@@ -1,0 +1,10 @@
+{
+    "name": "Zombineta",
+    "rootNamespace": "Zombineta",
+    "references": [
+        "Unity.InputSystem"
+    ],
+    "allowUnsafeCode": false,
+    "autoReferenced": true,
+    "noEngineReferences": false
+}

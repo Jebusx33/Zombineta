@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9cee9c0d0d171e4f948c61233c56465, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier:
+  goalDistance: 4000
+  startingGap: 40
+  laneSpacing: 1.6
+  laneChangeDuration: 0.15
+  normalSpeed: 12
+  turboSpeedMultiplier: 1.8
+  reverseSpeedMultiplier: -0.5
+  fuelMax: 100
+  fuelBurnPerSecond: 1.6
+  turboBurnMultiplier: 3
+  reverseBurnMultiplier: 0.5
+  fuelPickupAmount: 35
+  batteryMax: 100
+  batteryDrainPerSecond: 8
+  batteryPickupAmount: 40
+  headlightHordeSlowFactor: 0.5
+  ammoMax: 6
+  ammoAtStart: 3
+  ammoPickupAmount: 2
+  shotHordePushback: 15
+  hordeBaseSpeed: 13.5
+  rubberBandStartGap: 25
+  rubberBandRange: 35
+  rubberBandMaxBonus: 9
+  crashStunDuration: 0.8
+  crashFuelPenalty: 8
