@@ -23,7 +23,7 @@ MonoBehaviour:
   fuelBurnPerSecond: 1.6
   turboBurnMultiplier: 3
   reverseBurnMultiplier: 0.5
-  fuelPickupAmount: 35
+  fuelPickupAmount: 45
   batteryMax: 100
   batteryDrainPerSecond: 8
   batteryPickupAmount: 40

@@ -2,7 +2,10 @@
     "name": "Zombineta",
     "rootNamespace": "Zombineta",
     "references": [
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Universal.2D.Runtime",
+        "UnityEngine.UI"
     ],
     "allowUnsafeCode": false,
     "autoReferenced": true,

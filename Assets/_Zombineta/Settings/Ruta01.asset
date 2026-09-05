@@ -1,0 +1,348 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f477988c03e2a547925b51021b06c8b, type: 3}
+  m_Name: Ruta01
+  m_EditorClassIdentifier: Zombineta::Zombineta.Level.LevelDefinition
+  entries:
+  - distance: 120
+    lane: 1
+    kind: 1
+  - distance: 150
+    lane: 1
+    kind: 0
+  - distance: 236.82288
+    lane: 0
+    kind: 0
+  - distance: 240
+    lane: 1
+    kind: 1
+  - distance: 344.67307
+    lane: 2
+    kind: 0
+  - distance: 360
+    lane: 0
+    kind: 1
+  - distance: 400
+    lane: 0
+    kind: 3
+  - distance: 469.1336
+    lane: 0
+    kind: 0
+  - distance: 480
+    lane: 1
+    kind: 1
+  - distance: 500
+    lane: 0
+    kind: 2
+  - distance: 566.2492
+    lane: 0
+    kind: 0
+  - distance: 600
+    lane: 2
+    kind: 1
+  - distance: 648.1383
+    lane: 1
+    kind: 0
+  - distance: 720
+    lane: 2
+    kind: 1
+  - distance: 741.5214
+    lane: 1
+    kind: 0
+  - distance: 800
+    lane: 0
+    kind: 3
+  - distance: 840
+    lane: 0
+    kind: 1
+  - distance: 856.90076
+    lane: 1
+    kind: 0
+  - distance: 960
+    lane: 1
+    kind: 1
+  - distance: 962.4378
+    lane: 0
+    kind: 0
+  - distance: 1000
+    lane: 2
+    kind: 2
+  - distance: 1078.2262
+    lane: 1
+    kind: 0
+  - distance: 1080
+    lane: 0
+    kind: 1
+  - distance: 1192.1385
+    lane: 2
+    kind: 0
+  - distance: 1200
+    lane: 0
+    kind: 3
+  - distance: 1200
+    lane: 0
+    kind: 1
+  - distance: 1285.4111
+    lane: 0
+    kind: 0
+  - distance: 1320
+    lane: 1
+    kind: 1
+  - distance: 1398.5654
+    lane: 2
+    kind: 0
+  - distance: 1440
+    lane: 2
+    kind: 1
+  - distance: 1487.4877
+    lane: 0
+    kind: 0
+  - distance: 1500
+    lane: 1
+    kind: 2
+  - distance: 1560
+    lane: 0
+    kind: 1
+  - distance: 1578.1588
+    lane: 0
+    kind: 0
+  - distance: 1600
+    lane: 0
+    kind: 3
+  - distance: 1659.5769
+    lane: 0
+    kind: 0
+  - distance: 1680
+    lane: 0
+    kind: 1
+  - distance: 1757.3947
+    lane: 0
+    kind: 0
+  - distance: 1800
+    lane: 1
+    kind: 1
+  - distance: 1861.5287
+    lane: 1
+    kind: 0
+  - distance: 1920
+    lane: 1
+    kind: 1
+  - distance: 1949.6262
+    lane: 1
+    kind: 0
+  - distance: 2000
+    lane: 0
+    kind: 3
+  - distance: 2000
+    lane: 1
+    kind: 2
+  - distance: 2040
+    lane: 0
+    kind: 1
+  - distance: 2041.9098
+    lane: 1
+    kind: 0
+  - distance: 2111.043
+    lane: 2
+    kind: 0
+  - distance: 2160
+    lane: 1
+    kind: 1
+  - distance: 2177.1965
+    lane: 1
+    kind: 0
+  - distance: 2241.1843
+    lane: 2
+    kind: 0
+  - distance: 2241.1843
+    lane: 1
+    kind: 0
+  - distance: 2280
+    lane: 0
+    kind: 1
+  - distance: 2315.596
+    lane: 1
+    kind: 0
+  - distance: 2400
+    lane: 1
+    kind: 3
+  - distance: 2400
+    lane: 1
+    kind: 1
+  - distance: 2412.2712
+    lane: 1
+    kind: 0
+  - distance: 2412.2712
+    lane: 0
+    kind: 0
+  - distance: 2498.8608
+    lane: 2
+    kind: 0
+  - distance: 2498.8608
+    lane: 0
+    kind: 0
+  - distance: 2500
+    lane: 0
+    kind: 2
+  - distance: 2520
+    lane: 0
+    kind: 1
+  - distance: 2580.607
+    lane: 1
+    kind: 0
+  - distance: 2580.607
+    lane: 2
+    kind: 0
+  - distance: 2640
+    lane: 1
+    kind: 1
+  - distance: 2647.7837
+    lane: 2
+    kind: 0
+  - distance: 2724.6667
+    lane: 2
+    kind: 0
+  - distance: 2724.6667
+    lane: 1
+    kind: 0
+  - distance: 2760
+    lane: 1
+    kind: 1
+  - distance: 2800
+    lane: 2
+    kind: 3
+  - distance: 2808.3252
+    lane: 2
+    kind: 0
+  - distance: 2808.3252
+    lane: 1
+    kind: 0
+  - distance: 2872.1736
+    lane: 0
+    kind: 0
+  - distance: 2872.1736
+    lane: 1
+    kind: 0
+  - distance: 2880
+    lane: 2
+    kind: 1
+  - distance: 2930.5918
+    lane: 0
+    kind: 0
+  - distance: 3000
+    lane: 0
+    kind: 1
+  - distance: 3000
+    lane: 1
+    kind: 2
+  - distance: 3015.8784
+    lane: 2
+    kind: 0
+  - distance: 3088.7068
+    lane: 1
+    kind: 0
+  - distance: 3088.7068
+    lane: 2
+    kind: 0
+  - distance: 3120
+    lane: 1
+    kind: 1
+  - distance: 3148.7769
+    lane: 0
+    kind: 0
+  - distance: 3148.7769
+    lane: 1
+    kind: 0
+  - distance: 3200
+    lane: 2
+    kind: 3
+  - distance: 3204.9731
+    lane: 0
+    kind: 0
+  - distance: 3204.9731
+    lane: 1
+    kind: 0
+  - distance: 3240
+    lane: 0
+    kind: 1
+  - distance: 3257.9885
+    lane: 2
+    kind: 0
+  - distance: 3310.3357
+    lane: 2
+    kind: 0
+  - distance: 3360
+    lane: 2
+    kind: 1
+  - distance: 3389.301
+    lane: 0
+    kind: 0
+  - distance: 3389.301
+    lane: 2
+    kind: 0
+  - distance: 3457.1372
+    lane: 0
+    kind: 0
+  - distance: 3457.1372
+    lane: 2
+    kind: 0
+  - distance: 3480
+    lane: 2
+    kind: 1
+  - distance: 3500
+    lane: 0
+    kind: 2
+  - distance: 3509.2778
+    lane: 2
+    kind: 0
+  - distance: 3509.2778
+    lane: 1
+    kind: 0
+  - distance: 3575.462
+    lane: 0
+    kind: 0
+  - distance: 3575.462
+    lane: 2
+    kind: 0
+  - distance: 3600
+    lane: 1
+    kind: 3
+  - distance: 3600
+    lane: 0
+    kind: 1
+  - distance: 3641.702
+    lane: 0
+    kind: 0
+  - distance: 3641.702
+    lane: 1
+    kind: 0
+  - distance: 3710.6414
+    lane: 2
+    kind: 0
+  - distance: 3710.6414
+    lane: 0
+    kind: 0
+  - distance: 3720
+    lane: 1
+    kind: 1
+  - distance: 3782.5354
+    lane: 0
+    kind: 0
+  - distance: 3782.5354
+    lane: 2
+    kind: 0
+  - distance: 3829.052
+    lane: 0
+    kind: 0
+  - distance: 3873.5388
+    lane: 0
+    kind: 0

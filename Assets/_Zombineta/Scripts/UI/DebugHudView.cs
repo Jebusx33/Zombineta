@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Zombineta.Core;
 
 namespace Zombineta.UI
@@ -12,11 +13,21 @@ namespace Zombineta.UI
     {
         [SerializeField] RunController run;
 
+        [Tooltip("Arranca oculto: son numeros para balancear, no para jugar. F1 lo muestra.")]
+        [SerializeField] bool visible;
+
         GUIStyle style;
+
+        void Update()
+        {
+            var kb = Keyboard.current;
+            if (kb != null && kb.f1Key.wasPressedThisFrame)
+                visible = !visible;
+        }
 
         void OnGUI()
         {
-            if (run == null || run.Sim == null)
+            if (!visible || run == null || run.Sim == null)
                 return;
 
             style ??= new GUIStyle(GUI.skin.label)
