@@ -207,6 +207,19 @@ Estas costaron tiempo real en esta sesión:
 8. `Unity_Camera_Capture` no muestra canvases Screen Space Overlay, así que **el HUD no se
    puede verificar desde acá**. Tampoco se pueden enviar teclas.
 
+9. **`AssetDatabase.LoadAssetAtPath<Sprite>("hoja.png[NombreSprite]")` devuelve `null` en
+   silencio** para un sub-sprite generado por slicing, sin excepción ni error, en esta versión
+   de Unity. La alternativa que funciona es `LoadAllAssetsAtPath` o
+   `LoadAllAssetRepresentationsAtPath` filtrando por `.name`. Esto es **distinto** de la trampa
+   #4 (asset recién creado que no carga): esa se arregla con un `Assets/Refresh`; esta es un
+   `null` permanente del indexer con corchetes que un Refresh **no** arregla.
+
+10. **`TextureImporter.maxTextureSize` viene en 2048 por default en todos los overrides de
+    plataforma.** Si la textura fuente es más ancha que eso (p. ej. una hoja de 2752 px), Unity
+    la reescala para abajo al importar, sin warning ni error en consola. Antes de slicear o
+    usar una hoja grande, subí `maxTextureSize` (el default y todos los overrides de
+    plataforma) a un valor ≥ la dimensión más grande de la fuente.
+
 ---
 
 ## 6. Qué está verificado y qué no
@@ -243,7 +256,10 @@ ayudes** — cada vez que tenés que explicar algo, es un problema de diseño pa
 ### Fase 5 — Arte, audio y build (T20-T22, T24)
 Los assets están en `../../Arte/` (fuera del repo del juego):
 - 7 spritesheets de la protagonista en moto (3168×1344), incluida una animación de disparo.
-- Zombies con ciclo de caminata de 8 frames, impacto y muerte, con alfa.
+- Zombies con ciclo de caminata de 8 frames, impacto y muerte. **Ojo:** la hoja
+  (`ZombieViejo.png`) no tenía alfa real — el fondo "transparente" venía horneado como
+  cuadriculado gris opaco. Ya se limpió con `Tools/SpritePrep/` (ver su README para la
+  técnica).
 - Key art del menú ya compuesto y un test de paleta que define la dirección nocturna.
 
 Las Views ya están separadas de la lógica, así que cambiar greybox por sprites reales es
@@ -253,10 +269,19 @@ tocar `SpriteRenderer` y nada más.
 1. Conviven **dos direcciones de personaje**: el test de paleta tiene casco y caja de delivery
    "Ra π" con zombies verdes; los spritesheets terminados tienen a la protagonista sin casco
    con traje rosa/negro y zombies con piel humana. Hay que elegir una.
-2. Varios sheets tienen **fondo blanco opaco**, no alfa. Necesitan pasada de transparencia.
+2. Varios sheets no tienen alfa real. **No asumas que el fondo es blanco:** el de zombies
+   (`ZombieViejo.png`) resultó ser un cuadriculado gris de dos tonos (~RGB 66,66,66 y
+   ~RGB 104,104,104, mosaico de ~30px), no blanco opaco. Cada sheet puede tener un patrón
+   distinto — conviene inspeccionar antes de asumir cuál. Necesitan pasada de transparencia
+   (ver `Tools/SpritePrep/` para el caso cuadriculado).
 
 Los sheets son de 3168×1344 sin grilla exacta (3168/5 = 633,6), así que el slicing por grilla
 va a fallar. Conviene una herramienta de editor que calcule los recortes escaneando el alfa.
+
+`Tools/SpritePrep/` resuelve el problema del cuadriculado/sin-alfa, pero se construyó para
+`ZombieViejo.png` y requiere que la hoja divida exacto en columnas x filas. Sirve tal cual
+para el caso zombie; la grilla no exacta de los sheets de la protagonista es un problema
+aparte que `Tools/SpritePrep` todavía no maneja.
 
 ### Documentación (cuenta para la rúbrica)
 Los docs 01, 03, 06 y 07 siguen vacíos, y el **07 (Plan de Prototipo) es literalmente el

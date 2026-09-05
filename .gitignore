@@ -58,3 +58,6 @@ Thumbs.db
 
 # La herramienta de balance no la genera Unity: esa si va al repo
 !/Tools/**/*.csproj
+
+# Python (Tools/SpritePrep)
+__pycache__/
