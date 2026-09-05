@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9cee9c0d0d171e4f948c61233c56465, type: 3}
   m_Name: GameConfig
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   goalDistance: 4000
   startingGap: 40
   laneSpacing: 1.6
@@ -38,3 +38,5 @@ MonoBehaviour:
   rubberBandMaxBonus: 9
   crashStunDuration: 0.8
   crashFuelPenalty: 8
+  worldUnitsPerMeter: 0.25
+  cameraTrailMeters: 18

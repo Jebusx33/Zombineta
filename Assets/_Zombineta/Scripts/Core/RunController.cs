@@ -59,5 +59,8 @@ namespace Zombineta.Core
 
         /// <summary>Altura en mundo del carril indicado (0 abajo, 1 medio, 2 arriba).</summary>
         public float LaneToWorldY(float lane) => (lane - 1f) * config.laneSpacing;
+
+        /// <summary>Convierte metros de la simulacion a unidades de mundo.</summary>
+        public float ToWorldX(float meters) => meters * config.worldUnitsPerMeter;
     }
 }

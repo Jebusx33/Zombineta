@@ -24,7 +24,8 @@ namespace Zombineta.Player
                 return;
 
             var state = run.Sim.State;
-            transform.position = new Vector3(state.PlayerX, run.LaneToWorldY(state.LaneVisual), 0f);
+            transform.position = new Vector3(
+                run.ToWorldX(state.PlayerX), run.LaneToWorldY(state.LaneVisual), 0f);
 
             if (body == null)
                 return;

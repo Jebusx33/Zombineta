@@ -1,7 +1,7 @@
 using UnityEngine;
 using Zombineta.Core;
 
-namespace Zombineta.Horde
+namespace Zombineta.Enemies
 {
     /// <summary>
     /// Dibuja la horda como un frente que avanza. La simulacion solo conoce un
@@ -52,7 +52,7 @@ namespace Zombineta.Horde
             for (int i = 0; i < zombies.Length; i++)
             {
                 zombies[i].position = new Vector3(
-                    frontX + offsets[i],
+                    run.ToWorldX(frontX + offsets[i]),
                     run.LaneToWorldY(lanes[i]),
                     0f);
             }

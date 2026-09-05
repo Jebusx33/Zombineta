@@ -3,16 +3,14 @@ using UnityEngine;
 namespace Zombineta.Core
 {
     /// <summary>
-    /// Sigue a la jugadora dejandola a la derecha del centro, para que quede
-    /// aire a la izquierda y se vea venir a la horda. Sin ese aire la
-    /// persecucion no se lee.
+    /// Sigue a la jugadora quedandose atras de ella, para que aparezca a la
+    /// derecha de la pantalla y quede aire a la izquierda donde se ve venir a la
+    /// horda. Sin ese aire la persecucion no se lee: la amenaza queda fuera de
+    /// cuadro justo cuando importa.
     /// </summary>
     public sealed class CameraFollow : MonoBehaviour
     {
         [SerializeField] RunController run;
-
-        [Tooltip("Cuanto se corre la camara por delante de la jugadora, en metros.")]
-        [SerializeField] float lookAhead = 4f;
 
         [Tooltip("0 = pegada, valores mas altos = mas suave.")]
         [SerializeField] float smoothing = 0.12f;
@@ -26,7 +24,7 @@ namespace Zombineta.Core
             if (run == null || run.Sim == null)
                 return;
 
-            float targetX = run.Sim.State.PlayerX + lookAhead;
+            float targetX = run.ToWorldX(run.Sim.State.PlayerX - run.Config.cameraTrailMeters);
             float x = smoothing <= 0f
                 ? targetX
                 : Mathf.SmoothDamp(transform.position.x, targetX, ref velocityX, smoothing);

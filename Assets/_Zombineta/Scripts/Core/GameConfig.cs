@@ -62,5 +62,15 @@ namespace Zombineta.Core
         [Header("Choque contra obstaculo")]
         public float crashStunDuration = 0.8f;
         public float crashFuelPenalty = 8f;
+
+        [Header("Presentacion")]
+        [Tooltip("Unidades de mundo por metro simulado. La simulacion piensa en metros; " +
+                 "la pantalla no puede mostrar 40 m de ventaja a escala 1:1, asi que se " +
+                 "comprime. No afecta el balance, solo lo que se ve.")]
+        public float worldUnitsPerMeter = 0.25f;
+
+        [Tooltip("Metros que la camara se queda atras de la jugadora. Positivo la deja a la " +
+                 "derecha de la pantalla, con aire a la izquierda para ver venir a la horda.")]
+        public float cameraTrailMeters = 25f;
     }
 }

@@ -45,16 +45,21 @@ namespace Zombineta.Level
             if (dashes == null || followTarget == null)
                 return;
 
-            // Anclar la grilla a un multiplo de spacing: al avanzar la camara las
+            // spacing esta en metros; en pantalla se mide en unidades de mundo.
+            float step = run.ToWorldX(spacing);
+            if (step <= 0f)
+                return;
+
+            // Anclar la grilla a un multiplo de step: al avanzar la camara las
             // rayas saltan exactamente un espacio, lo cual es invisible.
-            float anchor = Mathf.Floor(followTarget.position.x / spacing) * spacing;
+            float anchor = Mathf.Floor(followTarget.position.x / step) * step;
             int half = dashesPerLine / 2;
 
             for (int line = 0; line < LineLanes.Length; line++)
             {
                 float y = run.LaneToWorldY(LineLanes[line]);
                 for (int i = 0; i < dashesPerLine; i++)
-                    dashes[line][i].position = new Vector3(anchor + (i - half) * spacing, y, 0f);
+                    dashes[line][i].position = new Vector3(anchor + (i - half) * step, y, 0f);
             }
         }
     }
