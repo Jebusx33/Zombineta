@@ -1,0 +1,901 @@
+fileFormatVersion: 2
+guid: d368c40d1a2a0054eb2bd61891e8689d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8423230838932466370
+    second: ZombieViejo_0
+  - first:
+      213: 3567391863957932341
+    second: ZombieViejo_1
+  - first:
+      213: 1723011618234400769
+    second: ZombieViejo_2
+  - first:
+      213: 8386308070974466806
+    second: ZombieViejo_3
+  - first:
+      213: 150778320284775476
+    second: ZombieViejo_4
+  - first:
+      213: 7865282261739855640
+    second: ZombieViejo_5
+  - first:
+      213: 8978334572109013475
+    second: ZombieViejo_6
+  - first:
+      213: 5793695788348337855
+    second: ZombieViejo_7
+  - first:
+      213: 1249891113278608368
+    second: ZombieViejo_8
+  - first:
+      213: 2222656564417474775
+    second: ZombieViejo_9
+  - first:
+      213: -7038747736174232127
+    second: ZombieViejo_10
+  - first:
+      213: -4358847506718784117
+    second: ZombieViejo_11
+  - first:
+      213: -5802053637635021319
+    second: ZombieViejo_12
+  - first:
+      213: -3360446606796322416
+    second: ZombieViejo_13
+  - first:
+      213: 6132571527866251998
+    second: ZombieViejo_14
+  - first:
+      213: -2142756253269556682
+    second: ZombieViejo_15
+  - first:
+      213: -6475393032495902739
+    second: ZombieViejo_16
+  - first:
+      213: -7729178310725438897
+    second: ZombieViejo_17
+  - first:
+      213: -8924673860401042435
+    second: ZombieViejo_18
+  - first:
+      213: -7384948486727128994
+    second: ZombieViejo_19
+  - first:
+      213: 4952693199125210201
+    second: ZombieViejo_20
+  - first:
+      213: -5288402800926684475
+    second: ZombieViejo_21
+  - first:
+      213: -2506332352371719517
+    second: ZombieViejo_22
+  - first:
+      213: 8117970907246104897
+    second: ZombieViejo_23
+  - first:
+      213: 1107931574035569380
+    second: ZombieViejo_24
+  - first:
+      213: 543808999440263872
+    second: ZombieViejo_25
+  - first:
+      213: 1681121586577950583
+    second: ZombieViejo_26
+  - first:
+      213: -6897940465765913611
+    second: ZombieViejo_27
+  - first:
+      213: 5178164603006142458
+    second: ZombieViejo_28
+  - first:
+      213: 2144086957759782009
+    second: ZombieViejo_29
+  - first:
+      213: -4950067863839959888
+    second: ZombieViejo_30
+  - first:
+      213: 7126028811836036768
+    second: ZombieViejo_31
+  - first:
+      213: 5504777594087764140
+    second: ZombieViejo_32
+  - first:
+      213: 7071879846754688996
+    second: ZombieViejo_33
+  - first:
+      213: -778869915343861251
+    second: ZombieViejo_34
+  - first:
+      213: 957227079427517472
+    second: ZombieViejo_35
+  - first:
+      213: 4527125073712915367
+    second: ZombieViejo_36
+  - first:
+      213: -195293211491637946
+    second: ZombieViejo_37
+  - first:
+      213: 1849537173393783732
+    second: ZombieViejo_38
+  - first:
+      213: 3553745126390624157
+    second: ZombieViejo_39
+  - first:
+      213: -3016587478799721807
+    second: ZombieViejo_40
+  - first:
+      213: 3939429745792741050
+    second: ZombieViejo_41
+  - first:
+      213: -7512902801186403946
+    second: ZombieViejo_42
+  - first:
+      213: 6031037330355295423
+    second: ZombieViejo_43
+  - first:
+      213: -6149304953977327270
+    second: ZombieViejo_44
+  - first:
+      213: -8993636365682717612
+    second: ZombieViejo_45
+  - first:
+      213: 261328448269304288
+    second: ZombieViejo_46
+  - first:
+      213: -4443515806701578819
+    second: ZombieViejo_47
+  - first:
+      213: -1924593586493214990
+    second: ZombieViejo_48
+  - first:
+      213: 5614950841176860722
+    second: ZombieViejo_49
+  - first:
+      213: 2925213555876563091
+    second: ZombieViejo_50
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 413
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ZombieViejo_r0_c0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1024
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebb6997348b481a4f9ddcb816c9f4ca4
+      internalID: 1471499687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r0_c1
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 1024
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 163a4d63548aa1e4ea1f51f2d1c337dc
+      internalID: 897350515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r0_c2
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 1024
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3e11c99275d2454aa79fe95214141c6
+      internalID: 1898066692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r0_c3
+      rect:
+        serializedVersion: 2
+        x: 1032
+        y: 1024
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d6952552f3430945b02b7ec8beb7877
+      internalID: -201195150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r0_c4
+      rect:
+        serializedVersion: 2
+        x: 1376
+        y: 1024
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71143c4b755300742b7c2955e166d419
+      internalID: 154658168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r0_c5
+      rect:
+        serializedVersion: 2
+        x: 1720
+        y: 1024
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79a94b83756030846b32b3a41207eb55
+      internalID: -303853421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r0_c6
+      rect:
+        serializedVersion: 2
+        x: 2064
+        y: 1024
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a7b0879f4f61c84d808c48258b8189a
+      internalID: 1876501390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r0_c7
+      rect:
+        serializedVersion: 2
+        x: 2408
+        y: 1024
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b38addcd477713c4ab114a5cc533b04f
+      internalID: -861536275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r1_c0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 512
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4a89c9a57dc2234894fbe71cb2a3642
+      internalID: -199378926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r1_c1
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 512
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2504563a6f5830c4dba38e4c0b11c9c4
+      internalID: -2003523475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r1_c2
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 512
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1fa0312a9f0e8a47b7047457819c992
+      internalID: -1320659363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r1_c3
+      rect:
+        serializedVersion: 2
+        x: 1032
+        y: 512
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ffcba9ee4606014f880f1f69fb2f0bf
+      internalID: -2134828444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r1_c4
+      rect:
+        serializedVersion: 2
+        x: 1376
+        y: 512
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dee18293d56e14d40aad44f54b935ad4
+      internalID: -1095760480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r1_c5
+      rect:
+        serializedVersion: 2
+        x: 1720
+        y: 512
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a5cba103ed467340b8bb5e74dfde62b
+      internalID: 222747527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r1_c6
+      rect:
+        serializedVersion: 2
+        x: 2064
+        y: 512
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a8c2b8e0ce711b47a60239ce39774aa
+      internalID: -352637831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r1_c7
+      rect:
+        serializedVersion: 2
+        x: 2408
+        y: 512
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7985dd96d756c54d8dd541c7230a6b9
+      internalID: -1593718924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r2_c0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 108b077236a2e544f9aa49c6db2e42a1
+      internalID: 2006592712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r2_c1
+      rect:
+        serializedVersion: 2
+        x: 344
+        y: 0
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f64cedde5875fa4f970efcc0b7c91e2
+      internalID: -1437558599
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r2_c2
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 0
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: edeec6fc6183cc24eb5e0b56cd5a312d
+      internalID: 1396073738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r2_c3
+      rect:
+        serializedVersion: 2
+        x: 1032
+        y: 0
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 993c513b75e5c6541b37d9eb3db028e1
+      internalID: 558737612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r2_c4
+      rect:
+        serializedVersion: 2
+        x: 1376
+        y: 0
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f3bcfe7881c572e4a9640c3811b13e29
+      internalID: -1329896288
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r2_c5
+      rect:
+        serializedVersion: 2
+        x: 1720
+        y: 0
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f210e1287476eea40a1b9284c00ec987
+      internalID: -669270168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r2_c6
+      rect:
+        serializedVersion: 2
+        x: 2064
+        y: 0
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fabb53d2a0321ea47ac34d852cecba18
+      internalID: 224744712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ZombieViejo_r2_c7
+      rect:
+        serializedVersion: 2
+        x: 2408
+        y: 0
+        width: 344
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cab2cbc1711205e45b996835285f7d7c
+      internalID: -361131184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: b47857c129cb68d47a49308edc0491f4
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      ZombieViejo_0: 8423230838932466370
+      ZombieViejo_1: 3567391863957932341
+      ZombieViejo_10: -7038747736174232127
+      ZombieViejo_11: -4358847506718784117
+      ZombieViejo_12: -5802053637635021319
+      ZombieViejo_13: -3360446606796322416
+      ZombieViejo_14: 6132571527866251998
+      ZombieViejo_15: -2142756253269556682
+      ZombieViejo_16: -6475393032495902739
+      ZombieViejo_17: -7729178310725438897
+      ZombieViejo_18: -8924673860401042435
+      ZombieViejo_19: -7384948486727128994
+      ZombieViejo_2: 1723011618234400769
+      ZombieViejo_20: 4952693199125210201
+      ZombieViejo_21: -5288402800926684475
+      ZombieViejo_22: -2506332352371719517
+      ZombieViejo_23: 8117970907246104897
+      ZombieViejo_24: 1107931574035569380
+      ZombieViejo_25: 543808999440263872
+      ZombieViejo_26: 1681121586577950583
+      ZombieViejo_27: -6897940465765913611
+      ZombieViejo_28: 5178164603006142458
+      ZombieViejo_29: 2144086957759782009
+      ZombieViejo_3: 8386308070974466806
+      ZombieViejo_30: -4950067863839959888
+      ZombieViejo_31: 7126028811836036768
+      ZombieViejo_32: 5504777594087764140
+      ZombieViejo_33: 7071879846754688996
+      ZombieViejo_34: -778869915343861251
+      ZombieViejo_35: 957227079427517472
+      ZombieViejo_36: 4527125073712915367
+      ZombieViejo_37: -195293211491637946
+      ZombieViejo_38: 1849537173393783732
+      ZombieViejo_39: 3553745126390624157
+      ZombieViejo_4: 150778320284775476
+      ZombieViejo_40: -3016587478799721807
+      ZombieViejo_41: 3939429745792741050
+      ZombieViejo_42: -7512902801186403946
+      ZombieViejo_43: 6031037330355295423
+      ZombieViejo_44: -6149304953977327270
+      ZombieViejo_45: -8993636365682717612
+      ZombieViejo_46: 261328448269304288
+      ZombieViejo_47: -4443515806701578819
+      ZombieViejo_48: -1924593586493214990
+      ZombieViejo_49: 5614950841176860722
+      ZombieViejo_5: 7865282261739855640
+      ZombieViejo_50: 2925213555876563091
+      ZombieViejo_6: 8978334572109013475
+      ZombieViejo_7: 5793695788348337855
+      ZombieViejo_8: 1249891113278608368
+      ZombieViejo_9: 2222656564417474775
+      ZombieViejo_r0_c0: 1471499687
+      ZombieViejo_r0_c1: 897350515
+      ZombieViejo_r0_c2: 1898066692
+      ZombieViejo_r0_c3: -201195150
+      ZombieViejo_r0_c4: 154658168
+      ZombieViejo_r0_c5: -303853421
+      ZombieViejo_r0_c6: 1876501390
+      ZombieViejo_r0_c7: -861536275
+      ZombieViejo_r1_c0: -199378926
+      ZombieViejo_r1_c1: -2003523475
+      ZombieViejo_r1_c2: -1320659363
+      ZombieViejo_r1_c3: -2134828444
+      ZombieViejo_r1_c4: -1095760480
+      ZombieViejo_r1_c5: 222747527
+      ZombieViejo_r1_c6: -352637831
+      ZombieViejo_r1_c7: -1593718924
+      ZombieViejo_r2_c0: 2006592712
+      ZombieViejo_r2_c1: -1437558599
+      ZombieViejo_r2_c2: 1396073738
+      ZombieViejo_r2_c3: 558737612
+      ZombieViejo_r2_c4: -1329896288
+      ZombieViejo_r2_c5: -669270168
+      ZombieViejo_r2_c6: 224744712
+      ZombieViejo_r2_c7: -361131184
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
