@@ -36,7 +36,7 @@ mismo layout 8×3, y esa es la que se copia al proyecto de Unity. El archivo ori
 |---|---|---|---|
 | **Walk** | fila 0: c0→c7 | 8 | Loop, ~10 fps (~0.8s/ciclo) |
 | **Hit** | fila 1: c1, c2 (impacto con sangre) | 2 | No-loop, ~8 fps, vuelve a Walk al terminar (Exit Time) |
-| **Death** | fila 1: c3,c4,c5 (tambaleo) + fila 2: c0→c7 (encorvarse → caer → tirado) | 11 | No-loop, se congela en el último frame |
+| **Death** | fila 1: c3,c4,c5 (tambaleo) + fila 2: c1→c7 (encorvarse → caer → tirado) | 10 | No-loop, se congela en el último frame |
 
 Sin usar: fila1-c0 y fila2-c0 (poses de caminata redundantes, dejadas de lado en esta pasada).
 
