@@ -20,7 +20,7 @@ MonoBehaviour:
   turboSpeedMultiplier: 1.8
   reverseSpeedMultiplier: -0.5
   fuelMax: 100
-  fuelBurnPerSecond: 1.6
+  fuelBurnPerSecond: 2.6
   turboBurnMultiplier: 3
   reverseBurnMultiplier: 0.5
   fuelPickupAmount: 45
@@ -32,7 +32,7 @@ MonoBehaviour:
   ammoAtStart: 3
   ammoPickupAmount: 2
   shotHordePushback: 15
-  hordeBaseSpeed: 13.5
+  hordeBaseSpeed: 17.5
   rubberBandStartGap: 25
   rubberBandRange: 35
   rubberBandMaxBonus: 9
