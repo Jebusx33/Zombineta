@@ -57,7 +57,7 @@ namespace Zombineta.Core
 
             if (Sim.State.Phase != RunPhase.Running)
             {
-                if (input != null && input.RestartPressed)
+                if (QuickRestartEnabled && input != null && input.RestartPressed)
                     Restart();
                 return;
             }
@@ -85,6 +85,21 @@ namespace Zombineta.Core
             Sim.Reset();
             Level.Reset();
             Paused = false;
+        }
+
+        /// <summary>
+        /// R reinicia la partida al perder o ganar. Cuando hay un flujo de pantallas, lo
+        /// apaga: reiniciar tiene que pasar por el Game Over, no saltearlo.
+        /// </summary>
+        public bool QuickRestartEnabled { get; set; } = true;
+
+        /// <summary>Cambia de recorrido y deja la partida lista en la largada, en pausa.</summary>
+        public void LoadLevel(LevelDefinition definition)
+        {
+            level = definition;
+            Level = new LevelRuntime(definition);
+            Sim.Reset();
+            Paused = true;
         }
 
         /// <summary>Altura en mundo del carril indicado (0 abajo, 1 medio, 2 arriba).</summary>

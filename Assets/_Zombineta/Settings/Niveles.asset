@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e169707362a25314a88ac886056d3dbe, type: 3}
+  m_Name: Niveles
+  m_EditorClassIdentifier: Zombineta::Zombineta.Flow.LevelSequence
+  levels:
+  - displayName: "Nivel 1 \u2014 La avenida"
+    introLines:
+    - Ciudad. Noche. Un pedido pendiente.
+    - "La horda ya sabe que est\xE1s ac\xE1."
+    - "Lleg\xE1 al refugio antes de quedarte sin nafta."
+    route: {fileID: 11400000, guid: a2fe5b3fafb63d848b80f5888dd06285, type: 2}
+  - displayName: "Nivel 2 \u2014 El puerto"
+    introLines:
+    - El pedido era para el refugio del puerto.
+    - "M\xE1s obst\xE1culos. La misma horda."
+    - '(Placeholder: nivel para mostrar el encadenamiento.)'
+    route: {fileID: 11400000, guid: eec1bd8fe5af420449b6742b106affa3, type: 2}

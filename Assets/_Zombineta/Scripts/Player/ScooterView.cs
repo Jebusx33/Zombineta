@@ -18,6 +18,12 @@ namespace Zombineta.Player
         [SerializeField] Color reverseColor = new Color(0.4f, 0.7f, 1f);
         [SerializeField] Color stunnedColor = new Color(0.6f, 0.6f, 0.6f);
 
+        /// <summary>
+        /// Color base del personaje elegido. Placeholder de la seleccion de personaje hasta
+        /// que haya sprites: cuando lleguen, esto pasa a elegir el set de animaciones.
+        /// </summary>
+        public void SetCharacterColor(Color color) => normalColor = color;
+
         void LateUpdate()
         {
             if (run == null || run.Sim == null)
