@@ -1,11 +1,12 @@
 # Zombineta — Handoff
 
-Última actualización: 10 de septiembre de 2026, tras sumar el escenario por capas y el flujo
-completo de pantallas.
+Última actualización: 10 de septiembre de 2026, tras sumar el lenguaje de cámara (zoom por
+tensión, sacudidas, congelado al chocar, finales de cámara lenta y plano abierto).
 
 **Estado:** el prototipo se recorre de punta a punta con el flujo del GDD (menú, opciones,
 personaje, cinemática, dos niveles, victoria, game over, final), sobre un escenario de
-placeholders con parallax en cinco capas. 59 tests EditMode en verde.
+placeholders con parallax en cinco capas y una cámara que reacciona a la persecución.
+73 tests EditMode en verde.
 
 **Ojo:** con el balance vigente la meta **no se alcanza jugando** (ver sección 4). Para
 recorrer el flujo completo existen F2 (ganar) y F3 (perder), solo en editor y builds de
@@ -27,9 +28,10 @@ calle nocturna de tres carriles, administrando tres recursos, hasta llegar a un 
 
 - Vista de perfil pura, scroll horizontal. **3 carriles apilados verticalmente** (0 abajo,
   1 medio, 2 arriba). Cambiar de carril es un tween de 0,15 s, no un salto físico.
-- El mundo es estático y la jugadora avanza en X real. La cámara la sigue **por detrás**
-  (18 m), dejándola a la derecha de la pantalla con aire a la izquierda para ver venir a la
-  horda. Si la cámara va adelante, la amenaza queda fuera de cuadro justo cuando importa.
+- El mundo es estático y la jugadora avanza en X real. La cámara la sigue **por detrás**,
+  dejándola a la derecha de la pantalla con aire a la izquierda para ver venir a la horda.
+  Si la cámara va adelante, la amenaza queda fuera de cuadro justo cuando importa. Cuánto
+  cierra y abre el plano según la tensión está en la sección 3, "Lenguaje de cámara".
 - Nivel de **distancia fija**: 4000 m ≈ 5 minutos. El "refugio" es la meta al final.
 
 ### Verbos
@@ -44,7 +46,7 @@ calle nocturna de tres carriles, administrando tres recursos, hasta llegar a un 
 | Menús | W/S elegir, ENTER confirmar, ESC volver | A/D cambia valores en Opciones |
 | Reintentar | R | En el Game Over |
 | Números de debug | F1 | HUD crudo para balancear |
-| Ganar / perder el nivel | F2 / F3 | Solo editor y builds de desarrollo |
+| Ganar / perder el nivel | F2 / F3 | Solo editor y builds de desarrollo. F2 teletransporta a la meta |
 
 ### La decisión de diseño que sostiene todo
 
@@ -64,8 +66,8 @@ Rampas y salto (T12), puertas y trampas ambientales (T13), victoria alternativa 
 
 Existen **como placeholder**, para mostrar el flujo: la selección de personaje (dos
 repartidoras que por ahora solo cambian el color de la moto, una por cada dirección de arte
-pendiente), las cinemáticas (placas de texto), Opciones (volumen y pantalla completa) y un
-segundo nivel (`Ruta02`, generado igual que el primero).
+pendiente), las cinemáticas (placas de texto), Opciones (volumen, pantalla completa,
+efectos de cámara y sacudidas) y un segundo nivel (`Ruta02`, generado igual que el primero).
 
 ---
 
@@ -76,8 +78,10 @@ segundo nivel (`Ruta02`, generado igual que el primero).
 - Abrí `Assets/_Zombineta/Scenes/Prototipo.unity` y dale Play. Arranca en el menú.
 - El proyecto es 2D URP con Renderer2D. El faro es un `Light2D` real, así que la escena
   depende de la iluminación 2D: si sacás el `Global Light 2D`, se ve todo negro.
-- Cámara ortográfica de tamaño 6, subida 1,4 u (`CameraFollow.fixedY`): el arte de la pista es
-  alto y así quedan la calle en la mitad de abajo y edificios y cielo arriba.
+- Cámara ortográfica de tamaño 6 en reposo, con el borde de abajo clavado en y = −4,6
+  (`CameraConfig.viewBottomY`): el arte de la pista es alto y así quedan la calle en la mitad
+  de abajo y edificios y cielo arriba. Al hacer zoom se mueve el borde de arriba, nunca la
+  calle.
 
 ### MCP de Unity
 
@@ -106,7 +110,12 @@ Assets/_Zombineta/Scripts/
     RunState.cs        Estado de una partida. C# plano.
     RunSimulation.cs   Todas las reglas del juego. C# plano, sin MonoBehaviour.
     RunController.cs   Único puente con Unity: input -> Tick -> eventos.
-    CameraFollow.cs
+    CameraFollow.cs    Puente de la cámara: estado y eventos -> CameraDirector -> transform.
+                       También maneja el tiempo (congelado del choque, cámara lenta).
+    GameSettings.cs    Preferencias del jugador (PlayerPrefs): efectos de cámara, sacudidas.
+  CameraFx/
+    CameraConfig.cs    ScriptableObject: todos los números de la cámara.
+    CameraDirector.cs  El lenguaje de cámara. C# plano: entra estado, sale una pose.
   Player/
     PlayerIntent.cs    Lo que la jugadora QUIERE hacer. Desacopla input de reglas.
     PlayerInputReader.cs   Único lugar que sabe qué teclas existen.
@@ -136,8 +145,8 @@ Assets/_Zombineta/Scripts/
 ```
 
 Assets de datos en `Assets/_Zombineta/Settings/`: `GameConfig` (balance), `Ruta01` y `Ruta02`
-(recorridos), `Niveles` (orden de los niveles y texto de las cinemáticas) y `Escenario`
-(capas del fondo). Diseñar es editar esos assets, no código.
+(recorridos), `Niveles` (orden de los niveles y texto de las cinemáticas), `Escenario`
+(capas del fondo) y `CameraConfig` (la cámara). Diseñar es editar esos assets, no código.
 
 ### Dos decisiones que conviene no revertir sin pensarlo
 
@@ -162,6 +171,39 @@ retroceso vuelve sobre los mismos edificios y dos playtests ven la misma calle.
 **El flujo de pantallas es una máquina de estados sin Unity.** Una acción que no corresponde
 a la pantalla actual se ignora: una victoria reportada en pleno Game Over no saltea nada. Se
 comprobó en vivo durante la verificación, sin querer.
+
+### Lenguaje de cámara
+
+La cámara cuenta la persecución sin HUD. Todo sale de **una sola señal de tensión**: la
+distancia a la horda, pasada por un smoothstep entre `safeGap` (45 m, plano abierto, tamaño
+6,3) y `dangerGap` (8 m, plano cerrado, tamaño 5).
+
+| Qué pasa | Qué hace la cámara |
+|---|---|
+| La horda se acerca | Cierra el plano **despacio** (0,9 s): la amenaza se siente venir |
+| Faro, disparo o turbo sacan ventaja | Abre **rápido** (0,3 s): el alivio se nota en el acto |
+| Turbo | Abre un poco más y adelanta la mirada 1,5 u |
+| Choque | Sacudida, golpe hacia adelante con zoom, y **60 ms de congelado** |
+| Disparo | Sacudida leve y retroceso |
+| Te atrapan | Plano cerrado sobre la moto, **cámara lenta ×0,25** y la horda le pasa por encima; 1,2 s y Game Over |
+| Llegás al refugio | El plano se abre sobre la meta (tamaño 7,5) y la moto entra rodando; 1,6 s y Nivel completo |
+
+Tres reglas que los tests sostienen y conviene no romper:
+- **La mirada hacia adelante no cambia con el zoom.** La cámara se ubica como
+  `X = playerX + lookAhead − medioAncho(tamaño)`: cerrar el plano no le quita a la jugadora
+  la distancia que ve hacia adelante, solo el aire de atrás.
+- **El borde de abajo no se mueve.** `Y = viewBottomY + tamaño`: la calle nunca sale de cuadro.
+- **Todo corre en tiempo real** (`unscaledDeltaTime`): la cámara sigue viva durante el
+  congelado y la cámara lenta, y los resortes son independientes del framerate.
+
+Los finales (atrapada y refugio) son **solo presentación**: la simulación ya terminó, y lo que
+se ve (la horda que avanza de más, la moto que rueda dentro del refugio) lo agregan
+`HordeView` y `ScooterView`. `ScreenFlow` espera lo que devuelve `CameraFollow.PlayCatch()` /
+`PlayVictory()` antes de cambiar de pantalla, y siempre devuelve `Time.timeScale` a 1.
+
+En Opciones hay dos interruptores (guardados en PlayerPrefs): **Efectos de cámara** apaga
+todo y deja el encuadre clásico fijo, y **Sacudidas** apaga solo sacudidas y golpes
+(para quien se marea) pero conserva el zoom y los finales.
 
 ---
 
@@ -305,12 +347,30 @@ Estas costaron tiempo real en esta sesión:
     de lo que se edita en la escena. Es lo que hace útil la edición en vivo del escenario,
     pero también quiere decir que un experimento en Play no se deshace solo al salir.
 
+17. **`System.Text.RegularExpressions` no está disponible en `RunCommand`.** Parseá a mano.
+
+18. **Para medir algo instantáneo (un choque, un frame congelado) no alcanza con consultar
+    después:** para cuando llega el siguiente comando ya pasó. Suscribite a `run.Stepped`
+    desde un `RunCommand`, o colgá un callback de `EditorApplication.update` que tome
+    muestras a tiempos fijos, y guardá lo medido en `SessionState`. Otro comando lo lee.
+    Así se verificaron el congelado del choque y la secuencia de F2 a mitad de nivel.
+
+19. **El cono de un `Light2D` apunta hacia +Y local.** Para que el faro ilumine hacia atrás
+    (hacia la horda) la rotación Z es 90, no 180. Con 180 apuntaba al piso.
+
 ---
 
 ## 6. Qué está verificado y qué no
 
 **Verificado:**
-- 59 tests EditMode corriendo dentro de Unity (Test Runner real, no solo los shims).
+- 73 tests EditMode corriendo dentro de Unity (Test Runner real, no solo los shims).
+- Cámara en Play Mode: con 50 m de ventaja tamaño 6,30 y con 6 m tamaño 5,00, con la mirada
+  hacia adelante (6,2 u) y el borde de abajo (−4,6) iguales en los dos. Choque contra un
+  obstáculo real: congelado en el impacto y vuelta a tiempo normal. Una captura real de la
+  horda con el final en cámara lenta. Victoria con plano abierto. F2 a mitad de nivel: la
+  cámara salta a la meta en vez de cruzar el nivel. Con efectos apagados, encuadre fijo y
+  Game Over inmediato.
+- El faro apunta hacia atrás (capturado en Play).
 - Consumo de nafta exacto contra la config, el faro frenando a la horda a la mitad,
   `Reset` restableciendo el estado, cero errores de consola en Play Mode.
 - Escenario: sincronismo moto/calle con diferencia 0 sobre 263 m, parallax medido igual al
@@ -323,10 +383,13 @@ Estas costaron tiempo real en esta sesión:
 **NO verificado — pendiente de que alguien lo juegue:**
 - **El teclado en los menús.** El flujo se manejó por su API; nunca se apretó una tecla real.
   Es lo primero a probar: W/S, ENTER, ESC, A/D en Opciones, R en Game Over.
-- El efecto visual del faro. Está configurado pero nadie lo vio funcionando.
 - Si la capa frontal molesta al jugar: árboles y farolas pasan en silueta por delante de los
-  carriles y pueden tapar un obstáculo un instante. Se ajusta en la capa "Frontal" de
-  `Escenario.asset` (tinte, alfa, huecos) sin tocar código.
+  carriles y pueden tapar un obstáculo o la moto un instante, **más con el plano cerrado**
+  (cuando la horda está encima). Se ajusta en la capa "Frontal" de `Escenario.asset` (tinte,
+  alfa, huecos) sin tocar código.
+- Cómo se sienten los números de la cámara con las manos en el teclado: intensidad de las
+  sacudidas, velocidad del zoom, duración del congelado. Se tocan en `CameraConfig.asset`
+  en pleno Play y quedan guardados.
 - Que el juego sea **divertido**. Eso es lo que responde el playtest, no el simulador.
 
 ---
