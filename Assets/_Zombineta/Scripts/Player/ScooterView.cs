@@ -23,6 +23,13 @@ namespace Zombineta.Player
         [SerializeField] Color reverseTint = new Color(0.75f, 0.88f, 1f);
         [SerializeField] Color stunnedTint = new Color(0.5f, 0.5f, 0.5f);
 
+        [Header("Llegada")]
+        [Tooltip("Metros que la moto sigue rodando dentro del refugio al ganar.")]
+        [SerializeField] float arrivalCoastMeters = 6f;
+
+        // Solo presentacion: la simulacion termina en la meta, la moto entra rodando.
+        float coast;
+
         /// <summary>
         /// Color del personaje elegido. Placeholder de la seleccion de personaje hasta que
         /// haya un set de animaciones por personaje.
@@ -35,10 +42,15 @@ namespace Zombineta.Player
                 return;
 
             var state = run.Sim.State;
+            if (state.Phase == RunPhase.Won)
+                coast = Mathf.Min(arrivalCoastMeters, coast + run.Config.normalSpeed * 0.6f * Time.deltaTime);
+            else if (state.Phase == RunPhase.Running)
+                coast = 0f;
+
             // El pivot del sprite esta en el contacto de las ruedas: la moto se apoya en la
             // linea del carril, igual que los pies de los zombies.
             transform.position = new Vector3(
-                run.ToWorldX(state.PlayerX), run.LaneToWorldY(state.LaneVisual), 0f);
+                run.ToWorldX(state.PlayerX + coast), run.LaneToWorldY(state.LaneVisual), 0f);
 
             if (body == null)
                 return;

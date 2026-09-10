@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d836b269faaaa34e8d7b1be2d32cfaa, type: 3}
+  m_Name: CameraConfig
+  m_EditorClassIdentifier: Zombineta::Zombineta.CameraFx.CameraConfig
+  baseSize: 6
+  viewBottomY: -4.6
+  lookAhead: 6.2
+  followTime: 0.12
+  wideSize: 6.3
+  tightSize: 5
+  safeGap: 45
+  dangerGap: 8
+  zoomInTime: 0.9
+  zoomOutTime: 0.3
+  turboExtraSize: 0.35
+  turboExtraLookAhead: 1.5
+  turboResponseTime: 0.4
+  maxShakeOffset: 0.35
+  maxShakeRoll: 1
+  shakeFrequency: 18
+  traumaDecay: 1.5
+  punchFrequency: 3.5
+  punchDamping: 0.4
+  crashTrauma: 0.6
+  crashPunchForward: 0.6
+  crashPunchZoom: -0.45
+  hitstopSeconds: 0.06
+  shotTrauma: 0.18
+  shotPunchForward: 0.3
+  catchSize: 3.6
+  catchZoomTime: 0.18
+  catchTimeScale: 0.25
+  catchTrauma: 0.5
+  catchHoldSeconds: 1.2
+  victorySize: 7.5
+  victoryOpenTime: 1
+  victoryHoldSeconds: 1.6

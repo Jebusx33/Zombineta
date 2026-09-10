@@ -17,9 +17,16 @@ namespace Zombineta.Enemies
         [Tooltip("Cuantos metros hacia atras se extiende la masa desde el frente.")]
         [SerializeField] float depth = 8f;
 
+        [Tooltip("Metros que la horda sigue avanzando por encima de la moto al atraparla.")]
+        [SerializeField] float overrunMeters = 12f;
+
         Transform[] zombies;
         float[] offsets;
         float[] lanes;
+
+        // Solo presentacion: la simulacion ya termino al atraparte, pero la horda sigue
+        // avanzando por encima de la moto (en camara lenta, con el tiempo escalado).
+        float overrun;
 
         void Start()
         {
@@ -47,7 +54,13 @@ namespace Zombineta.Enemies
             if (run == null || run.Sim == null || zombies == null)
                 return;
 
-            float frontX = run.Sim.State.HordeX;
+            var state = run.Sim.State;
+            if (state.Phase == RunPhase.Lost)
+                overrun = Mathf.Min(overrunMeters, overrun + run.Config.hordeBaseSpeed * Time.deltaTime);
+            else if (state.Phase == RunPhase.Running)
+                overrun = 0f;
+
+            float frontX = state.HordeX + overrun;
 
             for (int i = 0; i < zombies.Length; i++)
             {

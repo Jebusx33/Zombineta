@@ -27,6 +27,7 @@ namespace Zombineta.UI
     {
         [SerializeField] RunController run;
         [SerializeField] ScooterView scooter;
+        [SerializeField] CameraFollow cameraRig;
         [SerializeField] LevelSequence levels;
         [SerializeField] List<CharacterOption> characters = new List<CharacterOption>();
 
@@ -63,6 +64,8 @@ namespace Zombineta.UI
         GameFlow flow;
         bool fullscreen;   // Screen.fullScreen recien cambia al final del frame
         int cinematicIndex;
+        float finaleLeft;       // segundos reales hasta mostrar la pantalla de fin
+        bool finaleWon;
         float cinematicTimer;
 
         /// <summary>El flujo en curso. Expuesto para inspeccionarlo y para herramientas.</summary>
@@ -152,7 +155,17 @@ namespace Zombineta.UI
                 PlayerPrefs.SetInt(FullscreenKey, fullscreen ? 1 : 0);
                 RefreshOptionLabels();
             }
-            else if (Back(kb) || (confirm && optionsMenu.Selected == 2))
+            else if (optionsMenu.Selected == 2 && change)
+            {
+                GameSettings.CameraEffects = !GameSettings.CameraEffects;
+                RefreshOptionLabels();
+            }
+            else if (optionsMenu.Selected == 3 && change)
+            {
+                GameSettings.CameraShake = !GameSettings.CameraShake;
+                RefreshOptionLabels();
+            }
+            else if (Back(kb) || (confirm && optionsMenu.Selected == 4))
             {
                 flow.Back();
             }
@@ -194,10 +207,23 @@ namespace Zombineta.UI
 
         void UpdatePlaying(Keyboard kb)
         {
+            if (finaleLeft > 0f)
+            {
+                // En tiempo real: durante la camara lenta, el reloj del juego va mas lento.
+                finaleLeft -= Time.unscaledDeltaTime;
+                if (finaleLeft <= 0f)
+                    FinishFinale();
+                return;
+            }
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             // Atajos para recorrer el flujo sin tener que ganar o perder de verdad.
             if (kb != null && kb.f2Key.wasPressedThisFrame)
+            {
+                // A la meta: el plano de victoria encuadra el refugio, no la mitad del nivel.
+                run.Sim.State.PlayerX = run.Config.goalDistance;
                 run.Sim.State.Phase = RunPhase.Won;
+            }
             if (kb != null && kb.f3Key.wasPressedThisFrame)
             {
                 run.Sim.State.Phase = RunPhase.Lost;
@@ -205,9 +231,33 @@ namespace Zombineta.UI
             }
 #endif
             if (run.Sim.State.Phase == RunPhase.Won)
-                flow.LevelWon();
+                BeginFinale(won: true);
             else if (run.Sim.State.Phase == RunPhase.Lost)
-                flow.LevelLost();
+                BeginFinale(won: false);
+        }
+
+        /// <summary>
+        /// Antes de la pantalla de fin, la camara tiene su momento: plano cerrado y camara
+        /// lenta al ser atrapada, plano abierto al llegar. Con los efectos apagados la
+        /// camara devuelve 0 y se pasa directo, como antes.
+        /// </summary>
+        void BeginFinale(bool won)
+        {
+            finaleWon = won;
+            float hold = cameraRig == null ? 0f : (won ? cameraRig.PlayVictory() : cameraRig.PlayCatch());
+            if (hold <= 0f)
+                FinishFinale();
+            else
+                finaleLeft = hold;
+        }
+
+        void FinishFinale()
+        {
+            finaleLeft = 0f;
+            if (cameraRig != null) cameraRig.EndFinale();
+            Time.timeScale = 1f;
+            if (finaleWon) flow.LevelWon();
+            else flow.LevelLost();
         }
 
         void UpdateGameOver(Keyboard kb)
@@ -229,9 +279,15 @@ namespace Zombineta.UI
 
         void OnScreenChanged(GameScreen from, GameScreen to)
         {
+            // Red de seguridad: ninguna pantalla puede quedar con el tiempo congelado.
+            Time.timeScale = 1f;
+            finaleLeft = 0f;
+
             switch (to)
             {
                 case GameScreen.MainMenu:
+                    // El menu siempre sobre la largada, no sobre donde termino la partida.
+                    LoadCurrentLevel();
                     run.Paused = true;
                     ShowOnly(mainMenuPanel);
                     mainMenu.Select(0);
@@ -335,6 +391,9 @@ namespace Zombineta.UI
             // opcion seleccionada. Como se cambia lo dice la ayuda del pie.
             optionsMenu.SetLabel(0, "Volumen:  " + Mathf.RoundToInt(AudioListener.volume * 100f) + "%");
             optionsMenu.SetLabel(1, "Pantalla completa:  " + (fullscreen ? "Sí" : "No"));
+            optionsMenu.SetLabel(2, "Efectos de cámara:  " + (GameSettings.CameraEffects ? "Sí" : "No"));
+            optionsMenu.SetLabel(3, "Sacudidas:  " + (GameSettings.CameraShake ? "Sí" : "No") +
+                                    (GameSettings.CameraEffects ? "" : "  (efectos apagados)"));
         }
 
         void ShowOnly(GameObject panel)

@@ -23,6 +23,9 @@ namespace Zombineta.Core
         /// <summary>Se dispara cada frame en que ocurrio algo. Para SFX, VFX y UI.</summary>
         public event Action<RunEvent> Stepped;
 
+        /// <summary>La partida volvio a la largada (reintento o nivel nuevo).</summary>
+        public event Action Restarted;
+
         public RunSimulation Sim { get; private set; }
         public LevelRuntime Level { get; private set; }
         public GameConfig Config => config;
@@ -85,6 +88,7 @@ namespace Zombineta.Core
             Sim.Reset();
             Level.Reset();
             Paused = false;
+            Restarted?.Invoke();
         }
 
         /// <summary>
@@ -100,6 +104,7 @@ namespace Zombineta.Core
             Level = new LevelRuntime(definition);
             Sim.Reset();
             Paused = true;
+            Restarted?.Invoke();
         }
 
         /// <summary>Altura en mundo del carril indicado (0 abajo, 1 medio, 2 arriba).</summary>
