@@ -1,0 +1,141 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2d77c6dcf7c1ae4cbff49b93842217c, type: 3}
+  m_Name: Escenario
+  m_EditorClassIdentifier: Zombineta::Zombineta.Scenery.SceneryTileset
+  layers:
+  - name: Cielo
+    enabled: 1
+    parallax: 0
+    sortingOrder: -100
+    baselineY: 2.8
+    height: 5.2
+    gapChance: 0
+    gapMin: 2
+    gapMax: 6
+    noImmediateRepeat: 0
+    seed: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+    material: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+    variants:
+    - sprite: {fileID: 21300000, guid: 0a56c5594d5fa8f4893455e48812aa87, type: 3}
+      weight: 1
+      heightScale: 1
+      yOffset: 0
+  - name: Edificios
+    enabled: 1
+    parallax: 0.5
+    sortingOrder: -50
+    baselineY: 2.5
+    height: 3.2
+    gapChance: 0.22
+    gapMin: 0.3
+    gapMax: 1.5
+    noImmediateRepeat: 1
+    seed: 11
+    tint: {r: 0.8, g: 0.75, b: 0.98, a: 1}
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 21300000, guid: 2cd8205bf436ef44d900599a7877b795, type: 3}
+      weight: 3
+      heightScale: 1
+      yOffset: 0
+    - sprite: {fileID: 21300000, guid: 16254c25dd00e9a4eb907a06a53f95b8, type: 3}
+      weight: 3
+      heightScale: 1
+      yOffset: 0
+    - sprite: {fileID: 21300000, guid: 0a131f4c2a00a2d4da757d56d3ad7f4c, type: 3}
+      weight: 3
+      heightScale: 1
+      yOffset: 0
+    - sprite: {fileID: 21300000, guid: a5fe197d641ca9e46a62f851d183e67b, type: 3}
+      weight: 1.5
+      heightScale: 1
+      yOffset: 0
+    - sprite: {fileID: 21300000, guid: 604cf17f4fb1d864cb8d39a66ad8c5c3, type: 3}
+      weight: 1
+      heightScale: 0.62
+      yOffset: 0
+  - name: Calle
+    enabled: 1
+    parallax: 1
+    sortingOrder: -20
+    baselineY: -4.850909
+    height: 7.796364
+    gapChance: 0
+    gapMin: 2
+    gapMax: 6
+    noImmediateRepeat: 0
+    seed: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 21300000, guid: 76753e779300aa244ac484a6606f941f, type: 3}
+      weight: 1
+      heightScale: 1
+      yOffset: 0
+  - name: Calle - vias
+    enabled: 1
+    parallax: 1
+    sortingOrder: -19
+    baselineY: -2.1
+    height: 1.3
+    gapChance: 1
+    gapMin: 30
+    gapMax: 70
+    noImmediateRepeat: 1
+    seed: 23
+    tint: {r: 1, g: 1, b: 1, a: 0.55}
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 21300000, guid: 3ede235060f4b6f46a33e521b24a5b42, type: 3}
+      weight: 1
+      heightScale: 1
+      yOffset: 0
+  - name: Frontal
+    enabled: 1
+    parallax: 2.5
+    sortingOrder: 50
+    baselineY: -5.4
+    height: 5.8
+    gapChance: 1
+    gapMin: 10
+    gapMax: 22
+    noImmediateRepeat: 1
+    seed: 5
+    tint: {r: 0.18, g: 0.14, b: 0.26, a: 0.92}
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 21300000, guid: e3998443b205f23419ecc6d8d3c4ebc7, type: 3}
+      weight: 2
+      heightScale: 1.05
+      yOffset: 0
+    - sprite: {fileID: 21300000, guid: d06db305a7321a049a276fc81415ac62, type: 3}
+      weight: 2
+      heightScale: 0.95
+      yOffset: 0
+    - sprite: {fileID: 21300000, guid: fa0807634cae81b468ed1cbe5da93a29, type: 3}
+      weight: 1.5
+      heightScale: 0.85
+      yOffset: 0
+    - sprite: {fileID: 21300000, guid: 7b797a31302444a489662b27e037d601, type: 3}
+      weight: 1
+      heightScale: 1.1
+      yOffset: 0
+    - sprite: {fileID: 21300000, guid: 08b16d1a81e6e144991adc03c790e7a1, type: 3}
+      weight: 1
+      heightScale: 1.2
+      yOffset: 0
+    - sprite: {fileID: 21300000, guid: 871e6fb7969afc243a3bf5a2ca7866d5, type: 3}
+      weight: 1
+      heightScale: 0.3
+      yOffset: 0.2
