@@ -396,9 +396,21 @@ Estas costaron tiempo real en esta sesión:
 
 ## 7. Qué sigue
 
+### Dónde quedó la sesión
+Todo está en `master` (y en `Jose`). Lo último que se hizo fue el lenguaje de cámara; lo que
+el usuario ya anunció como próximo paso son **las animaciones de spritesheet de la
+protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
+fill y un slicing que escanee el alfa, porque no tienen grilla exacta). Las ramas de Germán,
+Jesús y Juana siguen en el commit inicial y la de Seba quedó unos commits atrás de `master`
+(ninguna tiene trabajo propio); conviene que las actualicen antes de tocar la escena, para
+no pelearse con conflictos de `Prototipo.unity`.
+
 ### Inmediato
 1. Jugarlo con teclado y anotar qué se siente mal. Es lo único que el simulador no contesta.
+   Incluye la cámara: sacudidas, velocidad del zoom y congelado se ajustan en
+   `CameraConfig.asset`.
 2. Decidir `goalDistance` con el balance nuevo, para que la meta vuelva a ser alcanzable.
+3. Animaciones de la protagonista a partir de las hojas `hf_*.png`.
 
 ### Escenario
 Los tiles son placeholders en `Assets/_Zombineta/Art/Tileset/` (copiados de
