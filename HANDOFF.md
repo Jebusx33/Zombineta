@@ -1,9 +1,15 @@
 # Zombineta — Handoff
 
-Última actualización: 5 de septiembre de 2026, tras cerrar la Fase 2.
+Última actualización: 10 de septiembre de 2026, tras sumar el escenario por capas y el flujo
+completo de pantallas.
 
-**Estado:** el prototipo se juega de punta a punta en greybox. Se puede ganar llegando al
-refugio y perder por nafta o por la horda. 31 tests EditMode en verde.
+**Estado:** el prototipo se recorre de punta a punta con el flujo del GDD (menú, opciones,
+personaje, cinemática, dos niveles, victoria, game over, final), sobre un escenario de
+placeholders con parallax en cinco capas. 59 tests EditMode en verde.
+
+**Ojo:** con el balance vigente la meta **no se alcanza jugando** (ver sección 4). Para
+recorrer el flujo completo existen F2 (ganar) y F3 (perder), solo en editor y builds de
+desarrollo.
 
 ---
 
@@ -35,8 +41,10 @@ calle nocturna de tres carriles, administrando tres recursos, hasta llegar a un 
 | Retroceso | ← o A (mantener) | Marcha atrás real (−0,5×), ×0,5 consumo |
 | Faro | ESPACIO (toggle) | La horda avanza a **×0,5**. Drena batería |
 | Disparar | X o click izq. | Empuja la horda **−15 m**. Munición limitada |
-| Reiniciar | R | En las pantallas de fin |
+| Menús | W/S elegir, ENTER confirmar, ESC volver | A/D cambia valores en Opciones |
+| Reintentar | R | En el Game Over |
 | Números de debug | F1 | HUD crudo para balancear |
+| Ganar / perder el nivel | F2 / F3 | Solo editor y builds de desarrollo |
 
 ### La decisión de diseño que sostiene todo
 
@@ -52,8 +60,12 @@ existiendo** — es la razón de ser del prototipo.
 
 ### Fuera del alcance (deliberado)
 
-Rampas y salto (T12), puertas y trampas ambientales (T13), selección de personaje,
-cinemáticas, menú de opciones, múltiples niveles, victoria alternativa por tiempo.
+Rampas y salto (T12), puertas y trampas ambientales (T13), victoria alternativa por tiempo.
+
+Existen **como placeholder**, para mostrar el flujo: la selección de personaje (dos
+repartidoras que por ahora solo cambian el color de la moto, una por cada dirección de arte
+pendiente), las cinemáticas (placas de texto), Opciones (volumen y pantalla completa) y un
+segundo nivel (`Ruta02`, generado igual que el primero).
 
 ---
 
@@ -61,9 +73,11 @@ cinemáticas, menú de opciones, múltiples niveles, victoria alternativa por ti
 
 - **Unity 6000.6.0f1** (en `D:\Dev\Unity`). Todo el equipo tiene que usar exactamente esta.
   Ojo: **6000.6 no es LTS.** Sigue pendiente decidir si se quedan acá o bajan a 6000.0 LTS.
-- Abrí `Assets/_Zombineta/Scenes/Prototipo.unity` y dale Play. ENTER arranca.
+- Abrí `Assets/_Zombineta/Scenes/Prototipo.unity` y dale Play. Arranca en el menú.
 - El proyecto es 2D URP con Renderer2D. El faro es un `Light2D` real, así que la escena
   depende de la iluminación 2D: si sacás el `Global Light 2D`, se ve todo negro.
+- Cámara ortográfica de tamaño 6, subida 1,4 u (`CameraFollow.fixedY`): el arte de la pista es
+  alto y así quedan la calle en la mitad de abajo y edificios y cielo arriba.
 
 ### MCP de Unity
 
@@ -106,11 +120,24 @@ Assets/_Zombineta/Scripts/
     LevelSpawner.cs    Recicla sprites sobre la ventana visible.
     GoalView.cs        El refugio.
     LaneMarkersView.cs Rayas de la calzada (dan la sensación de velocidad).
+  Scenery/
+    ParallaxMath.cs    La cuenta del parallax. C# plano.
+    SceneryLayout.cs   Qué tile va en cada lugar de una capa. C# plano, determinístico.
+    SceneryTileset.cs  ScriptableObject: las capas, sus tiles, pesos, huecos y semillas.
+    SceneryManager.cs  Arma el escenario a medida que avanza la cámara y lo rearma en vivo.
+  Flow/
+    GameFlow.cs        Máquina de estados de las pantallas. C# plano.
+    LevelSequence.cs   ScriptableObject: los niveles en orden, con su recorrido y cinemática.
   UI/
     HudView.cs         Barras, sin números.
     DebugHudView.cs    Números crudos, detrás de F1.
-    ScreenFlow.cs      Menú -> Level -> Victoria / Game Over.
+    MenuList.cs        Lista de opciones con una seleccionada. Solo presentación.
+    ScreenFlow.cs      Teclado -> eventos de GameFlow; GameFlow -> paneles visibles.
 ```
+
+Assets de datos en `Assets/_Zombineta/Settings/`: `GameConfig` (balance), `Ruta01` y `Ruta02`
+(recorridos), `Niveles` (orden de los niveles y texto de las cinemáticas) y `Escenario`
+(capas del fondo). Diseñar es editar esos assets, no código.
 
 ### Dos decisiones que conviene no revertir sin pensarlo
 
@@ -121,6 +148,20 @@ en turbo y que el retroceso recoja lo que dejaste pasar.
 
 **`worldUnitsPerMeter = 0.25`.** La simulación piensa en metros, pero 40 m de ventaja no
 entran en pantalla a escala 1:1. Las Views comprimen la distancia; el balance no se entera.
+
+**La calle tiene parallax 1: es el mundo, no una imagen que se mueve.** El sincronismo entre
+la moto y el fondo sale de ahí, por construcción. No hay una "velocidad de scroll" que ajustar
+para que coincida con la de la moto. Medido en Play Mode sobre 263 m: la moto se movió
+65,8984 u y la simulación predice 65,8984 u. Si alguien propone mover la calle con un script
+de scroll aparte, esa garantía se pierde.
+
+**El escenario es determinístico por semilla.** `SceneryLayout` arma los tiles de a pedazos,
+frame a frame, y da exactamente lo mismo que armarlo de una (hay un test para eso). Por eso el
+retroceso vuelve sobre los mismos edificios y dos playtests ven la misma calle.
+
+**El flujo de pantallas es una máquina de estados sin Unity.** Una acción que no corresponde
+a la pantalla actual se ignora: una victoria reportada en pleno Game Over no saltea nada. Se
+comprobó en vivo durante la verificación, sin querer.
 
 ---
 
@@ -133,7 +174,24 @@ El recorrido vive en `Ruta01.asset`: 111 entradas (31 bidones, 7 baterías, 9 ca
 64 obstáculos), generado con semilla fija para que dos playtests sean comparables. Los
 obstáculos empiezan ralos y se van cerrando, y **nunca bloquean los tres carriles a la vez**.
 
-### Estado verificado
+### Estado actual: la meta no se alcanza
+
+El 6 de septiembre se subió a mano `fuelBurnPerSecond` de 1,6 a 2,6 y `hordeBaseSpeed` de
+13,5 a 17,5, porque jugando la persecución se sentía más tensa y más divertida. El simulador
+**no respalda todavía** esos valores:
+
+| Balance | Estrategia hábil | Tiempo |
+|---|---|---|
+| Actual (2,6 / 17,5) | muere sin nafta al **28%** | 79 s |
+| Anterior (1,6 / 13,5) | llega al 100% | 303 s |
+| Actual + bidones cada 80 m | tampoco llega (72%) | — |
+
+Las dos lecturas conviven: el feel mejoró y la meta quedó fuera de alcance. La salida más
+probable **no es volver atrás el balance sino acortar `goalDistance`** (de 4000 a ~1000 m),
+para que el recorrido dure lo que la nafta aguanta. Se decide jugando, no acá. Mientras
+tanto, F2 permite ver "Nivel completo" y el Final.
+
+Con el balance anterior, la tabla de referencia era:
 
 | Estilo de juego | Resultado | Tiempo | Margen |
 |---|---|---|---|
@@ -204,8 +262,11 @@ Estas costaron tiempo real en esta sesión:
 
 7. **Reflection está bloqueada** por seguridad en `RunCommand`.
 
-8. `Unity_Camera_Capture` no muestra canvases Screen Space Overlay, así que **el HUD no se
-   puede verificar desde acá**. Tampoco se pueden enviar teclas.
+8. `Unity_Camera_Capture` no muestra canvases Screen Space Overlay. **Truco para verificar la
+   UI:** en Play Mode, pasar el canvas a `ScreenSpaceCamera` con `worldCamera = Camera.main`,
+   `planeDistance = 1` y `sortingOrder = 1000` (sin el orden alto, los sprites de la escena se
+   dibujan encima del texto). Es solo de runtime y se revierte al salir de Play. Teclas no se
+   pueden enviar: el flujo se maneja por la API de `ScreenFlow.Flow`.
 
 9. **`AssetDatabase.LoadAssetAtPath<Sprite>("hoja.png[NombreSprite]")` devuelve `null` en
    silencio** para un sub-sprite generado por slicing, sin excepción ni error, en esta versión
@@ -220,20 +281,52 @@ Estas costaron tiempo real en esta sesión:
     usar una hoja grande, subí `maxTextureSize` (el default y todos los overrides de
     plataforma) a un valor ≥ la dimensión más grande de la fuente.
 
+11. **Con Unity en segundo plano, el Play Mode no avanza.** `Time.frameCount` se queda en 1.
+    Poné `Application.runInBackground = true` desde un `RunCommand` ya en Play: es de runtime,
+    no toca la configuración del proyecto (que conviene dejar en false para el build).
+
+12. **No edites scripts con el juego en Play.** Con `runInBackground` activo, Unity detecta
+    el cambio, recompila y recarga el dominio en medio de la sesión: los campos no
+    serializados (como el `GameFlow` de `ScreenFlow`) quedan en null. Salí de Play, editá,
+    `Assets/Refresh`, y volvé a entrar.
+
+13. **El tiempo corre de verdad entre comando y comando.** Cada llamada al MCP tarda
+    segundos: en ese lapso una cinemática termina sola o la horda alcanza a la moto. Si una
+    prueba necesita varias transiciones seguidas, hacelas todas en un mismo `RunCommand`.
+
+14. **`AssetDatabase.DeleteAsset` está bloqueado:** el MCP lo rechaza entero con "User
+    interactions are not supported", sin ejecutar nada. Antes de crear un asset, chequeá si
+    existe y no lo pises. Destruir objetos de escena con `DestroyImmediate` sí funciona.
+
+15. **`Object.GetInstanceID()` es error de compilación en 6000.6** (obsoleto, "usá
+    `GetEntityId`"). Para el id de un objeto usá `Unity_ManageGameObject` con `find`.
+
+16. **Lo que se edita en un ScriptableObject durante Play Mode queda guardado**, a diferencia
+    de lo que se edita en la escena. Es lo que hace útil la edición en vivo del escenario,
+    pero también quiere decir que un experimento en Play no se deshace solo al salir.
+
 ---
 
 ## 6. Qué está verificado y qué no
 
 **Verificado:**
-- 31 tests EditMode corriendo dentro de Unity (Test Runner real, no solo los shims).
+- 59 tests EditMode corriendo dentro de Unity (Test Runner real, no solo los shims).
 - Consumo de nafta exacto contra la config, el faro frenando a la horda a la mitad,
   `Reset` restableciendo el estado, cero errores de consola en Play Mode.
-- La ruta completa es superable por una estrategia hábil e insuperable por una torpe.
+- Escenario: sincronismo moto/calle con diferencia 0 sobre 263 m, parallax medido igual al
+  configurado en las cinco capas, sin costuras entre tiles de la pista, y reconstrucción en
+  vivo al editar `Escenario.asset` en Play.
+- Flujo: las ocho pantallas recorridas en Play Mode y capturadas, incluida una derrota real
+  (la horda alcanzó a la moto sola) detectada por el flujo, y el cambio efectivo de `Ruta01` a
+  `Ruta02` entre niveles. El HUD de barras ya se vio funcionando.
 
 **NO verificado — pendiente de que alguien lo juegue:**
-- El flujo de pantallas end-to-end. El arranque se simuló por código; nunca se apretó ENTER.
-- El HUD de barras (no sale en las capturas de cámara).
+- **El teclado en los menús.** El flujo se manejó por su API; nunca se apretó una tecla real.
+  Es lo primero a probar: W/S, ENTER, ESC, A/D en Opciones, R en Game Over.
 - El efecto visual del faro. Está configurado pero nadie lo vio funcionando.
+- Si la capa frontal molesta al jugar: árboles y farolas pasan en silueta por delante de los
+  carriles y pueden tapar un obstáculo un instante. Se ajusta en la capa "Frontal" de
+  `Escenario.asset` (tinte, alfa, huecos) sin tocar código.
 - Que el juego sea **divertido**. Eso es lo que responde el playtest, no el simulador.
 
 ---
@@ -241,7 +334,28 @@ Estas costaron tiempo real en esta sesión:
 ## 7. Qué sigue
 
 ### Inmediato
-Jugarlo y anotar qué se siente mal. Es lo único que el simulador no puede contestar.
+1. Jugarlo con teclado y anotar qué se siente mal. Es lo único que el simulador no contesta.
+2. Decidir `goalDistance` con el balance nuevo, para que la meta vuelva a ser alcanzable.
+
+### Escenario
+Los tiles son placeholders en `Assets/_Zombineta/Art/Tileset/` (copiados de
+`Arte/Bocetos/Tileset`). Para reemplazarlos por arte final alcanza con cambiar el sprite de
+cada variante en `Escenario.asset`; el ancho se calcula solo a partir de la proporción. Tres
+cosas a saber:
+- A la copia de `pista` se le recortaron las primeras 74 columnas porque las líneas del
+  boceto no llegaban al borde y dejaban costura. **El tile final tiene que empalmar consigo
+  mismo en los dos bordes.**
+- `vias` venía con fondo blanco horneado; se pasó a alfa. `senalizacion` perdió la ñ del
+  nombre (se rompe entre Windows y macOS en git).
+- `balcon` quedó sin usar: es un adorno para poner *sobre* las fachadas y el sistema coloca
+  tiles uno al lado del otro, no superpuestos. Si hace falta, se agrega como una capa aparte
+  con el mismo parallax que los edificios.
+
+### Flujo de pantallas
+Los paneles son objetos de escena bajo el Canvas, a propósito: arte puede poner el key art
+(`Arte/Referencias/sketch_menu_color.png`) de fondo en `MainMenuPanel` desde el editor. Los
+textos de las cinemáticas se editan en `Niveles.asset`. Agregar un nivel es agregar una
+entrada ahí.
 
 ### Fase 3 — Contenido y balance (T17, T23)
 La ruta ya existe y es superable, pero está generada por algoritmo. Falta pasarle la mano:
