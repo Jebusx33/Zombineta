@@ -368,8 +368,19 @@ del doc 08 con 3 a 5 testers externos. La regla número 1: **mientras alguien te
 ayudes** — cada vez que tenés que explicar algo, es un problema de diseño para anotar.
 
 ### Fase 5 — Arte, audio y build (T20-T22, T24)
+**La protagonista ya usa arte:** `Art/Player/repartidora_moto_boceto.png`, copia recortada de
+`Arte/Assets/sprite_sketch.png`. Pivot en el contacto de las ruedas, 1,35 u de alto (el zombie
+mide 1,24), apoyada en la línea del carril igual que los pies de la horda. El sprite vive en
+el hijo `Scooter/Body`: ahí va el Animator cuando se sumen las hojas. `ScooterView` ya no
+reemplaza el color del sprite sino que lo **multiplica** por un tinte leve según el modo
+(turbo, retroceso, aturdida), así el arte se conserva.
+
 Los assets están en `../../Arte/` (fuera del repo del juego):
-- 7 spritesheets de la protagonista en moto (3168×1344), incluida una animación de disparo.
+- Spritesheets de la protagonista en moto (`hf_*.png`, 3168×1344), incluida una animación
+  de disparo. Son **6 hojas distintas, no 7**: `…8e8f3dff….png` y `…8e8f3dff… (1).png` son
+  el mismo archivo byte a byte. Vienen **sin alfa, con fondo blanco liso** (no cuadriculado
+  como la de zombies). Para limpiarlas conviene un flood fill desde el borde y no un recorte
+  global del blanco: la moto tiene partes crema y reflejos casi blancos que se comería.
 - Zombies con ciclo de caminata de 8 frames, impacto y muerte. **Ojo:** la hoja
   (`ZombieViejo.png`) no tenía alfa real — el fondo "transparente" venía horneado como
   cuadriculado gris opaco. Ya se limpió con `Tools/SpritePrep/` (ver su README para la
