@@ -36,6 +36,8 @@ namespace Zombineta.Tests
             c.catchZoomTime = 0.18f;
             c.victorySize = 7.5f;
             c.victoryOpenTime = 1f;
+            c.jumpHeadroom = 2f;
+            c.jumpZoomTime = 0.15f;
             return c;
         }
 
@@ -280,6 +282,29 @@ namespace Zombineta.Tests
 
             Assert.AreEqual(ps.Size, pf.Size, 0.02f);
             Assert.AreEqual(ps.X, pf.X, 0.03f);
+        }
+
+        [Test]
+        public void Jump_OpensTheShotSoTheScooterStaysInFrame()
+        {
+            var d = Make(gap: 6f);              // horda encima: plano cerrado (5)
+            var input = In(6f);
+            input.PlayerY = 1.6f;               // carril de arriba
+            input.JumpHeight = 3.3f;            // pico de un salto en turbo
+
+            var pose = Run(d, input, 1f);
+
+            float top = pose.Y + pose.Size;     // borde de arriba de la pantalla
+            Assert.GreaterOrEqual(top, 1.6f + 3.3f + 2f - 0.05f);
+        }
+
+        [Test]
+        public void NoJump_KeepsTheTensionFraming()
+        {
+            var d = Make(gap: 6f);
+            var pose = Run(d, In(6f), 3f);
+
+            Assert.AreEqual(5f, pose.Size, 0.02f);
         }
     }
 }

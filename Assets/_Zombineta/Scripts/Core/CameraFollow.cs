@@ -93,8 +93,9 @@ namespace Zombineta.Core
                 PlayerX = run.ToWorldX(s.PlayerX),
                 PlayerY = run.LaneToWorldY(s.LaneVisual),
                 GapMeters = s.Gap,
-                // Turbo "de verdad": apretar D sin nafta o aturdida no acelera.
-                Turbo = s.Mode == DriveMode.Turbo && s.Fuel > 0f && s.StunRemaining <= 0f,
+                // Turbo "de verdad": apretar D sin nafta, aturdida o en el aire no acelera.
+                Turbo = s.Mode == DriveMode.Turbo && s.Fuel > 0f && s.StunRemaining <= 0f && !s.Airborne,
+                JumpHeight = s.Airborne ? run.HeightToWorld(s.Height) : 0f,
                 GoalX = run.ToWorldX(run.Config.goalDistance),
             };
         }
@@ -104,11 +105,18 @@ namespace Zombineta.Core
             if (!GameSettings.CameraEffects || director == null)
                 return;
 
-            if ((events & RunEvent.Crashed) != 0)
+            // Caerse de un salto pega como un choque.
+            if ((events & (RunEvent.Crashed | RunEvent.Fell)) != 0)
             {
                 director.AddTrauma(config.crashTrauma);
                 director.Punch(config.crashPunchForward, config.crashPunchZoom);
                 Hitstop(config.hitstopSeconds);
+            }
+
+            if ((events & RunEvent.LandedPerfect) != 0)
+            {
+                director.AddTrauma(config.perfectLandingTrauma);
+                director.Punch(config.perfectLandingPunchForward, 0f);
             }
 
             if ((events & RunEvent.Shot) != 0)

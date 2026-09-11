@@ -23,6 +23,7 @@ namespace Zombineta.CameraFx
         public float GapMeters;  // distancia a la horda
         public bool Turbo;
         public float GoalX;      // mundo: el refugio
+        public float JumpHeight; // mundo: cuanto se elevo la moto sobre su carril
     }
 
     /// <summary>Donde y como poner la camara.</summary>
@@ -105,7 +106,7 @@ namespace Zombineta.CameraFx
             springX = springXVel = springZoom = springZoomVel = 0f;
             turbo = EffectsEnabled && input.Turbo ? 1f : 0f;
             Threat = ThreatFromGap(input.GapMeters, cfg.safeGap, cfg.dangerGap);
-            size = FollowSize();
+            size = FollowSize(input);
             x = FollowX(input.PlayerX);
             y = cfg.viewBottomY + size;
         }
@@ -150,9 +151,11 @@ namespace Zombineta.CameraFx
                     break;
 
                 default:
-                    float target = FollowSize();
-                    // Asimetrico: cerrarse lento, abrirse rapido.
-                    float tau = target < size ? cfg.zoomInTime : cfg.zoomOutTime;
+                    float target = FollowSize(input);
+                    // Asimetrico: cerrarse lento, abrirse rapido. Si manda el salto, mas rapido todavia.
+                    float tau = target < size ? cfg.zoomInTime
+                              : JumpSize(input) >= target ? cfg.jumpZoomTime
+                              : cfg.zoomOutTime;
                     size = Approach(size, target, tau, dt);
                     x = Approach(x, FollowX(input.PlayerX), cfg.followTime, dt);
                     y = cfg.viewBottomY + size;
@@ -176,12 +179,22 @@ namespace Zombineta.CameraFx
 
         // --- Interno -----------------------------------------------------------
 
-        float FollowSize()
+        float FollowSize(CameraInput input)
         {
             if (!EffectsEnabled)
                 return cfg.baseSize;
-            return Mathf.Lerp(cfg.wideSize, cfg.tightSize, Threat) + turbo * cfg.turboExtraSize;
+            float tension = Mathf.Lerp(cfg.wideSize, cfg.tightSize, Threat) + turbo * cfg.turboExtraSize;
+            return Mathf.Max(tension, JumpSize(input));
         }
+
+        /// <summary>
+        /// Tamano minimo para que la moto en el aire no se salga por arriba. El borde de abajo
+        /// es fijo, asi que el de arriba esta a dos tamanos de el.
+        /// </summary>
+        float JumpSize(CameraInput input) =>
+            input.JumpHeight <= 0f
+                ? 0f
+                : (input.PlayerY + input.JumpHeight + cfg.jumpHeadroom - cfg.viewBottomY) * 0.5f;
 
         /// <summary>X de camara que deja a la moto a lookAhead del borde derecho, con el zoom actual.</summary>
         float FollowX(float playerX)

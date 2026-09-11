@@ -112,5 +112,8 @@ namespace Zombineta.Core
 
         /// <summary>Convierte metros de la simulacion a unidades de mundo.</summary>
         public float ToWorldX(float meters) => meters * config.worldUnitsPerMeter;
+
+        /// <summary>Convierte metros de altura del salto a unidades de mundo.</summary>
+        public float HeightToWorld(float meters) => meters * config.jumpHeightToWorld;
     }
 }

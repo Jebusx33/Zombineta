@@ -104,5 +104,18 @@ namespace Zombineta.CameraFx
 
         [Tooltip("Segundos reales antes de mostrar la pantalla de victoria.")]
         public float victoryHoldSeconds = 1.6f;
+
+        [Header("Salto")]
+        [Tooltip("Unidades que se dejan libres por encima del carril mas la altura del salto. " +
+                 "Incluye el alto de la moto: si es menor, la moto se sale por arriba.")]
+        public float jumpHeadroom = 2f;
+
+        [Tooltip("Segundos para abrirse cuando lo que manda es el salto. Mas rapido que el " +
+                 "zoom normal: la moto sube rapido.")]
+        public float jumpZoomTime = 0.15f;
+
+        [Tooltip("Aterrizaje perfecto: golpecito de satisfaccion.")]
+        public float perfectLandingTrauma = 0.12f;
+        public float perfectLandingPunchForward = 0.25f;
     }
 }
