@@ -57,6 +57,7 @@ namespace Zombineta.Level
             float min = Mathf.Min(fromX, toX);
             float max = Mathf.Max(fromX, toX);
             float lane = sim.State.LaneVisual;
+            bool forward = toX > fromX;
             var events = RunEvent.None;
 
             for (int i = 0; i < Items.Length; i++)
@@ -70,6 +71,21 @@ namespace Zombineta.Level
                 if (d < min || item.Consumed)
                     continue;
                 if (Mathf.Abs(lane - item.Entry.lane) > LaneTolerance)
+                    continue;
+
+                // El estado se consulta en cada entrada: una rampa lanza, y lo que sigue en
+                // el mismo tramo ya se sobrevuela.
+                if (item.Entry.kind == LevelEntryKind.Ramp)
+                {
+                    // Solo hacia adelante y desde el piso. No se gasta: se puede volver y saltar de nuevo.
+                    if (forward && !sim.State.Airborne)
+                        events |= sim.Launch();
+                    continue;
+                }
+
+                // Lo del piso no se toca volando; lo del aire solo volando a su altura.
+                bool aerial = item.Entry.height > 0f;
+                if (aerial ? !sim.IsAtHeight(item.Entry.height) : sim.State.Airborne)
                     continue;
 
                 item.Consumed = true;

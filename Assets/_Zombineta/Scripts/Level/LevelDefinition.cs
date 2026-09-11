@@ -10,6 +10,7 @@ namespace Zombineta.Level
         Fuel,
         Battery,
         Ammo,
+        Ramp,
     }
 
     /// <summary>Una cosa colocada en el recorrido: a tantos metros, en tal carril.</summary>
@@ -25,11 +26,15 @@ namespace Zombineta.Level
 
         public LevelEntryKind kind;
 
-        public LevelEntry(float distance, int lane, LevelEntryKind kind)
+        [Tooltip("Metros sobre el carril. 0 = en el piso. Mayor a 0: solo se agarra saltando.")]
+        public float height;
+
+        public LevelEntry(float distance, int lane, LevelEntryKind kind, float height = 0f)
         {
             this.distance = distance;
             this.lane = lane;
             this.kind = kind;
+            this.height = height;
         }
     }
 

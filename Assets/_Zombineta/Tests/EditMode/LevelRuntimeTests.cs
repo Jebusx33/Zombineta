@@ -212,5 +212,129 @@ namespace Zombineta.Tests
             Assert.AreEqual(0, level.Items.Length);
             Assert.DoesNotThrow(() => Advance(sim, level, 2f, Driving(DriveMode.Normal)));
         }
+
+        // --- Rampas ------------------------------------------------------------
+
+        static RunEvent AdvanceCollecting(RunSimulation sim, LevelRuntime level, float seconds, PlayerIntent intent)
+        {
+            var all = RunEvent.None;
+            int steps = Mathf.RoundToInt(seconds / Dt);
+            for (int i = 0; i < steps; i++)
+            {
+                float before = sim.State.PlayerX;
+                all |= sim.Tick(intent, Dt);
+                float after = sim.State.PlayerX;
+                if (!Mathf.Approximately(before, after))
+                    all |= level.Collect(sim, before, after);
+            }
+            return all;
+        }
+
+        [Test]
+        public void RampInThePlayerLane_LaunchesWhenPassedForward()
+        {
+            var sim = new RunSimulation(MakeConfig());
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(20f, 1, LevelEntryKind.Ramp)));
+
+            var ev = AdvanceCollecting(sim, level, 2.1f, Driving(DriveMode.Normal));
+
+            Assert.IsTrue((ev & RunEvent.Launched) != 0);
+            Assert.IsFalse(level.Items[0].Consumed, "la rampa no se gasta");
+        }
+
+        [Test]
+        public void RampInAnotherLane_DoesNotLaunch()
+        {
+            var sim = new RunSimulation(MakeConfig());
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(20f, 0, LevelEntryKind.Ramp)));
+
+            var ev = AdvanceCollecting(sim, level, 2.5f, Driving(DriveMode.Normal));
+
+            Assert.IsFalse((ev & RunEvent.Launched) != 0);
+        }
+
+        [Test]
+        public void RampPassedInReverse_DoesNotLaunch()
+        {
+            var sim = new RunSimulation(MakeConfig());
+            sim.State.PlayerX = 25f;
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(20f, 1, LevelEntryKind.Ramp)));
+
+            var ev = AdvanceCollecting(sim, level, 2f, Driving(DriveMode.Reverse));
+
+            Assert.Less(sim.State.PlayerX, 20f, "paso la rampa para atras");
+            Assert.IsFalse((ev & RunEvent.Launched) != 0);
+        }
+
+        [Test]
+        public void ObstaclesRightAfterTheRamp_AreFlownOver()
+        {
+            var sim = new RunSimulation(MakeConfig());
+            var level = new LevelRuntime(MakeLevel(
+                new LevelEntry(20f, 1, LevelEntryKind.Ramp),
+                new LevelEntry(24f, 1, LevelEntryKind.Obstacle),
+                new LevelEntry(27f, 1, LevelEntryKind.Obstacle)));
+
+            var ev = AdvanceCollecting(sim, level, 4f, Driving(DriveMode.Normal));
+
+            Assert.IsFalse((ev & RunEvent.Crashed) != 0, "volando no se choca");
+            Assert.IsFalse(level.Items[1].Consumed);
+            Assert.IsFalse(level.Items[2].Consumed);
+        }
+
+        [Test]
+        public void ObstacleBeyondTheLanding_IsHit()
+        {
+            var sim = new RunSimulation(MakeConfig());
+            var level = new LevelRuntime(MakeLevel(
+                new LevelEntry(20f, 1, LevelEntryKind.Ramp),
+                new LevelEntry(45f, 1, LevelEntryKind.Obstacle)));
+
+            var ev = AdvanceCollecting(sim, level, 5f, Driving(DriveMode.Normal));
+
+            Assert.IsTrue((ev & RunEvent.Landed) != 0);
+            Assert.IsTrue((ev & RunEvent.Crashed) != 0, "despues de aterrizar vuelve a chocar");
+        }
+
+        [Test]
+        public void GroundPickupUnderTheJump_IsNotCollected()
+        {
+            var sim = new RunSimulation(MakeConfig());
+            var level = new LevelRuntime(MakeLevel(
+                new LevelEntry(20f, 1, LevelEntryKind.Ramp),
+                new LevelEntry(25f, 1, LevelEntryKind.Fuel)));
+
+            AdvanceCollecting(sim, level, 3f, Driving(DriveMode.Normal));
+
+            Assert.IsFalse(level.Items[1].Consumed);
+        }
+
+        [Test]
+        public void AerialPickup_IsCollectedOnlyByAJumpThatReachesIt()
+        {
+            // A 17 m de la rampa y 6 m de alto: el pico de un salto en turbo.
+            var high = new LevelEntry(37f, 1, LevelEntryKind.Ammo, 6f);
+
+            var turboSim = new RunSimulation(MakeConfig());
+            var turboLevel = new LevelRuntime(MakeLevel(new LevelEntry(20f, 1, LevelEntryKind.Ramp), high));
+            AdvanceCollecting(turboSim, turboLevel, 2.5f, Driving(DriveMode.Turbo));
+            Assert.IsTrue(turboLevel.Items[1].Consumed, "el salto en turbo llega");
+
+            var normalSim = new RunSimulation(MakeConfig());
+            var normalLevel = new LevelRuntime(MakeLevel(new LevelEntry(20f, 1, LevelEntryKind.Ramp), high));
+            AdvanceCollecting(normalSim, normalLevel, 4f, Driving(DriveMode.Normal));
+            Assert.IsFalse(normalLevel.Items[1].Consumed, "el salto normal pasa por abajo");
+        }
+
+        [Test]
+        public void AerialPickup_IsNotCollectedFromTheGround()
+        {
+            var sim = new RunSimulation(MakeConfig());
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(10f, 1, LevelEntryKind.Fuel, 1f)));
+
+            AdvanceCollecting(sim, level, 2f, Driving(DriveMode.Normal));
+
+            Assert.IsFalse(level.Items[0].Consumed);
+        }
     }
 }
