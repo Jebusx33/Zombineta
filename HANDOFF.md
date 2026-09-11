@@ -1,12 +1,11 @@
 # Zombineta — Handoff
 
-Última actualización: 10 de septiembre de 2026, tras sumar el lenguaje de cámara (zoom por
-tensión, sacudidas, congelado al chocar, finales de cámara lenta y plano abierto).
+Última actualización: 10 de septiembre de 2026, tras sumar rampas y salto regulable (T12).
 
 **Estado:** el prototipo se recorre de punta a punta con el flujo del GDD (menú, opciones,
 personaje, cinemática, dos niveles, victoria, game over, final), sobre un escenario de
-placeholders con parallax en cinco capas y una cámara que reacciona a la persecución.
-73 tests EditMode en verde.
+placeholders con parallax en cinco capas, una cámara que reacciona a la persecución y rampas
+con un salto que se regula inclinando en el aire. 101 tests EditMode en verde.
 
 **Ojo:** con el balance vigente la meta **no se alcanza jugando** (ver sección 4). Para
 recorrer el flujo completo existen F2 (ganar) y F3 (perder), solo en editor y builds de
@@ -43,6 +42,8 @@ calle nocturna de tres carriles, administrando tres recursos, hasta llegar a un 
 | Retroceso | ← o A (mantener) | Marcha atrás real (−0,5×), ×0,5 consumo |
 | Faro | ESPACIO (toggle) | La horda avanza a **×0,5**. Drena batería |
 | Disparar | X o click izq. | Empuja la horda **−15 m**. Munición limitada |
+| Saltar | Pasar por una rampa | Lanza según la velocidad. No hay botón de salto |
+| Inclinar en el aire | ← o A (nariz arriba) / → o D (nariz abajo) | Regula el largo; hay que aterrizar nivelada |
 | Menús | W/S elegir, ENTER confirmar, ESC volver | A/D cambia valores en Opciones |
 | Reintentar | R | En el Game Over |
 | Números de debug | F1 | HUD crudo para balancear |
@@ -62,7 +63,8 @@ existiendo** — es la razón de ser del prototipo.
 
 ### Fuera del alcance (deliberado)
 
-Rampas y salto (T12), puertas y trampas ambientales (T13), victoria alternativa por tiempo.
+Puertas y trampas ambientales (T13), victoria alternativa por tiempo. Del salto: botón de
+salto libre, cambio de carril en el aire y obstáculos aéreos.
 
 Existen **como placeholder**, para mostrar el flujo: la selección de personaje (dos
 repartidoras que por ahora solo cambian el color de la moto, una por cada dirección de arte
@@ -205,6 +207,39 @@ En Opciones hay dos interruptores (guardados en PlayerPrefs): **Efectos de cáma
 todo y deja el encuadre clásico fijo, y **Sacudidas** apaga solo sacudidas y golpes
 (para quien se marea) pero conserva el zoom y los finales.
 
+Durante un salto, la cámara se abre lo justo para que la moto no se salga por arriba
+(`CameraConfig.jumpHeadroom`).
+
+### Rampas y salto
+
+Diseño completo en `docs/superpowers/specs/2026-09-10-rampas-y-salto-design.md`; plan de
+implementación en `docs/superpowers/plans/`. Lo esencial:
+
+- **La rampa es una entrada del recorrido** (`LevelEntryKind.Ramp`). Pasarla hacia adelante,
+  en el piso y en su carril, lanza. No se gasta. Saltar es opcional: se esquiva cambiando de
+  carril.
+- **El largo depende de la velocidad**: normal ≈ 1 s y 12 m; turbo ≈ 2 s y 40 m.
+- **En el aire, A/D inclinan** (el modo de manejo se reinterpreta: retroceso = nariz arriba,
+  turbo = nariz abajo). **Nariz arriba planea**, nariz abajo cae antes: así se regula dónde
+  caer. No gasta nafta, no cambia de carril, no choca, no agarra lo del piso.
+- **En turbo la rampa imprime un giro hacia atrás.** Sin corregir, aterriza a más de 60° y se
+  cae; con D apretado todo el salto se pasa de largo y cae de trompa. Hay que soltar a tiempo.
+  A velocidad normal no gira: un salto sin tocar nada aterriza a 20°, sano pero sin premio.
+- **Aterrizaje:** ≤ 8° da impulso (×1,25 por 1,5 s); ≤ 25° nada; más, **caída**: 1,6 s tirada
+  y −10 de nafta, y la horda recorta ≈ 28 m.
+- **Pickups aéreos:** `LevelEntry.height > 0`. Solo se agarran volando a esa altura (±1,5 m).
+  Los de las rutas están a 6 m: solo los alcanza un salto en turbo.
+- **Se ve así:** la moto sube y rota sobre las ruedas; una sombra en el carril marca dónde va
+  a caer y **se pone verde cuando el ángulo daría aterrizaje perfecto** (la pista para
+  aprenderlo sin tutorial). Tirada, queda rotada 70° con el tinte de aturdida.
+- Todos los números en la sección "Salto" de `GameConfig`; la altura en pantalla está
+  exagerada (`jumpHeightToWorld = 0,5 u/m` contra 0,25 en X) para que el salto se lea.
+
+Las rutas tienen **15 rampas cada una**, cada 250 m desde los 300: rampa, dos obstáculos
+para sobrevolar a +4 y +8 m y, una sí y otra no, un bidón aéreo a +17 m. Se verificaron con
+la simulación real: todas se saltan sin chocar en normal y en turbo estabilizando, y en
+ningún punto quedan los tres carriles bloqueados.
+
 ---
 
 ## 4. Balance
@@ -263,7 +298,8 @@ Hay dos caminos y conviene usar los dos:
 2. **Vía MCP dentro de Unity**, cargando `GameConfig.asset` y `Ruta01.asset` reales y
    corriendo estrategias contra ellos. Es lo que se usó para el ajuste final. Ojo: la sonda
    externa **copia** los .cs del juego, así que si tocás la simulación hay que volver a
-   copiarlos.
+   copiarlos. **Todavía no se copiaron los del salto**: la sonda no conoce rampas, así que
+   sus resultados ignoran saltos, impulsos y caídas.
 
 En cualquier caso, medí siempre con **dos** estrategias: una hábil y una torpe. Si las dos
 llegan, el juego no premia entender nada; si ninguna llega, es injusto.
@@ -371,6 +407,10 @@ Estas costaron tiempo real en esta sesión:
   cámara salta a la meta en vez de cruzar el nivel. Con efectos apagados, encuadre fijo y
   Game Over inmediato.
 - El faro apunta hacia atrás (capturado en Play).
+- Salto: la física, las rampas, los pickups aéreos y la cámara tienen tests. En Play, un salto
+  real sobre la primera rampa de `Ruta01` despegó en la rampa, sobrevoló los dos obstáculos y
+  aterrizó a 12,3 m, igual que en la simulación; capturado en el aire con la sombra en el
+  carril.
 - Consumo de nafta exacto contra la config, el faro frenando a la horda a la mitad,
   `Reset` restableciendo el estado, cero errores de consola en Play Mode.
 - Escenario: sincronismo moto/calle con diferencia 0 sobre 263 m, parallax medido igual al
@@ -390,6 +430,10 @@ Estas costaron tiempo real en esta sesión:
 - Cómo se sienten los números de la cámara con las manos en el teclado: intensidad de las
   sacudidas, velocidad del zoom, duración del congelado. Se tocan en `CameraConfig.asset`
   en pleno Play y quedan guardados.
+- **El salto con teclado.** Ningún salto se piloteó con teclas reales: la inclinación se probó
+  con pilotos automáticos en los tests. Lo primero a mirar: si 60 °/s de inclinación y el
+  giro del turbo (2,6 °/s por m/s) se sienten controlables o frustrantes, y si mantener D
+  (turbo) al pisar la rampa y tener que soltarlo en el aire se entiende solo.
 - Que el juego sea **divertido**. Eso es lo que responde el playtest, no el simulador.
 
 ---
@@ -397,9 +441,8 @@ Estas costaron tiempo real en esta sesión:
 ## 7. Qué sigue
 
 ### Dónde quedó la sesión
-Todo está en `master` (y en `Jose`). Lo último que se hizo fue el lenguaje de cámara; lo que
-el usuario ya anunció como próximo paso son **las animaciones de spritesheet de la
-protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
+Lo último que se hizo fueron las rampas y el salto (T12). Lo que el usuario ya anunció como
+próximo paso son **las animaciones de spritesheet de la protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
 fill y un slicing que escanee el alfa, porque no tienen grilla exacta). Las ramas de Germán,
 Jesús y Juana siguen en el commit inicial y la de Seba quedó unos commits atrás de `master`
 (ninguna tiene trabajo propio); conviene que las actualicen antes de tocar la escena, para
@@ -411,6 +454,16 @@ no pelearse con conflictos de `Prototipo.unity`.
    `CameraConfig.asset`.
 2. Decidir `goalDistance` con el balance nuevo, para que la meta vuelva a ser alcanzable.
 3. Animaciones de la protagonista a partir de las hojas `hf_*.png`.
+
+### Salto
+- Arte de rampa: hoy es una cuña naranja generada (`Art/Level/rampa_placeholder.png`, pivot
+  abajo a la derecha: el borde alto es donde lanza). Al subirla la moto la atraviesa, porque la
+  simulación lanza desde el piso en el borde alto; con arte final conviene que la moto suba la
+  cuña visualmente (solo en `ScooterView`, sin tocar la simulación).
+- Animación de caída: hoy la moto solo queda rotada 70°.
+- Si la moto llega a la meta o la atrapan en pleno salto, queda congelada en el aire (la
+  simulación deja de correr). Las rutas no ponen rampas en los últimos 150 m, así que no pasa
+  en la meta.
 
 ### Escenario
 Los tiles son placeholders en `Assets/_Zombineta/Art/Tileset/` (copiados de
