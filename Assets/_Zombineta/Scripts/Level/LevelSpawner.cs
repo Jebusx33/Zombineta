@@ -24,13 +24,20 @@ namespace Zombineta.Level
         [SerializeField] Color batteryColor = new Color(0.3f, 0.85f, 0.95f);
         [SerializeField] Color ammoColor = new Color(0.95f, 0.9f, 0.4f);
 
+        [Header("Rampa")]
+        [Tooltip("Cuna con el pivot abajo a la derecha: el borde alto es donde lanza.")]
+        [SerializeField] Sprite rampSprite;
+        [SerializeField] Color rampColor = new Color(0.85f, 0.45f, 0.2f);
+
         SpriteRenderer[] pool;
+        Sprite defaultSprite;
 
         void Start()
         {
             if (run == null || itemPrefab == null)
                 return;
 
+            defaultSprite = itemPrefab.sprite;
             pool = new SpriteRenderer[poolSize];
             for (int i = 0; i < poolSize; i++)
             {
@@ -62,10 +69,14 @@ namespace Zombineta.Level
 
                 var sr = pool[used++];
                 sr.gameObject.SetActive(true);
+                var kind = item.Entry.kind;
+                sr.sprite = kind == LevelEntryKind.Ramp && rampSprite != null ? rampSprite : defaultSprite;
                 sr.transform.position = new Vector3(
-                    run.ToWorldX(d), run.LaneToWorldY(item.Entry.lane), 0f);
-                sr.transform.localScale = ScaleFor(item.Entry.kind);
-                sr.color = ColorFor(item.Entry.kind);
+                    run.ToWorldX(d),
+                    run.LaneToWorldY(item.Entry.lane) + run.HeightToWorld(item.Entry.height),
+                    0f);
+                sr.transform.localScale = ScaleFor(kind);
+                sr.color = ColorFor(kind);
             }
 
             for (int i = used; i < pool.Length; i++)
@@ -80,14 +91,20 @@ namespace Zombineta.Level
                 case LevelEntryKind.Fuel: return fuelColor;
                 case LevelEntryKind.Battery: return batteryColor;
                 case LevelEntryKind.Ammo: return ammoColor;
+                case LevelEntryKind.Ramp: return rampColor;
                 default: return obstacleColor;
             }
         }
 
-        // Los obstaculos ocupan el carril; los recursos son chicos y flotan.
-        static Vector3 ScaleFor(LevelEntryKind kind) =>
-            kind == LevelEntryKind.Obstacle
-                ? new Vector3(1.1f, 1.2f, 1f)
-                : new Vector3(0.55f, 0.55f, 1f);
+        // Los obstaculos ocupan el carril; los recursos son chicos y flotan; la rampa ya viene a escala.
+        static Vector3 ScaleFor(LevelEntryKind kind)
+        {
+            switch (kind)
+            {
+                case LevelEntryKind.Obstacle: return new Vector3(1.1f, 1.2f, 1f);
+                case LevelEntryKind.Ramp: return Vector3.one;
+                default: return new Vector3(0.55f, 0.55f, 1f);
+            }
+        }
     }
 }
