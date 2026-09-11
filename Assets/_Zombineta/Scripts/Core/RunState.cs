@@ -54,6 +54,23 @@ namespace Zombineta.Core
         public float StunRemaining;
         public float Elapsed;
 
+        // --- Salto ---
+        public bool Airborne;
+        /// <summary>Metros sobre el carril.</summary>
+        public float Height;
+        /// <summary>m/s, positivo hacia arriba.</summary>
+        public float VerticalSpeed;
+        /// <summary>Velocidad horizontal durante el salto: la de la rampa, fija hasta aterrizar.</summary>
+        public float AirSpeed;
+        /// <summary>Inclinacion en grados. Positivo = nariz arriba.</summary>
+        public float Pitch;
+        /// <summary>Giro en grados/s que trae de la rampa (mas rapido, mas gira).</summary>
+        public float LaunchSpin;
+        /// <summary>Segundos que quedan del impulso por aterrizaje perfecto.</summary>
+        public float BoostRemaining;
+        /// <summary>Tirada en el piso tras aterrizar mal. Dura lo que el aturdimiento.</summary>
+        public bool Fallen;
+
         public RunPhase Phase;
         public LossReason Loss;
 

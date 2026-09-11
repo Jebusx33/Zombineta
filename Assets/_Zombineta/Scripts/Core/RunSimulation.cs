@@ -20,6 +20,10 @@ namespace Zombineta.Core
         PickedUp = 1 << 8,
         Won = 1 << 9,
         Lost = 1 << 10,
+        Launched = 1 << 11,
+        Landed = 1 << 12,
+        LandedPerfect = 1 << 13,
+        Fell = 1 << 14,
     }
 
     /// <summary>
@@ -67,6 +71,14 @@ namespace Zombineta.Core
             State.Elapsed = 0f;
             State.Phase = RunPhase.Running;
             State.Loss = LossReason.None;
+            State.Airborne = false;
+            State.Height = 0f;
+            State.VerticalSpeed = 0f;
+            State.AirSpeed = 0f;
+            State.Pitch = 0f;
+            State.LaunchSpin = 0f;
+            State.BoostRemaining = 0f;
+            State.Fallen = false;
             PlayerSpeed = 0f;
             HordeSpeed = 0f;
         }
@@ -84,15 +96,31 @@ namespace Zombineta.Core
 
             // El aturdimiento por choque corre aunque la moto este frenada.
             if (State.StunRemaining > 0f)
+            {
                 State.StunRemaining = Mathf.Max(0f, State.StunRemaining - dt);
+                if (State.StunRemaining <= 0f)
+                    State.Fallen = false;
+            }
+
+            if (State.BoostRemaining > 0f)
+                State.BoostRemaining = Mathf.Max(0f, State.BoostRemaining - dt);
 
             bool hadFuel = State.Fuel > 0f;
             State.Mode = intent.Mode;
 
-            PlayerSpeed = ComputePlayerSpeed();
-            BurnFuel(dt);
-            if (hadFuel && State.Fuel <= 0f)
-                events |= RunEvent.RanOutOfFuel;
+            if (State.Airborne)
+            {
+                // Sin traccion: la velocidad es la de la rampa y el motor no gasta.
+                PlayerSpeed = State.AirSpeed;
+                events |= StepAir(intent.Mode, dt);
+            }
+            else
+            {
+                PlayerSpeed = ComputePlayerSpeed();
+                BurnFuel(dt);
+                if (hadFuel && State.Fuel <= 0f)
+                    events |= RunEvent.RanOutOfFuel;
+            }
 
             events |= DrainBattery(dt);
 
@@ -112,7 +140,8 @@ namespace Zombineta.Core
 
         RunEvent ApplyLaneChange(int delta)
         {
-            if (delta == 0)
+            // En el aire no hay de donde agarrarse para cambiar de carril.
+            if (delta == 0 || State.Airborne)
                 return RunEvent.None;
 
             int target = Mathf.Clamp(State.Lane + Math.Sign(delta), 0, LaneCount - 1);
@@ -159,15 +188,25 @@ namespace Zombineta.Core
             if (State.Fuel <= 0f)
                 return 0f;
 
+            float speed;
             switch (State.Mode)
             {
                 case DriveMode.Turbo:
-                    return config.normalSpeed * config.turboSpeedMultiplier;
+                    speed = config.normalSpeed * config.turboSpeedMultiplier;
+                    break;
                 case DriveMode.Reverse:
-                    return config.normalSpeed * config.reverseSpeedMultiplier;
+                    speed = config.normalSpeed * config.reverseSpeedMultiplier;
+                    break;
                 default:
-                    return config.normalSpeed;
+                    speed = config.normalSpeed;
+                    break;
             }
+
+            // El impulso del aterrizaje perfecto solo empuja hacia adelante.
+            if (State.BoostRemaining > 0f && speed > 0f)
+                speed *= config.landingBoostMultiplier;
+
+            return speed;
         }
 
         void BurnFuel(float dt)
@@ -236,6 +275,48 @@ namespace Zombineta.Core
             State.LaneVisual = Mathf.MoveTowards(State.LaneVisual, State.Lane, step);
         }
 
+        RunEvent StepAir(DriveMode lean, float dt)
+        {
+            // En el aire A/D inclinan: retroceso levanta la nariz, turbo la baja.
+            float input = lean == DriveMode.Reverse ? 1f : lean == DriveMode.Turbo ? -1f : 0f;
+            State.Pitch = Mathf.Clamp(
+                State.Pitch + (State.LaunchSpin + input * config.leanRate) * dt,
+                -config.maxPitch, config.maxPitch);
+
+            // Nariz arriba planea, nariz abajo cae antes: asi se regula el largo del salto.
+            float lift = config.leanLift * Mathf.Sin(State.Pitch * Mathf.Deg2Rad);
+            State.VerticalSpeed -= config.jumpGravity * (1f - lift) * dt;
+            State.Height += State.VerticalSpeed * dt;
+
+            return State.Height > 0f ? RunEvent.None : Land();
+        }
+
+        RunEvent Land()
+        {
+            float angle = Mathf.Abs(State.Pitch);
+
+            State.Airborne = false;
+            State.Height = 0f;
+            State.VerticalSpeed = 0f;
+            State.Pitch = 0f;
+            State.LaunchSpin = 0f;
+
+            if (angle <= config.perfectLandingAngle)
+            {
+                State.BoostRemaining = config.landingBoostDuration;
+                return RunEvent.Landed | RunEvent.LandedPerfect;
+            }
+
+            if (angle <= config.safeLandingAngle)
+                return RunEvent.Landed;
+
+            // Aterrizo torcida: al piso. La horda hace el resto.
+            State.StunRemaining = config.fallStunDuration;
+            State.Fuel = Mathf.Max(0f, State.Fuel - config.fallFuelPenalty);
+            State.Fallen = true;
+            return RunEvent.Fell;
+        }
+
         RunEvent CheckEndConditions()
         {
             if (State.HordeX >= State.PlayerX)
@@ -282,5 +363,28 @@ namespace Zombineta.Core
             State.Fuel = Mathf.Max(0f, State.Fuel - config.crashFuelPenalty);
             return RunEvent.Crashed;
         }
+
+        /// <summary>
+        /// La moto piso una rampa: sale volando con la velocidad que traia. De reversa o
+        /// frenada no pasa nada. Lo llama LevelRuntime al resolver el tramo recorrido.
+        /// </summary>
+        public RunEvent Launch()
+        {
+            if (State.Airborne || State.Phase != RunPhase.Running || PlayerSpeed <= 0f)
+                return RunEvent.None;
+
+            State.Airborne = true;
+            State.Height = 0f;
+            State.AirSpeed = PlayerSpeed;
+            State.VerticalSpeed = config.rampLaunchSlope * PlayerSpeed;
+            State.Pitch = config.launchPitch;
+            State.LaunchSpin = config.launchSpinPerExcessSpeed *
+                               Mathf.Max(0f, PlayerSpeed - config.normalSpeed);
+            return RunEvent.Launched;
+        }
+
+        /// <summary>Si la moto esta volando a esa altura (con la tolerancia de los pickups aereos).</summary>
+        public bool IsAtHeight(float meters) =>
+            State.Airborne && Mathf.Abs(State.Height - meters) <= config.aerialPickupTolerance;
     }
 }

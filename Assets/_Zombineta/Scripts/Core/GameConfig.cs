@@ -63,6 +63,36 @@ namespace Zombineta.Core
         public float crashStunDuration = 0.8f;
         public float crashFuelPenalty = 8f;
 
+        [Header("Salto")]
+        [Tooltip("Velocidad vertical de salida por cada m/s con que se pisa la rampa. " +
+                 "Mas rapido: mas alto y mas lejos.")]
+        public float rampLaunchSlope = 0.75f;
+        [Tooltip("Gravedad del salto en m/s2. De juego, no realista.")]
+        public float jumpGravity = 20f;
+        [Tooltip("Cuanto planea con la nariz arriba y cuanto cae con la nariz abajo. " +
+                 "0 = inclinar no cambia el largo del salto.")]
+        [Range(0f, 0.9f)] public float leanLift = 0.35f;
+        [Tooltip("Grados de nariz arriba al salir de la rampa. Un salto normal sin tocar nada " +
+                 "aterriza con esta inclinacion.")]
+        public float launchPitch = 20f;
+        [Tooltip("Giro hacia atras al salir, en grados/s por cada m/s por encima de la " +
+                 "velocidad normal. A velocidad normal no gira; en turbo hay que corregir.")]
+        public float launchSpinPerExcessSpeed = 2.6f;
+        [Tooltip("Grados por segundo que inclina la jugadora con A/D en el aire.")]
+        public float leanRate = 60f;
+        public float maxPitch = 80f;
+        [Tooltip("Aterrizar con menos inclinacion que esta da impulso.")]
+        public float perfectLandingAngle = 8f;
+        [Tooltip("Aterrizar con mas inclinacion que esta tira la moto al piso.")]
+        public float safeLandingAngle = 25f;
+        public float landingBoostMultiplier = 1.25f;
+        public float landingBoostDuration = 1.5f;
+        [Tooltip("Segundos tirada en el piso tras aterrizar mal. Mas que un choque.")]
+        public float fallStunDuration = 1.6f;
+        public float fallFuelPenalty = 10f;
+        [Tooltip("Metros de diferencia de altura con que se agarra un pickup en el aire.")]
+        public float aerialPickupTolerance = 1.5f;
+
         [Header("Presentacion")]
         [Tooltip("Unidades de mundo por metro simulado. La simulacion piensa en metros; " +
                  "la pantalla no puede mostrar 40 m de ventaja a escala 1:1, asi que se " +
@@ -72,5 +102,9 @@ namespace Zombineta.Core
         [Tooltip("Metros que la camara se queda atras de la jugadora. Positivo la deja a la " +
                  "derecha de la pantalla, con aire a la izquierda para ver venir a la horda.")]
         public float cameraTrailMeters = 25f;
+
+        [Tooltip("Unidades de mundo por metro de altura del salto. Mas que en X (0,25): " +
+                 "exagerado a proposito para que el salto se lea.")]
+        public float jumpHeightToWorld = 0.5f;
     }
 }
