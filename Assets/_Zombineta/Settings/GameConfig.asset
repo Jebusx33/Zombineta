@@ -31,12 +31,37 @@ MonoBehaviour:
   ammoMax: 6
   ammoAtStart: 3
   ammoPickupAmount: 2
-  shotHordePushback: 15
+  zombies: {fileID: 11400000, guid: a7ea75bfdd548d14883c0f9ae0cc1c19, type: 2}
+  hordeCount: 24
+  hordeDepthMeters: 14
+  corpseSeconds: 1.2
+  hordeSeed: 2026
   hordeBaseSpeed: 17.5
   rubberBandStartGap: 25
   rubberBandRange: 35
   rubberBandMaxBonus: 9
+  shotRangeMeters: 60
+  deathScareRadius: 4
+  deathScareSeconds: 0.5
+  explosionRadius: 8
+  explosionScareRadius: 16
+  explosionScareSeconds: 1
   crashStunDuration: 0.8
   crashFuelPenalty: 8
+  rampLaunchSlope: 0.75
+  jumpGravity: 20
+  leanLift: 0.35
+  launchPitch: 20
+  launchSpinPerExcessSpeed: 2.6
+  leanRate: 60
+  maxPitch: 80
+  perfectLandingAngle: 8
+  safeLandingAngle: 25
+  landingBoostMultiplier: 1.25
+  landingBoostDuration: 1.5
+  fallStunDuration: 1.6
+  fallFuelPenalty: 10
+  aerialPickupTolerance: 1.5
   worldUnitsPerMeter: 0.25
   cameraTrailMeters: 18
+  jumpHeightToWorld: 0.5

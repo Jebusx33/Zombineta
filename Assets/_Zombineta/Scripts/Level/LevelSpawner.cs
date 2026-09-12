@@ -24,6 +24,12 @@ namespace Zombineta.Level
         [SerializeField] Color batteryColor = new Color(0.3f, 0.85f, 0.95f);
         [SerializeField] Color ammoColor = new Color(0.95f, 0.9f, 0.4f);
 
+        [Header("Barril y zombie de frente")]
+        [SerializeField] Sprite barrelSprite;
+        [SerializeField] Color barrelColor = new Color(0.9f, 0.55f, 0.15f);
+        [Tooltip("Sprite del zombie parado que viene de frente. Se dibuja espejado.")]
+        [SerializeField] Sprite frontZombieSprite;
+
         [Header("Rampa")]
         [Tooltip("Cuna con el pivot abajo a la derecha: el borde alto es donde lanza.")]
         [SerializeField] Sprite rampSprite;
@@ -70,18 +76,38 @@ namespace Zombineta.Level
                 var sr = pool[used++];
                 sr.gameObject.SetActive(true);
                 var kind = item.Entry.kind;
-                sr.sprite = kind == LevelEntryKind.Ramp && rampSprite != null ? rampSprite : defaultSprite;
+                sr.sprite = SpriteFor(kind);
+                sr.flipX = kind == LevelEntryKind.ZombieFront;   // mira hacia la jugadora
                 sr.transform.position = new Vector3(
                     run.ToWorldX(d),
                     run.LaneToWorldY(item.Entry.lane) + run.HeightToWorld(item.Entry.height),
                     0f);
                 sr.transform.localScale = ScaleFor(kind);
                 sr.color = ColorFor(kind);
+
+                // El tipo del zombie de frente esta en la entrada, no en el kind.
+                if (kind == LevelEntryKind.ZombieFront && run.Config.zombies != null)
+                    sr.color = run.Config.zombies.Get(item.Entry.variant).tint;
             }
 
             for (int i = used; i < pool.Length; i++)
                 if (pool[i].gameObject.activeSelf)
                     pool[i].gameObject.SetActive(false);
+        }
+
+        Sprite SpriteFor(LevelEntryKind kind)
+        {
+            switch (kind)
+            {
+                case LevelEntryKind.Ramp:
+                    return rampSprite != null ? rampSprite : defaultSprite;
+                case LevelEntryKind.Barrel:
+                    return barrelSprite != null ? barrelSprite : defaultSprite;
+                case LevelEntryKind.ZombieFront:
+                    return frontZombieSprite != null ? frontZombieSprite : defaultSprite;
+                default:
+                    return defaultSprite;
+            }
         }
 
         Color ColorFor(LevelEntryKind kind)
@@ -92,6 +118,8 @@ namespace Zombineta.Level
                 case LevelEntryKind.Battery: return batteryColor;
                 case LevelEntryKind.Ammo: return ammoColor;
                 case LevelEntryKind.Ramp: return rampColor;
+                case LevelEntryKind.Barrel: return barrelColor;
+                case LevelEntryKind.ZombieFront: return Color.white;
                 default: return obstacleColor;
             }
         }
@@ -103,6 +131,8 @@ namespace Zombineta.Level
             {
                 case LevelEntryKind.Obstacle: return new Vector3(1.1f, 1.2f, 1f);
                 case LevelEntryKind.Ramp: return Vector3.one;
+                case LevelEntryKind.Barrel: return new Vector3(0.7f, 0.9f, 1f);
+                case LevelEntryKind.ZombieFront: return Vector3.one;
                 default: return new Vector3(0.55f, 0.55f, 1f);
             }
         }

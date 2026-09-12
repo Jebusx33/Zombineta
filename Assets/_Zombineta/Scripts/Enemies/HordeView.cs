@@ -4,25 +4,31 @@ using Zombineta.Core;
 namespace Zombineta.Enemies
 {
     /// <summary>
-    /// Dibuja la horda como un frente que avanza. La simulacion solo conoce un
-    /// numero (HordeX); aca se reparten varios zombies entre los tres carriles
-    /// para que se lea como una masa y no como un unico enemigo.
+    /// Dibuja la horda: un objeto por zombie simulado, con el tinte y la escala de su tipo.
+    /// No decide nada; la masa vive en HordeSimulation. Dispara los triggers Hit y Die del
+    /// Animator que ya trae el prefab, y reinicia la animacion cuando un zombie se recicla.
     /// </summary>
     public sealed class HordeView : MonoBehaviour
     {
         [SerializeField] RunController run;
         [SerializeField] Transform zombiePrefab;
-        [SerializeField] int zombieCount = 12;
-
-        [Tooltip("Cuantos metros hacia atras se extiende la masa desde el frente.")]
-        [SerializeField] float depth = 8f;
 
         [Tooltip("Metros que la horda sigue avanzando por encima de la moto al atraparla.")]
         [SerializeField] float overrunMeters = 12f;
 
-        Transform[] zombies;
-        float[] offsets;
-        float[] lanes;
+        [Header("Faro")]
+        [Tooltip("Los zombies iluminados se aclaran y se echan para atras: se ve por que frenan.")]
+        [SerializeField] Color litTint = new Color(1.25f, 1.2f, 1.1f);
+        [SerializeField] float litLeanDegrees = -12f;
+        [Tooltip("Metros detras de la moto que alcanza el cono del faro.")]
+        [SerializeField] float headlightRangeMeters = 28f;
+
+        Transform[] bodies;
+        SpriteRenderer[] sprites;
+        Animator[] animators;
+        int[] generations;
+        bool[] wasAlive;
+        float[] lastStagger;
 
         // Solo presentacion: la simulacion ya termino al atraparte, pero la horda sigue
         // avanzando por encima de la moto (en camara lenta, con el tiempo escalado).
@@ -30,44 +36,77 @@ namespace Zombineta.Enemies
 
         void Start()
         {
-            if (run == null || zombiePrefab == null)
+            if (run == null || zombiePrefab == null || run.Sim == null)
                 return;
 
-            zombies = new Transform[zombieCount];
-            offsets = new float[zombieCount];
-            lanes = new float[zombieCount];
+            int count = run.Sim.Horde.Units.Length;
+            bodies = new Transform[count];
+            sprites = new SpriteRenderer[count];
+            animators = new Animator[count];
+            generations = new int[count];
+            wasAlive = new bool[count];
+            lastStagger = new float[count];
 
-            // Semilla fija: la horda se ve igual en cada partida, asi un playtest
-            // es comparable con el siguiente.
-            var rng = new System.Random(1234);
-
-            for (int i = 0; i < zombieCount; i++)
+            for (int i = 0; i < count; i++)
             {
-                zombies[i] = Instantiate(zombiePrefab, transform);
-                offsets[i] = -(float)rng.NextDouble() * depth;
-                lanes[i] = (float)rng.NextDouble() * (RunSimulation.LaneCount - 1);
+                bodies[i] = Instantiate(zombiePrefab, transform);
+                sprites[i] = bodies[i].GetComponentInChildren<SpriteRenderer>();
+                animators[i] = bodies[i].GetComponentInChildren<Animator>();
+                generations[i] = -1;
+                wasAlive[i] = true;
             }
         }
 
         void LateUpdate()
         {
-            if (run == null || run.Sim == null || zombies == null)
+            if (run == null || run.Sim == null || bodies == null)
                 return;
 
             var state = run.Sim.State;
+            var horde = run.Sim.Horde;
+
             if (state.Phase == RunPhase.Lost)
                 overrun = Mathf.Min(overrunMeters, overrun + run.Config.hordeBaseSpeed * Time.deltaTime);
             else if (state.Phase == RunPhase.Running)
                 overrun = 0f;
 
-            float frontX = state.HordeX + overrun;
+            bool lightOn = state.HeadlightOn;
 
-            for (int i = 0; i < zombies.Length; i++)
+            for (int i = 0; i < bodies.Length; i++)
             {
-                zombies[i].position = new Vector3(
-                    run.ToWorldX(frontX + offsets[i]),
-                    run.LaneToWorldY(lanes[i]),
-                    0f);
+                var u = horde.Units[i];
+                var type = horde.Type(u.Type);
+
+                // Se reciclo: es otro zombie, vuelve a caminar desde cero.
+                if (generations[i] != u.Generation)
+                {
+                    generations[i] = u.Generation;
+                    wasAlive[i] = true;
+                    lastStagger[i] = 0f;
+                    if (animators[i] != null)
+                    {
+                        animators[i].Rebind();
+                        animators[i].Update(0f);
+                    }
+                }
+
+                if (wasAlive[i] && !u.Alive && animators[i] != null)
+                    animators[i].SetTrigger("Die");
+                else if (u.Alive && u.Stagger > lastStagger[i] + 0.01f && animators[i] != null)
+                    animators[i].SetTrigger("Hit");
+
+                wasAlive[i] = u.Alive;
+                lastStagger[i] = u.Stagger;
+
+                bodies[i].position = new Vector3(
+                    run.ToWorldX(u.X + overrun), run.LaneToWorldY(u.Lane), 0f);
+                bodies[i].localScale = Vector3.one * type.scale;
+
+                bool lit = lightOn && u.Alive &&
+                           u.X < state.PlayerX && u.X > state.PlayerX - headlightRangeMeters;
+                bodies[i].rotation = Quaternion.Euler(0f, 0f, lit ? litLeanDegrees : 0f);
+                if (sprites[i] != null)
+                    sprites[i].color = lit ? type.tint * litTint : type.tint;
             }
         }
     }

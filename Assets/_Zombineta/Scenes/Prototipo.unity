@@ -2359,6 +2359,9 @@ MonoBehaviour:
   fuelColor: {r: 1, g: 0.65, b: 0.15, a: 1}
   batteryColor: {r: 0.3, g: 0.85, b: 0.95, a: 1}
   ammoColor: {r: 0.95, g: 0.9, b: 0.4, a: 1}
+  barrelSprite: {fileID: 21300000, guid: 00b8ec328b7dcd9419475488dff9251c, type: 3}
+  barrelColor: {r: 0.9, g: 0.55, b: 0.15, a: 1}
+  frontZombieSprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
   rampSprite: {fileID: 21300000, guid: 2bb0697335c876c47ba60a63e8224098, type: 3}
   rampColor: {r: 0.85, g: 0.45, b: 0.2, a: 1}
 --- !u!4 &956599009
@@ -5670,9 +5673,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta::Zombineta.Enemies.HordeView
   run: {fileID: 1170739137}
   zombiePrefab: {fileID: 1454352294408542829, guid: d61e7fa8059f7eb4086d3014940acb31, type: 3}
-  zombieCount: 16
-  depth: 14
   overrunMeters: 12
+  litTint: {r: 1.25, g: 1.2, b: 1.1, a: 1}
+  litLeanDegrees: -12
+  headlightRangeMeters: 28
 --- !u!4 &2126441823
 Transform:
   m_ObjectHideFlags: 0
