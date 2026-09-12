@@ -36,7 +36,7 @@ MonoBehaviour:
   hordeDepthMeters: 14
   corpseSeconds: 1.2
   hordeSeed: 2026
-  hordeBaseSpeed: 17.5
+  hordeBaseSpeed: 14
   rubberBandStartGap: 25
   rubberBandRange: 35
   rubberBandMaxBonus: 9

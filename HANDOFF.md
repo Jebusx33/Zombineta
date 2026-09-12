@@ -8,7 +8,7 @@ placeholders con parallax en cinco capas, una cámara que reacciona a la persecu
 con un salto que se regula inclinando en el aire, y una horda de zombies individuales
 con tipos. 125 tests EditMode en verde.
 
-**Ojo:** con el balance vigente la meta **no se alcanza jugando**, y desde que la horda tiene tipos es peor: **el corredor (×1,35 sobre 17,5 = 23,6 m/s) es más rápido que el turbo (21,6 m/s)**, así que nada lo despega y la partida se pierde a los pocos segundos. Hay que rebalancear antes del próximo playtest (ver sección 4). Para
+**Ojo:** con el balance vigente la meta **no se alcanza jugando** (ver sección 4). Para
 recorrer el flujo completo existen F2 (ganar) y F3 (perder), solo en editor y builds de
 desarrollo.
 
@@ -291,18 +291,31 @@ El recorrido vive en `Ruta01.asset`: 111 entradas (31 bidones, 7 baterías, 9 ca
 64 obstáculos), generado con semilla fija para que dos playtests sean comparables. Los
 obstáculos empiezan ralos y se van cerrando, y **nunca bloquean los tres carriles a la vez**.
 
-### Lo primero a rebalancear: el corredor es imposible de despegar
+### El ajuste del 11/09: `hordeBaseSpeed` 17,5 -> 14
 
-Con `hordeBaseSpeed = 17,5` y el corredor en ×1,35, el frente de la horda va a **23,6 m/s**
-contra los 21,6 del turbo: **ninguna maniobra lo despega** y la partida se pierde a los pocos
-segundos (medido en Play: derrota a los 42 m). Antes de los tipos esto no pasaba porque toda la
-horda iba a 17,5.
+Al convertir la horda en individuos, el corredor (×1,35) quedaba en 23,6 m/s contra los 21,6
+del turbo: **nada lo despegaba** y la partida se perdía a los 42 m. Se bajó `hordeBaseSpeed` a
+**14**, que deja el reparto así:
 
-Dos salidas, las dos a decidir jugando:
-1. **Bajar `hordeBaseSpeed`** a ~14, que deja al corredor en 18,9: más rápido que el modo Normal
-   (12) pero más lento que el turbo (21,6). El turbo vuelve a ser la respuesta.
-2. **Bajar el `speedMultiplier` del corredor** en `Zombies.asset` a ~1,15 (20,1), dejando la
-   base como está: más tenso, pero el turbo apenas gana.
+| | m/s |
+|---|---|
+| Moto en Normal | 12 |
+| Pesado (×0,75) | 10,5 |
+| Común (×1) | 14 |
+| Corredor (×1,35) | 18,9 |
+| Moto en turbo | 21,6 |
+
+O sea: en Normal se pierde terreno contra el grueso de la horda, y el turbo le gana incluso al
+corredor. Medido con la simulación real sobre `Ruta01`, sin cambiar de carril (o sea, **sin
+juntar un solo bidón**):
+
+| Estrategia | Resultado |
+|---|---|
+| Siempre Normal | la alcanzan a los 63 m (5 s) |
+| Turbo + faro + tiros cuando aprieta | 648 m (16%), se queda sin nafta a los 38 s |
+
+La segunda muere de nafta porque la sonda no esquiva ni recolecta: jugando de verdad se juntan
+bidones. Falta la pasada de balance completa con alguien jugando.
 
 ### Estado actual: la meta no se alcanza
 
