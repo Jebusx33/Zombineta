@@ -41,9 +41,10 @@ namespace Zombineta.Tests
             c.ammoMax = 6;
             c.ammoAtStart = 3;
             c.ammoPickupAmount = 2;
-            c.shotHordePushback = 20f;
 
             c.hordeBaseSpeed = 11f;
+            c.hordeCount = 8;
+            c.hordeSeed = 5;
             c.rubberBandStartGap = 80f;
             c.rubberBandRange = 80f;
             c.rubberBandMaxBonus = 0f; // desactivada salvo en su propio test
@@ -219,17 +220,21 @@ namespace Zombineta.Tests
         // --- Pistola --------------------------------------------------------
 
         [Test]
-        public void Fire_PushesTheHordeBackAndSpendsAmmo()
+        public void Fire_KillsTheLeaderAndSpendsAmmo()
         {
             var sim = new RunSimulation(MakeConfig());
+            // Un solo zombie, en el carril de la jugadora, bien adelante de la masa.
+            foreach (var u in sim.Horde.Units) u.Alive = false;
+            var leader = sim.Horde.Units[0];
+            leader.Alive = true; leader.X = sim.State.PlayerX - 10f; leader.Lane = sim.State.Lane;
             float gapBefore = sim.State.Gap;
 
             var events = sim.Tick(new PlayerIntent { Mode = DriveMode.Normal, Fire = true }, Dt);
 
             Assert.AreNotEqual(RunEvent.None, events & RunEvent.Shot);
             Assert.AreEqual(2, sim.State.Ammo);
-            // +20 de empuje, menos lo poco que avanza la horda en un frame.
-            Assert.AreEqual(gapBefore + 20f, sim.State.Gap, 0.5f);
+            Assert.IsFalse(leader.Alive, "sin roster, un tiro mata");
+            Assert.Greater(sim.State.Gap, gapBefore, "el frente quedo mas atras");
         }
 
         [Test]

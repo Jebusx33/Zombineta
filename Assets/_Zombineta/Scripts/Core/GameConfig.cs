@@ -46,10 +46,23 @@ namespace Zombineta.Core
         public int ammoMax = 6;
         public int ammoAtStart = 3;
         public int ammoPickupAmount = 2;
-        [Tooltip("Metros que retrocede la horda por cada disparo.")]
-        public float shotHordePushback = 15f;
 
         [Header("Horda")]
+        [Tooltip("Los tipos de zombie que pueden aparecer. Sin asset, todos son comunes.")]
+        public Zombineta.Enemies.ZombieRoster zombies;
+
+        [Tooltip("Cuantos zombies se simulan a la vez. La masa se recicla: nunca se agota.")]
+        public int hordeCount = 24;
+
+        [Tooltip("Metros que se extiende la masa hacia atras desde el frente.")]
+        public float hordeDepthMeters = 14f;
+
+        [Tooltip("Segundos que queda el cadaver antes de volver a entrar por el fondo.")]
+        public float corpseSeconds = 1.2f;
+
+        [Tooltip("Semilla de la horda: los tipos y las muertes son reproducibles entre playtests.")]
+        public int hordeSeed = 2026;
+
         [Tooltip("Apenas mas rapida que el modo Normal: mantener Normal pierde terreno de a poco.")]
         public float hordeBaseSpeed = 12.5f;
         [Tooltip("A partir de esta distancia la horda empieza a acelerar para sostener la tension.")]
@@ -58,6 +71,18 @@ namespace Zombineta.Core
         public float rubberBandRange = 80f;
         [Tooltip("Velocidad extra maxima que puede ganar la horda por goma elastica.")]
         public float rubberBandMaxBonus = 6f;
+
+        [Header("Disparo y explosiones")]
+        [Tooltip("Alcance de la bala hacia atras, en metros.")]
+        public float shotRangeMeters = 60f;
+        [Tooltip("Metros alrededor de una muerte que hacen frenar a los vecinos.")]
+        public float deathScareRadius = 4f;
+        public float deathScareSeconds = 0.5f;
+        [Tooltip("Metros en los que una explosion mata.")]
+        public float explosionRadius = 8f;
+        [Tooltip("Metros en los que una explosion solo asusta.")]
+        public float explosionScareRadius = 16f;
+        public float explosionScareSeconds = 1f;
 
         [Header("Choque contra obstaculo")]
         public float crashStunDuration = 0.8f;

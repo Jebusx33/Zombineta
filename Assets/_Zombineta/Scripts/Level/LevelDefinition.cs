@@ -11,6 +11,8 @@ namespace Zombineta.Level
         Battery,
         Ammo,
         Ramp,
+        Barrel,
+        ZombieFront,
     }
 
     /// <summary>Una cosa colocada en el recorrido: a tantos metros, en tal carril.</summary>
@@ -29,12 +31,16 @@ namespace Zombineta.Level
         [Tooltip("Metros sobre el carril. 0 = en el piso. Mayor a 0: solo se agarra saltando.")]
         public float height;
 
-        public LevelEntry(float distance, int lane, LevelEntryKind kind, float height = 0f)
+        [Tooltip("Variante. En un zombie de frente, el indice de su tipo en Zombies.asset.")]
+        public int variant;
+
+        public LevelEntry(float distance, int lane, LevelEntryKind kind, float height = 0f, int variant = 0)
         {
             this.distance = distance;
             this.lane = lane;
             this.kind = kind;
             this.height = height;
+            this.variant = variant;
         }
     }
 

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Zombineta.Enemies;
 using Zombineta.Player;
 
 namespace Zombineta.Core
@@ -24,6 +25,9 @@ namespace Zombineta.Core
         Landed = 1 << 12,
         LandedPerfect = 1 << 13,
         Fell = 1 << 14,
+        ShotMissed = 1 << 15,
+        RanOver = 1 << 16,
+        Explosion = 1 << 17,
     }
 
     /// <summary>
@@ -39,6 +43,14 @@ namespace Zombineta.Core
 
         public RunState State { get; } = new RunState();
 
+        /// <summary>La horda como individuos. El frente sale de aca.</summary>
+        public HordeSimulation Horde { get; }
+
+        public GameConfig Config => config;
+
+        /// <summary>Los barriles del recorrido. Lo setea RunController; en tests puede ser null.</summary>
+        public IBarrelField Barrels { get; set; }
+
         /// <summary>Velocidad efectiva de la jugadora en el ultimo tick (m/s).</summary>
         public float PlayerSpeed { get; private set; }
 
@@ -53,13 +65,15 @@ namespace Zombineta.Core
             this.config = config != null
                 ? config
                 : throw new ArgumentNullException(nameof(config));
+            Horde = new HordeSimulation(this.config, this.config.zombies, this.config.hordeSeed);
             Reset();
         }
 
         public void Reset()
         {
             State.PlayerX = 0f;
-            State.HordeX = -config.startingGap;
+            Horde.Reset(-config.startingGap);
+            State.HordeX = Horde.FrontX;
             State.Lane = 1;
             State.LaneVisual = 1f;
             State.Fuel = config.fuelMax;
@@ -89,6 +103,10 @@ namespace Zombineta.Core
                 return RunEvent.None;
 
             var events = RunEvent.None;
+
+            // Lo primero: la horda arranca el tick con la lista de eventos limpia, asi lo que
+            // genere el disparo llega entero a las vistas.
+            Horde.BeginTick();
 
             events |= ApplyLaneChange(intent.LaneDelta);
             events |= ApplyHeadlightToggle(intent.ToggleHeadlight);
@@ -126,8 +144,9 @@ namespace Zombineta.Core
 
             State.PlayerX = Mathf.Max(0f, State.PlayerX + PlayerSpeed * dt);
 
-            HordeSpeed = ComputeHordeSpeed();
-            State.HordeX += HordeSpeed * dt;
+            Horde.Step(dt, ComputeHordeSpeedFactor());
+            State.HordeX = Horde.FrontX;
+            HordeSpeed = Horde.FrontSpeed;
 
             AdvanceLaneVisual(dt);
             State.Elapsed += dt;
@@ -174,9 +193,34 @@ namespace Zombineta.Core
                 return RunEvent.ShotDenied;
 
             State.Ammo--;
-            // Empuje instantaneo: la pistola compra espacio, el faro compra tiempo.
-            State.HordeX -= config.shotHordePushback;
-            return RunEvent.Shot;
+
+            float from = State.PlayerX;
+            int lane = State.Lane;
+            float range = config.shotRangeMeters;
+
+            var zombie = Horde.NearestBehind(from, lane, range);
+            float barrelX = 0f;
+            int barrelIndex = -1;
+            bool hasBarrel = Barrels != null &&
+                             Barrels.TryNearestBarrel(from, lane, range, out barrelX, out barrelIndex);
+
+            // Pega en lo primero que encuentra hacia atras: el barril o el zombie.
+            if (hasBarrel && (zombie == null || barrelX > zombie.X))
+            {
+                Horde.Tracer(from, barrelX, lane);
+                Barrels.Detonate(barrelIndex, this);
+                return RunEvent.Shot | RunEvent.Explosion;
+            }
+
+            if (zombie != null)
+            {
+                Horde.HitZombie(zombie, from);
+                State.HordeX = Horde.FrontX;
+                return RunEvent.Shot;
+            }
+
+            Horde.Miss(from, lane, range);
+            return RunEvent.Shot | RunEvent.ShotMissed;
         }
 
         float ComputePlayerSpeed()
@@ -244,7 +288,10 @@ namespace Zombineta.Core
             return RunEvent.RanOutOfBattery | RunEvent.HeadlightOff;
         }
 
-        float ComputeHordeSpeed()
+        /// <summary>
+        /// Cuanto se multiplica la velocidad base de cada zombie. Cada tipo le suma lo suyo.
+        /// </summary>
+        float ComputeHordeSpeedFactor()
         {
             float speed = config.hordeBaseSpeed;
 
@@ -260,7 +307,7 @@ namespace Zombineta.Core
             if (State.HeadlightOn)
                 speed *= config.headlightHordeSlowFactor;
 
-            return speed;
+            return config.hordeBaseSpeed <= 0f ? 0f : speed / config.hordeBaseSpeed;
         }
 
         void AdvanceLaneVisual(float dt)
@@ -386,5 +433,29 @@ namespace Zombineta.Core
         /// <summary>Si la moto esta volando a esa altura (con la tolerancia de los pickups aereos).</summary>
         public bool IsAtHeight(float meters) =>
             State.Airborne && Mathf.Abs(State.Height - meters) <= config.aerialPickupTolerance;
+
+        /// <summary>Un barril explota: mata a la horda en el radio. Lo llama LevelRuntime.</summary>
+        public RunEvent Explode(float x, int lane)
+        {
+            Horde.Explode(x, lane);
+            State.HordeX = Horde.FrontX;
+            return RunEvent.Explosion;
+        }
+
+        /// <summary>
+        /// La moto arrollo a un zombie que venia de frente. Cuesta lo que diga su tipo: al
+        /// comun te lo llevas puesto, el pesado es como chocar un auto.
+        /// </summary>
+        public RunEvent RunOver(int type, float x, int lane)
+        {
+            var t = Horde.Type(type);
+            if (t.ramStun > 0f)
+                State.StunRemaining = Mathf.Max(State.StunRemaining, t.ramStun);
+            if (t.ramFuelPenalty > 0f)
+                State.Fuel = Mathf.Max(0f, State.Fuel - t.ramFuelPenalty);
+
+            Horde.ReportRunOver(x, lane, type);
+            return RunEvent.RanOver;
+        }
     }
 }
