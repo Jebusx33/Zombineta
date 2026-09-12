@@ -119,6 +119,15 @@ namespace Zombineta.Core
                 director.Punch(config.perfectLandingPunchForward, 0f);
             }
 
+            if ((events & RunEvent.Explosion) != 0)
+            {
+                director.AddTrauma(config.explosionTrauma);
+                director.Punch(0f, 0.2f);
+            }
+
+            if ((events & RunEvent.RanOver) != 0)
+                director.AddTrauma(config.ramTrauma);
+
             if ((events & RunEvent.Shot) != 0)
             {
                 director.AddTrauma(config.shotTrauma);

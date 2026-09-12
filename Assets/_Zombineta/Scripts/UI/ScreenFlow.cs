@@ -165,7 +165,12 @@ namespace Zombineta.UI
                 GameSettings.CameraShake = !GameSettings.CameraShake;
                 RefreshOptionLabels();
             }
-            else if (Back(kb) || (confirm && optionsMenu.Selected == 4))
+            else if (optionsMenu.Selected == 4 && change)
+            {
+                GameSettings.Gore = !GameSettings.Gore;
+                RefreshOptionLabels();
+            }
+            else if (Back(kb) || (confirm && optionsMenu.Selected == 5))
             {
                 flow.Back();
             }
@@ -394,6 +399,7 @@ namespace Zombineta.UI
             optionsMenu.SetLabel(2, "Efectos de cámara:  " + (GameSettings.CameraEffects ? "Sí" : "No"));
             optionsMenu.SetLabel(3, "Sacudidas:  " + (GameSettings.CameraShake ? "Sí" : "No") +
                                     (GameSettings.CameraEffects ? "" : "  (efectos apagados)"));
+            optionsMenu.SetLabel(4, "Sangre:  " + (GameSettings.Gore ? "Alta" : "Baja"));
         }
 
         void ShowOnly(GameObject panel)

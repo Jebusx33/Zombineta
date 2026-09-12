@@ -117,5 +117,12 @@ namespace Zombineta.CameraFx
         [Tooltip("Aterrizaje perfecto: golpecito de satisfaccion.")]
         public float perfectLandingTrauma = 0.12f;
         public float perfectLandingPunchForward = 0.25f;
+
+        [Header("Horda")]
+        [Tooltip("Sacudida de una explosion de barril.")]
+        public float explosionTrauma = 0.5f;
+
+        [Tooltip("Sacudida al arrollar a un zombie de frente.")]
+        public float ramTrauma = 0.25f;
     }
 }

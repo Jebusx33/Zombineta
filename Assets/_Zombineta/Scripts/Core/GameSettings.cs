@@ -30,5 +30,20 @@ namespace Zombineta.Core
             get => cameraShake ??= PlayerPrefs.GetInt(CameraShakeKey, 1) == 1;
             set { cameraShake = value; PlayerPrefs.SetInt(CameraShakeKey, value ? 1 : 0); }
         }
+
+        const string GoreKey = "zombineta.gore";
+        static bool? gore;
+
+        /// <summary>Sangre alta o baja. En baja, las salpicaduras son polvo y no quedan manchas.</summary>
+        public static bool Gore
+        {
+            get => gore ??= PlayerPrefs.GetInt(GoreKey, 1) != 0;
+            set
+            {
+                gore = value;
+                PlayerPrefs.SetInt(GoreKey, value ? 1 : 0);
+                PlayerPrefs.Save();
+            }
+        }
     }
 }
