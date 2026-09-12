@@ -1,13 +1,14 @@
 # Zombineta — Handoff
 
-Última actualización: 10 de septiembre de 2026, tras sumar rampas y salto regulable (T12).
+Última actualización: 11 de septiembre de 2026, tras convertir la horda en individuos con tipos, disparo con traza, muertes y partículas.
 
 **Estado:** el prototipo se recorre de punta a punta con el flujo del GDD (menú, opciones,
 personaje, cinemática, dos niveles, victoria, game over, final), sobre un escenario de
 placeholders con parallax en cinco capas, una cámara que reacciona a la persecución y rampas
-con un salto que se regula inclinando en el aire. 101 tests EditMode en verde.
+con un salto que se regula inclinando en el aire, y una horda de zombies individuales
+con tipos. 125 tests EditMode en verde.
 
-**Ojo:** con el balance vigente la meta **no se alcanza jugando** (ver sección 4). Para
+**Ojo:** con el balance vigente la meta **no se alcanza jugando**, y desde que la horda tiene tipos es peor: **el corredor (×1,35 sobre 17,5 = 23,6 m/s) es más rápido que el turbo (21,6 m/s)**, así que nada lo despega y la partida se pierde a los pocos segundos. Hay que rebalancear antes del próximo playtest (ver sección 4). Para
 recorrer el flujo completo existen F2 (ganar) y F3 (perder), solo en editor y builds de
 desarrollo.
 
@@ -41,7 +42,7 @@ calle nocturna de tres carriles, administrando tres recursos, hasta llegar a un 
 | Turbo | → o D (mantener) | ×1,8 velocidad, ×3 consumo |
 | Retroceso | ← o A (mantener) | Marcha atrás real (−0,5×), ×0,5 consumo |
 | Faro | ESPACIO (toggle) | La horda avanza a **×0,5**. Drena batería |
-| Disparar | X o click izq. | Empuja la horda **−15 m**. Munición limitada |
+| Disparar | X o click izq. | Bala por **tu carril**: mata al primero que encuentre (o detona un barril). Munición limitada |
 | Saltar | Pasar por una rampa | Lanza según la velocidad. No hay botón de salto |
 | Inclinar en el aire | ← o A (nariz arriba) / → o D (nariz abajo) | Regula el largo; hay que aterrizar nivelada |
 | Menús | W/S elegir, ENTER confirmar, ESC volver | A/D cambia valores en Opciones |
@@ -124,7 +125,12 @@ Assets/_Zombineta/Scripts/
     ScooterView.cs
     HeadlightView.cs   Light2D + titileo con batería baja.
   Enemies/
-    HordeView.cs       La sim conoce un número (HordeX); esto lo dibuja como masa.
+    ZombieType.cs      Los numeros de una clase de zombie.
+    ZombieRoster.cs    ScriptableObject: la lista de tipos (Settings/Zombies.asset).
+    HordeSimulation.cs La masa como individuos: avance, disparo, muertes, reciclado. C# plano.
+    HordeView.cs       Un objeto por zombie simulado; dispara sus animaciones.
+  Fx/
+    FxManager.cs       Eventos de la horda -> particulas, traza del disparo y manchas.
   Level/
     LevelDefinition.cs El recorrido como datos (ScriptableObject).
     LevelRuntime.cs    Resuelve encuentros. C# plano.
@@ -242,6 +248,40 @@ ningún punto quedan los tres carriles bloqueados.
 
 ---
 
+### La horda
+
+Diseño completo en `docs/superpowers/specs/2026-09-11-horda-de-individuos-design.md`.
+
+- **La horda son 24 zombies simulados**, no un número. `State.HordeX` se calcula cada tick como
+  **la X del vivo más adelantado**: te puede alcanzar un solo corredor aunque el grueso esté
+  lejos. Vive en `HordeSimulation` (C# plano, `Scripts/Enemies/`).
+- **Es infinita.** El que muere queda de cadáver 1,2 s y reaparece al fondo de la masa con un
+  tipo nuevo; el que se descuelga también. La población es constante: **matar compra espacio,
+  no vacía la horda**.
+- **`shotHordePushback` ya no existe.** El empujón del disparo es consecuencia: si bajás al
+  puntero, el frente pasa a ser el siguiente. Matar a uno en el medio del bulto casi no mueve la
+  aguja; matar al corredor que se despegó, sí.
+- **Tipos en `Settings/Zombies.asset`** (común, corredor, pesado), con velocidad, probabilidad
+  de morir por bala, segundos que se frena si aguanta el tiro, costo de arrollarlo, peso de
+  aparición, tinte y escala. Sin asset, todos son comunes y mueren de un tiro.
+- **El disparo** sale por el carril de la jugadora hasta 60 m y pega en lo primero que
+  encuentra: un zombie (muere o encaja el impacto y se frena) o un **barril** (explota, mata en
+  8 m en los tres carriles, asusta en 16 y **encadena** otros barriles). Si el carril está
+  vacío, la bala se pierde y la munición también.
+- **Zombie de frente** (`LevelEntryKind.ZombieFront`, con su tipo en `variant`): se esquiva, se
+  sobrevuela con una rampa o se arrolla al costo de su tipo (al común te lo llevás puesto; el
+  pesado frena y cuesta nafta).
+- **Semilla fija** (`GameConfig.hordeSeed`): tipos y muertes reproducibles entre playtests.
+- **Los eventos son la interfaz con las vistas.** `HordeSimulation` publica una lista por tick
+  (traza, impacto, muerte con su causa, explosión, bala perdida) y `FxManager` la traduce en
+  partículas, la traza del disparo y las manchas del asfalto. `BeginTick()` limpia esa lista al
+  **empezar** el tick, no en el paso de la horda: el disparo se resuelve antes que el
+  movimiento y sus eventos tienen que sobrevivir.
+- **Opciones suma "Sangre: Alta / Baja"** (`GameSettings.Gore`). En baja, polvo gris y sin
+  manchas.
+
+---
+
 ## 4. Balance
 
 Todo vive en `Assets/_Zombineta/Settings/GameConfig.asset`. Balancear es editar ese asset,
@@ -250,6 +290,19 @@ nunca tocar código.
 El recorrido vive en `Ruta01.asset`: 111 entradas (31 bidones, 7 baterías, 9 cajas de balas,
 64 obstáculos), generado con semilla fija para que dos playtests sean comparables. Los
 obstáculos empiezan ralos y se van cerrando, y **nunca bloquean los tres carriles a la vez**.
+
+### Lo primero a rebalancear: el corredor es imposible de despegar
+
+Con `hordeBaseSpeed = 17,5` y el corredor en ×1,35, el frente de la horda va a **23,6 m/s**
+contra los 21,6 del turbo: **ninguna maniobra lo despega** y la partida se pierde a los pocos
+segundos (medido en Play: derrota a los 42 m). Antes de los tipos esto no pasaba porque toda la
+horda iba a 17,5.
+
+Dos salidas, las dos a decidir jugando:
+1. **Bajar `hordeBaseSpeed`** a ~14, que deja al corredor en 18,9: más rápido que el modo Normal
+   (12) pero más lento que el turbo (21,6). El turbo vuelve a ser la respuesta.
+2. **Bajar el `speedMultiplier` del corredor** en `Zombies.asset` a ~1,15 (20,1), dejando la
+   base como está: más tenso, pero el turbo apenas gana.
 
 ### Estado actual: la meta no se alcanza
 
@@ -407,6 +460,10 @@ Estas costaron tiempo real en esta sesión:
   cámara salta a la meta en vez de cruzar el nivel. Con efectos apagados, encuadre fijo y
   Game Over inmediato.
 - El faro apunta hacia atrás (capturado en Play).
+- Horda: la física de la masa, el reciclado, el disparo por carril, las muertes, las explosiones
+  con cadena y el atropello tienen tests (24 nuevos). En Play se vieron los 24 zombies con la
+  mezcla de tipos esperada (16/5/3), un disparo matando con su traza y su salpicadura, y la
+  mancha en el asfalto. Los 32 barriles de las dos rutas detonan de un tiro y limpian la zona.
 - Salto: la física, las rampas, los pickups aéreos y la cámara tienen tests. En Play, un salto
   real sobre la primera rampa de `Ruta01` despegó en la rampa, sobrevoló los dos obstáculos y
   aterrizó a 12,3 m, igual que en la simulación; capturado en el aire con la sombra en el
@@ -430,6 +487,10 @@ Estas costaron tiempo real en esta sesión:
 - Cómo se sienten los números de la cámara con las manos en el teclado: intensidad de las
   sacudidas, velocidad del zoom, duración del congelado. Se tocan en `CameraConfig.asset`
   en pleno Play y quedan guardados.
+- **Que la partida sea jugable con la horda nueva.** Ver arriba: hoy el corredor es más
+  rápido que el turbo y la partida se pierde enseguida. Es lo primero.
+- **El disparo con teclado**: si alinear el carril con el puntero se siente bien o molesto, y si
+  se entiende que la bala se pierde cuando el carril está vacío.
 - **El salto con teclado.** Ningún salto se piloteó con teclas reales: la inclinación se probó
   con pilotos automáticos en los tests. Lo primero a mirar: si 60 °/s de inclinación y el
   giro del turbo (2,6 °/s por m/s) se sienten controlables o frustrantes, y si mantener D
@@ -453,7 +514,15 @@ no pelearse con conflictos de `Prototipo.unity`.
    Incluye la cámara: sacudidas, velocidad del zoom y congelado se ajustan en
    `CameraConfig.asset`.
 2. Decidir `goalDistance` con el balance nuevo, para que la meta vuelva a ser alcanzable.
-3. Animaciones de la protagonista a partir de las hojas `hf_*.png`.
+3. Rebalancear la horda (ver sección 4) y volver a jugarla.
+4. Animaciones de la protagonista a partir de las hojas `hf_*.png`.
+
+### Horda
+- Arte por tipo: hoy los tres usan el mismo sprite con tinte y escala. `Personajes.png` tiene
+  seis arquetipos para elegir.
+- El zombie de frente **camina en el lugar**: la entrada del recorrido está a una distancia
+  fija. Si se quiere que avance de verdad, hay que moverlo en la simulación.
+- Las partículas y la mancha son placeholders generados (`Art/Fx/particula.png`).
 
 ### Salto
 - Arte de rampa: hoy es una cuña naranja generada (`Art/Level/rampa_placeholder.png`, pivot
