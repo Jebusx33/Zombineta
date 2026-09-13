@@ -163,8 +163,14 @@ por transform, no por Rigidbody, así que un collider sería frágil. `LevelRunt
 resuelve el *tramo* recorrido entre dos posiciones, lo que garantiza que nada se saltee yendo
 en turbo y que el retroceso recoja lo que dejaste pasar.
 
-**`worldUnitsPerMeter = 0.25`.** La simulación piensa en metros, pero 40 m de ventaja no
-entran en pantalla a escala 1:1. Las Views comprimen la distancia; el balance no se entera.
+**`worldUnitsPerMeter = 0.5`: la velocidad que se ve es un número de presentación.** La
+simulación piensa en metros; las Views los pasan a unidades con este factor, y el balance no
+se entera. Hasta el 13/09 valía 0,25 y todo se veía lento: la moto en Normal cruzaba la pantalla
+en 7 s. Se duplicó (medido en Play: la moto pasó de 3 a 6 u/s, siempre a 12 m/s). El costo es
+que en pantalla entran la mitad de metros (hoy unos 41 m de ancho): los obstáculos se ven venir
+con la mitad de tiempo y la horda entra en cuadro más cerca. Si se toca este número, acompañarlo
+con `jumpHeightToWorld` (para que el arco del salto no cambie de forma) y con la separación de
+las rayas de `LaneMarkersView` (en metros: a mayor escala, menos metros entre rayas).
 
 **La calle tiene parallax 1: es el mundo, no una imagen que se mueve.** El sincronismo entre
 la moto y el fondo sale de ahí, por construcción. No hay una "velocidad de scroll" que ajustar
@@ -239,7 +245,8 @@ implementación en `docs/superpowers/plans/`. Lo esencial:
   a caer y **se pone verde cuando el ángulo daría aterrizaje perfecto** (la pista para
   aprenderlo sin tutorial). Tirada, queda rotada 70° con el tinte de aturdida.
 - Todos los números en la sección "Salto" de `GameConfig`; la altura en pantalla está
-  exagerada (`jumpHeightToWorld = 0,5 u/m` contra 0,25 en X) para que el salto se lea.
+  exagerada respecto del eje X para que el salto se lea (`jumpHeightToWorld = 0,75 u/m`
+  contra 0,5 en X desde el 13/09).
 
 Las rutas tienen **15 rampas cada una**, cada 250 m desde los 300: rampa, dos obstáculos
 para sobrevolar a +4 y +8 m y, una sí y otra no, un bidón aéreo a +17 m. Se verificaron con

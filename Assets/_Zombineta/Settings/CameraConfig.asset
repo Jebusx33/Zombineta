@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d836b269faaaa34e8d7b1be2d32cfaa, type: 3}
   m_Name: CameraConfig
   m_EditorClassIdentifier: Zombineta::Zombineta.CameraFx.CameraConfig
-  baseSize: 6
+  baseSize: 9.24
   viewBottomY: -4.6
   lookAhead: 6.2
   followTime: 0.12
@@ -45,3 +45,9 @@ MonoBehaviour:
   victorySize: 7.5
   victoryOpenTime: 1
   victoryHoldSeconds: 1.6
+  jumpHeadroom: 2
+  jumpZoomTime: 0.15
+  perfectLandingTrauma: 0.12
+  perfectLandingPunchForward: 0.25
+  explosionTrauma: 0.5
+  ramTrauma: 0.25

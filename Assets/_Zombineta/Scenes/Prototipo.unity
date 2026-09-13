@@ -1040,7 +1040,7 @@ MonoBehaviour:
   run: {fileID: 1170739137}
   dashPrefab: {fileID: 6627121700770363696, guid: d31a102d3bd4a424493b19840af19527, type: 3}
   followTarget: {fileID: 542714083}
-  spacing: 6
+  spacing: 3
   dashesPerLine: 28
 --- !u!4 &407873408
 Transform:

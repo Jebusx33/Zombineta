@@ -62,6 +62,6 @@ MonoBehaviour:
   fallStunDuration: 1.6
   fallFuelPenalty: 10
   aerialPickupTolerance: 1.5
-  worldUnitsPerMeter: 0.25
+  worldUnitsPerMeter: 0.5
   cameraTrailMeters: 18
-  jumpHeightToWorld: 0.5
+  jumpHeightToWorld: 0.75
