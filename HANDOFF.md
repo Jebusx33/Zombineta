@@ -163,14 +163,28 @@ por transform, no por Rigidbody, así que un collider sería frágil. `LevelRunt
 resuelve el *tramo* recorrido entre dos posiciones, lo que garantiza que nada se saltee yendo
 en turbo y que el retroceso recoja lo que dejaste pasar.
 
-**`worldUnitsPerMeter = 0.5`: la velocidad que se ve es un número de presentación.** La
+**`worldUnitsPerMeter = 0.75`: la velocidad que se ve es un número de presentación.** La
 simulación piensa en metros; las Views los pasan a unidades con este factor, y el balance no
-se entera. Hasta el 13/09 valía 0,25 y todo se veía lento: la moto en Normal cruzaba la pantalla
-en 7 s. Se duplicó (medido en Play: la moto pasó de 3 a 6 u/s, siempre a 12 m/s). El costo es
-que en pantalla entran la mitad de metros (hoy unos 41 m de ancho): los obstáculos se ven venir
-con la mitad de tiempo y la horda entra en cuadro más cerca. Si se toca este número, acompañarlo
-con `jumpHeightToWorld` (para que el arco del salto no cambie de forma) y con la separación de
-las rayas de `LaneMarkersView` (en metros: a mayor escala, menos metros entre rayas).
+se entera. Empezó en 0,25 y todo se veía lento (la moto en Normal cruzaba la pantalla en 7 s);
+el 13/09 se llevó a 0,5 y después a 0,75, tomando como referencia la persecución en moto de
+*Terminator 2D: NO FATE*. Medido en Play con la moto a 12 m/s:
+
+| Capa | Parallax | Antes (0,25) | Ahora (0,75) |
+|---|---|---|---|
+| Calle y moto | 1 | 3 u/s | 9 u/s |
+| Edificios | 0,5 -> **0,8** | 1,5 u/s | 7,6 u/s |
+| Postes (nueva) | 1,4 | — | 13 u/s |
+| Frontal | 2,5 | 7,5 u/s | 24 u/s |
+
+El costo: en pantalla entran unos 28 m de ancho. Para no perder tiempo de reacción,
+`CameraConfig.lookAhead` pasó de 6,2 a 9,3 u (y el extra de turbo de 1,5 a 2,25): hacia adelante
+se ven los mismos metros que antes, y la moto quedó más a la izquierda. Lo que se perdió es vista
+hacia atrás: la horda entra en cuadro recién a unos 17 m.
+
+**Si se toca la escala, acompañarla** con `jumpHeightToWorld` (hoy 1,125: 1,5 veces la escala,
+para que el arco del salto no cambie de forma), `lookAhead` y `turboExtraLookAhead` (en
+unidades: escalan con el mundo), la separación de rayas de `LaneMarkersView` (hoy 2 m) y el
+`headlightRangeMeters` de `HordeView` (hoy 19 m, lo que cubre el cono del faro de 14 u).
 
 **La calle tiene parallax 1: es el mundo, no una imagen que se mueve.** El sincronismo entre
 la moto y el fondo sale de ahí, por construcción. No hay una "velocidad de scroll" que ajustar
@@ -245,8 +259,8 @@ implementación en `docs/superpowers/plans/`. Lo esencial:
   a caer y **se pone verde cuando el ángulo daría aterrizaje perfecto** (la pista para
   aprenderlo sin tutorial). Tirada, queda rotada 70° con el tinte de aturdida.
 - Todos los números en la sección "Salto" de `GameConfig`; la altura en pantalla está
-  exagerada respecto del eje X para que el salto se lea (`jumpHeightToWorld = 0,75 u/m`
-  contra 0,5 en X desde el 13/09).
+  exagerada respecto del eje X para que el salto se lea (`jumpHeightToWorld = 1,125 u/m`
+  contra 0,75 en X).
 
 Las rutas tienen **15 rampas cada una**, cada 250 m desde los 300: rampa, dos obstáculos
 para sobrevolar a +4 y +8 m y, una sí y otra no, un bidón aéreo a +17 m. Se verificaron con
@@ -555,6 +569,15 @@ no pelearse con conflictos de `Prototipo.unity`.
   en la meta.
 
 ### Escenario
+Dos capas nuevas para la sensación de velocidad, con placeholders generados:
+- **Vallas** (`tile_placeholder_valla.png`): la vereda de enfrente, pegada a la calle
+  (parallax 1), detrás del carril de arriba.
+- **Postes** (`tile_placeholder_poste.png`): bolardos en la vereda de este lado, abajo de
+  todo, a parallax 1,4. Muchos objetos chicos por segundo es lo que más vende velocidad.
+
+Y **polvo en la rueda trasera** (`WheelDustView` + `Scooter/Dust`): más cantidad cuanto más
+rápido, el doble en turbo, nada en el aire.
+
 Los tiles son placeholders en `Assets/_Zombineta/Art/Tileset/` (copiados de
 `Arte/Bocetos/Tileset`). Para reemplazarlos por arte final alcanza con cambiar el sprite de
 cada variante en `Escenario.asset`; el ancho se calcula solo a partir de la proporción. Tres

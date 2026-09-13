@@ -16,7 +16,7 @@ namespace Zombineta.Level
         [SerializeField] Transform followTarget;
 
         [Tooltip("Separacion entre rayas, en metros.")]
-        [SerializeField] float spacing = 3f;
+        [SerializeField] float spacing = 2f;
 
         [Tooltip("Cuantas rayas mantiene vivas cada linea. Tiene que cubrir el ancho de pantalla.")]
         [SerializeField] int dashesPerLine = 20;

@@ -122,7 +122,7 @@ namespace Zombineta.Core
         [Tooltip("Unidades de mundo por metro simulado. La simulacion piensa en metros; " +
                  "la pantalla no puede mostrar 40 m de ventaja a escala 1:1, asi que se " +
                  "comprime. No afecta el balance, solo lo que se ve.")]
-        public float worldUnitsPerMeter = 0.5f;
+        public float worldUnitsPerMeter = 0.75f;
 
         [Tooltip("Metros que la camara se queda atras de la jugadora. Positivo la deja a la " +
                  "derecha de la pantalla, con aire a la izquierda para ver venir a la horda.")]
@@ -131,6 +131,6 @@ namespace Zombineta.Core
         [Tooltip("Unidades de mundo por metro de altura del salto. Un poco mas que en X: " +
                  "exagerado a proposito para que el salto se lea. Si se cambia la escala del " +
                  "mundo, acompanarla para que el arco no cambie de forma.")]
-        public float jumpHeightToWorld = 0.75f;
+        public float jumpHeightToWorld = 1.125f;
     }
 }
