@@ -46,8 +46,8 @@ MonoBehaviour:
   explosionRadius: 8
   explosionScareRadius: 16
   explosionScareSeconds: 1
-  crashStunDuration: 0.8
-  crashFuelPenalty: 8
+  crashStunDuration: 0.2
+  crashFuelPenalty: 2
   rampLaunchSlope: 0.75
   jumpGravity: 20
   leanLift: 0.35
