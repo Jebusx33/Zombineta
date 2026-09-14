@@ -84,5 +84,25 @@ namespace Zombineta.Juego.Tests
             Assert.AreEqual(0, r[3].y);
             Assert.AreEqual(60, r[4].x);
         }
+
+        // Borde de la tolerancia fija de agrupamiento de filas (AlphaIslands.RowOverlapTolerancePx):
+        // un hueco vertical de tolerancia-1 debe unir las dos cajas en la misma fila, uno de
+        // exactamente tolerancia (ya no estrictamente menor) debe separarlas en dos filas.
+        [Test]
+        public void RowGrouping_GapJustUnderTolerance_MergesRow_GapAtTolerance_Separates()
+        {
+            int tol = (int)AlphaIslands.RowOverlapTolerancePx;
+
+            var inside = AlphaIslands.FindRows(
+                Canvas(50, 100, (10, 0, 20, 20), (10, 20 + (tol - 1), 20, 20)), 50, 100, 10, 0);
+            Assert.AreEqual(1, inside.Count);
+            Assert.AreEqual(2, inside[0].Count);
+
+            var outside = AlphaIslands.FindRows(
+                Canvas(50, 100, (10, 0, 20, 20), (10, 20 + tol, 20, 20)), 50, 100, 10, 0);
+            Assert.AreEqual(2, outside.Count);
+            Assert.AreEqual(1, outside[0].Count);
+            Assert.AreEqual(1, outside[1].Count);
+        }
     }
 }

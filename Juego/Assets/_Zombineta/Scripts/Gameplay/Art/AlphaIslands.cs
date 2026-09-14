@@ -29,10 +29,23 @@ namespace Zombineta.Art
     {
         public static List<PixelRect> Find(bool[] opaque, int width, int height, int minArea, int mergeGap)
         {
+            var rows = FindRows(opaque, width, height, minArea, mergeGap);
+            var result = new List<PixelRect>();
+            foreach (var row in rows)
+                result.AddRange(row);
+            return result;
+        }
+
+        // Igual que Find, pero sin aplanar: cada elemento es una fila completa (de arriba hacia
+        // abajo), y cada fila ya viene ordenada de izquierda a derecha. SheetSlicer la usa para
+        // nombrar <hoja>_<fila>_<columna> sin tener que re-derivar donde empieza cada fila (Find
+        // no expone esos cortes).
+        public static List<List<PixelRect>> FindRows(bool[] opaque, int width, int height, int minArea, int mergeGap)
+        {
             var boxes = FindComponents(opaque, width, height);
             boxes = MergeClose(boxes, mergeGap);
             boxes.RemoveAll(b => (long)b.width * b.height < minArea);
-            return SortIntoRows(boxes);
+            return GroupIntoRows(boxes);
         }
 
         // --- Componentes conectados (BFS, 8 vecinos) -----------------------------------
@@ -139,7 +152,7 @@ namespace Zombineta.Art
         // En una hoja de personajes las poses de una misma fila comparten "piso" (la misma linea
         // de base): sus cajas se TOCAN o se SUPERPONEN en Y aunque difieran mucho de altura (una
         // pose en el piso es mas baja y mas corta que sus vecinas de pie, y su CENTRO cae lejos del
-        // centro de ellas — agrupar por distancia entre centros con tolerancia de media altura
+        // centro de ellas: agrupar por distancia entre centros con tolerancia de media altura
         // mediana la deja afuera de su fila, o peor, la une a la fila de abajo). Entre filas
         // distintas, en cambio, siempre queda un margen sin pixeles opacos. Por eso las filas se
         // agrupan por la SUPERPOSICION/CERCANIA de los bordes verticales de cada caja (no del
@@ -149,12 +162,11 @@ namespace Zombineta.Art
         // devuelve las cajas ordenadas fila por fila, pero no expone los cortes entre filas).
         public const float RowOverlapTolerancePx = 4f;
 
-        static List<PixelRect> SortIntoRows(List<PixelRect> boxes)
+        static List<List<PixelRect>> GroupIntoRows(List<PixelRect> boxes)
         {
-            var result = new List<PixelRect>();
             int n = boxes.Count;
             if (n == 0)
-                return result;
+                return new List<List<PixelRect>>();
 
             float tolerance = RowOverlapTolerancePx;
 
@@ -183,11 +195,14 @@ namespace Zombineta.Art
             // centros), asi una pose en el piso no le baja el orden a toda su fila.
             rows.Sort((ra, rb) => RowTop(boxes, rb).CompareTo(RowTop(boxes, ra)));
 
+            var result = new List<List<PixelRect>>(rows.Count);
             foreach (var row in rows)
             {
                 row.Sort((ia, ib) => boxes[ia].x.CompareTo(boxes[ib].x));
+                var rowBoxes = new List<PixelRect>(row.Count);
                 foreach (var i in row)
-                    result.Add(boxes[i]);
+                    rowBoxes.Add(boxes[i]);
+                result.Add(rowBoxes);
             }
 
             return result;
