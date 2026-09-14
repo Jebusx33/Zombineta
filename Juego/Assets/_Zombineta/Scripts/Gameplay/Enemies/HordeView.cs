@@ -53,12 +53,19 @@ namespace Zombineta.Enemies
         // avanzando por encima de la moto (en camara lenta, con el tiempo escalado).
         float overrun;
 
-        // --- Solo lectura, para depurar y verificar looks/flipbooks desde afuera --------------
+#if UNITY_EDITOR
+        // --- Solo lectura, solo editor: para verificar looks/flipbooks por MCP en Play. Nunca se
+        // compila en un build (ni siquiera development), asi que no ensancha la API en runtime.
+        // LookNameAt devuelve el nombre en vez del ZombieLook: el look es un asset compartido con
+        // campos publicos, y devolver la referencia dejaria a cualquier caller mutarlo para todas
+        // las unidades que lo usan.
 
         public int UnitCount => bodies != null ? bodies.Length : 0;
 
-        public ZombieLook LookAt(int index) =>
-            currentLook != null && index >= 0 && index < currentLook.Length ? currentLook[index] : null;
+        public string LookNameAt(int index) =>
+            currentLook != null && index >= 0 && index < currentLook.Length && currentLook[index] != null
+                ? currentLook[index].name
+                : null;
 
         public FlipbookClip ClipAt(int index) =>
             flipbooks != null && index >= 0 && index < flipbooks.Length ? flipbooks[index].Clip : FlipbookClip.Walk;
@@ -68,6 +75,7 @@ namespace Zombineta.Enemies
 
         public bool FinishedAt(int index) =>
             flipbooks != null && index >= 0 && index < flipbooks.Length && flipbooks[index].Finished;
+#endif
 
         void Start()
         {
@@ -124,7 +132,11 @@ namespace Zombineta.Enemies
                 overrun = 0f;
 
             bool lightOn = state.HeadlightOn;
-            float speedRatio = run.Config.hordeBaseSpeed > 0f ? horde.FrontSpeed / run.Config.hordeBaseSpeed : 0f;
+            // En el overrun de Lost la simulacion ya no tickea (FrontSpeed queda congelado en lo
+            // que valia al perder), pero la horda sigue avanzando visualmente: las piernas tienen
+            // que acompanar ese avance, no quedar congeladas en la velocidad de antes de perder.
+            float speedRatio = state.Phase == RunPhase.Lost ? 1f
+                : run.Config.hordeBaseSpeed > 0f ? horde.FrontSpeed / run.Config.hordeBaseSpeed : 0f;
 
             for (int i = 0; i < bodies.Length; i++)
             {

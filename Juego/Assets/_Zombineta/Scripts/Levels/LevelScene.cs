@@ -165,9 +165,12 @@ namespace Zombineta.Juego.Levels
                 return;
             }
 
-            // En el editor: cada item en su carril y con la cara de su tipo.
-            foreach (var item in Items)
-                ApplyVisual(item);
+            // En el editor: cada item en su carril y con la cara de su tipo. Un solo fetch de
+            // Items por frame (GetComponentsInChildren aloca): el indice de cada item sale de su
+            // posicion aca, no de buscarlo de nuevo adentro de ApplyVisual.
+            var items = Items;
+            for (int i = 0; i < items.Length; i++)
+                ApplyVisual(items[i], i);
         }
 
         /// <summary>Paso de la grilla al mover un item, en metros.</summary>
@@ -204,7 +207,20 @@ namespace Zombineta.Juego.Levels
             item.snapshotHeight = item.height;
         }
 
+        /// <summary>
+        /// Para llamadas externas de a un item (por ejemplo LevelEditorActions), sin indice a
+        /// mano: lo busca una vez en Items. El bucle de Update ya tiene el indice y llama
+        /// directamente a la sobrecarga de abajo, sin este fetch por item.
+        /// </summary>
         public void ApplyVisual(LevelItem item)
+        {
+            if (item == null)
+                return;
+
+            ApplyVisual(item, IndexOf(item));
+        }
+
+        public void ApplyVisual(LevelItem item, int index)
         {
             if (item == null)
                 return;
@@ -232,7 +248,7 @@ namespace Zombineta.Juego.Levels
                 if (looks != null)
                 {
                     var pool = looks.For(item.variant);
-                    int idx = ZombieLookPicker.Pick(lookSeed, IndexOf(item), 0, pool.Count, -1);
+                    int idx = ZombieLookPicker.Pick(lookSeed, index, 0, pool.Count, -1);
                     zombieLook = idx >= 0 ? pool[idx] : null;
                 }
 
@@ -263,7 +279,8 @@ namespace Zombineta.Juego.Levels
 
         /// <summary>
         /// Posicion del item dentro de Items: la usa el sorteo de look para que cada ZombieFront
-        /// tenga siempre la misma pinta, sin importar cuantas veces se llame a ApplyVisual.
+        /// tenga siempre la misma pinta, sin importar cuantas veces se llame a ApplyVisual. Solo
+        /// la usa la sobrecarga de un item sin indice; el bucle de Update ya trae el suyo.
         /// </summary>
         int IndexOf(LevelItem item)
         {
