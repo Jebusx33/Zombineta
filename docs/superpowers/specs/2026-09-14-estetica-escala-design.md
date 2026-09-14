@@ -126,8 +126,8 @@ repite el del zombie anterior del mismo tipo cuando se puede.
   cuadriculado ya existe y se usa para `ZombieFlesh`.
 - Recortador de editor (`Zombineta > Arte > Recortar hoja por transparencia`): encuentra cada
   figura por componentes conectados de alfa, ordena por fila y columna, y escribe los sprites de
-  la hoja con pivot en los pies (centro abajo). Mismo criterio que el recortador descripto en el
-  plan original para las hojas sin grilla exacta.
+  la hoja con pivot en los pies (centro abajo). Hace falta porque las hojas no tienen grilla
+  exacta.
 - Fuentes: `Zombies_poses.png` (6 arquetipos × 4 poses), `ZombieFlesh.jpeg` (hombre rojo, hoja
   completa), `ZombieViejo.png` (anciano, hoja completa, ya importada). Donde un arquetipo tiene
   hoja completa, se usa esa y no las poses.
