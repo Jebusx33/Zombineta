@@ -40,6 +40,14 @@ namespace Zombineta.Juego.Levels
         [HideInInspector] public int generatedVariant;
         [HideInInspector] public float generatedHeight;
 
+        // Como lo dejo acomodado la escena la ultima vez: asi se sabe si se lo arrastro (manda la
+        // posicion) o se le cambio el carril en el inspector (manda el carril). Sin guardar: al
+        // recargar, manda el carril.
+        [System.NonSerialized] public bool hasSnapshot;
+        [System.NonSerialized] public Vector2 snapshotPosition;
+        [System.NonSerialized] public int snapshotLane;
+        [System.NonSerialized] public float snapshotHeight;
+
         public float Meters(LevelLayout layout) => layout.ToMeters(transform.position.x);
 
         public LevelEntry ToEntry(LevelLayout layout) =>
