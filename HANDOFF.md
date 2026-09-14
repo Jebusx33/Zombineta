@@ -1,7 +1,7 @@
 # Zombineta — Handoff
 
-Última actualización: 13 de septiembre de 2026, tras el sub-proyecto 2: el juego definitivo
-ya corre en escenas separadas (esqueleto navegable).
+Última actualización: 14 de septiembre de 2026, tras el sub-proyecto 3: los niveles del juego
+definitivo se juegan y se arman a mano en la escena, con una paleta y un generador.
 
 **Estado:** el prototipo se recorre de punta a punta con el flujo del GDD (menú, opciones,
 personaje, cinemática, dos niveles, victoria, game over, final), sobre un escenario de
@@ -48,8 +48,8 @@ Cinco sub-proyectos, cada uno con su diseño, plan e implementación:
 |---|---|---|
 | 1 | Reestructura: `Prototipo/`, `Juego/` y simulación compartida | **Hecho** (13/09) |
 | 2 | Escenas: `Boot` persistente + una escena por pantalla y por nivel | **Hecho** (13/09) |
-| 3 | Herramienta para armar niveles a mano (el nivel es la escena) | Próximo |
-| 4 | Estética nueva: carriles más abajo, más fondo, zombies más grandes | Espera un cuadro de referencia de arte |
+| 3 | Herramienta para armar niveles a mano (el nivel es la escena) | **Hecho** (14/09) |
+| 4 | Estética nueva: carriles más abajo, más fondo, zombies más grandes | Próximo; espera un cuadro de referencia de arte |
 | 5 | Iluminación 2D real con URP | Después del 4; necesita normal maps de arte |
 
 ### Escenas del juego definitivo (`Juego/`)
@@ -62,7 +62,7 @@ Diseño: `docs/superpowers/specs/2026-09-13-escenas-juego-design.md`.
 |---|---|
 | `Boot` | Nunca se descarga. `GameRoot` (flujo + director de escenas), `EventSystem` y el fundido |
 | `MainMenu`, `CharacterSelect`, `Cinematic`, `LevelComplete`, `GameOver`, `Ending` | Pantallas base: reemplazan a la anterior con fundido |
-| `Level_01`, `Level_02` | Niveles. **Hoy son de prueba**: G gana, P pierde, Esc/Start pausa |
+| `Level_01`, `Level_02` | Niveles jugables, armados sobre `Scenes/Templates/NivelBase` (ver "Niveles armados a mano"). F2 gana, F3 pierde (editor), Esc/Start pausa |
 | `Options`, `Pause` | Capas: se cargan encima sin descargar lo de abajo. Con la pausa encima el tiempo se congela |
 
 - `GameFlow` (compartido) decide a qué pantalla se va. `SceneRoutePlanner` (C# plano, con tests)
@@ -82,8 +82,9 @@ Diseño: `docs/superpowers/specs/2026-09-13-escenas-juego-design.md`.
 
 **Cómo agregar cosas:**
 - *Un nivel:* agregar una entrada en `Niveles.asset` con su `sceneName`, y correr
-  `Zombineta > Esqueleto > Construir escenas que falten`: crea la escena de prueba y la registra
-  en Build Settings. Después se reemplaza por el nivel real (sub-proyecto 3).
+  `Zombineta > Esqueleto > Construir escenas que falten`: crea una escena de prueba y la registra
+  en Build Settings. Después se reemplaza por una copia de `Scenes/Templates/NivelBase.unity` con
+  el mismo nombre (guardar encima) y se arma con la paleta.
 - *Una pantalla nueva:* hoy requiere tocar `GameFlow` (el estado), `SceneRoutePlanner` (su escena)
   y la herramienta. Es a propósito: el flujo es la fuente de verdad y tiene tests.
 - *Regenerar el esqueleto:* `Construir escenas que falten` nunca pisa una escena existente.
@@ -98,6 +99,61 @@ desde `Level_02` arranca jugando el nivel 2.
 **Verificado a mano (José, 13/09):** los menús se navegan bien con teclado. **No verificado:**
 joystick. Los textos de los interruptores de Opciones se ven algo borrosos porque el control
 está escalado: es un placeholder para que arte rehaga.
+
+### Niveles armados a mano (`Juego/`)
+
+Diseño: `docs/superpowers/specs/2026-09-13-niveles-a-mano-design.md`.
+
+**La escena es el nivel.** Cada obstáculo, bidón, rampa, barril o zombie de frente es un objeto
+con `LevelItem` bajo `Nivel/Recorrido`. Al dar Play, `LevelScene` junta esos objetos y arma el
+recorrido que usa la simulación: lo que se ve en la escena es lo que se juega. No hay un asset
+de ruta en el medio (`Ruta01`/`Ruta02` quedaron solo como origen de los dos niveles actuales).
+
+- **La X es la distancia** (metros × `worldUnitsPerMeter`) y **la Y es el carril**. El largo
+  del nivel es `goalDistance` en `LevelScene` (pisa el de `GameConfig` solo para ese nivel).
+- **Cómo se ve cada tipo** en el editor sale de `Settings/LevelItemPalette.asset` (sprite, color,
+  escala, orden). Es provisorio: el arte final de objetos va en el sub-proyecto 4.
+- `LevelFlowBridge` une la partida con el flujo: final de cámara → nivel completo / game over,
+  pausa, color del personaje elegido.
+
+**La paleta** (overlay "Nivel Zombineta" de la Scene view; aparece sola en una escena con
+`LevelScene`, fuera de Play):
+- **Colocar:** un botón por tipo; después, click en la escena pone el item en el carril y los
+  metros bajo el mouse. Shift sigue colocando, Esc cancela. "Altura" es para pickups aéreos
+  (se agarran saltando); "Tipo de zombie" usa los nombres de `Zombies.asset`.
+- **Mover:** con la herramienta de mover de Unity. Al soltar, la X queda en la grilla de 1 m y
+  la Y en el carril más cercano. Si en cambio se edita `lane` en el inspector, manda el carril.
+- **Generar / Regenerar:** arma el nivel con `LevelGenerator` usando la semilla y las densidades
+  de `LevelScene > Generator`. **Respeta lo tocado:** solo reemplaza items generados que nadie
+  movió ni editó; lo colocado a mano, lo movido y lo fijado se conserva, y el generador no pone
+  nada encima. Todo se deshace con Ctrl+Z.
+- **Fijar / Desfijar:** para conservar un item generado sin moverlo. Desfijar uno movido lo deja
+  como "generado sin tocar" donde está.
+- **Ir a (m)** mueve la vista. **Probar desde acá** entra en Play con la moto en los metros del
+  centro de la vista y la horda con la ventaja inicial detrás (solo en el editor).
+- **Guías** (gizmos): los tres carriles, regla cada 50 m, largada, refugio, un círculo amarillo
+  sobre lo fijado o tocado, y **en rojo los problemas** que detecta `LevelValidator`: tres
+  carriles tapados a menos de 2 m, algo en el aterrizaje de una rampa (8,5 a 50 m después), dos
+  objetos encimados (mismo carril y altura, a menos de 1 m). El botón "N problemas" lleva al
+  siguiente.
+
+**Estado de los niveles:** `Level_01` (191 items, de `Ruta01`) y `Level_02` (206, de `Ruta02`),
+todos marcados como generados. `Level_01` tiene 4 objetos encimados heredados de la ruta vieja
+(1200, 2400, 2450 y 3500 m); se ven en rojo y se arreglan moviendo uno o regenerando.
+
+**Verificado (14/09):** 166 tests en verde en `Juego/` (141 anteriores, +18 del generador y el
+layout, +7 del validador). En Play desde `Level_01`: la partida corre, un bidón agarrado se apaga en la escena,
+ganar llega a `LevelComplete`, y el recorrido menú → personaje → cinemática → `Level_01` →
+pausa → seguir deja las escenas esperadas. En el editor, por MCP: colocar a mano engancha a
+carril y grilla; mover un generado lo cambia de carril, lo redondea y deja de ser reemplazable;
+regenerar conservó colocado, movido y fijado (189 quitados, 192 nuevos, 0 problemas); probar
+desde 1500 m arrancó la moto en 1500,2 m. **No verificado a mano:** arrastrar items con el mouse
+y colocar con clicks reales (se probó por la API de la herramienta).
+
+**Arreglado en el camino:** si la moto chocaba justo antes de pausar, el fin del congelado del
+impacto le devolvía el tiempo al nivel con la pausa abierta (`CameraFollow.TimeHeld`). Y en el
+prototipo, los barriles nunca explotaban jugando: `RunController` no le pasaba el recorrido a la
+simulación (`Sim.Barrels = Level`).
 
 ---
 
@@ -604,7 +660,20 @@ Estas costaron tiempo real en esta sesión:
 26. **`Juego/` tiene desactivada la recarga de dominio al entrar a Play.** Las variables estáticas
     sobreviven entre sesiones de Play: todo estático se reinicia en
     `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]`
-    (ver `GameRoot` y `Bootstrapper`).
+    (ver `GameRoot` y `Bootstrapper`). Lo mismo con los callbacks: un `EditorApplication.update`
+    registrado desde el MCP sigue vivo después de salir de Play.
+
+27. **Una prueba en Play por MCP no llega a tiempo al primer frame.** Entre `Play` y el primer
+    `RunCommand` pasan segundos: sin input, la horda ya alcanzó a la moto y el nivel terminó. Para
+    probar un nivel, registrar el callback **antes** de entrar en Play: en un mismo `RunCommand`,
+    `EditorApplication.playModeStateChanged` (en `EnteredPlayMode` suma el `update`) y después
+    `EditorApplication.EnterPlaymode()`. Escribir el avance en `SessionState` paso a paso, no
+    todo al final.
+
+28. **Capturar la Scene view con overlays y gizmos:** `Unity_SceneView_Capture2DScene` renderiza
+    sin gizmos. Enfocar la ventana en un comando (`SceneView.lastActiveSceneView.Focus()`) y en
+    el siguiente leer sus píxeles con `InternalEditorUtility.ReadScreenPixel` sobre
+    `position × pixelsPerPoint`. En el mismo comando todavía se lee la pestaña que estaba delante.
 
 ---
 
@@ -665,9 +734,13 @@ Estas costaron tiempo real en esta sesión:
 **13/09:** se cerró la etapa de prototipo (tag `prototipo-v1`) y se hizo el sub-proyecto 1 de
 la sección 0: el repo quedó en `Prototipo/` + `Juego/` con la simulación compartida, 125 tests
 en verde en los dos proyectos, y el prototipo verificado sin referencias rotas. Lo próximo es
-el sub-proyecto 2 (escenas en `Juego/`), que quedó hecho el mismo día. **Lo próximo es el
-sub-proyecto 3: la herramienta para armar niveles a mano.** Lo que sigue abajo es de antes de
-la reestructura.
+el sub-proyecto 2 (escenas en `Juego/`), que quedó hecho el mismo día.
+
+**14/09:** sub-proyecto 3 hecho: niveles jugables armados a mano, con paleta, generador que
+respeta lo tocado y validaciones (sección 0). **Lo próximo es el sub-proyecto 4 (estética),
+que necesita un cuadro de referencia de arte.** Mientras tanto: probar la paleta con el mouse,
+limpiar los 4 encimados de `Level_01` y decidir `goalDistance`. Lo que sigue abajo es de antes
+de la reestructura.
 
 Lo último que se hizo fueron las rampas y el salto (T12). Lo que el usuario ya anunció como
 próximo paso son **las animaciones de spritesheet de la protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
