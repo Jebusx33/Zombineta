@@ -242,6 +242,10 @@ namespace Zombineta.Juego.Levels
                 ? LaneSorting.Order(item.lane, SortSlot.Shadow) + 1
                 : LaneSorting.Order(item.lane, SortSlot.Item);
 
+            // Escala del look del ZombieFront: empareja la resolucion de su hoja, no el tamano del cuerpo,
+            // asi que la sombra (hija del item) la descuenta.
+            float lookScale = 1f;
+
             if (item.kind == LevelEntryKind.ZombieFront)
             {
                 ZombieLook zombieLook = null;
@@ -256,11 +260,17 @@ namespace Zombineta.Juego.Levels
                 {
                     sprite = zombieLook.walk[0];
                     color = Color.white;
+                    if (zombieLook.scale > 0f)
+                        lookScale = zombieLook.scale;
                 }
                 else if (config != null && config.zombies != null)
                 {
                     color = config.zombies.Get(item.variant).tint;
                 }
+
+                // Mismo tamano que en la horda: escala del tipo y del look sobre la de la paleta.
+                float typeScale = config != null && config.zombies != null ? config.zombies.Get(item.variant).scale : 1f;
+                scale = new Vector3(scale.x * typeScale * lookScale, scale.y * typeScale * lookScale, 1f);
             }
 
             if (sr.sprite != sprite) sr.sprite = sprite;
@@ -274,7 +284,7 @@ namespace Zombineta.Juego.Levels
             if (isRamp)
                 RemoveShadow(item);
             else
-                ApplyShadow(item, look);
+                ApplyShadow(item, look, lookScale);
         }
 
         /// <summary>
@@ -291,7 +301,7 @@ namespace Zombineta.Juego.Levels
             return 0;
         }
 
-        GroundShadow ApplyShadow(LevelItem item, LevelItemPalette.Look look)
+        GroundShadow ApplyShadow(LevelItem item, LevelItemPalette.Look look, float lookScale = 1f)
         {
             var t = item.transform.Find(ShadowChildName);
             GroundShadow shadow;
@@ -313,7 +323,10 @@ namespace Zombineta.Juego.Levels
             if (shadow == null)
                 return null;
 
-            shadow.Width = look != null ? look.shadowWidth : 1f;
+            // En el editor GroundShadow no pasa por Awake al abrir la escena: sin esto su alfa de
+            // referencia queda en 1 y Place guarda la sombra opaca en la escena.
+            shadow.SetColor(shadowColor);
+            shadow.Width = (look != null ? look.shadowWidth : 1f) / (lookScale > 0f ? lookScale : 1f);
 
             var layout = Layout;
             float groundY = layout.LaneY(item.lane);

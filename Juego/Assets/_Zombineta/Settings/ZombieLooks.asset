@@ -51,7 +51,7 @@ MonoBehaviour:
       death:
       - {fileID: 1189096593, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
       walkFps: 3
-      scale: 1
+      scale: 2.5
       poseBob: 1
     - name: Vagabundo
       walk:
@@ -62,7 +62,7 @@ MonoBehaviour:
       death:
       - {fileID: -905661905, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
       walkFps: 3
-      scale: 1
+      scale: 2.5
       poseBob: 1
   - typeName: Corredor
     looks:
@@ -75,7 +75,7 @@ MonoBehaviour:
       death:
       - {fileID: 621030070, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
       walkFps: 4
-      scale: 1
+      scale: 2.5
       poseBob: 1
     - name: Adolescente
       walk:
@@ -86,7 +86,7 @@ MonoBehaviour:
       death:
       - {fileID: -22387386, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
       walkFps: 4
-      scale: 1
+      scale: 2.5
       poseBob: 1
   - typeName: Pesado
     looks:

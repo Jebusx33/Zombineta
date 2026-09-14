@@ -29,6 +29,12 @@ namespace Zombineta.Fx
         [SerializeField] LineRenderer tracer;
         [SerializeField] float tracerSeconds = 0.05f;
 
+        [Tooltip("Altura sobre el piso del carril de donde sale la traza (la mano de la jugadora), en unidades de mundo.")]
+        [SerializeField] float tracerHeight = 0.55f;
+
+        [Tooltip("Altura sobre el piso del carril donde nacen las particulas (el cuerpo del zombie), en unidades de mundo.")]
+        [SerializeField] float effectHeight = 0.5f;
+
         [Header("Manchas")]
         [SerializeField] SpriteRenderer decalPrefab;
         [SerializeField] int decalCount = 30;
@@ -98,7 +104,7 @@ namespace Zombineta.Fx
 
         void Play(HordeEvent e, bool gore)
         {
-            Vector3 at = new Vector3(run.ToWorldX(e.X), run.LaneToWorldY(e.Lane) + 0.5f, 0f);
+            Vector3 at = new Vector3(run.ToWorldX(e.X), run.LaneToWorldY(e.Lane) + effectHeight, 0f);
 
             switch (e.Kind)
             {
@@ -131,7 +137,7 @@ namespace Zombineta.Fx
         {
             if (tracer == null)
                 return;
-            float y = run.LaneToWorldY(e.Lane) + 0.55f;
+            float y = run.LaneToWorldY(e.Lane) + tracerHeight;
             tracer.SetPosition(0, new Vector3(run.ToWorldX(e.FromX), y, 0f));
             tracer.SetPosition(1, new Vector3(run.ToWorldX(e.X), y, 0f));
             tracer.sortingOrder = LaneSorting.Order(e.Lane, SortSlot.Effect);
@@ -170,7 +176,8 @@ namespace Zombineta.Fx
             var d = decals[nextDecal];
             nextDecal = (nextDecal + 1) % decals.Length;
             d.transform.position = at;
-            d.transform.localScale = Vector3.one * Random.Range(0.7f, 1.3f);
+            // La escala del prefab es la base (acompana el tamano de los personajes); el azar solo la varia.
+            d.transform.localScale = decalPrefab.transform.localScale * Random.Range(0.7f, 1.3f);
             d.color = bloodColor;
             // Mancha en el asfalto: se pisa, como la rampa.
             d.sortingOrder = LaneSorting.Order(lane, SortSlot.Shadow) + 1;

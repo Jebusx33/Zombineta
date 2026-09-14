@@ -15,6 +15,9 @@ namespace Zombineta.Enemies
         [SerializeField] RunController run;
         [SerializeField] Transform zombiePrefab;
 
+        [Tooltip("Escala base de todos los zombies, antes de la del tipo (Zombies.asset) y la del look.")]
+        [SerializeField] float bodyScale = 1f;
+
         [Header("Looks")]
         [Tooltip("Aspectos por tipo de zombie. Sin asignar (o el tipo sin looks): sigue el Animator del prefab.")]
         [SerializeField] ZombieLookSet looks;
@@ -24,6 +27,10 @@ namespace Zombineta.Enemies
         [Header("Sombra")]
         [SerializeField] Sprite shadowSprite;
         [SerializeField] Color shadowColor = new Color(0f, 0f, 0f, 0.45f);
+
+        [Tooltip("Ancho de la sombra relativo a sombra.png, con la escala base y la del tipo pero sin la " +
+                 "del look (esa solo empareja la resolucion de cada hoja, no el tamano del cuerpo).")]
+        [SerializeField] float shadowWidth = 1f;
 
         [Tooltip("Metros que la horda sigue avanzando por encima de la moto al atraparla.")]
         [SerializeField] float overrunMeters = 12f;
@@ -104,6 +111,27 @@ namespace Zombineta.Enemies
                 lastLookIndex[i] = -1;
                 shadows[i] = CreateShadow(bodies[i]);
             }
+        }
+
+        /// <summary>
+        /// Balanceo del sprite (en unidades locales del cuerpo y grados). Si el SpriteRenderer vive en
+        /// un hijo, se mueve el hijo; si vive en la raiz del prefab (como Zombie.prefab), se suma a la
+        /// pose del cuerpo ya ubicada: tocar su localPosition lo mandaria al origen del mundo.
+        /// </summary>
+        void SetSpriteOffset(int i, float bobY, float bobDegrees)
+        {
+            var t = sprites[i].transform;
+            if (t != bodies[i])
+            {
+                t.localPosition = new Vector3(0f, bobY, 0f);
+                t.localRotation = Quaternion.Euler(0f, 0f, bobDegrees);
+                return;
+            }
+
+            if (bobY == 0f && bobDegrees == 0f)
+                return;
+            t.position += Vector3.up * (bobY * t.localScale.y);
+            t.rotation *= Quaternion.Euler(0f, 0f, bobDegrees);
         }
 
         GroundShadow CreateShadow(Transform parent)
@@ -200,7 +228,7 @@ namespace Zombineta.Enemies
                 float worldX = run.ToWorldX(u.X + overrun);
                 float groundY = run.LaneToWorldY(u.Lane);
                 bodies[i].position = new Vector3(worldX, groundY, 0f);
-                bodies[i].localScale = Vector3.one * type.scale * (hasLook ? currentLook[i].scale : 1f);
+                bodies[i].localScale = Vector3.one * bodyScale * type.scale * (hasLook ? currentLook[i].scale : 1f);
 
                 bool lit = lightOn && u.Alive &&
                            u.X < state.PlayerX && u.X > state.PlayerX - headlightRangeMeters;
@@ -222,20 +250,17 @@ namespace Zombineta.Enemies
                         if (look.poseBob)
                         {
                             float t = Time.time * 9f + i;
-                            sprites[i].transform.localPosition = new Vector3(0f, Mathf.Sin(t) * 0.04f, 0f);
-                            sprites[i].transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(t) * 3f);
+                            SetSpriteOffset(i, Mathf.Sin(t) * 0.04f, Mathf.Sin(t) * 3f);
                         }
                         else
                         {
-                            sprites[i].transform.localPosition = Vector3.zero;
-                            sprites[i].transform.localRotation = Quaternion.identity;
+                            SetSpriteOffset(i, 0f, 0f);
                         }
                     }
                     else
                     {
                         sprites[i].color = lit ? type.tint * litTint : type.tint;
-                        sprites[i].transform.localPosition = Vector3.zero;
-                        sprites[i].transform.localRotation = Quaternion.identity;
+                        SetSpriteOffset(i, 0f, 0f);
                     }
 
                     // De pie tapa lo de arriba; caido queda como cualquier cosa tirada en el piso.
@@ -244,6 +269,9 @@ namespace Zombineta.Enemies
 
                 if (shadows[i] != null)
                 {
+                    // La sombra es hija del cuerpo: descontar la escala del look para que no crezca con ella.
+                    float lookScale = hasLook && currentLook[i].scale > 0f ? currentLook[i].scale : 1f;
+                    shadows[i].Width = shadowWidth / lookScale;
                     shadows[i].Visible = u.Alive;
                     if (u.Alive)
                         shadows[i].Place(worldX, groundY, 0f, u.Lane);
