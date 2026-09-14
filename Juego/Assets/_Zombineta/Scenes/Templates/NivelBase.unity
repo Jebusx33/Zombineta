@@ -1860,6 +1860,8 @@ MonoBehaviour:
     barrelEvery: 200
     frontZombieEvery: 150
     heavyFrontZombieChance: 0.3
+  looks: {fileID: 11400000, guid: 526ce8163bc04b242a6e808590ae5fbe, type: 2}
+  lookSeed: 12345
   shadowSprite: {fileID: 21300000, guid: 8c1bb8c15f5a47141b8d044f53482a77, type: 3}
   shadowColor: {r: 0, g: 0, b: 0, a: 0.45}
 --- !u!4 &1171654547
@@ -4976,6 +4978,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta::Zombineta.Enemies.HordeView
   run: {fileID: 1170739137}
   zombiePrefab: {fileID: 1454352294408542829, guid: d61e7fa8059f7eb4086d3014940acb31, type: 3}
+  looks: {fileID: 11400000, guid: 526ce8163bc04b242a6e808590ae5fbe, type: 2}
+  lookSeed: 12345
   shadowSprite: {fileID: 21300000, guid: 8c1bb8c15f5a47141b8d044f53482a77, type: 3}
   shadowColor: {r: 0, g: 0, b: 0, a: 0.45}
   overrunMeters: 12

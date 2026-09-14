@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Zombineta.Core;
+using Zombineta.Enemies;
 using Zombineta.Fx;
 using Zombineta.Level;
 
@@ -28,6 +29,12 @@ namespace Zombineta.Juego.Levels
         [SerializeField] Transform itemsRoot;
 
         [SerializeField] LevelGeneratorSettings generator = new LevelGeneratorSettings();
+
+        [Header("Looks")]
+        [Tooltip("Aspectos por tipo de zombie, para la cara del ZombieFront. Sin asignar: tinte de Zombies.asset.")]
+        [SerializeField] ZombieLookSet looks;
+        [Tooltip("Semilla del sorteo de look por item: mismo seed, misma pinta.")]
+        [SerializeField] int lookSeed = 12345;
 
         [Header("Sombra")]
         [SerializeField] Sprite shadowSprite;
@@ -219,8 +226,26 @@ namespace Zombineta.Juego.Levels
                 ? LaneSorting.Order(item.lane, SortSlot.Shadow) + 1
                 : LaneSorting.Order(item.lane, SortSlot.Item);
 
-            if (item.kind == LevelEntryKind.ZombieFront && config != null && config.zombies != null)
-                color = config.zombies.Get(item.variant).tint;
+            if (item.kind == LevelEntryKind.ZombieFront)
+            {
+                ZombieLook zombieLook = null;
+                if (looks != null)
+                {
+                    var pool = looks.For(item.variant);
+                    int idx = ZombieLookPicker.Pick(lookSeed, IndexOf(item), 0, pool.Count, -1);
+                    zombieLook = idx >= 0 ? pool[idx] : null;
+                }
+
+                if (zombieLook != null && zombieLook.walk != null && zombieLook.walk.Length > 0)
+                {
+                    sprite = zombieLook.walk[0];
+                    color = Color.white;
+                }
+                else if (config != null && config.zombies != null)
+                {
+                    color = config.zombies.Get(item.variant).tint;
+                }
+            }
 
             if (sr.sprite != sprite) sr.sprite = sprite;
             if (sr.color != color) sr.color = color;
@@ -234,6 +259,19 @@ namespace Zombineta.Juego.Levels
                 RemoveShadow(item);
             else
                 ApplyShadow(item, look);
+        }
+
+        /// <summary>
+        /// Posicion del item dentro de Items: la usa el sorteo de look para que cada ZombieFront
+        /// tenga siempre la misma pinta, sin importar cuantas veces se llame a ApplyVisual.
+        /// </summary>
+        int IndexOf(LevelItem item)
+        {
+            var items = Items;
+            for (int i = 0; i < items.Length; i++)
+                if (items[i] == item)
+                    return i;
+            return 0;
         }
 
         GroundShadow ApplyShadow(LevelItem item, LevelItemPalette.Look look)

@@ -1,0 +1,120 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7885e8c70484ae8479508ab02136078a, type: 3}
+  m_Name: ZombieLooks
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Enemies.ZombieLookSet
+  types:
+  - typeName: Comun
+    looks:
+    - name: Anciano
+      walk:
+      - {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: 897350515, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: 1898066692, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: -201195150, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: 154658168, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: -303853421, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: 1876501390, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: -861536275, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      hit:
+      - {fileID: -2003523475, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: -1320659363, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      death:
+      - {fileID: -2134828444, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: -1095760480, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: 222747527, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: -1437558599, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: 1396073738, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: 558737612, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: -1329896288, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: -669270168, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: 224744712, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      - {fileID: -361131184, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+      walkFps: 10
+      scale: 1
+      poseBob: 0
+    - name: Oficinista
+      walk:
+      - {fileID: -2052041959634115987, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      - {fileID: 156106066, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      hit:
+      - {fileID: -68548076307621248, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      death:
+      - {fileID: 1189096593, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      walkFps: 3
+      scale: 1
+      poseBob: 1
+    - name: Vagabundo
+      walk:
+      - {fileID: -1509474166, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      - {fileID: -1357537627, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      hit:
+      - {fileID: 740060391, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      death:
+      - {fileID: -905661905, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      walkFps: 3
+      scale: 1
+      poseBob: 1
+  - typeName: Corredor
+    looks:
+    - name: Mujer
+      walk:
+      - {fileID: -1313851544, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      - {fileID: 1351302838, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      hit:
+      - {fileID: 49550376, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      death:
+      - {fileID: 621030070, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      walkFps: 4
+      scale: 1
+      poseBob: 1
+    - name: Adolescente
+      walk:
+      - {fileID: -1056860233, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      - {fileID: 1844032440, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      hit:
+      - {fileID: -906973639, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      death:
+      - {fileID: -22387386, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
+      walkFps: 4
+      scale: 1
+      poseBob: 1
+  - typeName: Pesado
+    looks:
+    - name: HombreRojo
+      walk:
+      - {fileID: -1044169842, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: 340477357, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: -1147293635, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: 33368682, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: -42400273, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: -1641712959, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: -738474450, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: 1750168632, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      hit:
+      - {fileID: -322968013, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: 2072575870, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: 714613423, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: 109419519, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: 1745668998, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      death:
+      - {fileID: 290736592, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: 1545483376, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: -2058518468, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: -1381962430, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: -1928780625, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: -654719440, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: -380865831, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      - {fileID: -1225829869, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+      walkFps: 10
+      scale: 1
+      poseBob: 0
