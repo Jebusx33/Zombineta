@@ -1,0 +1,229 @@
+fileFormatVersion: 2
+guid: 71b10401ce01ba644a41e8d5a8cbd151
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3105088370053549829
+    second: zombie_hombre_0
+  - first:
+      213: 6125503467078558939
+    second: zombie_hombre_1
+  - first:
+      213: -1297168968779133267
+    second: zombie_hombre_2
+  - first:
+      213: -5952761392280852169
+    second: zombie_hombre_3
+  - first:
+      213: 2846580774002347778
+    second: zombie_hombre_4
+  - first:
+      213: 1586624952479474062
+    second: zombie_hombre_5
+  - first:
+      213: 4980265562280646972
+    second: zombie_hombre_6
+  - first:
+      213: 2805289661095926647
+    second: zombie_hombre_7
+  - first:
+      213: 2799613981820803193
+    second: zombie_hombre_8
+  - first:
+      213: 4447886041668926929
+    second: zombie_hombre_9
+  - first:
+      213: 3028071865383584296
+    second: zombie_hombre_10
+  - first:
+      213: 6982149631269617658
+    second: zombie_hombre_11
+  - first:
+      213: 2413842176198238360
+    second: zombie_hombre_12
+  - first:
+      213: -135364664647773535
+    second: zombie_hombre_13
+  - first:
+      213: 4879942408337649507
+    second: zombie_hombre_14
+  - first:
+      213: 3584084599051039889
+    second: zombie_hombre_15
+  - first:
+      213: -5210060801514978864
+    second: zombie_hombre_16
+  - first:
+      213: 3581226406535983153
+    second: zombie_hombre_17
+  - first:
+      213: 7121927380046829162
+    second: zombie_hombre_18
+  - first:
+      213: 5064384283419504292
+    second: zombie_hombre_19
+  - first:
+      213: -727177643114045340
+    second: zombie_hombre_20
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      zombie_hombre_0: -3105088370053549829
+      zombie_hombre_1: 6125503467078558939
+      zombie_hombre_10: 3028071865383584296
+      zombie_hombre_11: 6982149631269617658
+      zombie_hombre_12: 2413842176198238360
+      zombie_hombre_13: -135364664647773535
+      zombie_hombre_14: 4879942408337649507
+      zombie_hombre_15: 3584084599051039889
+      zombie_hombre_16: -5210060801514978864
+      zombie_hombre_17: 3581226406535983153
+      zombie_hombre_18: 7121927380046829162
+      zombie_hombre_19: 5064384283419504292
+      zombie_hombre_2: -1297168968779133267
+      zombie_hombre_20: -727177643114045340
+      zombie_hombre_3: -5952761392280852169
+      zombie_hombre_4: 2846580774002347778
+      zombie_hombre_5: 1586624952479474062
+      zombie_hombre_6: 4980265562280646972
+      zombie_hombre_7: 2805289661095926647
+      zombie_hombre_8: 2799613981820803193
+      zombie_hombre_9: 4447886041668926929
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

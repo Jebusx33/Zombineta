@@ -1,0 +1,241 @@
+fileFormatVersion: 2
+guid: 36f83b63ef50721468a2e7f9e822ba23
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2434362385469241951
+    second: zombies_poses_0
+  - first:
+      213: -8208298247468941292
+    second: zombies_poses_1
+  - first:
+      213: 4556839972060182735
+    second: zombies_poses_2
+  - first:
+      213: -8911078435270343415
+    second: zombies_poses_3
+  - first:
+      213: -8446214529024015161
+    second: zombies_poses_4
+  - first:
+      213: 1789710843146683015
+    second: zombies_poses_5
+  - first:
+      213: -6683869118748295318
+    second: zombies_poses_6
+  - first:
+      213: -374996004516285543
+    second: zombies_poses_7
+  - first:
+      213: -6000527279383215042
+    second: zombies_poses_8
+  - first:
+      213: 4992423141487302770
+    second: zombies_poses_9
+  - first:
+      213: 886197947731222013
+    second: zombies_poses_10
+  - first:
+      213: 7610918985132330059
+    second: zombies_poses_11
+  - first:
+      213: -208522997161456581
+    second: zombies_poses_12
+  - first:
+      213: -3043834494932771967
+    second: zombies_poses_13
+  - first:
+      213: -429427487566850356
+    second: zombies_poses_14
+  - first:
+      213: -3934972035662735481
+    second: zombies_poses_15
+  - first:
+      213: 6791494969734573920
+    second: zombies_poses_16
+  - first:
+      213: 7195773976787570531
+    second: zombies_poses_17
+  - first:
+      213: 8970160698522711854
+    second: zombies_poses_18
+  - first:
+      213: -7298326014550504907
+    second: zombies_poses_19
+  - first:
+      213: -565775923181918670
+    second: zombies_poses_20
+  - first:
+      213: 7079291807647375936
+    second: zombies_poses_21
+  - first:
+      213: -3505513569170929408
+    second: zombies_poses_22
+  - first:
+      213: -7886748660131444619
+    second: zombies_poses_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      zombies_poses_0: -2434362385469241951
+      zombies_poses_1: -8208298247468941292
+      zombies_poses_10: 886197947731222013
+      zombies_poses_11: 7610918985132330059
+      zombies_poses_12: -208522997161456581
+      zombies_poses_13: -3043834494932771967
+      zombies_poses_14: -429427487566850356
+      zombies_poses_15: -3934972035662735481
+      zombies_poses_16: 6791494969734573920
+      zombies_poses_17: 7195773976787570531
+      zombies_poses_18: 8970160698522711854
+      zombies_poses_19: -7298326014550504907
+      zombies_poses_2: 4556839972060182735
+      zombies_poses_20: -565775923181918670
+      zombies_poses_21: 7079291807647375936
+      zombies_poses_22: -3505513569170929408
+      zombies_poses_23: -7886748660131444619
+      zombies_poses_3: -8911078435270343415
+      zombies_poses_4: -8446214529024015161
+      zombies_poses_5: 1789710843146683015
+      zombies_poses_6: -6683869118748295318
+      zombies_poses_7: -374996004516285543
+      zombies_poses_8: -6000527279383215042
+      zombies_poses_9: 4992423141487302770
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
