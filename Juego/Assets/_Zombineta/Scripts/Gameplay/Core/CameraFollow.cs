@@ -26,6 +26,12 @@ namespace Zombineta.Core
 
         public CameraDirector Director => director;
 
+        /// <summary>
+        /// Hay una pausa encima del nivel: el tiempo lo tiene congelado otro. Al terminar el
+        /// congelado de un impacto, el tiempo se queda en 0 en vez de volver a 1.
+        /// </summary>
+        public bool TimeHeld { get; set; }
+
         void Awake()
         {
             cam = GetComponent<Camera>();
@@ -69,7 +75,7 @@ namespace Zombineta.Core
             {
                 hitstopLeft -= dt;
                 if (hitstopLeft <= 0f && !inFinale)
-                    Time.timeScale = 1f;
+                    Time.timeScale = TimeHeld ? 0f : 1f;
             }
 
             var input = BuildInput();

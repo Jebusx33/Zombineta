@@ -59,8 +59,12 @@ namespace Zombineta.Juego.Levels
             }
 
             var flow = GameRoot.Flow;
-            // Con la pausa u opciones encima, la partida espera.
-            if (flow != null && flow.Current != GameScreen.Playing)
+            // Con la pausa u opciones encima, la partida espera y el congelado de un choque
+            // no le devuelve el tiempo.
+            bool held = flow != null && flow.Current != GameScreen.Playing;
+            if (cameraRig != null)
+                cameraRig.TimeHeld = held;
+            if (held)
                 return;
 
             var state = run.Sim.State;
@@ -91,8 +95,8 @@ namespace Zombineta.Juego.Levels
 
             var root = GameRoot.Instance;
             if (flow != null && root != null && !root.Busy && Time.frameCount != root.LastChangeFrame &&
-                pauseAction != null && pauseAction.action.WasPressedThisFrame())
-                flow.Pause();
+                pauseAction != null && pauseAction.action.WasPressedThisFrame() && flow.Pause() && cameraRig != null)
+                cameraRig.TimeHeld = true;
         }
 
         void BeginFinale(bool won)
