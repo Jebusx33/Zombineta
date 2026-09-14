@@ -36,43 +36,43 @@ namespace Zombineta.Juego.EditorTools.Framing
                 return false;
             }
 
-            var rt = RenderTexture.GetTemporary(Width, Height, 24, RenderTextureFormat.ARGB32);
-            var previousTarget = cam.targetTexture;
-            var previousActive = RenderTexture.active;
             var shot = new Texture2D(Width, Height, TextureFormat.RGBA32, false) { hideFlags = HideFlags.DontSave };
-
             try
             {
-                cam.targetTexture = rt;
-                cam.Render();
-                RenderTexture.active = rt;
-                shot.ReadPixels(new Rect(0, 0, Width, Height), 0, 0);
-                shot.Apply(false);
-            }
-            finally
-            {
-                cam.targetTexture = previousTarget;
-                RenderTexture.active = previousActive;
-                RenderTexture.ReleaseTemporary(rt);
-            }
+                var rt = RenderTexture.GetTemporary(Width, Height, 24, RenderTextureFormat.ARGB32);
+                var previousTarget = cam.targetTexture;
+                var previousActive = RenderTexture.active;
+                try
+                {
+                    cam.targetTexture = rt;
+                    cam.Render();
+                    RenderTexture.active = rt;
+                    shot.ReadPixels(new Rect(0, 0, Width, Height), 0, 0);
+                    shot.Apply(false);
+                }
+                finally
+                {
+                    cam.targetTexture = previousTarget;
+                    RenderTexture.active = previousActive;
+                    RenderTexture.ReleaseTemporary(rt);
+                }
 
-            float alpha = Mathf.Clamp01(guideOpacity);
-            var guide = alpha > 0f ? FramingGuide.LoadTexture(FramingGuide.ImagePath) : null;
-            if (guide != null)
-                Blend(shot, guide, alpha);
+                float alpha = Mathf.Clamp01(guideOpacity);
+                var guide = alpha > 0f ? FramingGuide.LoadTexture(FramingGuide.ImagePath) : null;
+                if (guide != null)
+                    Blend(shot, guide, alpha);
 
-            try
-            {
                 var dir = Path.GetDirectoryName(outPath);
                 if (!string.IsNullOrEmpty(dir))
                     Directory.CreateDirectory(dir);
                 File.WriteAllBytes(outPath, shot.EncodeToPNG());
+                return true;
             }
             finally
             {
+                // Pase lo que pase (render, mezcla o disco), la textura temporal no queda viva.
                 Object.DestroyImmediate(shot);
             }
-            return true;
         }
 
         /// <summary>Mezcla la guia (estirada a la foto, como el overlay a pantalla completa) con alfa fijo.</summary>

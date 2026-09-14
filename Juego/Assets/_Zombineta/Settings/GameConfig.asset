@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goalDistance: 4000
   startingGap: 40
-  laneSpacing: 1
+  laneSpacing: 0.99
   laneChangeDuration: 0.15
   normalSpeed: 12
   turboSpeedMultiplier: 1.8

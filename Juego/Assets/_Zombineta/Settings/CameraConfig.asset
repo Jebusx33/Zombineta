@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: CameraConfig
   m_EditorClassIdentifier: Zombineta::Zombineta.CameraFx.CameraConfig
   baseSize: 6.3
-  viewBottomY: -3.37
+  viewBottomY: -3.3575
   lookAhead: 9.299999
   followTime: 0.12
-  wideSize: 6.93
+  wideSize: 6.3
   tightSize: 5.67
   safeGap: 45
   dangerGap: 8

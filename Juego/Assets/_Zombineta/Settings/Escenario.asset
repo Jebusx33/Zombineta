@@ -35,7 +35,7 @@ MonoBehaviour:
     enabled: 1
     parallax: 0.6
     sortingOrder: -50
-    baselineY: 1.76
+    baselineY: 1.742
     height: 6.2
     gapChance: 0.22
     gapMin: 0.3
@@ -91,7 +91,7 @@ MonoBehaviour:
     enabled: 1
     parallax: 1
     sortingOrder: -45
-    baselineY: 1.755
+    baselineY: 1.742
     height: 0.45
     gapChance: 0
     gapMin: 2
@@ -109,8 +109,8 @@ MonoBehaviour:
     enabled: 1
     parallax: 1
     sortingOrder: -20
-    baselineY: -3.005
-    height: 4.8727
+    baselineY: -2.9745
+    height: 4.824
     gapChance: 0
     gapMin: 2
     gapMax: 6
@@ -128,7 +128,7 @@ MonoBehaviour:
     parallax: 1
     sortingOrder: -21
     baselineY: -9
-    height: 6
+    height: 6.0255
     gapChance: 0
     gapMin: 2
     gapMax: 6

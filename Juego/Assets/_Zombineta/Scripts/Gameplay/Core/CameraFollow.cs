@@ -26,8 +26,12 @@ namespace Zombineta.Core
         [Tooltip("Carril (en coordenadas de carril) cuya linea queda fija. -0,5 = el borde de abajo del carril 0.")]
         [SerializeField] float anchorLane = -0.5f;
 
-        [Tooltip("Tamano ortografico en el que la linea anclada cae donde la pone viewBottomY: el encuadre normal.")]
-        [SerializeField] float anchorReferenceSize = 6.3f;
+        [Tooltip("Segundos reales en que el anclaje se apaga al entrar en atrapada o victoria (y vuelve al salir), " +
+                 "para que la camara no pegue un salto.")]
+        [SerializeField] float anchorBlendSeconds = 0.25f;
+
+        // Peso del anclaje: 1 en juego normal, 0 en los finales (ahi manda el director, como siempre).
+        float anchorWeight = 1f;
 
         Camera cam;
         CameraDirector director;
@@ -94,10 +98,11 @@ namespace Zombineta.Core
             {
                 director.Snap(input);
                 needsSnap = false;
+                anchorWeight = 1f;   // la largada salta al encuadre normal: el anclaje tambien
             }
 
             var pose = director.Step(input, dt);
-            pose.Y += AnchorOffset(pose.Size);
+            pose.Y += AnchorOffset(pose.Size, dt);
             transform.position = new Vector3(pose.X, pose.Y, transform.position.z);
             transform.rotation = Quaternion.Euler(0f, 0f, pose.Roll);
             cam.orthographicSize = pose.Size;
@@ -105,18 +110,26 @@ namespace Zombineta.Core
 
         /// <summary>
         /// Corrimiento vertical que deja la linea anclada a la misma altura de pantalla con cualquier
-        /// zoom. Con anchorReferenceSize no corre nada (el encuadre calibrado); al abrirse baja la
-        /// camara y al cerrarse la sube. En el plano de atrapada el director centra la moto: no se toca.
+        /// zoom. Con baseSize (el encuadre calibrado contra la referencia) no corre nada; al abrirse baja
+        /// la camara y al cerrarse la sube. En atrapada y victoria el director manda como siempre (centra
+        /// la moto / fija el borde de abajo): el peso baja a 0 en anchorBlendSeconds, sin salto.
         /// </summary>
-        float AnchorOffset(float size)
+        float AnchorOffset(float size, float dt)
         {
-            if (!anchorLaneLine || anchorReferenceSize <= 0f)
+            float referenceSize = config.baseSize;
+            if (!anchorLaneLine || referenceSize <= 0f)
                 return 0f;
-            if (director.EffectsEnabled && director.Mode == CameraMode.Catch)
+
+            bool finale = director.EffectsEnabled && director.Mode != CameraMode.Follow;
+            float target = finale ? 0f : 1f;
+            anchorWeight = anchorBlendSeconds > 0f
+                ? Mathf.MoveTowards(anchorWeight, target, dt / anchorBlendSeconds)
+                : target;
+            if (anchorWeight <= 0f)
                 return 0f;
 
             float lineY = run.LaneToWorldY(anchorLane);
-            return (lineY - config.viewBottomY) * (1f - size / anchorReferenceSize);
+            return anchorWeight * (lineY - config.viewBottomY) * (1f - size / referenceSize);
         }
 
         CameraInput BuildInput()

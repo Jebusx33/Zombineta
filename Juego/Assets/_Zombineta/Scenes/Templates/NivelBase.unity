@@ -734,7 +734,7 @@ MonoBehaviour:
   config: {fileID: 11400000, guid: 03c43a20e4de76d49aaca0fca8defd2f, type: 2}
   anchorLaneLine: 1
   anchorLane: -0.5
-  anchorReferenceSize: 6.3
+  anchorBlendSeconds: 0.25
 --- !u!20 &542714085
 Camera:
   m_ObjectHideFlags: 0

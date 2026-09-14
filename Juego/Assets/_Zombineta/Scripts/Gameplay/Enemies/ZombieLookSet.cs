@@ -16,6 +16,11 @@ namespace Zombineta.Enemies
         public Sprite[] hit;
         public Sprite[] death;
         public float walkFps = 8f;
+
+        [Tooltip("Compensa la resolucion de la hoja de origen, no el tamano de juego: las hojas completas " +
+                 "(Anciano, HombreRojo) van en 1 y las de Zombies_poses en 2,5 porque sus figuras salen " +
+                 "~2,3 veces mas chicas. El tamano en pantalla lo dan HordeView.bodyScale y la escala del tipo. " +
+                 "La sombra del zombie descuenta este valor.")]
         public float scale = 1f;
         public bool poseBob;
     }
