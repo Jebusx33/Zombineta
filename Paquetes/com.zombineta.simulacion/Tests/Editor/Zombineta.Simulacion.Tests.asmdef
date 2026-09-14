@@ -1,8 +1,8 @@
 {
-    "name": "Zombineta.Tests.EditMode",
+    "name": "Zombineta.Simulacion.Tests",
     "rootNamespace": "Zombineta.Tests",
     "references": [
-        "Zombineta",
+        "Zombineta.Simulacion",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

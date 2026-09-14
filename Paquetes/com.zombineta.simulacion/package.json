@@ -1,0 +1,7 @@
+{
+  "name": "com.zombineta.simulacion",
+  "version": "0.1.0",
+  "displayName": "Zombineta - Simulacion",
+  "description": "Reglas del juego en C# plano: moto, horda, salto, recorrido, flujo de pantallas y lenguaje de camara. Sin MonoBehaviour: se prueba sin escena.",
+  "unity": "6000.6"
+}
