@@ -209,8 +209,11 @@ namespace Zombineta.Juego.EditorTools.Framing
             return go;
         }
 
-        /// <summary>Carga la textura desde disco (esta fuera de Assets/, no es un asset importado) y la cachea por ruta.</summary>
-        static Texture2D LoadTexture(string path)
+        /// <summary>
+        /// Carga la textura desde disco (esta fuera de Assets/, no es un asset importado) y la cachea
+        /// por ruta. Tambien la usa FramingCapture: la textura es del cache, no destruirla.
+        /// </summary>
+        internal static Texture2D LoadTexture(string path)
         {
             if (string.IsNullOrEmpty(path) || !File.Exists(path))
             {

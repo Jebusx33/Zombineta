@@ -18,6 +18,17 @@ namespace Zombineta.Core
         [SerializeField] RunController run;
         [SerializeField] CameraConfig config;
 
+        [Header("Anclaje al piso")]
+        [Tooltip("El director fija el borde de abajo de la pantalla; con la calle en el 85 % de la altura, " +
+                 "el zoom movia las lineas de carril. Esto fija en pantalla una linea de carril en su lugar.")]
+        [SerializeField] bool anchorLaneLine = true;
+
+        [Tooltip("Carril (en coordenadas de carril) cuya linea queda fija. -0,5 = el borde de abajo del carril 0.")]
+        [SerializeField] float anchorLane = -0.5f;
+
+        [Tooltip("Tamano ortografico en el que la linea anclada cae donde la pone viewBottomY: el encuadre normal.")]
+        [SerializeField] float anchorReferenceSize = 6.3f;
+
         Camera cam;
         CameraDirector director;
         bool needsSnap = true;
@@ -86,9 +97,26 @@ namespace Zombineta.Core
             }
 
             var pose = director.Step(input, dt);
+            pose.Y += AnchorOffset(pose.Size);
             transform.position = new Vector3(pose.X, pose.Y, transform.position.z);
             transform.rotation = Quaternion.Euler(0f, 0f, pose.Roll);
             cam.orthographicSize = pose.Size;
+        }
+
+        /// <summary>
+        /// Corrimiento vertical que deja la linea anclada a la misma altura de pantalla con cualquier
+        /// zoom. Con anchorReferenceSize no corre nada (el encuadre calibrado); al abrirse baja la
+        /// camara y al cerrarse la sube. En el plano de atrapada el director centra la moto: no se toca.
+        /// </summary>
+        float AnchorOffset(float size)
+        {
+            if (!anchorLaneLine || anchorReferenceSize <= 0f)
+                return 0f;
+            if (director.EffectsEnabled && director.Mode == CameraMode.Catch)
+                return 0f;
+
+            float lineY = run.LaneToWorldY(anchorLane);
+            return (lineY - config.viewBottomY) * (1f - size / anchorReferenceSize);
         }
 
         CameraInput BuildInput()

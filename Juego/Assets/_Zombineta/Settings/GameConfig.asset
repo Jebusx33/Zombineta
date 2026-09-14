@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goalDistance: 4000
   startingGap: 40
-  laneSpacing: 1.6
+  laneSpacing: 1
   laneChangeDuration: 0.15
   normalSpeed: 12
   turboSpeedMultiplier: 1.8
@@ -64,4 +64,4 @@ MonoBehaviour:
   aerialPickupTolerance: 1.5
   worldUnitsPerMeter: 0.75
   cameraTrailMeters: 18
-  jumpHeightToWorld: 1.125
+  jumpHeightToWorld: 2.1375
