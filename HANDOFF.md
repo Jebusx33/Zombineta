@@ -1,7 +1,7 @@
 # Zombineta — Handoff
 
-Última actualización: 13 de septiembre de 2026, al cerrar la etapa de prototipo y separar el
-repo en `Prototipo/` y `Juego/`.
+Última actualización: 13 de septiembre de 2026, tras el sub-proyecto 2: el juego definitivo
+ya corre en escenas separadas (esqueleto navegable).
 
 **Estado:** el prototipo se recorre de punta a punta con el flujo del GDD (menú, opciones,
 personaje, cinemática, dos niveles, victoria, game over, final), sobre un escenario de
@@ -47,10 +47,57 @@ Cinco sub-proyectos, cada uno con su diseño, plan e implementación:
 | # | Sub-proyecto | Estado |
 |---|---|---|
 | 1 | Reestructura: `Prototipo/`, `Juego/` y simulación compartida | **Hecho** (13/09) |
-| 2 | Escenas: `Boot` persistente + una escena por pantalla y por nivel | Próximo |
-| 3 | Herramienta para armar niveles a mano (el nivel es la escena) | Después del 2 |
+| 2 | Escenas: `Boot` persistente + una escena por pantalla y por nivel | **Hecho** (13/09) |
+| 3 | Herramienta para armar niveles a mano (el nivel es la escena) | Próximo |
 | 4 | Estética nueva: carriles más abajo, más fondo, zombies más grandes | Espera un cuadro de referencia de arte |
 | 5 | Iluminación 2D real con URP | Después del 4; necesita normal maps de arte |
+
+### Escenas del juego definitivo (`Juego/`)
+
+Diseño: `docs/superpowers/specs/2026-09-13-escenas-juego-design.md`.
+
+**Cómo está armado:**
+
+| Escena | Qué es |
+|---|---|
+| `Boot` | Nunca se descarga. `GameRoot` (flujo + director de escenas), `EventSystem` y el fundido |
+| `MainMenu`, `CharacterSelect`, `Cinematic`, `LevelComplete`, `GameOver`, `Ending` | Pantallas base: reemplazan a la anterior con fundido |
+| `Level_01`, `Level_02` | Niveles. **Hoy son de prueba**: G gana, P pierde, Esc/Start pausa |
+| `Options`, `Pause` | Capas: se cargan encima sin descargar lo de abajo. Con la pausa encima el tiempo se congela |
+
+- `GameFlow` (compartido) decide a qué pantalla se va. `SceneRoutePlanner` (C# plano, con tests)
+  traduce cada cambio en escenas a cargar y descargar. `GameRoot` ejecuta ese plan.
+- **Play desde cualquier escena.** Abrís `Level_02` (o `MainMenu`, o la que sea) y le das Play:
+  `Boot` se carga sola al lado y el flujo arranca en esa pantalla. No hace falta recorrer el juego
+  para probar una pantalla.
+- **La cinemática es una sola escena** que muestra el título del nivel y sus viñetas. El
+  contenido está en `Assets/_Zombineta/Settings/Niveles.asset`: por cada nivel, `displayName`
+  (título), `sceneName` (su escena) y `comicPanels` (imagen y segundos de cada viñeta). Hoy las
+  viñetas son placeholders generados en `Art/Placeholder/`.
+- **Los menús son botones de uGUI.** Teclado y joystick navegan con el `EventSystem`; cada
+  pantalla elige su primer botón en `firstSelected`. Para cambiar un menú alcanza con mover o
+  agregar botones en la escena y enganchar su `OnClick`.
+- **Input:** la acción `Pause` (Esc, Start) está en el mapa `Player` de
+  `Assets/Settings/InputSystem_Actions`. La cinemática usa `UI/Submit` y `UI/Cancel`.
+
+**Cómo agregar cosas:**
+- *Un nivel:* agregar una entrada en `Niveles.asset` con su `sceneName`, y correr
+  `Zombineta > Esqueleto > Construir escenas que falten`: crea la escena de prueba y la registra
+  en Build Settings. Después se reemplaza por el nivel real (sub-proyecto 3).
+- *Una pantalla nueva:* hoy requiere tocar `GameFlow` (el estado), `SceneRoutePlanner` (su escena)
+  y la herramienta. Es a propósito: el flujo es la fuente de verdad y tiene tests.
+- *Regenerar el esqueleto:* `Construir escenas que falten` nunca pisa una escena existente.
+  `Reconstruir todas` sí (pide confirmación): no usarla una vez que arte tocó las pantallas.
+
+**Verificado:** 141 tests en verde en `Juego/` (125 de la simulación + 6 del flujo nuevo + 10 del
+planificador). En Play, un recorrido de 18 pasos (menú, personaje, cinemática completa, nivel 1,
+pausa, opciones sobre la pausa, volver, seguir, ganar, nivel 2, perder, reintentar, reintentar
+desde la pausa, final y menú) dejó en cada paso exactamente las escenas esperadas. Y Play directo
+desde `Level_02` arranca jugando el nivel 2.
+
+**No verificado:** la navegación con teclado y joystick de verdad (el recorrido se hizo llamando
+al flujo). Los textos de los interruptores de Opciones se ven algo borrosos porque el control
+está escalado: es un placeholder para que arte rehaga.
 
 ---
 
@@ -542,6 +589,23 @@ Estas costaron tiempo real en esta sesión:
     `delayCall` puede tardar más de un minuto en ejecutarse. Antes de mover carpetas, confirmar
     que no queda ningún `Unity.exe` del proyecto (los `AssetImportWorker` también cuentan).
 
+
+23. **En una herramienta de editor, `EditorSceneManager.NewScene` descarga los assets que nadie
+    usa.** Si la herramienta cargó un asset (un `LevelSequence`, una `InputActionReference`) antes
+    de crear la escena y lo asigna después, la referencia queda vacía sin error. Cargar cada asset
+    justo antes de asignarlo. Las referencias a objetos de la propia escena no tienen el problema.
+
+24. **En 6000.6, `Scene.handle` ya no se convierte a `int`** (error CS0619, obsoleto). Para
+    comparar escenas usar `handle.ToString()` o `GetRawData()`.
+
+25. **Un `Text` de uGUI cuya línea no entra en el alto de su rect no muestra nada.** Pasa con los
+    controles de `DefaultControls` (su label mide 20 px): poner `verticalOverflow = Overflow`.
+
+26. **`Juego/` tiene desactivada la recarga de dominio al entrar a Play.** Las variables estáticas
+    sobreviven entre sesiones de Play: todo estático se reinicia en
+    `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]`
+    (ver `GameRoot` y `Bootstrapper`).
+
 ---
 
 ## 6. Qué está verificado y qué no
@@ -601,7 +665,9 @@ Estas costaron tiempo real en esta sesión:
 **13/09:** se cerró la etapa de prototipo (tag `prototipo-v1`) y se hizo el sub-proyecto 1 de
 la sección 0: el repo quedó en `Prototipo/` + `Juego/` con la simulación compartida, 125 tests
 en verde en los dos proyectos, y el prototipo verificado sin referencias rotas. Lo próximo es
-el sub-proyecto 2 (escenas en `Juego/`). Lo que sigue abajo es de antes de la reestructura.
+el sub-proyecto 2 (escenas en `Juego/`), que quedó hecho el mismo día. **Lo próximo es el
+sub-proyecto 3: la herramienta para armar niveles a mano.** Lo que sigue abajo es de antes de
+la reestructura.
 
 Lo último que se hizo fueron las rampas y el salto (T12). Lo que el usuario ya anunció como
 próximo paso son **las animaciones de spritesheet de la protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
