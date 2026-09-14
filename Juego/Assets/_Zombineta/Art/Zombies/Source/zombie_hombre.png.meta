@@ -106,12 +106,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 413
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -134,7 +134,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -147,7 +147,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: Standalone
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -160,7 +160,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: WebGL
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -173,7 +173,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: WindowsStoreApps
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -186,7 +186,469 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: zombie_hombre_0_0
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 1036
+        width: 276
+        height: 450
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afe42f2e8b5d56c48b57e5ca7b9dedb0
+      internalID: -1044169842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_0_1
+      rect:
+        serializedVersion: 2
+        x: 371
+        y: 1041
+        width: 278
+        height: 445
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f0195d1fbcfdec48aea557483760bbe
+      internalID: 340477357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_0_2
+      rect:
+        serializedVersion: 2
+        x: 730
+        y: 1035
+        width: 233
+        height: 447
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e214854a65d0f34d93cf731be207aeb
+      internalID: -1147293635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_0_3
+      rect:
+        serializedVersion: 2
+        x: 1061
+        y: 1035
+        width: 242
+        height: 453
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4cd9fb1d2166f60499527ebcde5faa14
+      internalID: 33368682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_0_4
+      rect:
+        serializedVersion: 2
+        x: 1399
+        y: 1036
+        width: 278
+        height: 449
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef90de549e7d4e44b851b57c7bd9a175
+      internalID: -42400273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_0_5
+      rect:
+        serializedVersion: 2
+        x: 1753
+        y: 1034
+        width: 249
+        height: 454
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44059069cf1558e4a9f64c71a2081b34
+      internalID: -1641712959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_0_6
+      rect:
+        serializedVersion: 2
+        x: 2117
+        y: 1040
+        width: 221
+        height: 442
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49e6404cbba4c8646a23e14321f7cf08
+      internalID: -738474450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_0_7
+      rect:
+        serializedVersion: 2
+        x: 2439
+        y: 1039
+        width: 235
+        height: 444
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 331bbcc9e85ce2e45ba70912dab4322a
+      internalID: 1750168632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_1_0
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 521
+        width: 219
+        height: 451
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3823d1a4cd650594b948f48bc8fba0a2
+      internalID: -322968013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_1_1
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 522
+        width: 225
+        height: 439
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e8a6135b7dd77141ba63143a52bd840
+      internalID: 2072575870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_1_2
+      rect:
+        serializedVersion: 2
+        x: 723
+        y: 521
+        width: 269
+        height: 442
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de3bcc3aee0540047b419081c3067e3c
+      internalID: 714613423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_1_3
+      rect:
+        serializedVersion: 2
+        x: 1073
+        y: 519
+        width: 254
+        height: 443
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6f334ad37d8f4f40970402dbf078d41
+      internalID: 109419519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_1_4
+      rect:
+        serializedVersion: 2
+        x: 1455
+        y: 524
+        width: 237
+        height: 433
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 913d67de4d8991d46a685e56b8ecbf7e
+      internalID: 1745668998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_2_0
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 15
+        width: 225
+        height: 466
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c67c77541fd90794a8217a1487e86b12
+      internalID: 290736592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_2_1
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 18
+        width: 182
+        height: 419
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9e74bfab82541a4a92ad0ba5f5f36eb
+      internalID: 1545483376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_2_2
+      rect:
+        serializedVersion: 2
+        x: 731
+        y: 22
+        width: 247
+        height: 340
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32715e9aa5647954cac4f155d1951f5e
+      internalID: -2058518468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_2_3
+      rect:
+        serializedVersion: 2
+        x: 1058
+        y: 21
+        width: 289
+        height: 258
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96e992d755aa6cc43ab095b4fbc7711a
+      internalID: -1381962430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_2_4
+      rect:
+        serializedVersion: 2
+        x: 1404
+        y: 10
+        width: 300
+        height: 160
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b201a5181e4d19149a2e362bdb79edf1
+      internalID: -1928780625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_2_5
+      rect:
+        serializedVersion: 2
+        x: 1740
+        y: 18
+        width: 314
+        height: 144
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2386348b502dc843929f52e2bc3fb87
+      internalID: -654719440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_2_6
+      rect:
+        serializedVersion: 2
+        x: 2075
+        y: 22
+        width: 314
+        height: 116
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ed271d44c2e63247aa103b461022a75
+      internalID: -380865831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombie_hombre_2_7
+      rect:
+        serializedVersion: 2
+        x: 2416
+        y: 24
+        width: 329
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23320545a6e146e44bb9f32b61b9d820
+      internalID: -1225829869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -201,27 +663,27 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      zombie_hombre_0: -3105088370053549829
-      zombie_hombre_1: 6125503467078558939
-      zombie_hombre_10: 3028071865383584296
-      zombie_hombre_11: 6982149631269617658
-      zombie_hombre_12: 2413842176198238360
-      zombie_hombre_13: -135364664647773535
-      zombie_hombre_14: 4879942408337649507
-      zombie_hombre_15: 3584084599051039889
-      zombie_hombre_16: -5210060801514978864
-      zombie_hombre_17: 3581226406535983153
-      zombie_hombre_18: 7121927380046829162
-      zombie_hombre_19: 5064384283419504292
-      zombie_hombre_2: -1297168968779133267
-      zombie_hombre_20: -727177643114045340
-      zombie_hombre_3: -5952761392280852169
-      zombie_hombre_4: 2846580774002347778
-      zombie_hombre_5: 1586624952479474062
-      zombie_hombre_6: 4980265562280646972
-      zombie_hombre_7: 2805289661095926647
-      zombie_hombre_8: 2799613981820803193
-      zombie_hombre_9: 4447886041668926929
+      zombie_hombre_0_0: -1044169842
+      zombie_hombre_0_1: 340477357
+      zombie_hombre_0_2: -1147293635
+      zombie_hombre_0_3: 33368682
+      zombie_hombre_0_4: -42400273
+      zombie_hombre_0_5: -1641712959
+      zombie_hombre_0_6: -738474450
+      zombie_hombre_0_7: 1750168632
+      zombie_hombre_1_0: -322968013
+      zombie_hombre_1_1: 2072575870
+      zombie_hombre_1_2: 714613423
+      zombie_hombre_1_3: 109419519
+      zombie_hombre_1_4: 1745668998
+      zombie_hombre_2_0: 290736592
+      zombie_hombre_2_1: 1545483376
+      zombie_hombre_2_2: -2058518468
+      zombie_hombre_2_3: -1381962430
+      zombie_hombre_2_4: -1928780625
+      zombie_hombre_2_5: -654719440
+      zombie_hombre_2_6: -380865831
+      zombie_hombre_2_7: -1225829869
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -74,6 +74,60 @@ TextureImporter:
   - first:
       213: -7886748660131444619
     second: zombies_poses_23
+  - first:
+      213: -2052041959634115987
+    second: zombies_poses_0_0
+  - first:
+      213: -68548076307621248
+    second: zombies_poses_0_1
+  - first:
+      213: 26148300392989000
+    second: zombies_poses_0_2
+  - first:
+      213: -8625586945512461742
+    second: zombies_poses_0_3
+  - first:
+      213: 6151940728860039218
+    second: zombies_poses_0_4
+  - first:
+      213: 7705894969090646025
+    second: zombies_poses_0_5
+  - first:
+      213: 3447216993513304291
+    second: zombies_poses_0_6
+  - first:
+      213: -1031888506816023097
+    second: zombies_poses_0_7
+  - first:
+      213: -2715903009239234480
+    second: zombies_poses_0_8
+  - first:
+      213: -5737539863571660089
+    second: zombies_poses_0_9
+  - first:
+      213: -3546216094904467502
+    second: zombies_poses_0_10
+  - first:
+      213: -3931526608370425094
+    second: zombies_poses_0_11
+  - first:
+      213: -7613381699297075372
+    second: zombies_poses_0_12
+  - first:
+      213: -465378172647937045
+    second: zombies_poses_0_13
+  - first:
+      213: 9051092391749885378
+    second: zombies_poses_0_14
+  - first:
+      213: 3799250966605193415
+    second: zombies_poses_0_15
+  - first:
+      213: 2166121447355597975
+    second: zombies_poses_0_16
+  - first:
+      213: -6612287878667374324
+    second: zombies_poses_0_17
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -115,12 +169,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 413
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -143,7 +197,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -156,7 +210,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: Standalone
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -169,7 +223,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: WebGL
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -182,7 +236,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
     buildTarget: WindowsStoreApps
-    maxTextureSize: 2048
+    maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -195,7 +249,535 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: zombies_poses_0_0
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 1161
+        width: 135
+        height: 228
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36ae3ba203100c04b9ef6181719e087c
+      internalID: -2052041959634115987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_0_1
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 1160
+        width: 147
+        height: 230
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a35ec8223153f804186ea3f687746059
+      internalID: -68548076307621248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_0_2
+      rect:
+        serializedVersion: 2
+        x: 573
+        y: 1162
+        width: 133
+        height: 208
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12294d10b6cec904f8b375a4247c24ac
+      internalID: 156106066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_0_3
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 1161
+        width: 318
+        height: 69
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73c7fa3f094c68c4a9bd55a4056c715a
+      internalID: 1189096593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_1_0
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 918
+        width: 137
+        height: 222
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4289e0917f2bb724f8be97c6e6e833a6
+      internalID: 963896419
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_1_1
+      rect:
+        serializedVersion: 2
+        x: 337
+        y: 918
+        width: 161
+        height: 228
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa52d5ca4d8d8e74192deb260d6984b5
+      internalID: -485006054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_1_2
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 920
+        width: 147
+        height: 198
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d5357e7c6784054389017125b18b548
+      internalID: -1722762255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_1_3
+      rect:
+        serializedVersion: 2
+        x: 775
+        y: 918
+        width: 288
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f5fca514cb1cb841bd2b28961b1af8f
+      internalID: 1903105564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_2_0
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 682
+        width: 120
+        height: 226
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 844d307e04c11294fbdcd1d8a5a1dff3
+      internalID: -1313851544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_2_1
+      rect:
+        serializedVersion: 2
+        x: 337
+        y: 682
+        width: 141
+        height: 227
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d299ee03bd82ef440b9549dfab33729a
+      internalID: 49550376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_2_2
+      rect:
+        serializedVersion: 2
+        x: 569
+        y: 681
+        width: 119
+        height: 206
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 036c661e100277a4a935ec68d48bf813
+      internalID: 1351302838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_2_3
+      rect:
+        serializedVersion: 2
+        x: 770
+        y: 687
+        width: 304
+        height: 59
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f34b3ca8c1b26e744a7a2a43d24af74c
+      internalID: 621030070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_3_0
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 430
+        width: 192
+        height: 243
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4eb0b9bf05dee74d801f6bae7158115
+      internalID: -922169595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_3_1
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 431
+        width: 174
+        height: 244
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 593b87b3edd58e048bd0125fe318184a
+      internalID: -1462393936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_3_2
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 434
+        width: 162
+        height: 215
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2eff462844fc9904ab6dfe5ecca1dd8f
+      internalID: -1354073312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_3_3
+      rect:
+        serializedVersion: 2
+        x: 751
+        y: 437
+        width: 353
+        height: 71
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95087788b6d4b3e4f9470db394d68a8f
+      internalID: 1185015740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_4_0
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 231
+        width: 157
+        height: 193
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f6482732b065f44693a3a5f8b7ddb19
+      internalID: -1056860233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_4_1
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 230
+        width: 142
+        height: 182
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 70a9ec7c96a89ac479f3b3a647525df8
+      internalID: -906973639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_4_2
+      rect:
+        serializedVersion: 2
+        x: 535
+        y: 229
+        width: 156
+        height: 187
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45f4da4828244324eaf7133cd923f814
+      internalID: 1844032440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_4_3
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 224
+        width: 309
+        height: 82
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba6e508e704e4194ca94e23521fe257f
+      internalID: -22387386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_5_0
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 8
+        width: 175
+        height: 211
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d98bc2f77757cb469b3b8cc85bcf92c
+      internalID: -1509474166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_5_1
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 8
+        width: 159
+        height: 211
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37d11328126568f4c907ab99131d609a
+      internalID: 740060391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_5_2
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 8
+        width: 149
+        height: 197
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f00bd9ac46e0b2f44b420776e3381c94
+      internalID: -1357537627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zombies_poses_5_3
+      rect:
+        serializedVersion: 2
+        x: 776
+        y: 18
+        width: 317
+        height: 88
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d352e297d7615e46be495dc1f3d322d
+      internalID: -905661905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -210,30 +792,30 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      zombies_poses_0: -2434362385469241951
-      zombies_poses_1: -8208298247468941292
-      zombies_poses_10: 886197947731222013
-      zombies_poses_11: 7610918985132330059
-      zombies_poses_12: -208522997161456581
-      zombies_poses_13: -3043834494932771967
-      zombies_poses_14: -429427487566850356
-      zombies_poses_15: -3934972035662735481
-      zombies_poses_16: 6791494969734573920
-      zombies_poses_17: 7195773976787570531
-      zombies_poses_18: 8970160698522711854
-      zombies_poses_19: -7298326014550504907
-      zombies_poses_2: 4556839972060182735
-      zombies_poses_20: -565775923181918670
-      zombies_poses_21: 7079291807647375936
-      zombies_poses_22: -3505513569170929408
-      zombies_poses_23: -7886748660131444619
-      zombies_poses_3: -8911078435270343415
-      zombies_poses_4: -8446214529024015161
-      zombies_poses_5: 1789710843146683015
-      zombies_poses_6: -6683869118748295318
-      zombies_poses_7: -374996004516285543
-      zombies_poses_8: -6000527279383215042
-      zombies_poses_9: 4992423141487302770
+      zombies_poses_0_0: -2052041959634115987
+      zombies_poses_0_1: -68548076307621248
+      zombies_poses_0_2: 156106066
+      zombies_poses_0_3: 1189096593
+      zombies_poses_1_0: 963896419
+      zombies_poses_1_1: -485006054
+      zombies_poses_1_2: -1722762255
+      zombies_poses_1_3: 1903105564
+      zombies_poses_2_0: -1313851544
+      zombies_poses_2_1: 49550376
+      zombies_poses_2_2: 1351302838
+      zombies_poses_2_3: 621030070
+      zombies_poses_3_0: -922169595
+      zombies_poses_3_1: -1462393936
+      zombies_poses_3_2: -1354073312
+      zombies_poses_3_3: 1185015740
+      zombies_poses_4_0: -1056860233
+      zombies_poses_4_1: -906973639
+      zombies_poses_4_2: 1844032440
+      zombies_poses_4_3: -22387386
+      zombies_poses_5_0: -1509474166
+      zombies_poses_5_1: 740060391
+      zombies_poses_5_2: -1357537627
+      zombies_poses_5_3: -905661905
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
