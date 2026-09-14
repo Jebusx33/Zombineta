@@ -45,5 +45,34 @@ namespace Zombineta.Core
                 PlayerPrefs.Save();
             }
         }
+
+        const string VolumeKey = "zombineta.volume";
+        static float? volume;
+
+        /// <summary>Volumen general, de 0 a 1.</summary>
+        public static float Volume
+        {
+            get => volume ??= PlayerPrefs.GetFloat(VolumeKey, 0.8f);
+            set
+            {
+                volume = Mathf.Clamp01(value);
+                PlayerPrefs.SetFloat(VolumeKey, volume.Value);
+                PlayerPrefs.Save();
+            }
+        }
+
+        const string FullscreenKey = "zombineta.fullscreen";
+        static bool? fullscreen;
+
+        public static bool Fullscreen
+        {
+            get => fullscreen ??= PlayerPrefs.GetInt(FullscreenKey, 1) != 0;
+            set
+            {
+                fullscreen = value;
+                PlayerPrefs.SetInt(FullscreenKey, value ? 1 : 0);
+                PlayerPrefs.Save();
+            }
+        }
     }
 }

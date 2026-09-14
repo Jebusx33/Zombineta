@@ -5,6 +5,17 @@ using Zombineta.Level;
 
 namespace Zombineta.Flow
 {
+    /// <summary>Una vineta de la cinematica: la imagen y cuanto dura en pantalla.</summary>
+    [Serializable]
+    public sealed class ComicPanel
+    {
+        public Sprite image;
+
+        [Min(0.5f)]
+        [Tooltip("Segundos en pantalla si nadie la pasa antes.")]
+        public float seconds = 3f;
+    }
+
     /// <summary>Un nivel de la campana: su recorrido y lo que cuenta la cinematica de entrada.</summary>
     [Serializable]
     public sealed class LevelInfo
@@ -16,6 +27,12 @@ namespace Zombineta.Flow
         public string[] introLines = new string[0];
 
         public LevelDefinition route;
+
+        [Tooltip("Escena del nivel en el juego definitivo. Tiene que estar en Build Settings.")]
+        public string sceneName = "";
+
+        [Tooltip("Vinetas de la cinematica de entrada, en orden. El titulo es displayName.")]
+        public List<ComicPanel> comicPanels = new List<ComicPanel>();
     }
 
     /// <summary>

@@ -1,0 +1,18 @@
+{
+    "name": "Zombineta.Juego",
+    "rootNamespace": "Zombineta.Juego",
+    "references": [
+        "Zombineta.Simulacion",
+        "Unity.InputSystem",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

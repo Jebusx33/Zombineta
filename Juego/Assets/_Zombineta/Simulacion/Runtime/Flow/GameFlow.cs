@@ -2,7 +2,7 @@ using System;
 
 namespace Zombineta.Flow
 {
-    /// <summary>Las pantallas del juego, segun el diagrama de flujo del GDD.</summary>
+    /// <summary>Las pantallas del juego, segun el diagrama de flujo del GDD (mas la pausa).</summary>
     public enum GameScreen
     {
         MainMenu,
@@ -13,15 +13,16 @@ namespace Zombineta.Flow
         LevelComplete,
         GameOver,
         Ending,
+        Paused,
     }
 
     /// <summary>
-    /// El flujo de pantallas como maquina de estados. C# plano: no sabe de paneles, ni de
+    /// El flujo de pantallas como maquina de estados. C# plano: no sabe de escenas, ni de
     /// teclas, ni de Unity. La vista le avisa que paso ("apretaron Jugar", "se gano el
     /// nivel") y el flujo decide a donde se va.
     ///
-    ///   Menu <-> Opciones
-    ///   Menu -> Personaje -> Cinematica -> Nivel
+    ///   Menu <-> Opciones <-> Pausa
+    ///   Menu -> Personaje -> Cinematica -> Nivel <-> Pausa
     ///   Nivel gano   -> Nivel completo -> Cinematica del siguiente (o Final si era el ultimo)
     ///   Nivel perdio -> Game Over -> Reintentar (mismo nivel) o Menu
     ///
@@ -31,6 +32,7 @@ namespace Zombineta.Flow
     public sealed class GameFlow
     {
         readonly int levelCount;
+        GameScreen optionsReturn = GameScreen.MainMenu;
 
         public GameFlow(int levelCount)
         {
@@ -46,6 +48,13 @@ namespace Zombineta.Flow
 
         public int CharacterIndex { get; private set; }
 
+        /// <summary>
+        /// Sube cada vez que un nivel arranca de cero: al terminar la cinematica o al
+        /// reintentar. Volver de la pausa no lo cambia, asi quien carga escenas sabe si tiene
+        /// que recargar el nivel o solo sacar la pausa.
+        /// </summary>
+        public int Attempt { get; private set; }
+
         public int LevelCount => levelCount;
 
         public bool IsLastLevel => LevelIndex >= levelCount - 1;
@@ -57,12 +66,21 @@ namespace Zombineta.Flow
 
         public bool Play() => Go(GameScreen.MainMenu, GameScreen.CharacterSelect);
 
-        public bool OpenOptions() => Go(GameScreen.MainMenu, GameScreen.Options);
+        /// <summary>Opciones se abre desde el menu o desde la pausa, y vuelve a donde se abrio.</summary>
+        public bool OpenOptions()
+        {
+            if (Current != GameScreen.MainMenu && Current != GameScreen.Paused)
+                return false;
+            optionsReturn = Current;
+            return Switch(GameScreen.Options);
+        }
 
-        /// <summary>Volver: desde Opciones o desde la seleccion de personaje, al menu.</summary>
+        /// <summary>Volver: desde Opciones a donde se abrio; desde el personaje, al menu.</summary>
         public bool Back()
         {
-            if (Current == GameScreen.Options || Current == GameScreen.CharacterSelect)
+            if (Current == GameScreen.Options)
+                return Switch(optionsReturn);
+            if (Current == GameScreen.CharacterSelect)
                 return Switch(GameScreen.MainMenu);
             return false;
         }
@@ -80,11 +98,21 @@ namespace Zombineta.Flow
             return Switch(GameScreen.Cinematic);
         }
 
-        public bool CinematicFinished() => Go(GameScreen.Cinematic, GameScreen.Playing);
+        public bool CinematicFinished()
+        {
+            if (Current != GameScreen.Cinematic)
+                return false;
+            Attempt++;
+            return Switch(GameScreen.Playing);
+        }
 
         public bool LevelWon() => Go(GameScreen.Playing, GameScreen.LevelComplete);
 
         public bool LevelLost() => Go(GameScreen.Playing, GameScreen.GameOver);
+
+        public bool Pause() => Go(GameScreen.Playing, GameScreen.Paused);
+
+        public bool Resume() => Go(GameScreen.Paused, GameScreen.Playing);
 
         /// <summary>Despues de ganar: la cinematica del siguiente nivel, o el final.</summary>
         public bool Continue()
@@ -100,16 +128,35 @@ namespace Zombineta.Flow
         }
 
         /// <summary>
-        /// Reintentar va directo al nivel, sin repetir la cinematica: despues de morir
-        /// nadie quiere volver a ver la introduccion.
+        /// Reintentar arranca el nivel de cero, desde el Game Over o desde la pausa, sin
+        /// repetir la cinematica: despues de morir nadie quiere volver a ver la introduccion.
         /// </summary>
-        public bool Retry() => Go(GameScreen.GameOver, GameScreen.Playing);
+        public bool Retry()
+        {
+            if (Current != GameScreen.GameOver && Current != GameScreen.Paused)
+                return false;
+            Attempt++;
+            return Switch(GameScreen.Playing);
+        }
 
         public bool ToMainMenu()
         {
-            if (Current == GameScreen.GameOver || Current == GameScreen.Ending)
+            if (Current == GameScreen.GameOver || Current == GameScreen.Ending || Current == GameScreen.Paused)
                 return Switch(GameScreen.MainMenu);
             return false;
+        }
+
+        /// <summary>
+        /// Pone el flujo en una pantalla sin pasar por las anteriores y sin avisar. Solo para
+        /// arrancar en Play desde cualquier escena en el editor: esa escena ya esta cargada.
+        /// </summary>
+        public void JumpTo(GameScreen screen, int levelIndex = 0)
+        {
+            LevelIndex = Math.Max(0, Math.Min(levelIndex, levelCount - 1));
+            if (screen == GameScreen.Playing)
+                Attempt++;
+            optionsReturn = GameScreen.MainMenu;
+            Current = screen;
         }
 
         // --- Interno ---------------------------------------------------------

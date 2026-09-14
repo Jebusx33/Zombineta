@@ -171,5 +171,91 @@ namespace Zombineta.Tests
         {
             Assert.Throws<System.ArgumentException>(() => new GameFlow(0));
         }
+
+        // --- Pausa y opciones con retorno -------------------------------------------
+
+        [Test]
+        public void PauseAndResume_OnlyInsideALevel()
+        {
+            var f = new GameFlow(2);
+            Assert.IsFalse(f.Pause(), "en el menu no hay nada que pausar");
+
+            f = InLevel(levels: 2, level: 0);
+            Assert.IsTrue(f.Pause());
+            Assert.AreEqual(GameScreen.Paused, f.Current);
+            Assert.IsTrue(f.Resume());
+            Assert.AreEqual(GameScreen.Playing, f.Current);
+        }
+
+        [Test]
+        public void OptionsOpenedFromPause_GoBackToPause()
+        {
+            var f = InLevel(levels: 2, level: 0);
+            f.Pause();
+
+            Assert.IsTrue(f.OpenOptions());
+            Assert.AreEqual(GameScreen.Options, f.Current);
+            Assert.IsTrue(f.Back());
+            Assert.AreEqual(GameScreen.Paused, f.Current);
+        }
+
+        [Test]
+        public void OptionsOpenedFromTheMenu_StillGoBackToTheMenu_AfterAPause()
+        {
+            var f = InLevel(levels: 2, level: 0);
+            f.Pause();
+            f.OpenOptions();
+            f.Back();
+            f.ToMainMenu();
+
+            f.OpenOptions();
+            f.Back();
+            Assert.AreEqual(GameScreen.MainMenu, f.Current, "el retorno no queda pegado en la pausa");
+        }
+
+        [Test]
+        public void Attempt_GrowsWhenALevelStartsFresh_NotWhenResuming()
+        {
+            var f = InLevel(levels: 2, level: 0);
+            int a = f.Attempt;
+
+            f.Pause();
+            f.Resume();
+            Assert.AreEqual(a, f.Attempt, "seguir no es empezar de nuevo");
+
+            f.Pause();
+            Assert.IsTrue(f.Retry(), "desde la pausa se puede reintentar");
+            Assert.AreEqual(GameScreen.Playing, f.Current);
+            Assert.AreEqual(a + 1, f.Attempt);
+
+            f.LevelLost();
+            f.Retry();
+            Assert.AreEqual(a + 2, f.Attempt);
+        }
+
+        [Test]
+        public void FromPause_YouCanQuitToTheMenu()
+        {
+            var f = InLevel(levels: 2, level: 0);
+            f.Pause();
+
+            Assert.IsTrue(f.ToMainMenu());
+            Assert.AreEqual(GameScreen.MainMenu, f.Current);
+        }
+
+        [Test]
+        public void JumpTo_PlacesTheFlowWithoutRaisingChanged()
+        {
+            var f = new GameFlow(3);
+            int changes = 0;
+            f.Changed += (a, b) => changes++;
+
+            f.JumpTo(GameScreen.Playing, 2);
+
+            Assert.AreEqual(GameScreen.Playing, f.Current);
+            Assert.AreEqual(2, f.LevelIndex);
+            Assert.AreEqual(0, changes);
+            Assert.IsTrue(f.Pause(), "desde ahi el flujo sigue normal");
+        }
     }
 }
