@@ -65,6 +65,18 @@ El juego contrasta la alta tensión de una persecución constante con un tono li
 
 ---
 
+## 🗂️ Estructura del repositorio
+
+| Carpeta | Qué es |
+| :--- | :--- |
+| `Prototipo/` | Proyecto de Unity del **prototipo** (entregable de E2). Congelado: solo arreglos para los playtests. Estado de cierre en el tag `prototipo-v1`. |
+| `Juego/` | Proyecto de Unity del **juego definitivo**, en construcción. |
+| `Juego/Assets/_Zombineta/Simulacion/` | Las reglas del juego en C# plano, con sus tests. Las usan **los dos proyectos**: el prototipo la importa como paquete local. |
+| `docs/` | Diseños y planes de cada etapa. |
+| `HANDOFF.md` | Estado técnico detallado para retomar el desarrollo. |
+
+---
+
 ## ⚙️ Configuración Técnica
 
 | Componente | Detalle |
@@ -115,7 +127,9 @@ Los modelos base generados (bloqueos geométricos y texturas iniciales) están o
 
 ## ▶️ Ejecución
 
-1. Abrir el proyecto en **Unity 6**.
-2. Asegurar que los bancos de FMOD estén construidos y vinculados.
-3. Cargar la escena principal desde la carpeta `/Scenes`.
-4. Presionar *Play* en el Editor.
+1. Instalar **Unity 6000.6.0f1** (la misma versión para todo el equipo).
+2. Abrir desde Unity Hub la carpeta `Prototipo/` (para jugar el prototipo) o `Juego/` (el definitivo). **No** la raíz del repo.
+3. Prototipo: cargar `Assets/_Zombineta/Scenes/Prototipo.unity` y presionar *Play*.
+4. Juego: cargar `Assets/_Zombineta/Scenes/Boot.unity`.
+
+> Conviene clonar el repo en una ruta corta (por ejemplo `D:\Zombineta`): algunos paquetes de Unity tienen archivos con rutas muy largas y Windows no admite más de 260 caracteres.

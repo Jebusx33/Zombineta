@@ -362,7 +362,7 @@
       "url": "https://packages.unity.com"
     },
     "com.zombineta.simulacion": {
-      "version": "file:../../Paquetes/com.zombineta.simulacion",
+      "version": "file:../../Juego/Assets/_Zombineta/Simulacion",
       "depth": 0,
       "source": "local",
       "dependencies": {}

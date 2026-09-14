@@ -70,3 +70,11 @@ Los namespaces no cambian. Queda en el prototipo todo MonoBehaviour: `RunControl
 - **El MCP puede pedir aprobar de nuevo la conexión** al abrir el proyecto desde otra ruta
   (Project Settings > AI > Unity MCP). Es un clic del usuario.
 - **Ramas del equipo:** después del movimiento conviene recrearlas desde `master`.
+
+## Cambio durante la implementación
+
+La simulación **no quedó en `Paquetes/`** sino en `Juego/Assets/_Zombineta/Simulacion/`. Con el
+paquete afuera de `Assets/`, el `RunCommand` del MCP no podía referenciar sus tipos (solo compila
+contra asmdefs dentro de `Assets/`), y así no se puede verificar nada en Play desde el MCP. Adentro
+de `Juego/Assets` el proyecto activo tiene acceso completo; el prototipo la importa como paquete
+local desde esa carpeta y pierde ese acceso, lo que no importa porque está congelado.

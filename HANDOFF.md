@@ -1,6 +1,7 @@
 # Zombineta — Handoff
 
-Última actualización: 11 de septiembre de 2026, tras convertir la horda en individuos con tipos, disparo con traza, muertes y partículas.
+Última actualización: 13 de septiembre de 2026, al cerrar la etapa de prototipo y separar el
+repo en `Prototipo/` y `Juego/`.
 
 **Estado:** el prototipo se recorre de punta a punta con el flujo del GDD (menú, opciones,
 personaje, cinemática, dos niveles, victoria, game over, final), sobre un escenario de
@@ -11,6 +12,45 @@ con tipos. 125 tests EditMode en verde.
 **Ojo:** con el balance vigente la meta **no se alcanza jugando** (ver sección 4). Para
 recorrer el flujo completo existen F2 (ganar) y F3 (perder), solo en editor y builds de
 desarrollo.
+
+---
+
+## 0. Estructura del repo (desde el 13/09)
+
+```
+Zombineta/
+  Prototipo/                          proyecto Unity del prototipo (congelado para E2)
+  Juego/                              proyecto Unity del juego definitivo (en construcción)
+    Assets/_Zombineta/Simulacion/     la simulación + sus 125 tests, compartida
+  docs/superpowers/specs|plans/       diseño y plan de cada etapa
+```
+
+- **El prototipo está congelado** como entregable de E2 (9/10): solo arreglos de bugs y de
+  balance para los playtests. El estado al cerrar la etapa es el tag **`prototipo-v1`**.
+- **La simulación vive dentro de `Juego/`** y el prototipo la importa como paquete local
+  (`Prototipo/Packages/manifest.json`: `file:../../Juego/Assets/_Zombineta/Simulacion`). Un
+  arreglo de reglas o de balance se hace una vez y llega a los dos. Por qué adentro de
+  `Juego/Assets` y no en una carpeta propia: ver la trampa #20.
+- **Salvo que se diga otra cosa, las rutas `Assets/...` de este documento son de `Prototipo/`.**
+  Los archivos de la simulación (`RunSimulation`, `HordeSimulation`, `GameConfig`, `GameFlow`,
+  `CameraDirector`, `SceneryLayout`, etc.) ahora están en `Juego/Assets/_Zombineta/Simulacion/Runtime/`.
+- Se abre **cada proyecto por separado** desde Unity Hub (`Prototipo/` o `Juego/`), nunca la raíz.
+- **Clonar en una ruta corta.** La ruta de trabajo actual es muy larga y un paquete de Unity ya
+  supera los 260 caracteres de Windows (trampa #21).
+- **Ramas del equipo:** las de Germán, Jesús, Juana y Seba no tienen trabajo propio; conviene
+  borrarlas y recrearlas desde `master` en lugar de actualizarlas.
+
+### El camino al juego definitivo
+
+Cinco sub-proyectos, cada uno con su diseño, plan e implementación:
+
+| # | Sub-proyecto | Estado |
+|---|---|---|
+| 1 | Reestructura: `Prototipo/`, `Juego/` y simulación compartida | **Hecho** (13/09) |
+| 2 | Escenas: `Boot` persistente + una escena por pantalla y por nivel | Próximo |
+| 3 | Herramienta para armar niveles a mano (el nivel es la escena) | Después del 2 |
+| 4 | Estética nueva: carriles más abajo, más fondo, zombies más grandes | Espera un cuadro de referencia de arte |
+| 5 | Iluminación 2D real con URP | Después del 4; necesita normal maps de arte |
 
 ---
 
@@ -78,7 +118,8 @@ efectos de cámara y sacudidas) y un segundo nivel (`Ruta02`, generado igual que
 
 - **Unity 6000.6.0f1** (en `D:\Dev\Unity`). Todo el equipo tiene que usar exactamente esta.
   Ojo: **6000.6 no es LTS.** Sigue pendiente decidir si se quedan acá o bajan a 6000.0 LTS.
-- Abrí `Assets/_Zombineta/Scenes/Prototipo.unity` y dale Play. Arranca en el menú.
+- Abrí el proyecto `Prototipo/` desde Unity Hub, cargá `Assets/_Zombineta/Scenes/Prototipo.unity`
+  y dale Play. Arranca en el menú.
 - El proyecto es 2D URP con Renderer2D. El faro es un `Light2D` real, así que la escena
   depende de la iluminación 2D: si sacás el `Global Light 2D`, se ve todo negro.
 - Cámara ortográfica de tamaño 6 en reposo, con el borde de abajo clavado en y = −4,6
@@ -481,6 +522,26 @@ Estas costaron tiempo real en esta sesión:
 19. **El cono de un `Light2D` apunta hacia +Y local.** Para que el faro ilumine hacia atrás
     (hacia la horda) la rotación Z es 90, no 180. Con 180 apuntaba al piso.
 
+
+20. **El `RunCommand` del MCP solo compila contra assemblies cuyo asmdef está dentro de
+    `Assets/`** (más algunas curadas de Unity). Una assembly que viene de un paquete —aunque sea
+    local y esté cargada— no se puede referenciar: da `CS0012 ... is defined in an assembly that
+    is not referenced`. Por eso la simulación vive en `Juego/Assets/` y no en una carpeta
+    `Paquetes/`. Consecuencia: **en el prototipo, `RunCommand` ya no puede tocar tipos de la
+    simulación** (`RunSimulation`, `GameFlow`, `GameConfig`...). Para balancear alcanza con
+    `SerializedObject` sobre el asset cargado como `Object`; para verificar lógica, usar `Juego/`.
+    (Está en `com.unity.ai.assistant`, `DynamicAssemblyBuilder.GetAssetsAssemblyNames`.)
+
+21. **Límite de 260 caracteres de ruta en Windows.** Con el repo en
+    `D:\Jose\Facu\Taller de proyecto integral\Prototipo\Zombineta\Zombineta\Juego`, un archivo
+    de `com.unity.2d.tooling` en `Library/PackageCache` ya no se puede leer
+    (`DirectoryNotFoundException` al importar un `.uxml`). No rompe el juego, pero va a empeorar.
+    Clonar el repo en una ruta corta.
+
+22. **Cerrar Unity desde el MCP:** `EditorApplication.Exit(0)` funciona, pero si se agenda con
+    `delayCall` puede tardar más de un minuto en ejecutarse. Antes de mover carpetas, confirmar
+    que no queda ningún `Unity.exe` del proyecto (los `AssetImportWorker` también cuentan).
+
 ---
 
 ## 6. Qué está verificado y qué no
@@ -536,6 +597,12 @@ Estas costaron tiempo real en esta sesión:
 ## 7. Qué sigue
 
 ### Dónde quedó la sesión
+
+**13/09:** se cerró la etapa de prototipo (tag `prototipo-v1`) y se hizo el sub-proyecto 1 de
+la sección 0: el repo quedó en `Prototipo/` + `Juego/` con la simulación compartida, 125 tests
+en verde en los dos proyectos, y el prototipo verificado sin referencias rotas. Lo próximo es
+el sub-proyecto 2 (escenas en `Juego/`). Lo que sigue abajo es de antes de la reestructura.
+
 Lo último que se hizo fueron las rampas y el salto (T12). Lo que el usuario ya anunció como
 próximo paso son **las animaciones de spritesheet de la protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
 fill y un slicing que escanee el alfa, porque no tienen grilla exacta). Las ramas de Germán,
