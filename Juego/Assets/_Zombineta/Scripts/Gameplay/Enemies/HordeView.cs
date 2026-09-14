@@ -1,5 +1,6 @@
 using UnityEngine;
 using Zombineta.Core;
+using Zombineta.Fx;
 
 namespace Zombineta.Enemies
 {
@@ -12,6 +13,10 @@ namespace Zombineta.Enemies
     {
         [SerializeField] RunController run;
         [SerializeField] Transform zombiePrefab;
+
+        [Header("Sombra")]
+        [SerializeField] Sprite shadowSprite;
+        [SerializeField] Color shadowColor = new Color(0f, 0f, 0f, 0.45f);
 
         [Tooltip("Metros que la horda sigue avanzando por encima de la moto al atraparla.")]
         [SerializeField] float overrunMeters = 12f;
@@ -26,6 +31,7 @@ namespace Zombineta.Enemies
         Transform[] bodies;
         SpriteRenderer[] sprites;
         Animator[] animators;
+        GroundShadow[] shadows;
         int[] generations;
         bool[] wasAlive;
         float[] lastStagger;
@@ -43,6 +49,7 @@ namespace Zombineta.Enemies
             bodies = new Transform[count];
             sprites = new SpriteRenderer[count];
             animators = new Animator[count];
+            shadows = new GroundShadow[count];
             generations = new int[count];
             wasAlive = new bool[count];
             lastStagger = new float[count];
@@ -54,7 +61,20 @@ namespace Zombineta.Enemies
                 animators[i] = bodies[i].GetComponentInChildren<Animator>();
                 generations[i] = -1;
                 wasAlive[i] = true;
+                shadows[i] = CreateShadow(bodies[i]);
             }
+        }
+
+        GroundShadow CreateShadow(Transform parent)
+        {
+            var go = new GameObject("Sombra");
+            go.transform.SetParent(parent, false);
+            var renderer = go.AddComponent<SpriteRenderer>();
+            renderer.sprite = shadowSprite;
+            renderer.color = shadowColor;
+            var shadow = go.AddComponent<GroundShadow>();
+            shadow.Init(renderer);
+            return shadow;
         }
 
         void LateUpdate()
@@ -98,15 +118,27 @@ namespace Zombineta.Enemies
                 wasAlive[i] = u.Alive;
                 lastStagger[i] = u.Stagger;
 
-                bodies[i].position = new Vector3(
-                    run.ToWorldX(u.X + overrun), run.LaneToWorldY(u.Lane), 0f);
+                float worldX = run.ToWorldX(u.X + overrun);
+                float groundY = run.LaneToWorldY(u.Lane);
+                bodies[i].position = new Vector3(worldX, groundY, 0f);
                 bodies[i].localScale = Vector3.one * type.scale;
 
                 bool lit = lightOn && u.Alive &&
                            u.X < state.PlayerX && u.X > state.PlayerX - headlightRangeMeters;
                 bodies[i].rotation = Quaternion.Euler(0f, 0f, lit ? litLeanDegrees : 0f);
                 if (sprites[i] != null)
+                {
                     sprites[i].color = lit ? type.tint * litTint : type.tint;
+                    // De pie tapa lo de arriba; caido queda como cualquier cosa tirada en el piso.
+                    sprites[i].sortingOrder = LaneSorting.Order(u.Lane, u.Alive ? SortSlot.Zombie : SortSlot.Item);
+                }
+
+                if (shadows[i] != null)
+                {
+                    shadows[i].Visible = u.Alive;
+                    if (u.Alive)
+                        shadows[i].Place(worldX, groundY, 0f, u.Lane);
+                }
             }
         }
     }

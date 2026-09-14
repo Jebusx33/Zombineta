@@ -511,6 +511,7 @@ GameObject:
   m_Component:
   - component: {fileID: 510499156}
   - component: {fileID: 510499155}
+  - component: {fileID: 510499157}
   m_Layer: 0
   m_Name: Shadow
   m_TagString: Untagged
@@ -526,7 +527,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 510499154}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -544,7 +545,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 706657676}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -593,6 +594,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1391902537}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &510499157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510499154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3207b945ffe822e4b92490040761b8d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
+  shadow: {fileID: 510499155}
+  width: 1
 --- !u!1 &510604779
 GameObject:
   m_ObjectHideFlags: 0
@@ -1001,6 +1016,56 @@ RectTransform:
   m_AnchoredPosition: {x: 70, y: -160}
   m_SizeDelta: {x: 22, y: 22}
   m_Pivot: {x: 0, y: 1}
+--- !u!21 &706657676
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Sprite-Lit-Default (Instance)
+  m_Shader: {fileID: 4800000, guid: e260cfa7296ee7642b167f1eb5be5023, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - ETC1_EXTERNAL_ALPHA
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AlphaTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _EnableExternalAlpha: 0
+    - _ZWrite: 0
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Flip: {r: 1, g: 1, b: 1, a: 1}
+    - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!1 &798278906
 GameObject:
   m_ObjectHideFlags: 0
@@ -1795,6 +1860,8 @@ MonoBehaviour:
     barrelEvery: 200
     frontZombieEvery: 150
     heavyFrontZombieChance: 0.3
+  shadowSprite: {fileID: 21300000, guid: 8c1bb8c15f5a47141b8d044f53482a77, type: 3}
+  shadowColor: {r: 0, g: 0, b: 0, a: 0.45}
 --- !u!4 &1171654547
 Transform:
   m_ObjectHideFlags: 0
@@ -2045,7 +2112,7 @@ MonoBehaviour:
   reverseTint: {r: 0.75, g: 0.88, b: 1, a: 1}
   stunnedTint: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   arrivalCoastMeters: 6
-  shadow: {fileID: 510499155}
+  shadow: {fileID: 510499157}
   shadowColor: {r: 0, g: 0, b: 0, a: 0.45}
   shadowPerfectColor: {r: 0.3, g: 1, b: 0.4, a: 0.65}
   fallenAngle: 70
@@ -4909,6 +4976,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta::Zombineta.Enemies.HordeView
   run: {fileID: 1170739137}
   zombiePrefab: {fileID: 1454352294408542829, guid: d61e7fa8059f7eb4086d3014940acb31, type: 3}
+  shadowSprite: {fileID: 21300000, guid: 8c1bb8c15f5a47141b8d044f53482a77, type: 3}
+  shadowColor: {r: 0, g: 0, b: 0, a: 0.45}
   overrunMeters: 12
   litTint: {r: 1.25, g: 1.2, b: 1.1, a: 1}
   litLeanDegrees: -12

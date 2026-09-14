@@ -1,5 +1,6 @@
 using UnityEngine;
 using Zombineta.Core;
+using Zombineta.Fx;
 
 namespace Zombineta.Player
 {
@@ -28,24 +29,16 @@ namespace Zombineta.Player
         [SerializeField] float arrivalCoastMeters = 6f;
 
         [Header("Salto")]
-        [Tooltip("Sombra en el carril mientras vuela: marca donde va a caer.")]
-        [SerializeField] SpriteRenderer shadow;
+        [Tooltip("Sombra permanente en el piso del carril: marca donde esta parada o donde va a caer.")]
+        [SerializeField] GroundShadow shadow;
         [SerializeField] Color shadowColor = new Color(0f, 0f, 0f, 0.45f);
-        [Tooltip("La sombra toma este color si la inclinacion daria aterrizaje perfecto.")]
+        [Tooltip("La sombra toma este color si la inclinacion daria aterrizaje perfecto. Solo mientras vuela.")]
         [SerializeField] Color shadowPerfectColor = new Color(0.3f, 1f, 0.4f, 0.65f);
         [Tooltip("Grados de la moto tirada en el piso tras una caida.")]
         [SerializeField] float fallenAngle = 70f;
 
         // Solo presentacion: la simulacion termina en la meta, la moto entra rodando.
         float coast;
-
-        Vector3 shadowBaseScale = Vector3.one;
-
-        void Awake()
-        {
-            if (shadow != null)
-                shadowBaseScale = shadow.transform.localScale;
-        }
 
         /// <summary>
         /// Color del personaje elegido. Placeholder de la seleccion de personaje hasta que
@@ -79,6 +72,8 @@ namespace Zombineta.Player
             if (body == null)
                 return;
 
+            body.sortingOrder = LaneSorting.Order(state.LaneVisual, SortSlot.Player);
+
             Color tint = Color.white;
             if (state.StunRemaining > 0f || state.Fuel <= 0f)
                 tint = stunnedTint;
@@ -95,21 +90,12 @@ namespace Zombineta.Player
             if (shadow == null)
                 return;
 
-            if (shadow.enabled != state.Airborne)
-                shadow.enabled = state.Airborne;
-            if (!state.Airborne)
-                return;
+            // Permanente: marca donde esta parada y, si vuela, donde va a caer.
+            bool perfect = state.Airborne && Mathf.Abs(state.Pitch) <= run.Config.perfectLandingAngle;
+            shadow.SetColor(perfect ? shadowPerfectColor : shadowColor);
 
-            // Queda en el carril, derecha aunque la moto este inclinada.
-            shadow.transform.SetPositionAndRotation(
-                new Vector3(transform.position.x, laneY, 0f), Quaternion.identity);
-
-            // Mas alto, mas chica: se lee la altura sin mirar la moto.
-            float k = Mathf.Clamp01(run.HeightToWorld(state.Height) / 4f);
-            shadow.transform.localScale = shadowBaseScale * Mathf.Lerp(1f, 0.55f, k);
-
-            bool perfect = Mathf.Abs(state.Pitch) <= run.Config.perfectLandingAngle;
-            shadow.color = perfect ? shadowPerfectColor : shadowColor;
+            float heightWorld = state.Airborne ? run.HeightToWorld(state.Height) : 0f;
+            shadow.Place(transform.position.x, laneY, heightWorld, state.LaneVisual);
         }
     }
 }

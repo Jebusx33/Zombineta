@@ -107,18 +107,18 @@ namespace Zombineta.Fx
                     break;
 
                 case HordeEventKind.Impact:
-                    Emit(impacts, at, gore ? bloodColor : dustColor);
+                    Emit(impacts, at, gore ? bloodColor : dustColor, e.Lane);
                     break;
 
                 case HordeEventKind.Death:
                     Emit(e.Cause == DeathCause.RunOver ? runOvers : deaths, at,
-                         gore ? bloodColor : dustColor);
+                         gore ? bloodColor : dustColor, e.Lane);
                     if (gore)
-                        Stain(new Vector3(at.x, run.LaneToWorldY(e.Lane), 0f));
+                        Stain(new Vector3(at.x, run.LaneToWorldY(e.Lane), 0f), e.Lane);
                     break;
 
                 case HordeEventKind.Explosion:
-                    Emit(explosions, at, new Color(1f, 0.75f, 0.3f, 1f));
+                    Emit(explosions, at, new Color(1f, 0.75f, 0.3f, 1f), e.Lane);
                     break;
 
                 case HordeEventKind.Miss:
@@ -134,11 +134,12 @@ namespace Zombineta.Fx
             float y = run.LaneToWorldY(e.Lane) + 0.55f;
             tracer.SetPosition(0, new Vector3(run.ToWorldX(e.FromX), y, 0f));
             tracer.SetPosition(1, new Vector3(run.ToWorldX(e.X), y, 0f));
+            tracer.sortingOrder = LaneSorting.Order(e.Lane, SortSlot.Effect);
             tracer.enabled = true;
             tracerLeft = tracerSeconds;
         }
 
-        void Emit(List<ParticleSystem> pool, Vector3 at, Color color)
+        void Emit(List<ParticleSystem> pool, Vector3 at, Color color, int lane)
         {
             if (pool.Count == 0)
                 return;
@@ -155,11 +156,14 @@ namespace Zombineta.Fx
             chosen.transform.position = at;
             var main = chosen.main;
             main.startColor = color;
+            var renderer = chosen.GetComponent<Renderer>();
+            if (renderer != null)
+                renderer.sortingOrder = LaneSorting.Order(lane, SortSlot.Effect);
             chosen.Clear();
             chosen.Play();
         }
 
-        void Stain(Vector3 at)
+        void Stain(Vector3 at, int lane)
         {
             if (decals == null || decals.Length == 0)
                 return;
@@ -168,6 +172,8 @@ namespace Zombineta.Fx
             d.transform.position = at;
             d.transform.localScale = Vector3.one * Random.Range(0.7f, 1.3f);
             d.color = bloodColor;
+            // Mancha en el asfalto: se pisa, como la rampa.
+            d.sortingOrder = LaneSorting.Order(lane, SortSlot.Shadow) + 1;
             d.enabled = true;
         }
     }

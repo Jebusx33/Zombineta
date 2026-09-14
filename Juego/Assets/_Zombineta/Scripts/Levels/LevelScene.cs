@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Zombineta.Core;
+using Zombineta.Fx;
 using Zombineta.Level;
 
 namespace Zombineta.Juego.Levels
@@ -28,6 +29,10 @@ namespace Zombineta.Juego.Levels
 
         [SerializeField] LevelGeneratorSettings generator = new LevelGeneratorSettings();
 
+        [Header("Sombra")]
+        [SerializeField] Sprite shadowSprite;
+        [SerializeField] Color shadowColor = new Color(0f, 0f, 0f, 0.45f);
+
         public GameConfig Config => config;
         public LevelItemPalette Palette => palette;
         public float GoalDistance => goalDistance;
@@ -44,7 +49,11 @@ namespace Zombineta.Juego.Levels
         /// </summary>
         public const string PlayFromKey = "zombineta.playFromMeters";
 
-        readonly List<(LevelItem item, int index)> bound = new List<(LevelItem, int)>();
+        /// <summary>Nombre fijo del hijo que dibuja la sombra: asi se lo puede encontrar y reusar.</summary>
+        const string ShadowChildName = "Sombra";
+
+        readonly List<(LevelItem item, int index, GroundShadow shadow)> bound =
+            new List<(LevelItem, int, GroundShadow)>();
         RunController run;
 
         // --- Datos para la simulacion ------------------------------------------------
@@ -97,7 +106,9 @@ namespace Zombineta.Juego.Levels
                     if (e.kind == entry.kind && e.lane == entry.lane && e.variant == entry.variant &&
                         Mathf.Abs(e.distance - entry.distance) < 0.001f && Mathf.Abs(e.height - entry.height) < 0.001f)
                     {
-                        bound.Add((pool[k], i));
+                        var shadowT = pool[k].transform.Find(ShadowChildName);
+                        var shadow = shadowT != null ? shadowT.GetComponent<GroundShadow>() : null;
+                        bound.Add((pool[k], i, shadow));
                         pool.RemoveAt(k);
                         break;
                     }
@@ -133,13 +144,16 @@ namespace Zombineta.Juego.Levels
                 if (run == null || run.Level == null)
                     return;
                 var runtime = run.Level.Items;
-                foreach (var (item, index) in bound)
+                foreach (var (item, index, shadow) in bound)
                 {
                     if (item == null)
                         continue;
+                    bool visible = !runtime[index].Consumed;
                     var sr = item.GetComponent<SpriteRenderer>();
                     if (sr != null)
-                        sr.enabled = !runtime[index].Consumed;
+                        sr.enabled = visible;
+                    if (shadow != null)
+                        shadow.Visible = visible;
                 }
                 return;
             }
@@ -198,7 +212,12 @@ namespace Zombineta.Juego.Levels
             var sprite = look != null ? look.sprite : null;
             var color = look != null ? look.color : Color.magenta;
             var scale = look != null ? new Vector3(look.scale.x, look.scale.y, 1f) : Vector3.one;
-            int order = look != null ? look.sortingOrder : 6;
+
+            // La rampa se pisa: va justo encima de la sombra del carril, no donde van los items.
+            bool isRamp = item.kind == LevelEntryKind.Ramp;
+            int order = isRamp
+                ? LaneSorting.Order(item.lane, SortSlot.Shadow) + 1
+                : LaneSorting.Order(item.lane, SortSlot.Item);
 
             if (item.kind == LevelEntryKind.ZombieFront && config != null && config.zombies != null)
                 color = config.zombies.Get(item.variant).tint;
@@ -209,6 +228,55 @@ namespace Zombineta.Juego.Levels
             bool flip = item.kind == LevelEntryKind.ZombieFront;   // mira hacia la jugadora
             if (sr.flipX != flip) sr.flipX = flip;
             if (item.transform.localScale != scale) item.transform.localScale = scale;
+
+            // La rampa ya se pisa: no necesita su propia sombra en el piso.
+            if (isRamp)
+                RemoveShadow(item);
+            else
+                ApplyShadow(item, look);
+        }
+
+        GroundShadow ApplyShadow(LevelItem item, LevelItemPalette.Look look)
+        {
+            var t = item.transform.Find(ShadowChildName);
+            GroundShadow shadow;
+            if (t == null)
+            {
+                var go = new GameObject(ShadowChildName);
+                go.transform.SetParent(item.transform, false);
+                var sr = go.AddComponent<SpriteRenderer>();
+                sr.sprite = shadowSprite;
+                sr.color = shadowColor;
+                shadow = go.AddComponent<GroundShadow>();
+                shadow.Init(sr);
+            }
+            else
+            {
+                shadow = t.GetComponent<GroundShadow>();
+            }
+
+            if (shadow == null)
+                return null;
+
+            shadow.Width = look != null ? look.shadowWidth : 1f;
+
+            var layout = Layout;
+            float groundY = layout.LaneY(item.lane);
+            float heightWorld = item.height * layout.JumpHeightToWorld;
+            shadow.Place(item.transform.position.x, groundY, heightWorld, item.lane);
+            return shadow;
+        }
+
+        void RemoveShadow(LevelItem item)
+        {
+            var t = item.transform.Find(ShadowChildName);
+            if (t == null)
+                return;
+
+            if (Application.isPlaying)
+                Destroy(t.gameObject);
+            else
+                DestroyImmediate(t.gameObject);
         }
 
         /// <summary>El recorrido tal como esta en la escena, para validarlo.</summary>
