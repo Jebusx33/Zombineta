@@ -146,8 +146,8 @@ Transform:
   m_GameObject: {fileID: 166191}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2100, y: 1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 2100, y: 1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1142876322}
@@ -264,7 +264,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1222945646}
@@ -282,7 +282,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 10079596}
-  width: 1
+  width: 1.1
 --- !u!212 &10079596
 SpriteRenderer:
   serializedVersion: 3
@@ -446,7 +446,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 642.67554, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 715615531}
@@ -562,8 +562,8 @@ Transform:
   m_GameObject: {fileID: 46738286}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2737.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 2737.5, y: 1, z: 0}
+  m_LocalScale: {x: 4.75, y: 4.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 265267232}
@@ -618,7 +618,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 810
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+  m_Sprite: {fileID: -2052041959634115987, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -680,7 +680,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1265695220}
@@ -698,7 +698,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 49632783}
-  width: 1
+  width: 1.1
 --- !u!212 &49632783
 SpriteRenderer:
   serializedVersion: 3
@@ -787,7 +787,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1681376407}
@@ -805,7 +805,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 51127990}
-  width: 1
+  width: 0.9
 --- !u!212 &51127990
 SpriteRenderer:
   serializedVersion: 3
@@ -893,8 +893,8 @@ Transform:
   m_GameObject: {fileID: 52148327}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1837.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 1837.5, y: -1, z: 0}
+  m_LocalScale: {x: 2.375, y: 2.375, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 90928625}
@@ -949,8 +949,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1010
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
-  m_Color: {r: 0.72, g: 0.72, b: 0.8, a: 1}
+  m_Sprite: {fileID: -1044169842, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
@@ -1118,7 +1118,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 197620523}
@@ -1136,7 +1136,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 60069432}
-  width: 1
+  width: 0.9
 --- !u!212 &60069432
 SpriteRenderer:
   serializedVersion: 3
@@ -1225,7 +1225,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 364836944}
@@ -1243,7 +1243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 68541952}
-  width: 1
+  width: 0.9
 --- !u!212 &68541952
 SpriteRenderer:
   serializedVersion: 3
@@ -1331,8 +1331,8 @@ Transform:
   m_GameObject: {fileID: 70256460}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 418.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 418.5, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 759363830}
@@ -1448,8 +1448,8 @@ Transform:
   m_GameObject: {fileID: 75528606}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 637.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalPosition: {x: 637.5, y: -1, z: 0}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 201049215}
@@ -1566,7 +1566,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 878118624}
@@ -1584,7 +1584,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 80043752}
-  width: 1
+  width: 0.9
 --- !u!212 &80043752
 SpriteRenderer:
   serializedVersion: 3
@@ -1673,7 +1673,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2068835115}
@@ -1691,7 +1691,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 85702688}
-  width: 1
+  width: 0.8
 --- !u!212 &85702688
 SpriteRenderer:
   serializedVersion: 3
@@ -1779,8 +1779,8 @@ Transform:
   m_GameObject: {fileID: 90511461}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2853, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2853, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 488969285}
@@ -1897,7 +1897,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 52148328}
@@ -1915,7 +1915,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 90928627}
-  width: 1
+  width: 0.8
 --- !u!212 &90928627
 SpriteRenderer:
   serializedVersion: 3
@@ -2004,7 +2004,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1396.1465, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 674616268}
@@ -2121,7 +2121,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1632.8975, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 932247505}
@@ -2238,7 +2238,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 937.5, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 56223666}
@@ -2355,7 +2355,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 768537433}
@@ -2373,7 +2373,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 119354229}
-  width: 1
+  width: 1.1
 --- !u!212 &119354229
 SpriteRenderer:
   serializedVersion: 3
@@ -2462,7 +2462,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1701618412}
@@ -2480,7 +2480,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 140387271}
-  width: 1
+  width: 1.1
 --- !u!212 &140387271
 SpriteRenderer:
   serializedVersion: 3
@@ -2568,8 +2568,8 @@ Transform:
   m_GameObject: {fileID: 143423375}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1890, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 1890, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1288600168}
@@ -2686,7 +2686,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 981, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 548873293}
@@ -2803,7 +2803,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2316.53, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 279013846}
@@ -2919,8 +2919,8 @@ Transform:
   m_GameObject: {fileID: 158721109}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2293.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2293.5, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1771583495}
@@ -3036,8 +3036,8 @@ Transform:
   m_GameObject: {fileID: 164060741}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 810, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 810, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1988252476}
@@ -3154,7 +3154,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 235165581}
@@ -3172,7 +3172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 167969735}
-  width: 1
+  width: 1.1
 --- !u!212 &167969735
 SpriteRenderer:
   serializedVersion: 3
@@ -3261,7 +3261,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2403.73, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 296564271}
@@ -3377,8 +3377,8 @@ Transform:
   m_GameObject: {fileID: 172031590}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1237.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalPosition: {x: 1237.5, y: 1, z: 0}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1301798088}
@@ -3495,7 +3495,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 217510259}
@@ -3513,7 +3513,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 195126972}
-  width: 1
+  width: 1.1
 --- !u!212 &195126972
 SpriteRenderer:
   serializedVersion: 3
@@ -3602,7 +3602,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1800, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 60069430}
@@ -3826,7 +3826,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 836871577}
@@ -3844,7 +3844,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 201462733}
-  width: 1
+  width: 0.9
 --- !u!212 &201462733
 SpriteRenderer:
   serializedVersion: 3
@@ -3932,8 +3932,8 @@ Transform:
   m_GameObject: {fileID: 217510258}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2261.9087, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2261.9087, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 195126970}
@@ -4049,8 +4049,8 @@ Transform:
   m_GameObject: {fileID: 219095068}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2100, y: -1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 2100, y: -1, z: 0}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -4165,8 +4165,8 @@ Transform:
   m_GameObject: {fileID: 235165580}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 258.5048, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 258.5048, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 167969733}
@@ -4283,7 +4283,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2043.5, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 591781447}
@@ -4400,7 +4400,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.32, y: 0.32, z: 0.32}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 46738287}
@@ -4418,7 +4418,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 265267234}
-  width: 1
+  width: 0.32
 --- !u!212 &265267234
 SpriteRenderer:
   serializedVersion: 3
@@ -4507,7 +4507,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2071574849}
@@ -4525,7 +4525,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 271413618}
-  width: 1
+  width: 1.1
 --- !u!212 &271413618
 SpriteRenderer:
   serializedVersion: 3
@@ -4614,7 +4614,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 151942246}
@@ -4632,7 +4632,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 279013848}
-  width: 1
+  width: 1.1
 --- !u!212 &279013848
 SpriteRenderer:
   serializedVersion: 3
@@ -4721,7 +4721,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 713554934}
@@ -4739,7 +4739,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 282417628}
-  width: 1
+  width: 0.9
 --- !u!212 &282417628
 SpriteRenderer:
   serializedVersion: 3
@@ -4828,7 +4828,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 825, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 4.75, y: 4.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1299966935}
@@ -4883,7 +4883,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 910
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+  m_Sprite: {fileID: -2052041959634115987, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -4945,7 +4945,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 168338561}
@@ -4963,7 +4963,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 296564273}
-  width: 1
+  width: 1.1
 --- !u!212 &296564273
 SpriteRenderer:
   serializedVersion: 3
@@ -5052,7 +5052,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1858894235}
@@ -5070,7 +5070,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 297414204}
-  width: 1
+  width: 1.1
 --- !u!212 &297414204
 SpriteRenderer:
   serializedVersion: 3
@@ -5158,8 +5158,8 @@ Transform:
   m_GameObject: {fileID: 299121736}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2625, y: -1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 2625, y: -1, z: 0}
+  m_LocalScale: {x: 4.75, y: 4.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1084962102}
@@ -5214,7 +5214,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1010
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+  m_Sprite: {fileID: -1509474166, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -5276,7 +5276,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1427179436}
@@ -5294,7 +5294,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 301419099}
-  width: 1
+  width: 1.1
 --- !u!212 &301419099
 SpriteRenderer:
   serializedVersion: 3
@@ -5382,8 +5382,8 @@ Transform:
   m_GameObject: {fileID: 305086463}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1080, y: 1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 1080, y: 1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2021159320}
@@ -5499,8 +5499,8 @@ Transform:
   m_GameObject: {fileID: 308119405}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 412.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 412.5, y: -1, z: 0}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -5616,7 +5616,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1112915241}
@@ -5634,7 +5634,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 318618825}
-  width: 1
+  width: 0.9
 --- !u!212 &318618825
 SpriteRenderer:
   serializedVersion: 3
@@ -5722,8 +5722,8 @@ Transform:
   m_GameObject: {fileID: 332188934}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2443.4915, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2443.4915, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 552503198}
@@ -5839,8 +5839,8 @@ Transform:
   m_GameObject: {fileID: 332550482}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2475, y: -1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 2475, y: -1, z: 0}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -5955,8 +5955,8 @@ Transform:
   m_GameObject: {fileID: 342904559}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 600, y: -1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 600, y: -1, z: 0}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -6072,7 +6072,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 990, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 494149977}
@@ -6188,8 +6188,8 @@ Transform:
   m_GameObject: {fileID: 357159374}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 540, y: 1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 540, y: 1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1835837586}
@@ -6306,7 +6306,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1800, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1550808920}
@@ -6423,7 +6423,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 913406234}
@@ -6441,7 +6441,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 363591652}
-  width: 1
+  width: 0.9
 --- !u!212 &363591652
 SpriteRenderer:
   serializedVersion: 3
@@ -6530,7 +6530,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2070, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 68541950}
@@ -6647,7 +6647,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1880901632}
@@ -6665,7 +6665,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 365373970}
-  width: 1
+  width: 0.9
 --- !u!212 &365373970
 SpriteRenderer:
   serializedVersion: 3
@@ -6753,8 +6753,8 @@ Transform:
   m_GameObject: {fileID: 367815202}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 237.75, y: 5.15, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 237.75, y: 11.825001, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 955081900}
@@ -6871,7 +6871,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1345491785}
@@ -6889,7 +6889,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 374283468}
-  width: 1
+  width: 0.9
 --- !u!212 &374283468
 SpriteRenderer:
   serializedVersion: 3
@@ -6978,7 +6978,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 419559359}
@@ -6996,7 +6996,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 376518440}
-  width: 1
+  width: 1.1
 --- !u!212 &376518440
 SpriteRenderer:
   serializedVersion: 3
@@ -7160,7 +7160,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 527086457}
@@ -7178,7 +7178,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 381566158}
-  width: 1
+  width: 1.1
 --- !u!212 &381566158
 SpriteRenderer:
   serializedVersion: 3
@@ -7267,7 +7267,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1758286761}
@@ -7285,7 +7285,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 392537893}
-  width: 1
+  width: 0.9
 --- !u!212 &392537893
 SpriteRenderer:
   serializedVersion: 3
@@ -7374,7 +7374,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1031914034}
@@ -7392,7 +7392,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 402248802}
-  width: 1
+  width: 1.1
 --- !u!212 &402248802
 SpriteRenderer:
   serializedVersion: 3
@@ -7606,7 +7606,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1728, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1690777338}
@@ -7723,7 +7723,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 978, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1101231720}
@@ -7840,7 +7840,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1824126100}
@@ -7858,7 +7858,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 419258555}
-  width: 1
+  width: 1.1
 --- !u!212 &419258555
 SpriteRenderer:
   serializedVersion: 3
@@ -7946,8 +7946,8 @@ Transform:
   m_GameObject: {fileID: 419559358}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 231, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 231, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 376518438}
@@ -8064,7 +8064,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1275, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 4.75, y: 4.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2035313105}
@@ -8119,7 +8119,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 910
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+  m_Sprite: {fileID: -1509474166, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -8181,7 +8181,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1500, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 561141215}
@@ -8373,8 +8373,8 @@ Transform:
   m_GameObject: {fileID: 430065255}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 612.75, y: 5.15, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 612.75, y: 11.825001, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1515470755}
@@ -8491,7 +8491,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1059198998}
@@ -8509,7 +8509,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 432151483}
-  width: 1
+  width: 0.9
 --- !u!212 &432151483
 SpriteRenderer:
   serializedVersion: 3
@@ -8597,8 +8597,8 @@ Transform:
   m_GameObject: {fileID: 434592480}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1987.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalPosition: {x: 1987.5, y: 1, z: 0}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 981314723}
@@ -8715,7 +8715,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 486.10373, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 810390899}
@@ -8832,7 +8832,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.32, y: 0.32, z: 0.32}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 951691401}
@@ -8850,7 +8850,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 441792213}
-  width: 1
+  width: 0.32
 --- !u!212 &441792213
 SpriteRenderer:
   serializedVersion: 3
@@ -8939,7 +8939,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2104870957}
@@ -8957,7 +8957,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 458932153}
-  width: 1
+  width: 0.8
 --- !u!212 &458932153
 SpriteRenderer:
   serializedVersion: 3
@@ -9045,8 +9045,8 @@ Transform:
   m_GameObject: {fileID: 459132617}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2062.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 2062.5, y: 1, z: 0}
+  m_LocalScale: {x: 4.75, y: 4.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1517226429}
@@ -9101,7 +9101,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 810
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+  m_Sprite: {fileID: -2052041959634115987, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -9163,7 +9163,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 682550529}
@@ -9181,7 +9181,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 467189491}
-  width: 1
+  width: 1.1
 --- !u!212 &467189491
 SpriteRenderer:
   serializedVersion: 3
@@ -9492,7 +9492,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 90511462}
@@ -9510,7 +9510,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 488969287}
-  width: 1
+  width: 1.1
 --- !u!212 &488969287
 SpriteRenderer:
   serializedVersion: 3
@@ -9599,7 +9599,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 354025950}
@@ -9617,7 +9617,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 494149979}
-  width: 1
+  width: 0.9
 --- !u!212 &494149979
 SpriteRenderer:
   serializedVersion: 3
@@ -9706,7 +9706,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1734773122}
@@ -9724,7 +9724,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 503718599}
-  width: 1
+  width: 1.1
 --- !u!212 &503718599
 SpriteRenderer:
   serializedVersion: 3
@@ -9996,7 +9996,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1060578244}
@@ -10014,7 +10014,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 523753812}
-  width: 1
+  width: 1.1
 --- !u!212 &523753812
 SpriteRenderer:
   serializedVersion: 3
@@ -10103,7 +10103,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 556.14105, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 381566156}
@@ -10240,6 +10240,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta::Zombineta.Core.CameraFollow
   run: {fileID: 1170739137}
   config: {fileID: 11400000, guid: 03c43a20e4de76d49aaca0fca8defd2f, type: 2}
+  anchorLaneLine: 1
+  anchorLane: -0.5
+  anchorReferenceSize: 6.3
 --- !u!20 &542714085
 Camera:
   m_ObjectHideFlags: 0
@@ -10402,7 +10405,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 148159782}
@@ -10420,7 +10423,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 548873295}
-  width: 1
+  width: 1.1
 --- !u!212 &548873295
 SpriteRenderer:
   serializedVersion: 3
@@ -10509,7 +10512,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1576233426}
@@ -10527,7 +10530,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 550637964}
-  width: 1
+  width: 0.9
 --- !u!212 &550637964
 SpriteRenderer:
   serializedVersion: 3
@@ -10616,7 +10619,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 332188935}
@@ -10634,7 +10637,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 552503200}
-  width: 1
+  width: 1.1
 --- !u!212 &552503200
 SpriteRenderer:
   serializedVersion: 3
@@ -10798,7 +10801,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 423370790}
@@ -10816,7 +10819,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 561141217}
-  width: 1
+  width: 0.9
 --- !u!212 &561141217
 SpriteRenderer:
   serializedVersion: 3
@@ -10905,7 +10908,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2631.9585, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1879754753}
@@ -11022,7 +11025,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 662494086}
@@ -11040,7 +11043,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 580934739}
-  width: 1
+  width: 0.9
 --- !u!212 &580934739
 SpriteRenderer:
   serializedVersion: 3
@@ -11128,8 +11131,8 @@ Transform:
   m_GameObject: {fileID: 586041958}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1540.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1540.5, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1044080403}
@@ -11246,7 +11249,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 251815805}
@@ -11264,7 +11267,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 591781449}
-  width: 1
+  width: 1.1
 --- !u!212 &591781449
 SpriteRenderer:
   serializedVersion: 3
@@ -11353,7 +11356,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 717016646}
@@ -11371,7 +11374,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 597951674}
-  width: 1
+  width: 1.1
 --- !u!212 &597951674
 SpriteRenderer:
   serializedVersion: 3
@@ -11460,7 +11463,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2250, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 950340558}
@@ -11577,7 +11580,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1462.2197, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2057553994}
@@ -11694,7 +11697,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.32, y: 0.32, z: 0.32}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1186281755}
@@ -11712,7 +11715,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 626759992}
-  width: 1
+  width: 0.32
 --- !u!212 &626759992
 SpriteRenderer:
   serializedVersion: 3
@@ -11801,7 +11804,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2065657903}
@@ -11819,7 +11822,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 636815728}
-  width: 1
+  width: 1.1
 --- !u!212 &636815728
 SpriteRenderer:
   serializedVersion: 3
@@ -11907,8 +11910,8 @@ Transform:
   m_GameObject: {fileID: 641404840}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -12.272728, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 0.55}
+  m_LocalPosition: {x: 0, y: -12.272729, z: 0}
+  m_LocalScale: {x: 0.495, y: 0.495, z: 0.495}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2124485703}
@@ -11926,7 +11929,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 641404843}
-  width: 1
+  width: 0.9
 --- !u!212 &641404843
 SpriteRenderer:
   serializedVersion: 3
@@ -12014,8 +12017,8 @@ Transform:
   m_GameObject: {fileID: 655034383}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1809.2034, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1809.2034, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1898127610}
@@ -12132,7 +12135,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1440, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 580934737}
@@ -12249,7 +12252,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2067316403}
@@ -12267,7 +12270,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 672167230}
-  width: 1
+  width: 1.1
 --- !u!212 &672167230
 SpriteRenderer:
   serializedVersion: 3
@@ -12356,7 +12359,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 95485368}
@@ -12374,7 +12377,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 674616270}
-  width: 1
+  width: 1.1
 --- !u!212 &674616270
 SpriteRenderer:
   serializedVersion: 3
@@ -12463,7 +12466,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 984045059}
@@ -12481,7 +12484,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 679570067}
-  width: 1
+  width: 0.9
 --- !u!212 &679570067
 SpriteRenderer:
   serializedVersion: 3
@@ -12569,8 +12572,8 @@ Transform:
   m_GameObject: {fileID: 682550528}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2905.154, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2905.154, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 467189489}
@@ -12686,8 +12689,8 @@ Transform:
   m_GameObject: {fileID: 684378253}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2400, y: 1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 2400, y: 1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1456714172}
@@ -12804,7 +12807,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1725, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -12995,7 +12998,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1934115307}
@@ -13013,7 +13016,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 694562295}
-  width: 1
+  width: 1.1
 --- !u!212 &694562295
 SpriteRenderer:
   serializedVersion: 3
@@ -13101,8 +13104,8 @@ Transform:
   m_GameObject: {fileID: 695397646}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2112.75, y: 5.15, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 2112.75, y: 11.825001, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1417143570}
@@ -13218,8 +13221,8 @@ Transform:
   m_GameObject: {fileID: 713554933}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2250, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 2250, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 282417626}
@@ -13336,7 +13339,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2340, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1891264680}
@@ -13453,7 +13456,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 45050676}
@@ -13471,7 +13474,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 715615533}
-  width: 1
+  width: 1.1
 --- !u!212 &715615533
 SpriteRenderer:
   serializedVersion: 3
@@ -13559,8 +13562,8 @@ Transform:
   m_GameObject: {fileID: 717016645}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1318.046, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1318.046, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 597951672}
@@ -13677,7 +13680,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1620, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1801970614}
@@ -13794,7 +13797,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 998597300}
@@ -13812,7 +13815,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 728322977}
-  width: 1
+  width: 1.1
 --- !u!212 &728322977
 SpriteRenderer:
   serializedVersion: 3
@@ -13900,8 +13903,8 @@ Transform:
   m_GameObject: {fileID: 728765594}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 964.05835, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 964.05835, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2111959531}
@@ -14017,8 +14020,8 @@ Transform:
   m_GameObject: {fileID: 732051778}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1530, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 1530, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1158923051}
@@ -14242,7 +14245,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 900480388}
@@ -14260,7 +14263,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 746272765}
-  width: 1
+  width: 1.1
 --- !u!212 &746272765
 SpriteRenderer:
   serializedVersion: 3
@@ -14349,7 +14352,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 187.5, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2073723253}
@@ -14466,7 +14469,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 70256461}
@@ -14484,7 +14487,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 759363832}
-  width: 1
+  width: 1.1
 --- !u!212 &759363832
 SpriteRenderer:
   serializedVersion: 3
@@ -14572,8 +14575,8 @@ Transform:
   m_GameObject: {fileID: 760742081}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1387.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalPosition: {x: 1387.5, y: -1, z: 0}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2136988949}
@@ -14689,8 +14692,8 @@ Transform:
   m_GameObject: {fileID: 768537432}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1168.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1168.5, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 119354227}
@@ -14913,8 +14916,8 @@ Transform:
   m_GameObject: {fileID: 770077713}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -12.272728, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 0.55}
+  m_LocalPosition: {x: 0, y: -12.272729, z: 0}
+  m_LocalScale: {x: 0.495, y: 0.495, z: 0.495}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1983266174}
@@ -14932,7 +14935,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 770077716}
-  width: 1
+  width: 0.9
 --- !u!212 &770077716
 SpriteRenderer:
   serializedVersion: 3
@@ -15020,8 +15023,8 @@ Transform:
   m_GameObject: {fileID: 789254249}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2487.75, y: 5.15, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 2487.75, y: 11.825001, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1346642041}
@@ -15137,8 +15140,8 @@ Transform:
   m_GameObject: {fileID: 791141870}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2610, y: 1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 2610, y: 1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1807296951}
@@ -15330,7 +15333,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1051072873}
@@ -15348,7 +15351,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 799727403}
-  width: 1
+  width: 1.1
 --- !u!212 &799727403
 SpriteRenderer:
   serializedVersion: 3
@@ -15437,7 +15440,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1050, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2.375, y: 2.375, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 841389447}
@@ -15492,8 +15495,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 910
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
-  m_Color: {r: 0.72, g: 0.72, b: 0.8, a: 1}
+  m_Sprite: {fileID: -1044169842, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
@@ -15554,7 +15557,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 437967224}
@@ -15572,7 +15575,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 810390901}
-  width: 1
+  width: 1.1
 --- !u!212 &810390901
 SpriteRenderer:
   serializedVersion: 3
@@ -15903,8 +15906,8 @@ Transform:
   m_GameObject: {fileID: 836871576}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 750, y: 1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 750, y: 1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 201462731}
@@ -16021,7 +16024,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1735756257}
@@ -16039,7 +16042,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 839105772}
-  width: 1
+  width: 0.9
 --- !u!212 &839105772
 SpriteRenderer:
   serializedVersion: 3
@@ -16128,7 +16131,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 799749395}
@@ -16146,7 +16149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 841389449}
-  width: 1
+  width: 0.8
 --- !u!212 &841389449
 SpriteRenderer:
   serializedVersion: 3
@@ -16235,7 +16238,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1878476501}
@@ -16253,7 +16256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 841812724}
-  width: 1
+  width: 0.9
 --- !u!212 &841812724
 SpriteRenderer:
   serializedVersion: 3
@@ -16341,8 +16344,8 @@ Transform:
   m_GameObject: {fileID: 850418697}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 150, y: 1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 150, y: 1, z: 0}
+  m_LocalScale: {x: 4.75, y: 4.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1930593356}
@@ -16397,7 +16400,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 810
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+  m_Sprite: {fileID: -2052041959634115987, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -16458,8 +16461,8 @@ Transform:
   m_GameObject: {fileID: 866004317}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1543.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1543.5, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1779780527}
@@ -16575,8 +16578,8 @@ Transform:
   m_GameObject: {fileID: 869253422}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2137.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalPosition: {x: 2137.5, y: -1, z: 0}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1572102208}
@@ -16693,7 +16696,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1716327706}
@@ -16711,7 +16714,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 869389266}
-  width: 1
+  width: 0.9
 --- !u!212 &869389266
 SpriteRenderer:
   serializedVersion: 3
@@ -16799,8 +16802,8 @@ Transform:
   m_GameObject: {fileID: 878118623}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 300, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 300, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 80043750}
@@ -16916,8 +16919,8 @@ Transform:
   m_GameObject: {fileID: 900480387}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2541.9758, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2541.9758, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 746272763}
@@ -17033,8 +17036,8 @@ Transform:
   m_GameObject: {fileID: 907308731}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2681.5964, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2681.5964, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1474530783}
@@ -17151,7 +17154,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.32, y: 0.32, z: 0.32}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1054790678}
@@ -17169,7 +17172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 908571754}
-  width: 1
+  width: 0.32
 --- !u!212 &908571754
 SpriteRenderer:
   serializedVersion: 3
@@ -17258,7 +17261,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2051378442}
@@ -17276,7 +17279,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 910067109}
-  width: 1
+  width: 1.1
 --- !u!212 &910067109
 SpriteRenderer:
   serializedVersion: 3
@@ -17365,7 +17368,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1125, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 363591650}
@@ -17482,7 +17485,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1798681103}
@@ -17500,7 +17503,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 930296399}
-  width: 1
+  width: 0.9
 --- !u!212 &930296399
 SpriteRenderer:
   serializedVersion: 3
@@ -17589,7 +17592,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 110008261}
@@ -17607,7 +17610,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 932247507}
-  width: 1
+  width: 1.1
 --- !u!212 &932247507
 SpriteRenderer:
   serializedVersion: 3
@@ -17695,8 +17698,8 @@ Transform:
   m_GameObject: {fileID: 933574944}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2850, y: -1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 2850, y: -1, z: 0}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -17812,7 +17815,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2512.5, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2.375, y: 2.375, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1773099627}
@@ -17867,8 +17870,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 910
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
-  m_Color: {r: 0.72, g: 0.72, b: 0.8, a: 1}
+  m_Sprite: {fileID: -1044169842, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
@@ -17929,7 +17932,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1497158881}
@@ -17947,7 +17950,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 936818877}
-  width: 1
+  width: 1.1
 --- !u!212 &936818877
 SpriteRenderer:
   serializedVersion: 3
@@ -18035,8 +18038,8 @@ Transform:
   m_GameObject: {fileID: 943716562}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2154.1301, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2154.1301, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2080846320}
@@ -18153,7 +18156,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1731, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1135944728}
@@ -18270,7 +18273,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 602737294}
@@ -18288,7 +18291,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 950340560}
-  width: 1
+  width: 0.9
 --- !u!212 &950340560
 SpriteRenderer:
   serializedVersion: 3
@@ -18376,8 +18379,8 @@ Transform:
   m_GameObject: {fileID: 951691400}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 937.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 937.5, y: 1, z: 0}
+  m_LocalScale: {x: 4.75, y: 4.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 441792211}
@@ -18432,7 +18435,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 810
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+  m_Sprite: {fileID: -2052041959634115987, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -18569,8 +18572,8 @@ Transform:
   m_GameObject: {fileID: 955081899}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -12.272728, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 0.55}
+  m_LocalPosition: {x: 0, y: -12.272729, z: 0}
+  m_LocalScale: {x: 0.495, y: 0.495, z: 0.495}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 367815203}
@@ -18588,7 +18591,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 955081902}
-  width: 1
+  width: 0.9
 --- !u!212 &955081902
 SpriteRenderer:
   serializedVersion: 3
@@ -18677,7 +18680,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1090960476}
@@ -18695,7 +18698,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 955091917}
-  width: 1
+  width: 0.9
 --- !u!212 &955091917
 SpriteRenderer:
   serializedVersion: 3
@@ -18784,7 +18787,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1680.8882, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1563706238}
@@ -18901,7 +18904,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1703551341}
@@ -18919,7 +18922,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 961887775}
-  width: 1
+  width: 1.1
 --- !u!212 &961887775
 SpriteRenderer:
   serializedVersion: 3
@@ -19115,7 +19118,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 180, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 679570065}
@@ -19232,7 +19235,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1749060336}
@@ -19250,7 +19253,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 986267023}
-  width: 1
+  width: 1.1
 --- !u!212 &986267023
 SpriteRenderer:
   serializedVersion: 3
@@ -19339,7 +19342,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1417616671}
@@ -19357,7 +19360,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 992956773}
-  width: 1
+  width: 1.1
 --- !u!212 &992956773
 SpriteRenderer:
   serializedVersion: 3
@@ -19445,8 +19448,8 @@ Transform:
   m_GameObject: {fileID: 998597299}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1048.9241, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1048.9241, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 728322975}
@@ -19563,7 +19566,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1828653245}
@@ -19581,7 +19584,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1004815949}
-  width: 1
+  width: 1.1
 --- !u!212 &1004815949
 SpriteRenderer:
   serializedVersion: 3
@@ -19670,7 +19673,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 360, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1569285352}
@@ -19786,8 +19789,8 @@ Transform:
   m_GameObject: {fileID: 1031914033}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1353, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1353, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 402248800}
@@ -19903,8 +19906,8 @@ Transform:
   m_GameObject: {fileID: 1038815495}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2481, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2481, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1119310857}
@@ -20125,7 +20128,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 586041959}
@@ -20143,7 +20146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1044080405}
-  width: 1
+  width: 1.1
 --- !u!212 &1044080405
 SpriteRenderer:
   serializedVersion: 3
@@ -20300,8 +20303,8 @@ MonoBehaviour:
     m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
   m_PointLightInnerAngle: 45
   m_PointLightOuterAngle: 70
-  m_PointLightInnerRadius: 1
-  m_PointLightOuterRadius: 14
+  m_PointLightInnerRadius: 1.9
+  m_PointLightOuterRadius: 26.6
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
@@ -20356,8 +20359,8 @@ Transform:
   m_GameObject: {fileID: 1051072872}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2103, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2103, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 799727401}
@@ -20473,8 +20476,8 @@ Transform:
   m_GameObject: {fileID: 1054790677}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 712.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 712.5, y: -1, z: 0}
+  m_LocalScale: {x: 4.75, y: 4.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 908571752}
@@ -20529,7 +20532,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1010
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+  m_Sprite: {fileID: -1509474166, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -20591,7 +20594,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1868657319}
@@ -20609,7 +20612,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1055345331}
-  width: 1
+  width: 1.1
 --- !u!212 &1055345331
 SpriteRenderer:
   serializedVersion: 3
@@ -20697,8 +20700,8 @@ Transform:
   m_GameObject: {fileID: 1059198997}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2700, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 2700, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 432151481}
@@ -20814,8 +20817,8 @@ Transform:
   m_GameObject: {fileID: 1060578243}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 721.82837, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 721.82837, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 523753810}
@@ -20932,7 +20935,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1275756608}
@@ -20950,7 +20953,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1084193716}
-  width: 1
+  width: 0.9
 --- !u!212 &1084193716
 SpriteRenderer:
   serializedVersion: 3
@@ -21039,7 +21042,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.32, y: 0.32, z: 0.32}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 299121737}
@@ -21057,7 +21060,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1084962104}
-  width: 1
+  width: 0.32
 --- !u!212 &1084962104
 SpriteRenderer:
   serializedVersion: 3
@@ -21145,8 +21148,8 @@ Transform:
   m_GameObject: {fileID: 1090960475}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 450, y: 1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 450, y: 1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 955091915}
@@ -21262,8 +21265,8 @@ Transform:
   m_GameObject: {fileID: 1096589829}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1583.2822, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1583.2822, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1510672713}
@@ -21380,7 +21383,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1976986775}
@@ -21398,7 +21401,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1099220010}
-  width: 1
+  width: 0.9
 --- !u!212 &1099220010
 SpriteRenderer:
   serializedVersion: 3
@@ -21487,7 +21490,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 416601719}
@@ -21505,7 +21508,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1101231722}
-  width: 1
+  width: 1.1
 --- !u!212 &1101231722
 SpriteRenderer:
   serializedVersion: 3
@@ -21641,7 +21644,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 808.6697, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1506369015}
@@ -21757,8 +21760,8 @@ Transform:
   m_GameObject: {fileID: 1112915240}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 270, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 270, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 318618823}
@@ -21875,7 +21878,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1038815496}
@@ -21893,7 +21896,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1119310859}
-  width: 1
+  width: 1.1
 --- !u!212 &1119310859
 SpriteRenderer:
   serializedVersion: 3
@@ -21981,8 +21984,8 @@ Transform:
   m_GameObject: {fileID: 1126299537}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 351.85022, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 351.85022, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1807641351}
@@ -22099,7 +22102,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1185882940}
@@ -22117,7 +22120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1128608109}
-  width: 1
+  width: 0.9
 --- !u!212 &1128608109
 SpriteRenderer:
   serializedVersion: 3
@@ -22206,7 +22209,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1513906376}
@@ -22224,7 +22227,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1129586147}
-  width: 1
+  width: 1.1
 --- !u!212 &1129586147
 SpriteRenderer:
   serializedVersion: 3
@@ -22312,8 +22315,8 @@ Transform:
   m_GameObject: {fileID: 1134274200}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1837.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalPosition: {x: 1837.5, y: -1, z: 0}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1972721202}
@@ -22430,7 +22433,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 947947826}
@@ -22448,7 +22451,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1135944730}
-  width: 1
+  width: 1.1
 --- !u!212 &1135944730
 SpriteRenderer:
   serializedVersion: 3
@@ -22537,7 +22540,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 166192}
@@ -22555,7 +22558,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1142876324}
-  width: 1
+  width: 0.9
 --- !u!212 &1142876324
 SpriteRenderer:
   serializedVersion: 3
@@ -22643,8 +22646,8 @@ Transform:
   m_GameObject: {fileID: 1150321997}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2592.853, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2592.853, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2008237095}
@@ -22760,8 +22763,8 @@ Transform:
   m_GameObject: {fileID: 1153607512}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 787.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 787.5, y: 1, z: 0}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -22877,7 +22880,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 732051779}
@@ -22895,7 +22898,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1158923053}
-  width: 1
+  width: 0.9
 --- !u!212 &1158923053
 SpriteRenderer:
   serializedVersion: 3
@@ -22984,7 +22987,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2136601233}
@@ -23002,7 +23005,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1168868204}
-  width: 1
+  width: 1.1
 --- !u!212 &1168868204
 SpriteRenderer:
   serializedVersion: 3
@@ -23254,7 +23257,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1935.4552, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1256087855}
@@ -23370,8 +23373,8 @@ Transform:
   m_GameObject: {fileID: 1178787390}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2592.853, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2592.853, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1305851402}
@@ -23488,7 +23491,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1950, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1855621074}
@@ -23604,8 +23607,8 @@ Transform:
   m_GameObject: {fileID: 1185882939}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1710, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 1710, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1128608107}
@@ -23721,8 +23724,8 @@ Transform:
   m_GameObject: {fileID: 1185966183}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 487.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalPosition: {x: 487.5, y: -1, z: 0}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2026745581}
@@ -23838,8 +23841,8 @@ Transform:
   m_GameObject: {fileID: 1186281754}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1612.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 1612.5, y: -1, z: 0}
+  m_LocalScale: {x: 4.75, y: 4.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 626759990}
@@ -23894,7 +23897,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1010
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+  m_Sprite: {fileID: -1509474166, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -23955,8 +23958,8 @@ Transform:
   m_GameObject: {fileID: 1187171869}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1244.6826, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1244.6826, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1310062607}
@@ -24072,8 +24075,8 @@ Transform:
   m_GameObject: {fileID: 1197027375}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 793.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 793.5, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2051731362}
@@ -24265,7 +24268,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1762924025}
@@ -24283,7 +24286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1204868052}
-  width: 1
+  width: 1.1
 --- !u!212 &1204868052
 SpriteRenderer:
   serializedVersion: 3
@@ -24371,8 +24374,8 @@ Transform:
   m_GameObject: {fileID: 1222945645}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1680.8882, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1680.8882, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 10079594}
@@ -24488,8 +24491,8 @@ Transform:
   m_GameObject: {fileID: 1237076980}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2836.9016, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2836.9016, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1624546389}
@@ -24606,7 +24609,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1511685936}
@@ -24624,7 +24627,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1254394565}
-  width: 1
+  width: 1.1
 --- !u!212 &1254394565
 SpriteRenderer:
   serializedVersion: 3
@@ -24713,7 +24716,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1177832483}
@@ -24731,7 +24734,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1256087857}
-  width: 1
+  width: 1.1
 --- !u!212 &1256087857
 SpriteRenderer:
   serializedVersion: 3
@@ -24820,7 +24823,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1809.2034, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 49632781}
@@ -24937,7 +24940,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1613582484}
@@ -24955,7 +24958,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1267456002}
-  width: 1
+  width: 1.1
 --- !u!212 &1267456002
 SpriteRenderer:
   serializedVersion: 3
@@ -25043,8 +25046,8 @@ Transform:
   m_GameObject: {fileID: 1275756607}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 900, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 900, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1084193714}
@@ -25161,7 +25164,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1708112939}
@@ -25179,7 +25182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1283372421}
-  width: 1
+  width: 1.1
 --- !u!212 &1283372421
 SpriteRenderer:
   serializedVersion: 3
@@ -25268,7 +25271,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 143423376}
@@ -25286,7 +25289,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1288600170}
-  width: 1
+  width: 0.9
 --- !u!212 &1288600170
 SpriteRenderer:
   serializedVersion: 3
@@ -25375,7 +25378,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1412617212}
@@ -25393,7 +25396,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1293828052}
-  width: 1
+  width: 1.1
 --- !u!212 &1293828052
 SpriteRenderer:
   serializedVersion: 3
@@ -25482,7 +25485,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.32, y: 0.32, z: 0.32}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 290733865}
@@ -25500,7 +25503,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1299966937}
-  width: 1
+  width: 0.32
 --- !u!212 &1299966937
 SpriteRenderer:
   serializedVersion: 3
@@ -25696,7 +25699,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 337.5, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1456247318}
@@ -25813,7 +25816,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1178787391}
@@ -25831,7 +25834,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1305851404}
-  width: 1
+  width: 1.1
 --- !u!212 &1305851404
 SpriteRenderer:
   serializedVersion: 3
@@ -25919,8 +25922,8 @@ Transform:
   m_GameObject: {fileID: 1308416712}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1537.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 1537.5, y: 1, z: 0}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -26036,7 +26039,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1187171870}
@@ -26054,7 +26057,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1310062609}
-  width: 1
+  width: 1.1
 --- !u!212 &1310062609
 SpriteRenderer:
   serializedVersion: 3
@@ -26246,7 +26249,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1350, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 374283466}
@@ -26362,8 +26365,8 @@ Transform:
   m_GameObject: {fileID: 1346642040}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -12.272728, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 0.55}
+  m_LocalPosition: {x: 0, y: -12.272729, z: 0}
+  m_LocalScale: {x: 0.495, y: 0.495, z: 0.495}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 789254250}
@@ -26381,7 +26384,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1346642043}
-  width: 1
+  width: 0.9
 --- !u!212 &1346642043
 SpriteRenderer:
   serializedVersion: 3
@@ -26469,8 +26472,8 @@ Transform:
   m_GameObject: {fileID: 1352749416}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 487.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 487.5, y: 1, z: 0}
+  m_LocalScale: {x: 4.75, y: 4.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1467134772}
@@ -26525,7 +26528,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 810
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
+  m_Sprite: {fileID: -1509474166, guid: 36f83b63ef50721468a2e7f9e822ba23, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -26586,8 +26589,8 @@ Transform:
   m_GameObject: {fileID: 1355695121}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1500, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 1500, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1618824284}
@@ -26703,8 +26706,8 @@ Transform:
   m_GameObject: {fileID: 1368677948}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 630, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 630, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1373318515}
@@ -26821,7 +26824,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1680707047}
@@ -26839,7 +26842,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1373125185}
-  width: 1
+  width: 1.1
 --- !u!212 &1373125185
 SpriteRenderer:
   serializedVersion: 3
@@ -26928,7 +26931,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1368677949}
@@ -26946,7 +26949,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1373318517}
-  width: 1
+  width: 0.9
 --- !u!212 &1373318517
 SpriteRenderer:
   serializedVersion: 3
@@ -27035,7 +27038,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1940742275}
@@ -27053,7 +27056,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1373759670}
-  width: 1
+  width: 1.1
 --- !u!212 &1373759670
 SpriteRenderer:
   serializedVersion: 3
@@ -27165,7 +27168,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1049661738}
@@ -27218,8 +27221,8 @@ Transform:
   m_GameObject: {fileID: 1409669284}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1918.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1918.5, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1717939497}
@@ -27336,7 +27339,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2731.2764, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1293828050}
@@ -27452,8 +27455,8 @@ Transform:
   m_GameObject: {fileID: 1417143569}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -12.272728, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 0.55}
+  m_LocalPosition: {x: 0, y: -12.272729, z: 0}
+  m_LocalScale: {x: 0.495, y: 0.495, z: 0.495}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 695397647}
@@ -27471,7 +27474,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1417143572}
-  width: 1
+  width: 0.9
 --- !u!212 &1417143572
 SpriteRenderer:
   serializedVersion: 3
@@ -27560,7 +27563,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2154.1301, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1659129827}
@@ -27676,8 +27679,8 @@ Transform:
   m_GameObject: {fileID: 1417616670}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2316.53, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2316.53, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 992956771}
@@ -27794,7 +27797,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1707380615}
@@ -27812,7 +27815,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1427091982}
-  width: 1
+  width: 1.1
 --- !u!212 &1427091982
 SpriteRenderer:
   serializedVersion: 3
@@ -27901,7 +27904,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2361.5825, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 301419097}
@@ -28125,7 +28128,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2122347732}
@@ -28143,7 +28146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1437747758}
-  width: 1
+  width: 0.9
 --- !u!212 &1437747758
 SpriteRenderer:
   serializedVersion: 3
@@ -28232,7 +28235,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1711290915}
@@ -28250,7 +28253,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1447900256}
-  width: 1
+  width: 0.8
 --- !u!212 &1447900256
 SpriteRenderer:
   serializedVersion: 3
@@ -28339,7 +28342,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1564880282}
@@ -28357,7 +28360,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1448674436}
-  width: 1
+  width: 1.1
 --- !u!212 &1448674436
 SpriteRenderer:
   serializedVersion: 3
@@ -28553,7 +28556,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 684378254}
@@ -28571,7 +28574,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1456714174}
-  width: 1
+  width: 0.9
 --- !u!212 &1456714174
 SpriteRenderer:
   serializedVersion: 3
@@ -28660,7 +28663,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.32, y: 0.32, z: 0.32}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1352749417}
@@ -28678,7 +28681,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1467134774}
-  width: 1
+  width: 0.32
 --- !u!212 &1467134774
 SpriteRenderer:
   serializedVersion: 3
@@ -28767,7 +28770,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 907308732}
@@ -28785,7 +28788,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1474530785}
-  width: 1
+  width: 1.1
 --- !u!212 &1474530785
 SpriteRenderer:
   serializedVersion: 3
@@ -28948,8 +28951,8 @@ Transform:
   m_GameObject: {fileID: 1476962394}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1915.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1915.5, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1559956027}
@@ -29066,7 +29069,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2737.5, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1830036145}
@@ -29183,7 +29186,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2668.5, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1992440139}
@@ -29299,8 +29302,8 @@ Transform:
   m_GameObject: {fileID: 1497158880}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 177.61716, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 177.61716, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 936818875}
@@ -29417,7 +29420,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1860588394}
@@ -29435,7 +29438,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1502635991}
-  width: 1
+  width: 1.1
 --- !u!212 &1502635991
 SpriteRenderer:
   serializedVersion: 3
@@ -29524,7 +29527,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1110895637}
@@ -29542,7 +29545,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1506369017}
-  width: 1
+  width: 1.1
 --- !u!212 &1506369017
 SpriteRenderer:
   serializedVersion: 3
@@ -29631,7 +29634,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1096589830}
@@ -29649,7 +29652,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1510672715}
-  width: 1
+  width: 1.1
 --- !u!212 &1510672715
 SpriteRenderer:
   serializedVersion: 3
@@ -29737,8 +29740,8 @@ Transform:
   m_GameObject: {fileID: 1511685935}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2290.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2290.5, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1254394563}
@@ -29854,8 +29857,8 @@ Transform:
   m_GameObject: {fileID: 1513906375}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2856, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2856, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1129586145}
@@ -29971,8 +29974,8 @@ Transform:
   m_GameObject: {fileID: 1514546234}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 225, y: -1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 225, y: -1, z: 0}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -30087,8 +30090,8 @@ Transform:
   m_GameObject: {fileID: 1515470754}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -12.272728, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 0.55}
+  m_LocalPosition: {x: 0, y: -12.272729, z: 0}
+  m_LocalScale: {x: 0.495, y: 0.495, z: 0.495}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 430065256}
@@ -30106,7 +30109,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1515470757}
-  width: 1
+  width: 0.9
 --- !u!212 &1515470757
 SpriteRenderer:
   serializedVersion: 3
@@ -30195,7 +30198,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.32, y: 0.32, z: 0.32}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 459132618}
@@ -30213,7 +30216,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1517226431}
-  width: 1
+  width: 0.32
 --- !u!212 &1517226431
 SpriteRenderer:
   serializedVersion: 3
@@ -30311,6 +30314,8 @@ MonoBehaviour:
   poolPerKind: 6
   tracer: {fileID: 811297639}
   tracerSeconds: 0.05
+  tracerHeight: 1.045
+  effectHeight: 0.95
   decalPrefab: {fileID: 7390958764050753839, guid: 3404861897ec6374cb60f52f5e516452, type: 3}
   decalCount: 30
   bloodColor: {r: 0.55, g: 0.05, b: 0.07, a: 0.85}
@@ -30358,7 +30363,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 360102011}
@@ -30376,7 +30381,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1550808922}
-  width: 1
+  width: 0.9
 --- !u!212 &1550808922
 SpriteRenderer:
   serializedVersion: 3
@@ -30465,7 +30470,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1900003038}
@@ -30483,7 +30488,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1554786943}
-  width: 1
+  width: 1.1
 --- !u!212 &1554786943
 SpriteRenderer:
   serializedVersion: 3
@@ -30572,7 +30577,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1476962395}
@@ -30590,7 +30595,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1559956029}
-  width: 1
+  width: 1.1
 --- !u!212 &1559956029
 SpriteRenderer:
   serializedVersion: 3
@@ -30679,7 +30684,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 975, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -30795,7 +30800,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 956812581}
@@ -30813,7 +30818,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1563706240}
-  width: 1
+  width: 1.1
 --- !u!212 &1563706240
 SpriteRenderer:
   serializedVersion: 3
@@ -30901,8 +30906,8 @@ Transform:
   m_GameObject: {fileID: 1564880281}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2197.9438, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2197.9438, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1448674434}
@@ -31019,7 +31024,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1027172789}
@@ -31037,7 +31042,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1569285354}
-  width: 1
+  width: 0.9
 --- !u!212 &1569285354
 SpriteRenderer:
   serializedVersion: 3
@@ -31232,8 +31237,8 @@ Transform:
   m_GameObject: {fileID: 1576233425}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1260, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 1260, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 550637962}
@@ -31349,8 +31354,8 @@ Transform:
   m_GameObject: {fileID: 1581268147}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 415.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 415.5, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1877687622}
@@ -31466,8 +31471,8 @@ Transform:
   m_GameObject: {fileID: 1597856883}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -12.272728, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 0.55}
+  m_LocalPosition: {x: 0, y: -12.272729, z: 0}
+  m_LocalScale: {x: 0.495, y: 0.495, z: 0.495}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1815696925}
@@ -31485,7 +31490,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1597856886}
-  width: 1
+  width: 0.9
 --- !u!212 &1597856886
 SpriteRenderer:
   serializedVersion: 3
@@ -31573,8 +31578,8 @@ Transform:
   m_GameObject: {fileID: 1613582483}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 606, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 606, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1267456000}
@@ -31691,7 +31696,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1355695122}
@@ -31709,7 +31714,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1618824286}
-  width: 1
+  width: 0.9
 --- !u!212 &1618824286
 SpriteRenderer:
   serializedVersion: 3
@@ -31798,7 +31803,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1237076981}
@@ -31816,7 +31821,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1624546391}
-  width: 1
+  width: 1.1
 --- !u!212 &1624546391
 SpriteRenderer:
   serializedVersion: 3
@@ -31904,8 +31909,8 @@ Transform:
   m_GameObject: {fileID: 1656976635}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 375, y: 1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 375, y: 1, z: 0}
+  m_LocalScale: {x: 2.375, y: 2.375, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1731636645}
@@ -31960,8 +31965,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 810
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
-  m_Color: {r: 0.72, g: 0.72, b: 0.8, a: 1}
+  m_Sprite: {fileID: -1044169842, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
@@ -32022,7 +32027,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1417224362}
@@ -32040,7 +32045,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1659129829}
-  width: 1
+  width: 1.1
 --- !u!212 &1659129829
 SpriteRenderer:
   serializedVersion: 3
@@ -32129,7 +32134,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1917256495}
@@ -32147,7 +32152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1666619893}
-  width: 1
+  width: 1.1
 --- !u!212 &1666619893
 SpriteRenderer:
   serializedVersion: 3
@@ -32235,8 +32240,8 @@ Transform:
   m_GameObject: {fileID: 1680707046}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2478, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2478, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1373125183}
@@ -32353,7 +32358,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2790, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 51127988}
@@ -32470,7 +32475,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 412435252}
@@ -32488,7 +32493,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1690777340}
-  width: 1
+  width: 1.1
 --- !u!212 &1690777340
 SpriteRenderer:
   serializedVersion: 3
@@ -32576,8 +32581,8 @@ Transform:
   m_GameObject: {fileID: 1692153555}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 894.1039, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 894.1039, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2125177208}
@@ -32693,8 +32698,8 @@ Transform:
   m_GameObject: {fileID: 1701618411}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2361.5825, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2361.5825, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 140387269}
@@ -32810,8 +32815,8 @@ Transform:
   m_GameObject: {fileID: 1703551340}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1935.4552, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1935.4552, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 961887773}
@@ -32927,8 +32932,8 @@ Transform:
   m_GameObject: {fileID: 1707380614}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2731.2764, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2731.2764, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1427091980}
@@ -33044,8 +33049,8 @@ Transform:
   m_GameObject: {fileID: 1708112938}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2541.9758, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2541.9758, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1283372419}
@@ -33161,8 +33166,8 @@ Transform:
   m_GameObject: {fileID: 1711290914}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2175, y: 1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 2175, y: 1, z: 0}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1447900254}
@@ -33278,8 +33283,8 @@ Transform:
   m_GameObject: {fileID: 1716327705}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 375, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 375, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 869389264}
@@ -33396,7 +33401,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1409669285}
@@ -33414,7 +33419,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1717939499}
-  width: 1
+  width: 1.1
 --- !u!212 &1717939499
 SpriteRenderer:
   serializedVersion: 3
@@ -33503,7 +33508,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2108453595}
@@ -33521,7 +33526,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1722379802}
-  width: 1
+  width: 1.1
 --- !u!212 &1722379802
 SpriteRenderer:
   serializedVersion: 3
@@ -33610,7 +33615,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1656976636}
@@ -33628,7 +33633,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1731636647}
-  width: 1
+  width: 0.8
 --- !u!212 &1731636647
 SpriteRenderer:
   serializedVersion: 3
@@ -33808,8 +33813,8 @@ Transform:
   m_GameObject: {fileID: 1734773121}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 603, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 603, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 503718597}
@@ -33925,8 +33930,8 @@ Transform:
   m_GameObject: {fileID: 1735756256}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 900, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 900, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 839105770}
@@ -34043,7 +34048,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2662.5, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -34158,8 +34163,8 @@ Transform:
   m_GameObject: {fileID: 1749060335}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1874.1456, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1874.1456, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 986267021}
@@ -34275,8 +34280,8 @@ Transform:
   m_GameObject: {fileID: 1758286760}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2625, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 2625, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 392537891}
@@ -34393,7 +34398,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2009397908}
@@ -34411,7 +34416,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1761451624}
-  width: 1
+  width: 1.1
 --- !u!212 &1761451624
 SpriteRenderer:
   serializedVersion: 3
@@ -34500,7 +34505,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1531.4324, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1204868050}
@@ -34617,7 +34622,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1985127756}
@@ -34635,7 +34640,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1771414180}
-  width: 1
+  width: 1.1
 --- !u!212 &1771414180
 SpriteRenderer:
   serializedVersion: 3
@@ -34724,7 +34729,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 158721110}
@@ -34742,7 +34747,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1771583497}
-  width: 1
+  width: 1.1
 --- !u!212 &1771583497
 SpriteRenderer:
   serializedVersion: 3
@@ -34831,7 +34836,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 935183449}
@@ -34849,7 +34854,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1773099629}
-  width: 1
+  width: 0.8
 --- !u!212 &1773099629
 SpriteRenderer:
   serializedVersion: 3
@@ -34938,7 +34943,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 866004318}
@@ -34956,7 +34961,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1779780529}
-  width: 1
+  width: 1.1
 --- !u!212 &1779780529
 SpriteRenderer:
   serializedVersion: 3
@@ -35152,7 +35157,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2887.5, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 736691325}
@@ -35268,8 +35273,8 @@ Transform:
   m_GameObject: {fileID: 1798681102}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1200, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 1200, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 930296397}
@@ -35386,7 +35391,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 728191193}
@@ -35404,7 +35409,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1801970616}
-  width: 1
+  width: 0.9
 --- !u!212 &1801970616
 SpriteRenderer:
   serializedVersion: 3
@@ -35568,7 +35573,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 791141871}
@@ -35586,7 +35591,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1807296953}
-  width: 1
+  width: 0.9
 --- !u!212 &1807296953
 SpriteRenderer:
   serializedVersion: 3
@@ -35675,7 +35680,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1126299538}
@@ -35693,7 +35698,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1807641353}
-  width: 1
+  width: 1.1
 --- !u!212 &1807641353
 SpriteRenderer:
   serializedVersion: 3
@@ -35782,7 +35787,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1954272965}
@@ -35800,7 +35805,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1807734738}
-  width: 1
+  width: 0.9
 --- !u!212 &1807734738
 SpriteRenderer:
   serializedVersion: 3
@@ -35888,8 +35893,8 @@ Transform:
   m_GameObject: {fileID: 1809341014}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -12.272728, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 0.55}
+  m_LocalPosition: {x: 0, y: -12.272729, z: 0}
+  m_LocalScale: {x: 0.495, y: 0.495, z: 0.495}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1953712430}
@@ -35907,7 +35912,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1809341017}
-  width: 1
+  width: 0.9
 --- !u!212 &1809341017
 SpriteRenderer:
   serializedVersion: 3
@@ -35995,8 +36000,8 @@ Transform:
   m_GameObject: {fileID: 1815696924}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1362.75, y: 5.15, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 1362.75, y: 11.825001, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1597856884}
@@ -36112,8 +36117,8 @@ Transform:
   m_GameObject: {fileID: 1815962486}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1912.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 1912.5, y: -1, z: 0}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -36228,8 +36233,8 @@ Transform:
   m_GameObject: {fileID: 1824126099}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1985.8378, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1985.8378, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 419258553}
@@ -36346,7 +36351,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1942830405}
@@ -36364,7 +36369,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1827448031}
-  width: 1
+  width: 0.9
 --- !u!212 &1827448031
 SpriteRenderer:
   serializedVersion: 3
@@ -36452,8 +36457,8 @@ Transform:
   m_GameObject: {fileID: 1828653244}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1115.6157, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1115.6157, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1004815947}
@@ -36677,7 +36682,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 357159375}
@@ -36695,7 +36700,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1835837588}
-  width: 1
+  width: 0.9
 --- !u!212 &1835837588
 SpriteRenderer:
   serializedVersion: 3
@@ -36784,7 +36789,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1184453382}
@@ -36802,7 +36807,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1855621076}
-  width: 1
+  width: 0.8
 --- !u!212 &1855621076
 SpriteRenderer:
   serializedVersion: 3
@@ -36997,8 +37002,8 @@ Transform:
   m_GameObject: {fileID: 1858894234}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2106.244, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2106.244, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 297414202}
@@ -37114,8 +37119,8 @@ Transform:
   m_GameObject: {fileID: 1860588393}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1356, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1356, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1502635989}
@@ -37231,8 +37236,8 @@ Transform:
   m_GameObject: {fileID: 1868657318}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1874.1456, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1874.1456, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1055345329}
@@ -37349,7 +37354,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1581268148}
@@ -37367,7 +37372,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1877687624}
-  width: 1
+  width: 1.1
 --- !u!212 &1877687624
 SpriteRenderer:
   serializedVersion: 3
@@ -37456,7 +37461,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 720, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 841812722}
@@ -37573,7 +37578,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 576289471}
@@ -37591,7 +37596,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1879754755}
-  width: 1
+  width: 1.1
 --- !u!212 &1879754755
 SpriteRenderer:
   serializedVersion: 3
@@ -37680,7 +37685,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1980, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 365373968}
@@ -37796,8 +37801,8 @@ Transform:
   m_GameObject: {fileID: 1888616647}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1162.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 1162.5, y: -1, z: 0}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -37913,7 +37918,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 714024547}
@@ -37931,7 +37936,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1891264682}
-  width: 1
+  width: 0.9
 --- !u!212 &1891264682
 SpriteRenderer:
   serializedVersion: 3
@@ -38019,8 +38024,8 @@ Transform:
   m_GameObject: {fileID: 1891579772}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2836.9016, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2836.9016, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2114726265}
@@ -38137,7 +38142,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 655034384}
@@ -38155,7 +38160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1898127612}
-  width: 1
+  width: 1.1
 --- !u!212 &1898127612
 SpriteRenderer:
   serializedVersion: 3
@@ -38244,7 +38249,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 90, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2136608404}
@@ -38361,7 +38366,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 112.5, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1554786941}
@@ -38477,8 +38482,8 @@ Transform:
   m_GameObject: {fileID: 1916161730}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1875, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 1875, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1973462466}
@@ -38595,7 +38600,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2665.5, y: 0, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1666619891}
@@ -38712,7 +38717,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1087.5, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1435268328}
@@ -38829,7 +38834,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.32, y: 0.32, z: 0.32}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 850418698}
@@ -38847,7 +38852,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1930593358}
-  width: 1
+  width: 0.32
 --- !u!212 &1930593358
 SpriteRenderer:
   serializedVersion: 3
@@ -38935,8 +38940,8 @@ Transform:
   m_GameObject: {fileID: 1934115306}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2782.981, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2782.981, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 694562293}
@@ -39052,8 +39057,8 @@ Transform:
   m_GameObject: {fileID: 1940742274}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2106, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2106, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1373759668}
@@ -39169,8 +39174,8 @@ Transform:
   m_GameObject: {fileID: 1942830404}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2160, y: 1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 2160, y: 1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1827448029}
@@ -39361,8 +39366,8 @@ Transform:
   m_GameObject: {fileID: 1947650027}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2587.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalPosition: {x: 2587.5, y: -1, z: 0}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1856554361}
@@ -39478,8 +39483,8 @@ Transform:
   m_GameObject: {fileID: 1953712429}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1737.75, y: 6.75, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 1737.75, y: 12.825001, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1809341015}
@@ -39596,7 +39601,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2700, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1807734736}
@@ -39820,7 +39825,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1916161731}
@@ -39838,7 +39843,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1973462468}
-  width: 1
+  width: 0.9
 --- !u!212 &1973462468
 SpriteRenderer:
   serializedVersion: 3
@@ -39926,8 +39931,8 @@ Transform:
   m_GameObject: {fileID: 1976986774}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2520, y: 1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 2520, y: 1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1099220008}
@@ -40043,8 +40048,8 @@ Transform:
   m_GameObject: {fileID: 1983266173}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2862.75, y: 5.15, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 2862.75, y: 11.825001, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 770077714}
@@ -40160,8 +40165,8 @@ Transform:
   m_GameObject: {fileID: 1985127755}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 228, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 228, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1771414178}
@@ -40278,7 +40283,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 164060742}
@@ -40296,7 +40301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1988252478}
-  width: 1
+  width: 0.9
 --- !u!212 &1988252478
 SpriteRenderer:
   serializedVersion: 3
@@ -40384,8 +40389,8 @@ Transform:
   m_GameObject: {fileID: 1990047460}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1350, y: -1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 1350, y: -1, z: 0}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -40500,8 +40505,8 @@ Transform:
   m_GameObject: {fileID: 1990266527}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2287.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 2287.5, y: -1, z: 0}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 475886339}
@@ -40617,7 +40622,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1486889737}
@@ -40635,7 +40640,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 1992440141}
-  width: 1
+  width: 1.1
 --- !u!212 &1992440141
 SpriteRenderer:
   serializedVersion: 3
@@ -40723,8 +40728,8 @@ Transform:
   m_GameObject: {fileID: 1992987985}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2437.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalPosition: {x: 2437.5, y: -1, z: 0}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 769477773}
@@ -40840,8 +40845,8 @@ Transform:
   m_GameObject: {fileID: 2003660608}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2681.5964, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2681.5964, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2136269508}
@@ -40958,7 +40963,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1150321998}
@@ -40976,7 +40981,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 2008237097}
-  width: 1
+  width: 1.1
 --- !u!212 &2008237097
 SpriteRenderer:
   serializedVersion: 3
@@ -41064,8 +41069,8 @@ Transform:
   m_GameObject: {fileID: 2009397907}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 790.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 790.5, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1761451622}
@@ -41229,7 +41234,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 305086464}
@@ -41247,7 +41252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 2021159322}
-  width: 1
+  width: 0.9
 --- !u!212 &2021159322
 SpriteRenderer:
   serializedVersion: 3
@@ -41443,7 +41448,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.32, y: 0.32, z: 0.32}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 421462378}
@@ -41461,7 +41466,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 2035313107}
-  width: 1
+  width: 0.32
 --- !u!212 &2035313107
 SpriteRenderer:
   serializedVersion: 3
@@ -41781,8 +41786,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 3
       minMaxState: 3
-      scalar: 0.3
-      minScalar: 0.12
+      scalar: 0.57
+      minScalar: 0.22799999
       maxCurve:
         serializedVersion: 2
         m_Curve: []
@@ -41957,7 +41962,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 0.05
+      value: 0.095
       mode: 0
       spread: 0
       speed:
@@ -43847,8 +43852,8 @@ Transform:
   m_GameObject: {fileID: 2051378441}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2782.981, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2782.981, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 910067107}
@@ -43965,7 +43970,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1197027376}
@@ -43983,7 +43988,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 2051731364}
-  width: 1
+  width: 1.1
 --- !u!212 &2051731364
 SpriteRenderer:
   serializedVersion: 3
@@ -44072,7 +44077,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 602825322}
@@ -44090,7 +44095,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 2057553996}
-  width: 1
+  width: 1.1
 --- !u!212 &2057553996
 SpriteRenderer:
   serializedVersion: 3
@@ -44178,8 +44183,8 @@ Transform:
   m_GameObject: {fileID: 2061165534}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1687.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.9, z: 1}
+  m_LocalPosition: {x: 1687.5, y: 1, z: 0}
+  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1793513919}
@@ -44295,8 +44300,8 @@ Transform:
   m_GameObject: {fileID: 2065657902}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2482.7517, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2482.7517, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 636815726}
@@ -44412,8 +44417,8 @@ Transform:
   m_GameObject: {fileID: 2067316402}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2631.9585, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2631.9585, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 672167228}
@@ -44529,8 +44534,8 @@ Transform:
   m_GameObject: {fileID: 2068835114}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1500, y: 1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 1500, y: 1, z: 0}
+  m_LocalScale: {x: 2.375, y: 2.375, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 85702686}
@@ -44585,8 +44590,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 810
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
-  m_Color: {r: 0.72, g: 0.72, b: 0.8, a: 1}
+  m_Sprite: {fileID: -1044169842, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
@@ -44646,8 +44651,8 @@ Transform:
   m_GameObject: {fileID: 2071574848}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2043.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2043.5, y: 1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 271413616}
@@ -44871,7 +44876,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 943716563}
@@ -44889,7 +44894,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 2080846322}
-  width: 1
+  width: 1.1
 --- !u!212 &2080846322
 SpriteRenderer:
   serializedVersion: 3
@@ -44977,8 +44982,8 @@ Transform:
   m_GameObject: {fileID: 2104870956}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1387.5, y: 1.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 1387.5, y: 1, z: 0}
+  m_LocalScale: {x: 2.375, y: 2.375, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 458932151}
@@ -45033,8 +45038,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 810
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
-  m_Color: {r: 0.72, g: 0.72, b: 0.8, a: 1}
+  m_Sprite: {fileID: -1044169842, guid: 71b10401ce01ba644a41e8d5a8cbd151, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
@@ -45094,8 +45099,8 @@ Transform:
   m_GameObject: {fileID: 2108453594}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1165.5, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 1165.5, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1722379800}
@@ -45287,7 +45292,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 728765595}
@@ -45305,7 +45310,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 2111959533}
-  width: 1
+  width: 1.1
 --- !u!212 &2111959533
 SpriteRenderer:
   serializedVersion: 3
@@ -45394,7 +45399,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1891579773}
@@ -45412,7 +45417,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 2114726267}
-  width: 1
+  width: 1.1
 --- !u!212 &2114726267
 SpriteRenderer:
   serializedVersion: 3
@@ -45500,8 +45505,8 @@ Transform:
   m_GameObject: {fileID: 2122347731}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2430, y: -1.6, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 2430, y: -1, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1437747756}
@@ -45617,8 +45622,8 @@ Transform:
   m_GameObject: {fileID: 2124485702}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 987.75, y: 6.75, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.55, z: 1}
+  m_LocalPosition: {x: 987.75, y: 12.825001, z: 0}
+  m_LocalScale: {x: 1.045, y: 1.045, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 641404841}
@@ -45735,7 +45740,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1692153556}
@@ -45753,7 +45758,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 2125177210}
-  width: 1
+  width: 1.1
 --- !u!212 &2125177210
 SpriteRenderer:
   serializedVersion: 3
@@ -45845,10 +45850,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta::Zombineta.Enemies.HordeView
   run: {fileID: 1170739137}
   zombiePrefab: {fileID: 1454352294408542829, guid: d61e7fa8059f7eb4086d3014940acb31, type: 3}
+  bodyScale: 1.9
   looks: {fileID: 11400000, guid: 526ce8163bc04b242a6e808590ae5fbe, type: 2}
   lookSeed: 12345
   shadowSprite: {fileID: 21300000, guid: 8c1bb8c15f5a47141b8d044f53482a77, type: 3}
   shadowColor: {r: 0, g: 0, b: 0, a: 0.45}
+  shadowWidth: 0.8
   overrunMeters: 12
   litTint: {r: 1.25, g: 1.2, b: 1.1, a: 1}
   litLeanDegrees: -12
@@ -45896,7 +45903,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2003660609}
@@ -45914,7 +45921,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 2136269510}
-  width: 1
+  width: 1.1
 --- !u!212 &2136269510
 SpriteRenderer:
   serializedVersion: 3
@@ -46002,8 +46009,8 @@ Transform:
   m_GameObject: {fileID: 2136601232}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2403.73, y: -1.6, z: 0}
-  m_LocalScale: {x: 1.1, y: 1.2, z: 1}
+  m_LocalPosition: {x: 2403.73, y: -1, z: 0}
+  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1168868202}
@@ -46120,7 +46127,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1898508735}
@@ -46138,7 +46145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GroundShadow
   shadow: {fileID: 2136608406}
-  width: 1
+  width: 0.9
 --- !u!212 &2136608406
 SpriteRenderer:
   serializedVersion: 3
