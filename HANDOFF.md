@@ -95,8 +95,8 @@ pausa, opciones sobre la pausa, volver, seguir, ganar, nivel 2, perder, reintent
 desde la pausa, final y menú) dejó en cada paso exactamente las escenas esperadas. Y Play directo
 desde `Level_02` arranca jugando el nivel 2.
 
-**No verificado:** la navegación con teclado y joystick de verdad (el recorrido se hizo llamando
-al flujo). Los textos de los interruptores de Opciones se ven algo borrosos porque el control
+**Verificado a mano (José, 13/09):** los menús se navegan bien con teclado. **No verificado:**
+joystick. Los textos de los interruptores de Opciones se ven algo borrosos porque el control
 está escalado: es un placeholder para que arte rehaga.
 
 ---
