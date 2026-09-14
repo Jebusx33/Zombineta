@@ -1,13 +1,14 @@
 # Zombineta — Handoff
 
-Última actualización: 14 de septiembre de 2026, tras el sub-proyecto 3: los niveles del juego
-definitivo se juegan y se arman a mano en la escena, con una paleta y un generador.
+Última actualización: 14 de septiembre de 2026, tras el sub-proyecto 4: la escala y el encuadre
+del juego definitivo calzan con la referencia de arte (carriles abajo, más fondo, personajes
+grandes), con zombies por arquetipo y sombras por carril.
 
 **Estado:** el prototipo se recorre de punta a punta con el flujo del GDD (menú, opciones,
 personaje, cinemática, dos niveles, victoria, game over, final), sobre un escenario de
-placeholders con parallax en cinco capas, una cámara que reacciona a la persecución y rampas
+placeholders con parallax en varias capas, una cámara que reacciona a la persecución y rampas
 con un salto que se regula inclinando en el aire, y una horda de zombies individuales
-con tipos. 125 tests EditMode en verde.
+con tipos y arte propio por arquetipo. 186 tests EditMode en verde.
 
 **Ojo:** con el balance vigente la meta **no se alcanza jugando** (ver sección 4). Para
 recorrer el flujo completo existen F2 (ganar) y F3 (perder), solo en editor y builds de
@@ -49,8 +50,8 @@ Cinco sub-proyectos, cada uno con su diseño, plan e implementación:
 | 1 | Reestructura: `Prototipo/`, `Juego/` y simulación compartida | **Hecho** (13/09) |
 | 2 | Escenas: `Boot` persistente + una escena por pantalla y por nivel | **Hecho** (13/09) |
 | 3 | Herramienta para armar niveles a mano (el nivel es la escena) | **Hecho** (14/09) |
-| 4 | Estética nueva: carriles más abajo, más fondo, zombies más grandes | Próximo; espera un cuadro de referencia de arte |
-| 5 | Iluminación 2D real con URP | Después del 4; necesita normal maps de arte |
+| 4 | Estética nueva: carriles más abajo, más fondo, zombies más grandes | **Hecho** (14/09) |
+| 5 | Iluminación 2D real con URP | Próximo; necesita normal maps de arte |
 
 ### Escenas del juego definitivo (`Juego/`)
 
@@ -154,6 +155,91 @@ y colocar con clicks reales (se probó por la API de la herramienta).
 impacto le devolvía el tiempo al nivel con la pausa abierta (`CameraFollow.TimeHeld`). Y en el
 prototipo, los barriles nunca explotaban jugando: `RunController` no le pasaba el recorrido a la
 simulación (`Sim.Barrels = Level`).
+
+### Estética y escala (`Juego/`)
+
+Diseño: `docs/superpowers/specs/2026-09-14-estetica-escala-design.md`.
+
+Carriles más juntos y más abajo, casi todo el cuadro de fondo, personajes al doble de alto y
+zombies con arte propio por arquetipo en vez de un sprite genérico teñido. Calzado a ojo contra
+`Arte/Bocetos/Concept Art/Mapa_Escala.png` — la referencia es el encuadre **en calma**, con la
+horda lejos, no un momento de tensión.
+
+**Guía de referencia y captura de comparación** (editor, menú `Zombineta/Encuadre`):
+- `Mostrar referencia` / `Ocultar referencia` superpone el boceto en el Game view (Canvas
+  `ScreenSpaceOverlay`, `HideFlags.DontSave`: no llega a builds ni ensucia la escena). `Elegir
+  imagen…` cambia el PNG; `Opacidad +`/`Opacidad -` ajustan la mezcla (default 0,4). Sigue viva en
+  Play y al cambiar de escena.
+- `Capturar comparación` (`FramingCapture`) renderiza `Camera.main` a 1920×1080, le mezcla la
+  referencia encima al mismo opacity, y guarda el PNG en `Juego/Temp/Encuadre/`. Es la forma de
+  comparar sin depender del tamaño ni el foco de la ventana del Game view (trampa #29).
+
+**Dónde vive cada número:**
+
+| Qué | Dónde |
+|---|---|
+| Separación entre carriles | `GameConfig.laneSpacing` (0,99) |
+| Tamaño de cámara en calma / tensión / atrapada / victoria | `CameraConfig.wideSize` (6,3 = la referencia) / `tightSize` (5,67, −10 %) / `catchSize` (3,6) / `victorySize` (7,5) |
+| Borde de abajo de la calle | `CameraConfig.viewBottomY` |
+| Anclaje del piso al hacer zoom | `CameraFollow` (carril ancla; mezcla en `anchorBlendSeconds` = 0,25 s reales; se apaga en atrapada y victoria) |
+| Altura del salto en pantalla | `GameConfig.jumpHeightToWorld` |
+| Escala de la moto | `Scooter.localScale` en `NivelBase` y en cada nivel |
+| Escala de los zombies | `HordeView.bodyScale` × la escala del tipo en `Zombies.asset` × `ZombieLook.scale` |
+| Escala de objetos del recorrido | `LevelItemPalette.asset` (por tipo) |
+| Tamaño de efectos y manchas | `FxManager` (alturas ya serializadas) y la escala de cada prefab `Fx*` |
+| Capas de fondo | `Escenario.asset` (parallax, alto y base de cada capa) |
+
+**Orden por carril y sus slots:** `LaneSorting.Order(visualLane, slot)`
+(`Scripts/Gameplay/Core/LaneSorting.cs`, namespace `Zombineta.Core`) =
+`Base(1000) − round(visualLane×100) + slot`, con `visualLane` continuo (no salta durante el tween
+de carril). Los slots, de atrás hacia adelante dentro de un mismo carril:
+`Shadow(0) < Item(10) < Zombie(20) < Player(30) < Effect(40)`. Lo usan `ScooterView`, `HordeView`,
+`LevelScene.ApplyVisual` y `FxManager`.
+
+**Sombras:** `GroundShadow` (`Scripts/Gameplay/Fx/GroundShadow.cs`) es la elipse
+(`Art/Fx/sombra.png`) que sigue la X del dueño, se queda en el piso de su carril y se achica y
+aclara con la altura. La crean por código `ScooterView`, `HordeView` (una por zombie, se oculta al
+morir) y `LevelScene.ApplyVisual` (una por item que no sea rampa; el ancho sale de
+`LevelItemPalette.Look.shadowWidth`).
+
+**`ZombieLooks` — cómo sumar un arquetipo nuevo:**
+1. **Preparar la hoja:** fondo transparente con `Tools/SpritePrep/remove_white_background.py
+   <entrada> <salida> [--tolerance N]` (fondo blanco liso; el default 24 alcanza salvo un
+   cuadriculado disfrazado de blanco — trampa #31). Para cuadriculado gris está
+   `remove_checker_background.py`.
+2. **Recortar:** seleccionar el PNG en el Project y `Assets > Zombineta > Recortar por
+   transparencia` (`SheetSlicer`, `Editor/Art/SheetSlicer.cs`). Encuentra cada figura por
+   componentes conexas de alfa (`AlphaIslands`, testeado), agrupa filas por superposición de los
+   bordes verticales (no por distancia entre centros: una pose caída/tirada tiene un centro muy
+   lejos del de sus vecinas de pie aunque comparta la misma línea de base) y nombra
+   `<hoja>_<fila>_<columna>` con pivot en los pies. Si la hoja ya tenía sprites recortados y el
+   conteo de islas da distinto, no sobreescribe sin confirmar.
+3. **Agregar el look:** en `Settings/ZombieLooks.asset`, un `ZombieLook` nuevo dentro del
+   `TypeLooks` del tipo que corresponda (mismo orden que `Zombies.asset`: Común/Corredor/Pesado)
+   con sus sprites de `walk`/`hit`/`death`, `walkFps` y `scale` (compensa la resolución de la hoja
+   de origen, no el tamaño en juego: las hojas completas van en 1, las poses de `Zombies_poses` en
+   2,5 porque salen ~2,3 veces más chicas). `ZombieLookPicker` elige entre los looks del tipo por
+   semilla y no repite el look anterior del mismo tipo cuando hay más de uno.
+
+**Estado de los niveles:** `Level_01` y `Level_02` se reabrieron y guardaron con los carriles y
+sombras nuevos: 0 items fuera de su carril, mismos problemas preexistentes en `LevelValidator`
+que antes (4 y 5, los objetos encimados heredados de la ruta vieja).
+
+**Verificado (14/09):** 186 tests EditMode en verde. Capturas de plano en calma, cerrado
+(tensión), atrapada y victoria contra `Mapa_Escala.png`: líneas de carril y de calle a ≤2-3 px de
+la referencia. En Play: el carril de abajo tapa al de arriba sin parpadeo durante el tween, la
+horda muestra la mezcla de looks por arquetipo con impacto y muerte animados por código, y el
+recorrido menú → nivel → pausa no tira errores de consola. `Prototipo/` sin tocar (`git diff`
+contra `5b66236` en `Prototipo/Assets|Packages|ProjectSettings` vacío).
+
+**NO verificado — pendiente de jugarlo:** cómo se siente el encuadre nuevo con las manos (las
+siluetas del primer plano tapando un carril un instante, el aire para saltar con el ancla del
+piso puesto, si sigue leyéndose bien qué carril ocupa cada cosa con personajes tan grandes).
+
+**Límites conocidos de los placeholders:** fachadas de edificio estiradas, troncos de árbol
+rellenos (no silueta fina), cordón y vereda como franjas grises lisas, los looks de una sola pose
+(oficinista, vagabundo, mujer, adolescente) mueren en un solo cuadro por falta de arte de caída, y
+la capa `Frontal` (árboles a parallax 2,5) sigue cruzando los carriles por delante.
 
 ---
 
@@ -675,6 +761,42 @@ Estas costaron tiempo real en esta sesión:
     el siguiente leer sus píxeles con `InternalEditorUtility.ReadScreenPixel` sobre
     `position × pixelsPerPoint`. En el mismo comando todavía se lee la pestaña que estaba delante.
 
+29. **No enfocar ventanas del editor ni leer píxeles de la pantalla física por MCP: la máquina es
+    el escritorio en uso del usuario.** `EditorWindow.Focus()` + `ReadScreenPixel` capturan lo que
+    esté realmente al frente en el sistema operativo, no la ventana de Unity — en esta sesión eso
+    llegó a mostrar por accidente el Gmail y el Calendar del usuario con una reunión en curso. Para
+    ver el Game view con overlays (Canvas `ScreenSpaceOverlay`) en Play, usar
+    `ScreenCapture.CaptureScreenshotAsTexture()` dentro del callback de update; para comparar
+    encuadre sin overlays alcanza con renderizar la cámara a una `RenderTexture`
+    (`Camera.Render()` + `ReadPixels`), como hace `FramingCapture`.
+
+30. **`TextureImporter.spritesheet` compila pero ya no tiene efecto en 6000.6** (solo tira el
+    warning CS0618, no un error: es fácil no notarlo). Para escribir rects de sprite desde código
+    hay que usar `UnityEditor.U2D.Sprites.SpriteDataProviderFactories` +
+    `ISpriteEditorDataProvider.SetSpriteRects()` + `Apply()` (lo mismo que usa el Sprite Editor por
+    dentro), y agregar la referencia `Unity.2D.Sprite.Editor` al asmdef del editor.
+
+31. **`remove_checker_background.py` puede devolver 0 píxeles transparentes en silencio**, sin
+    error, si el tono real del cuadriculado no coincide con las bandas hardcodeadas
+    (`CHECKER_BANDS`, pensadas para grises ~66/104). `ZombieFlesh.jpeg` tenía un cuadriculado mucho
+    más claro (~212): no limpió nada y no avisó. Se resolvió con
+    `remove_white_background.py --tolerance 65` en vez de tocar las bandas. Antes de asumir qué
+    script usar, inspeccionar a mano el tono real del fondo.
+
+32. **Escribir `localPosition` en un sprite "hijo" manda todo al origen del padre si ese hijo en
+    realidad está en la raíz de la jerarquía.** El balanceo (`poseBob`) de `HordeView` escribía
+    `sprites[i].transform.localPosition`, pero en `Zombie.prefab` el `SpriteRenderer` está en la
+    raíz del prefab: los zombies con look quedaban invisibles en (0,0) del mundo (solo se veían sus
+    sombras, que sí se posicionan en coordenadas de mundo). Antes de mover algo por
+    `localPosition`, confirmar en qué nivel de la jerarquía vive el componente que se quiere mover.
+
+33. **Los sprites de `ZombieFront` guardados en una escena de nivel solo se recalculan con un tick
+    real del editor**, porque `LevelScene.ApplyVisual` corre desde `[ExecuteAlways] Update()`.
+    Cargar la escena y tocar el GameObject por MCP no alcanza para que ese `Update()` corra: el
+    sprite guardado se queda con el look viejo (o el genérico de la paleta) hasta que el editor
+    tiene un frame real o se llama `ApplyVisual` a mano. Antes de dar por buena una escena con
+    `ZombieFront`, abrirla, forzar `ApplyVisual` (o esperar un tick real) y guardar.
+
 ---
 
 ## 6. Qué está verificado y qué no
@@ -704,6 +826,11 @@ Estas costaron tiempo real en esta sesión:
 - Flujo: las ocho pantallas recorridas en Play Mode y capturadas, incluida una derrota real
   (la horda alcanzó a la moto sola) detectada por el flujo, y el cambio efectivo de `Ruta01` a
   `Ruta02` entre niveles. El HUD de barras ya se vio funcionando.
+- Estética y escala (14/09): 186 tests EditMode. Capturas de plano en calma, cerrado, atrapada y
+  victoria contra `Mapa_Escala.png` con las líneas de carril y de calle a ≤2-3 px. En Play, el
+  orden por carril tapa correctamente sin parpadeo durante el tween de cambio de carril, y la
+  horda muestra la mezcla de looks por arquetipo con impacto y muerte animados por código.
+  `Prototipo/` sin tocar.
 
 **NO verificado — pendiente de que alguien lo juegue:**
 - **El teclado en los menús.** El flujo se manejó por su API; nunca se apretó una tecla real.
@@ -724,6 +851,10 @@ Estas costaron tiempo real en esta sesión:
   giro del turbo (2,6 °/s por m/s) se sienten controlables o frustrantes, y si mantener D
   (turbo) al pisar la rampa y tener que soltarlo en el aire se entiende solo.
 - Que el juego sea **divertido**. Eso es lo que responde el playtest, no el simulador.
+- **Cómo se siente el encuadre y la escala nuevos del sub-proyecto 4.** Nadie lo jugó con las
+  manos: si las siluetas del primer plano tapan un carril un instante, si el aire para saltar
+  alcanza con el ancla del piso puesto, y si se sigue leyendo bien el carril de cada cosa con
+  personajes al doble de alto.
 
 ---
 
@@ -736,11 +867,15 @@ la sección 0: el repo quedó en `Prototipo/` + `Juego/` con la simulación comp
 en verde en los dos proyectos, y el prototipo verificado sin referencias rotas. Lo próximo es
 el sub-proyecto 2 (escenas en `Juego/`), que quedó hecho el mismo día.
 
-**14/09:** sub-proyecto 3 hecho: niveles jugables armados a mano, con paleta, generador que
-respeta lo tocado y validaciones (sección 0). **Lo próximo es el sub-proyecto 4 (estética),
-que necesita un cuadro de referencia de arte.** Mientras tanto: probar la paleta con el mouse,
-limpiar los 4 encimados de `Level_01` y decidir `goalDistance`. Lo que sigue abajo es de antes
-de la reestructura.
+**14/09:** sub-proyecto 3 hecho (niveles jugables armados a mano, con paleta, generador que
+respeta lo tocado y validaciones) y sub-proyecto 4 hecho (estética y escala: guía de referencia
+y captura de comparación, carriles y cámara calzados con `Mapa_Escala.png`, orden por carril y
+sombras, zombies por arquetipo con animación por código, escenario reacomodado — todo detallado
+en la sección 0). **Lo próximo es el sub-proyecto 5 (iluminación 2D con URP), que necesita
+normal maps de arte.** Mientras tanto: jugarlo con teclado para sentir el encuadre nuevo
+(siluetas del primer plano, aire de salto, lectura de carril — ver sección 6), limpiar los 4
+encimados de `Level_01` y decidir `goalDistance`. Lo que sigue abajo es de antes de la
+reestructura.
 
 Lo último que se hizo fueron las rampas y el salto (T12). Lo que el usuario ya anunció como
 próximo paso son **las animaciones de spritesheet de la protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
