@@ -35,10 +35,22 @@ namespace Zombineta.Juego.EditorTools.Framing
         {
             EditorSceneManager.activeSceneChangedInEditMode += (a, b) => { if (Visible) Ensure(); };
             SceneManager.activeSceneChanged += (a, b) => { if (Visible) Ensure(); };
-            EditorApplication.playModeStateChanged += _ => { if (Visible) Ensure(); };
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 
             // El editor puede reabrirse con la guia activa de una sesion anterior: recrearla ahora
             // en vez de esperar al proximo cambio de escena.
+            if (Visible)
+                Ensure();
+        }
+
+        static void OnPlayModeStateChanged(PlayModeStateChange state)
+        {
+            // Sin recarga de dominio, las texturas nativas cacheadas no se limpian solas al
+            // entrar o salir de Play: se destruyen aca para no arrastrar referencias a texturas
+            // invalidas de una sesion de Play a la otra.
+            if (state == PlayModeStateChange.ExitingEditMode || state == PlayModeStateChange.ExitingPlayMode)
+                ClearTextureCache();
+
             if (Visible)
                 Ensure();
         }
@@ -104,6 +116,15 @@ namespace Zombineta.Juego.EditorTools.Framing
         {
             ImagePath = imagePath;
             Opacity = opacity;
+
+            // Si la imagen no carga no queda nada para mostrar: no dejar Visible en true (el
+            // menu quedaria "activo" sin overlay, LoadTexture ya avisa por que fallo).
+            if (LoadTexture(imagePath) == null)
+            {
+                Hide();
+                return;
+            }
+
             Visible = true;
             Ensure();
         }
@@ -113,7 +134,19 @@ namespace Zombineta.Juego.EditorTools.Framing
             var go = GameObject.Find(GameObjectName);
             if (go != null)
                 Object.DestroyImmediate(go);
+            ClearTextureCache();
             Visible = false;
+        }
+
+        /// <summary>Destruye las texturas nativas cacheadas y vacia el cache.</summary>
+        static void ClearTextureCache()
+        {
+            foreach (var texture in textureCache.Values)
+            {
+                if (texture != null)
+                    Object.DestroyImmediate(texture);
+            }
+            textureCache.Clear();
         }
 
         // --- Overlay -------------------------------------------------------------------
@@ -126,10 +159,17 @@ namespace Zombineta.Juego.EditorTools.Framing
                 return;
 
             var go = GameObject.Find(GameObjectName);
-            if (go == null)
+            var image = go != null ? go.GetComponentInChildren<RawImage>(true) : null;
+            if (image == null)
+            {
+                // O no existia __GuiaEncuadre, o alguien le rompio la jerarquia (le saco el
+                // RawImage): tirar lo que haya y crearlo de nuevo, prolijo.
+                if (go != null)
+                    Object.DestroyImmediate(go);
                 go = CreateOverlay();
+                image = go.GetComponentInChildren<RawImage>(true);
+            }
 
-            var image = go.GetComponentInChildren<RawImage>(true);
             image.texture = texture;
             image.color = new Color(1f, 1f, 1f, Opacity);
 
@@ -173,7 +213,12 @@ namespace Zombineta.Juego.EditorTools.Framing
         static Texture2D LoadTexture(string path)
         {
             if (string.IsNullOrEmpty(path) || !File.Exists(path))
+            {
+                Debug.LogWarning(
+                    "FramingGuide: no se encontro la imagen de referencia en '" + path +
+                    "'. Usar 'Zombineta/Encuadre/Elegir imagen…' para elegir otra.");
                 return null;
+            }
 
             if (textureCache.TryGetValue(path, out var cached) && cached != null)
                 return cached;
@@ -183,7 +228,7 @@ namespace Zombineta.Juego.EditorTools.Framing
             {
                 bytes = File.ReadAllBytes(path);
             }
-            catch (IOException e)
+            catch (System.Exception e)
             {
                 Debug.LogWarning("FramingGuide: no se pudo leer " + path + " (" + e.Message + ")");
                 return null;
