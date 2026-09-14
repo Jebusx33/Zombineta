@@ -109,9 +109,23 @@ InitTestScene*.unity*
 # Especifico de Zombineta
 # ---------------------------------------------------------------------------
 
+# El repo tiene DOS proyectos de Unity: Juego/ y Prototipo/. La raiz NO es un proyecto.
+# Si alguien la abre por error desde Unity Hub, Unity crea un proyecto vacio aca; que no
+# llegue al repo. Unity Hub tiene que apuntar a Juego/ (o a Prototipo/).
+/[Aa]ssets/
+/[Pp]ackages/
+/[Pp]roject[Ss]ettings/
+/*.slnx
+/*.sln
+
+# Unity: escena de recuperacion tras un cierre inesperado y archivos de bloqueo.
+**/[Aa]ssets/_[Rr]ecovery/
+**/[Aa]ssets/_[Rr]ecovery.meta
+**/[Tt]emp/
+
 # El .csproj de la herramienta de balance NO lo genera Unity: ese si va al repo.
 # Tiene que ir despues de la regla *.csproj de arriba para pisarla.
-!/Tools/**/*.csproj
+!/Prototipo/Tools/**/*.csproj
 
 # Editores
 .vscode/
@@ -127,3 +141,6 @@ InitTestScene*.unity*
 Thumbs.db
 *.stackdump
 __pycache__/
+.pytest_cache/
+desktop.ini
+~$*

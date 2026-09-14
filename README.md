@@ -132,4 +132,20 @@ Los modelos base generados (bloqueos geométricos y texturas iniciales) están o
 3. Prototipo: cargar `Assets/_Zombineta/Scenes/Prototipo.unity` y presionar *Play*.
 4. Juego: cargar `Assets/_Zombineta/Scenes/Boot.unity`.
 
+**Antes de clonar (una sola vez por máquina):**
+
+```bash
+git lfs install
+```
+
+Las imágenes, audios y modelos van por Git LFS: sin eso llegan como archivos de texto de 130 bytes y Unity muestra sprites rotos.
+
+**Para mergear escenas y prefabs sin romperlas (una vez por máquina, ajustando la ruta a tu Unity):**
+
+```bash
+git config --global merge.unityyamlmerge.driver "'D:/Dev/Unity/6000.6.0f1/Editor/Data/Tools/UnityYAMLMerge.exe' merge -p %O %B %A %A"
+```
+
+Si alguien abrió la raíz por error y Unity creó `Assets/`, `Packages/` o `ProjectSettings/` sueltas en la raíz, se pueden borrar: git las ignora y no son parte del juego.
+
 > Conviene clonar el repo en una ruta corta (por ejemplo `D:\Zombineta`): algunos paquetes de Unity tienen archivos con rutas muy largas y Windows no admite más de 260 caracteres.
