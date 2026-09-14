@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Zombineta.Juego.Levels;
 using Zombineta.Level;
 using Zombineta.Player;
 
@@ -15,6 +16,9 @@ namespace Zombineta.Core
     {
         [SerializeField] GameConfig config;
         [SerializeField] LevelDefinition level;
+
+        [Tooltip("Nivel armado a mano: si esta, el recorrido y el largo salen de la escena.")]
+        [SerializeField] LevelScene levelScene;
         [SerializeField] PlayerInputReader input;
 
         [Tooltip("Si esta activo, la partida arranca sola. Si no, la largan las pantallas.")]
@@ -48,11 +52,20 @@ namespace Zombineta.Core
             if (input == null)
                 input = GetComponent<PlayerInputReader>();
 
+            if (levelScene != null)
+            {
+                config = levelScene.RuntimeConfig(config);
+                level = levelScene.BuildDefinition();
+            }
+
             Sim = new RunSimulation(config);
             Level = new LevelRuntime(level);
             // Sin esto los barriles no existen para el disparo: la bala nunca los encuentra.
             Sim.Barrels = Level;
             Paused = !autoStart;
+
+            if (levelScene != null)
+                levelScene.Bind(this);
         }
 
         void Update()
