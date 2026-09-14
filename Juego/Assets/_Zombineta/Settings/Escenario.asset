@@ -17,8 +17,8 @@ MonoBehaviour:
     enabled: 1
     parallax: 0
     sortingOrder: -100
-    baselineY: 2.8
-    height: 8
+    baselineY: 1.5
+    height: 11
     gapChance: 0
     gapMin: 2
     gapMax: 6
@@ -33,10 +33,10 @@ MonoBehaviour:
       yOffset: 0
   - name: Edificios
     enabled: 1
-    parallax: 0.8
+    parallax: 0.6
     sortingOrder: -50
-    baselineY: 2.5
-    height: 3.2
+    baselineY: 1.76
+    height: 6.2
     gapChance: 0.22
     gapMin: 0.3
     gapMax: 1.5
@@ -65,12 +65,52 @@ MonoBehaviour:
       weight: 1
       heightScale: 0.62
       yOffset: 0
+  - name: Arboles
+    enabled: 1
+    parallax: 0.9
+    sortingOrder: -40
+    baselineY: 1.85
+    height: 6.7
+    gapChance: 0.4
+    gapMin: 3
+    gapMax: 10
+    noImmediateRepeat: 1
+    seed: 41
+    tint: {r: 0.55, g: 0.5, b: 0.7, a: 1}
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 21300000, guid: 7b797a31302444a489662b27e037d601, type: 3}
+      weight: 1
+      heightScale: 1
+      yOffset: 0
+    - sprite: {fileID: 21300000, guid: 08b16d1a81e6e144991adc03c790e7a1, type: 3}
+      weight: 1
+      heightScale: 1
+      yOffset: 0
+  - name: Cordon de enfrente
+    enabled: 1
+    parallax: 1
+    sortingOrder: -45
+    baselineY: 1.755
+    height: 0.45
+    gapChance: 0
+    gapMin: 2
+    gapMax: 6
+    noImmediateRepeat: 0
+    seed: 1
+    tint: {r: 0.36, g: 0.34, b: 0.42, a: 1}
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 21300000, guid: 34ecad7966b14874d8f90643e4f60aba, type: 3}
+      weight: 1
+      heightScale: 1
+      yOffset: 0
   - name: Calle
     enabled: 1
     parallax: 1
     sortingOrder: -20
-    baselineY: -4.850909
-    height: 7.796364
+    baselineY: -3.005
+    height: 4.8727
     gapChance: 0
     gapMin: 2
     gapMax: 6
@@ -83,8 +123,26 @@ MonoBehaviour:
       weight: 1
       heightScale: 1
       yOffset: 0
-  - name: Calle - vias
+  - name: Vereda de abajo
     enabled: 1
+    parallax: 1
+    sortingOrder: -21
+    baselineY: -9
+    height: 6
+    gapChance: 0
+    gapMin: 2
+    gapMax: 6
+    noImmediateRepeat: 0
+    seed: 1
+    tint: {r: 0.3, g: 0.29, b: 0.34, a: 1}
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 21300000, guid: 34ecad7966b14874d8f90643e4f60aba, type: 3}
+      weight: 1
+      heightScale: 1
+      yOffset: 0
+  - name: Calle - vias
+    enabled: 0
     parallax: 1
     sortingOrder: -19
     baselineY: -2.1
@@ -102,7 +160,7 @@ MonoBehaviour:
       heightScale: 1
       yOffset: 0
   - name: Vallas
-    enabled: 1
+    enabled: 0
     parallax: 1
     sortingOrder: -18
     baselineY: 2.3
@@ -120,7 +178,7 @@ MonoBehaviour:
       heightScale: 1
       yOffset: 0
   - name: Postes
-    enabled: 1
+    enabled: 0
     parallax: 1.4
     sortingOrder: 40
     baselineY: -4.6
@@ -137,10 +195,40 @@ MonoBehaviour:
       weight: 1
       heightScale: 1
       yOffset: 0
+  - name: Primer plano
+    enabled: 1
+    parallax: 1.6
+    sortingOrder: 2010
+    baselineY: -5.6
+    height: 8.5
+    gapChance: 0.6
+    gapMin: 6
+    gapMax: 18
+    noImmediateRepeat: 1
+    seed: 51
+    tint: {r: 0.16, g: 0.13, b: 0.2, a: 0.9}
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 21300000, guid: e3998443b205f23419ecc6d8d3c4ebc7, type: 3}
+      weight: 2
+      heightScale: 1
+      yOffset: 0
+    - sprite: {fileID: 21300000, guid: fa0807634cae81b468ed1cbe5da93a29, type: 3}
+      weight: 1.5
+      heightScale: 0.7
+      yOffset: 0
+    - sprite: {fileID: 21300000, guid: 871e6fb7969afc243a3bf5a2ca7866d5, type: 3}
+      weight: 1
+      heightScale: 0.35
+      yOffset: 1.9
+    - sprite: {fileID: 21300000, guid: d06db305a7321a049a276fc81415ac62, type: 3}
+      weight: 1.5
+      heightScale: 0.9
+      yOffset: 0
   - name: Frontal
     enabled: 1
     parallax: 2.5
-    sortingOrder: 50
+    sortingOrder: 2000
     baselineY: -5.4
     height: 5.8
     gapChance: 1
@@ -152,15 +240,15 @@ MonoBehaviour:
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: e3998443b205f23419ecc6d8d3c4ebc7, type: 3}
-      weight: 2
+      weight: 0
       heightScale: 1.05
       yOffset: 0
     - sprite: {fileID: 21300000, guid: d06db305a7321a049a276fc81415ac62, type: 3}
-      weight: 2
+      weight: 0
       heightScale: 0.95
       yOffset: 0
     - sprite: {fileID: 21300000, guid: fa0807634cae81b468ed1cbe5da93a29, type: 3}
-      weight: 1.5
+      weight: 0
       heightScale: 0.85
       yOffset: 0
     - sprite: {fileID: 21300000, guid: 7b797a31302444a489662b27e037d601, type: 3}
@@ -172,6 +260,6 @@ MonoBehaviour:
       heightScale: 1.2
       yOffset: 0
     - sprite: {fileID: 21300000, guid: 871e6fb7969afc243a3bf5a2ca7866d5, type: 3}
-      weight: 1
+      weight: 0
       heightScale: 0.3
       yOffset: 0.2
