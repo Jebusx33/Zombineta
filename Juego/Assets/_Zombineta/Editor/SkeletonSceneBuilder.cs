@@ -53,29 +53,26 @@ namespace Zombineta.Juego.EditorTools
 
             EnsurePauseAction();
             var panels = BuildPlaceholderPanels();
-            var levels = BuildLevels(panels);
+            var levelScenes = new List<string>();
+            foreach (var level in BuildLevels(panels).levels)
+                levelScenes.Add(level.sceneName);
 
-            var pause = FindAction("Player/Pause");
-            var submit = FindAction("UI/Submit");
-            var cancel = FindAction("UI/Cancel");
-
+            // Ojo: cada escena nueva descarga de memoria los assets que nadie usa. Por eso las
+            // referencias a assets (niveles, acciones) se cargan de nuevo justo antes de asignarlas.
             int built = 0;
-            built += Scene(SceneNames.Boot, overwrite, () => BuildBoot(levels));
+            built += Scene(SceneNames.Boot, overwrite, BuildBoot);
             built += Scene(SceneNames.MainMenu, overwrite, BuildMainMenu);
-            built += Scene(SceneNames.Options, overwrite, () => BuildOptions(cancel));
+            built += Scene(SceneNames.Options, overwrite, BuildOptions);
             built += Scene(SceneNames.CharacterSelect, overwrite, BuildCharacterSelect);
-            built += Scene(SceneNames.Cinematic, overwrite, () => BuildCinematic(submit, cancel));
-            foreach (var level in levels.levels)
-            {
-                var name = level.sceneName;
-                built += Scene(name, overwrite, () => BuildLevel(name, pause));
-            }
+            built += Scene(SceneNames.Cinematic, overwrite, BuildCinematic);
+            foreach (var name in levelScenes)
+                built += Scene(name, overwrite, () => BuildLevel(name));
             built += Scene(SceneNames.LevelComplete, overwrite, BuildLevelComplete);
             built += Scene(SceneNames.GameOver, overwrite, BuildGameOver);
             built += Scene(SceneNames.Ending, overwrite, BuildEnding);
-            built += Scene(SceneNames.Pause, overwrite, () => BuildPause(pause));
+            built += Scene(SceneNames.Pause, overwrite, BuildPause);
 
-            RegisterBuildScenes(levels);
+            RegisterBuildScenes(levelScenes);
             EditorSceneManager.OpenScene(ScenesDir + "/" + SceneNames.Boot + ".unity");
             Debug.Log("Esqueleto: " + built + " escena(s) construida(s), " +
                       EditorBuildSettings.scenes.Length + " en Build Settings.");
@@ -194,14 +191,13 @@ namespace Zombineta.Juego.EditorTools
             return level;
         }
 
-        static void RegisterBuildScenes(LevelSequence levels)
+        static void RegisterBuildScenes(List<string> levelScenes)
         {
             var names = new List<string>
             {
                 SceneNames.Boot, SceneNames.MainMenu, SceneNames.Options, SceneNames.CharacterSelect, SceneNames.Cinematic,
             };
-            foreach (var level in levels.levels)
-                names.Add(level.sceneName);
+            names.AddRange(levelScenes);
             names.AddRange(new[] { SceneNames.LevelComplete, SceneNames.GameOver, SceneNames.Ending, SceneNames.Pause });
 
             var scenes = new List<EditorBuildSettingsScene>();
@@ -212,7 +208,7 @@ namespace Zombineta.Juego.EditorTools
 
         // --- Escenas ---------------------------------------------------------------
 
-        static void BuildBoot(LevelSequence levels)
+        static void BuildBoot()
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
@@ -223,7 +219,7 @@ namespace Zombineta.Juego.EditorTools
             var black = AddImage(canvas.transform, "Negro", Color.black);
             var fader = black.gameObject.AddComponent<ScreenFader>();
 
-            Set(root, "levels", levels);
+            Set(root, "levels", AssetDatabase.LoadAssetAtPath<LevelSequence>(LevelsPath));
             Set(root, "fader", fader);
             Save(scene, SceneNames.Boot);
         }
@@ -244,9 +240,9 @@ namespace Zombineta.Juego.EditorTools
             Save(scene, SceneNames.MainMenu);
         }
 
-        static void BuildOptions(InputActionReference cancel)
+        static void BuildOptions()
         {
-            var (scene, canvas) = NewScreen(false, 200, new Color(0f, 0f, 0f, 0.88f), "OPCIONES");
+            var (scene, canvas) = NewScreen(false, 200, new Color(0.05f, 0.04f, 0.08f, 1f), "OPCIONES");
             var screen = canvas.gameObject.AddComponent<OptionsScreen>();
 
             var volume = AddSlider(canvas.transform, "Volumen", new Vector2(120f, 190f));
@@ -263,7 +259,7 @@ namespace Zombineta.Juego.EditorTools
             Set(screen, "cameraEffects", effects);
             Set(screen, "cameraShake", shake);
             Set(screen, "gore", gore);
-            Set(screen, "cancelAction", cancel);
+            Set(screen, "cancelAction", FindAction("UI/Cancel"));
             Set(screen, "firstSelected", volume);
             Save(scene, SceneNames.Options);
         }
@@ -284,7 +280,7 @@ namespace Zombineta.Juego.EditorTools
             Save(scene, SceneNames.CharacterSelect);
         }
 
-        static void BuildCinematic(InputActionReference submit, InputActionReference cancel)
+        static void BuildCinematic()
         {
             var (scene, canvas) = NewScreen(true, 0, Color.black, "");
             Object.DestroyImmediate(canvas.transform.Find("Titulo").gameObject);
@@ -305,12 +301,12 @@ namespace Zombineta.Juego.EditorTools
             Set(player, "titleGroup", titleGroup);
             Set(player, "panel", panel);
             Set(player, "panelGroup", panelGroup);
-            Set(player, "submitAction", submit);
-            Set(player, "cancelAction", cancel);
+            Set(player, "submitAction", FindAction("UI/Submit"));
+            Set(player, "cancelAction", FindAction("UI/Cancel"));
             Save(scene, SceneNames.Cinematic);
         }
 
-        static void BuildLevel(string sceneName, InputActionReference pause)
+        static void BuildLevel(string sceneName)
         {
             var (scene, canvas) = NewScreen(true, 0, new Color(0.18f, 0.18f, 0.22f), "");
             Object.DestroyImmediate(canvas.transform.Find("Titulo").gameObject);
@@ -325,7 +321,7 @@ namespace Zombineta.Juego.EditorTools
             var label = AddText(canvas.transform, "Etiqueta", sceneName, 56, new Vector2(0f, 180f), new Vector2(1700f, 300f));
 
             Set(stub, "label", label);
-            Set(stub, "pauseAction", pause);
+            Set(stub, "pauseAction", FindAction("Player/Pause"));
             Save(scene, sceneName);
         }
 
@@ -361,7 +357,7 @@ namespace Zombineta.Juego.EditorTools
             Save(scene, SceneNames.Ending);
         }
 
-        static void BuildPause(InputActionReference pause)
+        static void BuildPause()
         {
             var (scene, canvas) = NewScreen(false, 100, new Color(0f, 0f, 0f, 0.7f), "PAUSA");
             var screen = canvas.gameObject.AddComponent<PauseScreen>();
@@ -371,7 +367,7 @@ namespace Zombineta.Juego.EditorTools
                 ("Opciones", screen.OpenOptions),
                 ("Salir al menu", screen.ToMenu));
             Set(screen, "firstSelected", buttons[0]);
-            Set(screen, "pauseAction", pause);
+            Set(screen, "pauseAction", FindAction("Player/Pause"));
             Save(scene, SceneNames.Pause);
         }
 
@@ -492,11 +488,16 @@ namespace Zombineta.Juego.EditorTools
             var text = go.GetComponentInChildren<Text>();
             text.text = label;
             text.font = UiFont;
-            text.fontSize = 16;
+            text.fontSize = 14;
             text.color = Color.white;
+            // El rect del texto es bajito: sin esto el Text oculta la linea que no entra.
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
 
             var toggle = go.GetComponent<Toggle>();
             Paint(toggle);
+            if (toggle.graphic != null)
+                toggle.graphic.color = Accent;
             return toggle;
         }
 
@@ -556,6 +557,8 @@ namespace Zombineta.Juego.EditorTools
                 Debug.LogError("No existe el campo '" + field + "' en " + target.GetType().Name, target);
                 return;
             }
+            if (value == null)
+                Debug.LogWarning("Referencia vacia para '" + field + "' en " + target.GetType().Name, target);
             prop.objectReferenceValue = value;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
