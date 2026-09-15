@@ -250,15 +250,17 @@ namespace Zombineta.Juego.EditorTools
             var effects = AddToggle(canvas.transform, "Efectos de camara", new Vector2(0f, 20f));
             var shake = AddToggle(canvas.transform, "Sacudidas", new Vector2(0f, -60f));
             var gore = AddToggle(canvas.transform, "Sangre alta", new Vector2(0f, -140f));
-            var back = AddButton(canvas.transform, "Volver", new Vector2(0f, -280f), screen.Back);
+            var vibration = AddToggle(canvas.transform, "Vibracion", new Vector2(0f, -220f));
+            var back = AddButton(canvas.transform, "Volver", new Vector2(0f, -300f), screen.Back);
 
-            Chain(new Selectable[] { volume, fullscreen, effects, shake, gore, back });
+            Chain(new Selectable[] { volume, fullscreen, effects, shake, gore, vibration, back });
 
             Set(screen, "volume", volume);
             Set(screen, "fullscreen", fullscreen);
             Set(screen, "cameraEffects", effects);
             Set(screen, "cameraShake", shake);
             Set(screen, "gore", gore);
+            Set(screen, "vibration", vibration);
             Set(screen, "cancelAction", FindAction("UI/Cancel"));
             Set(screen, "firstSelected", volume);
             Save(scene, SceneNames.Options);

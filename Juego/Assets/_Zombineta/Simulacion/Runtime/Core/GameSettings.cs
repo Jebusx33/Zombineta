@@ -74,5 +74,20 @@ namespace Zombineta.Core
                 PlayerPrefs.Save();
             }
         }
+
+        const string VibrationKey = "zombineta.vibration";
+        static bool? vibration;
+
+        /// <summary>Vibracion del joystick ante golpes, disparos y la atrapada.</summary>
+        public static bool Vibration
+        {
+            get => vibration ??= PlayerPrefs.GetInt(VibrationKey, 1) != 0;
+            set
+            {
+                vibration = value;
+                PlayerPrefs.SetInt(VibrationKey, value ? 1 : 0);
+                PlayerPrefs.Save();
+            }
+        }
     }
 }

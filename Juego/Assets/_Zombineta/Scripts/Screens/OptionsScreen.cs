@@ -14,6 +14,7 @@ namespace Zombineta.Juego.Screens
         [SerializeField] Toggle cameraEffects;
         [SerializeField] Toggle cameraShake;
         [SerializeField] Toggle gore;
+        [SerializeField] Toggle vibration;
         [SerializeField] InputActionReference cancelAction;
 
         void Awake()
@@ -23,6 +24,7 @@ namespace Zombineta.Juego.Screens
             cameraEffects?.onValueChanged.AddListener(v => GameSettings.CameraEffects = v);
             cameraShake?.onValueChanged.AddListener(v => GameSettings.CameraShake = v);
             gore?.onValueChanged.AddListener(v => GameSettings.Gore = v);
+            vibration?.onValueChanged.AddListener(v => GameSettings.Vibration = v);
         }
 
         void OnEnable()
@@ -33,6 +35,7 @@ namespace Zombineta.Juego.Screens
             cameraEffects?.SetIsOnWithoutNotify(GameSettings.CameraEffects);
             cameraShake?.SetIsOnWithoutNotify(GameSettings.CameraShake);
             gore?.SetIsOnWithoutNotify(GameSettings.Gore);
+            vibration?.SetIsOnWithoutNotify(GameSettings.Vibration);
         }
 
         protected override void Update()
