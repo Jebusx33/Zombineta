@@ -261,7 +261,7 @@ directo: lee las acciones de este mapa. **Para cambiar un binding se edita ese m
 | Disparar | X, click izquierdo | botón oeste (X/□), hombro derecho (RB/R1) |
 | Faro (toggle) | Espacio | botón norte (Y/△) |
 | Pausa | Esc | Start |
-| Reinicio rápido (Game Over) | R | — (solo teclado) |
+| Reinicio rápido (Game Over) | R | — (solo teclado, y solo en una escena de nivel suelta sin flujo: `LevelFlowBridge.Start` pone `run.QuickRestartEnabled = false` en cuanto hay flujo, así que en el juego normal R no hace nada) |
 | F2 ganar / F3 perder (editor y builds de desarrollo) | F2 / F3 | Select + RB / Select + LB |
 
 Los dos juntos (turbo + retroceso) dan Normal, igual que D+A hoy. El stick de carril usa punto
@@ -296,10 +296,12 @@ la escena `Pause`, pinta el texto del esquema actual y se repinta cuando cambia.
 
 **Límites conocidos:**
 - Un joystick genérico que el Input System no reconoce como `Gamepad` (algunos DirectInput
-  viejos) se queda sin los bindings de gatillo (Turbo/Retroceso). El soporte se probó con
-  Xbox y PlayStation.
+  viejos) se queda sin los bindings de gatillo (Turbo/Retroceso). Se probó con un joystick
+  real (no se probaron específicamente Xbox y PlayStation).
 - La vibración de un control de PlayStation en Windows depende del driver instalado; si no
   vibra no es necesariamente un bug del juego.
+- Mover el mouse durante la partida cambia la ayuda de controles de la pausa a teclado, aunque
+  se siga jugando con joystick (es el último dispositivo que generó una acción).
 
 ---
 
@@ -927,12 +929,13 @@ Estas costaron tiempo real en esta sesión:
   horda muestra la mezcla de looks por arquetipo con impacto y muerte animados por código.
   `Prototipo/` sin tocar.
 - Joystick (15/09): 209 tests EditMode en verde (186 base + 14 de `PlayerInputReaderTests` + 6
-  de `RumbleDirectorTests` + 3 de `InputDeviceTrackerTests`). En Play por MCP con un gamepad
-  virtual: cambio de carril, turbo, retroceso, disparo, faro, pausa y F2/F3 con
-  Select+RB/Select+LB; la vibración sube con un choque y vuelve a 0, y se corta en pausa; la
-  ayuda de controles de la pausa cambia de teclado a joystick (y viceversa) según el último
-  dispositivo usado. Consola sin errores en toda la secuencia. **José probó con joystick real
-  todo el recorrido, incluida la vibración (15/09).**
+  de `RumbleDirectorTests` + 3 de `InputDeviceTrackerTests`), que cubren los bindings con
+  dispositivos virtuales. Por MCP con un gamepad virtual en Play se verificó puntualmente la
+  vibración (sube con un choque, vuelve a 0, se corta en pausa) y el cambio de la ayuda de
+  controles de la pausa entre teclado y joystick; consola sin errores. El recorrido completo
+  (cambio de carril, turbo, retroceso, disparo, faro, pausa, F2/F3 con Select+RB/Select+LB) se
+  probó de punta a punta con **José y un joystick real (15/09), vibración incluida** — el
+  recorrido con gamepad virtual por MCP no se hizo (decisión del usuario).
 
 **NO verificado — pendiente de que alguien lo juegue:**
 - **El teclado en los menús.** El flujo se manejó por su API; nunca se apretó una tecla real.
@@ -981,10 +984,11 @@ reestructura.
 
 **15/09:** joystick hecho (ver "Controles" en la sección 0): mapa de acciones `Moto`,
 vibración con `RumbleDirector`/`GamepadRumble` y su opción en Opciones, y ayuda de controles en
-la pausa según el último dispositivo usado. 209 tests EditMode en verde y recorrido verificado
-por MCP con gamepad virtual; José además lo jugó de punta a punta con un joystick real,
-vibración incluida. **Lo próximo es el sub-proyecto 5 (iluminación 2D con URP)**, que sigue
-necesitando normal maps de arte.
+la pausa según el último dispositivo usado. 209 tests EditMode en verde; por MCP con gamepad
+virtual se verificó puntualmente la vibración y el cambio de ayuda de controles (no el
+recorrido completo, salteado por decisión del usuario), y José lo jugó de punta a punta con un
+joystick real, vibración incluida. **Lo próximo es el sub-proyecto 5 (iluminación 2D con URP)**,
+que sigue necesitando normal maps de arte.
 
 Lo último que se hizo fueron las rampas y el salto (T12). Lo que el usuario ya anunció como
 próximo paso son **las animaciones de spritesheet de la protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
