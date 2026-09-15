@@ -370,6 +370,15 @@ namespace Zombineta.Juego.EditorTools
                 ("Salir al menu", screen.ToMenu));
             Set(screen, "firstSelected", buttons[0]);
             Set(screen, "pauseAction", FindAction("Player/Pause"));
+
+            // Ayuda de controles debajo de los botones: cambia sola segun el ultimo dispositivo usado.
+            var hintsText = AddText(canvas.transform, "AyudaControles",
+                ControlHints.TextFor(Zombineta.Player.ControlScheme.KeyboardMouse), 24,
+                new Vector2(0f, -310f), new Vector2(1700f, 100f));
+            hintsText.color = new Color(1f, 1f, 1f, 0.85f);
+            var hints = hintsText.gameObject.AddComponent<ControlHints>();
+            Set(hints, "text", hintsText);
+
             Save(scene, SceneNames.Pause);
         }
 
