@@ -46,7 +46,9 @@ namespace Zombineta.Juego.Levels
         public Transform ItemsRoot => itemsRoot != null ? itemsRoot : transform;
         public LevelGeneratorSettings Generator => generator;
 
-        public LevelLayout Layout => config != null ? LevelLayout.From(config) : new LevelLayout(0.75f, 1.6f, 1.125f);
+        // Sin config asignada: usar los valores actuales de Settings/GameConfig.asset (no los
+        // defaults viejos de la clase GameConfig, que ya no coinciden con el asset en uso).
+        public LevelLayout Layout => config != null ? LevelLayout.From(config) : new LevelLayout(0.75f, 0.99f, 2.1375f);
 
         public LevelItem[] Items => ItemsRoot.GetComponentsInChildren<LevelItem>(true);
 
