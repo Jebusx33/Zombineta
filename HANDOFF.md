@@ -38,8 +38,9 @@ Zombineta/
 - Se abre **cada proyecto por separado** desde Unity Hub (`Prototipo/` o `Juego/`), nunca la raíz.
 - **Clonar en una ruta corta.** La ruta de trabajo actual es muy larga y un paquete de Unity ya
   supera los 260 caracteres de Windows (trampa #21).
-- **Ramas del equipo:** las de Germán, Jesús, Juana y Seba no tienen trabajo propio; conviene
-  borrarlas y recrearlas desde `master` en lugar de actualizarlas.
+- **Ramas del equipo:** las de Germán, Jesús, Juana y Seba se llevaron a `master` el 14/09 (no
+  tenían trabajo propio). Cada uno: `git fetch` y `git checkout <su rama>` + `git pull`; si ya
+  tenía la rama local vieja, `git reset --hard origin/<su rama>` (no había nada propio que perder).
 
 ### El camino al juego definitivo
 
@@ -880,9 +881,7 @@ reestructura.
 Lo último que se hizo fueron las rampas y el salto (T12). Lo que el usuario ya anunció como
 próximo paso son **las animaciones de spritesheet de la protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
 fill y un slicing que escanee el alfa, porque no tienen grilla exacta). Las ramas de Germán,
-Jesús y Juana siguen en el commit inicial y la de Seba quedó unos commits atrás de `master`
-(ninguna tiene trabajo propio); conviene que las actualicen antes de tocar la escena, para
-no pelearse con conflictos de `Prototipo.unity`.
+Jesús, Juana y Seba quedaron al día con `master` el 14/09 (ver sección 0).
 
 ### Inmediato
 1. Jugarlo con teclado y anotar qué se siente mal. Es lo único que el simulador no contesta.
