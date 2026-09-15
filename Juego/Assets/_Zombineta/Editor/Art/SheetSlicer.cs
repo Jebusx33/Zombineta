@@ -77,6 +77,8 @@ namespace Zombineta.Juego.EditorTools.Art
             }
 
             bool wasReadable = importer.isReadable;
+            TextureImporterType originalTextureType = importer.textureType;
+            SpriteImportMode originalSpriteImportMode = importer.spriteImportMode;
 
             importer.textureType = TextureImporterType.Sprite;
             importer.spriteImportMode = SpriteImportMode.Multiple;
@@ -90,6 +92,8 @@ namespace Zombineta.Juego.EditorTools.Art
             {
                 Debug.LogError("SheetSlicer: no se pudo releer la textura en '" + path + "' despues de reimportarla.");
                 importer.isReadable = wasReadable;
+                importer.textureType = originalTextureType;
+                importer.spriteImportMode = originalSpriteImportMode;
                 AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
                 return new List<PixelRect>();
             }
@@ -113,7 +117,12 @@ namespace Zombineta.Juego.EditorTools.Art
                 Debug.LogWarning("SheetSlicer: '" + hoja + "' ya tenia " + existingCount + " sprites recortados y ahora se " +
                     "detectaron " + newCount + " islas (minArea=" + minArea + ", mergeGap=" + mergeGap + "). No se " +
                     "sobreescribe: llamar con overwriteOnCountChange:true (o confirmar en el dialogo del menu) para forzarlo.");
+                // Restaurar tambien textureType/spriteImportMode: si la textura era Single (por
+                // ejemplo referenciada por fileID 21300000 en un .asset), dejarla en Multiple aca
+                // rompe esa referencia aunque el usuario haya cancelado la sobreescritura.
                 importer.isReadable = wasReadable;
+                importer.textureType = originalTextureType;
+                importer.spriteImportMode = originalSpriteImportMode;
                 AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
                 return Flatten(rows);
             }
