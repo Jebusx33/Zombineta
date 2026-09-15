@@ -19,10 +19,15 @@ namespace Zombineta.Player
         [Tooltip("Multiplica la cantidad en turbo.")]
         [SerializeField] float turboMultiplier = 2f;
 
+        ParticleSystemRenderer dustRenderer;
+
         void LateUpdate()
         {
             if (run == null || run.Sim == null || dust == null)
                 return;
+
+            if (dustRenderer == null)
+                dustRenderer = dust.GetComponent<ParticleSystemRenderer>();
 
             var state = run.Sim.State;
             float speed = run.Sim.PlayerSpeed;
@@ -34,6 +39,14 @@ namespace Zombineta.Player
 
             var emission = dust.emission;
             emission.rateOverTime = rate;
+
+            // Justo debajo de la moto: se ve pasar el polvo detras de la rueda, pero sin taparlo,
+            // y por encima de la sombra propia de la moto (que usa SortSlot.Shadow).
+            if (dustRenderer != null)
+            {
+                int order = LaneSorting.Order(state.LaneVisual, SortSlot.Player) - 1;
+                if (dustRenderer.sortingOrder != order) dustRenderer.sortingOrder = order;
+            }
         }
     }
 }
