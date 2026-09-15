@@ -57,5 +57,8 @@
     "com.unity.timeline": "6.6.0",
     "com.unity.ugui": "2.6.0",
     "com.unity.visualscripting": "1.9.12"
-  }
+  },
+  "testables": [
+    "com.unity.inputsystem"
+  ]
 }

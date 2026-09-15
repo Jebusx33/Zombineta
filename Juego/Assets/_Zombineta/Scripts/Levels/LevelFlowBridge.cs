@@ -20,6 +20,7 @@ namespace Zombineta.Juego.Levels
         [SerializeField] CameraFollow cameraRig;
         [SerializeField] ScooterView scooter;
         [SerializeField] InputActionReference pauseAction;
+        [SerializeField] PlayerInputReader input;
 
         [Tooltip("Color de la moto por personaje, en el orden de la pantalla de seleccion.")]
         [SerializeField] Color[] characterColors = { Color.white, new Color(0.75f, 0.9f, 1f) };
@@ -70,16 +71,15 @@ namespace Zombineta.Juego.Levels
             var state = run.Sim.State;
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            var kb = Keyboard.current;
-            if (kb != null && state.Phase == RunPhase.Running)
+            if (input != null && state.Phase == RunPhase.Running)
             {
-                if (kb.f2Key.wasPressedThisFrame)
+                if (input.DebugWinPressed)
                 {
                     // A la meta: el plano de victoria encuadra el refugio.
                     state.PlayerX = run.Config.goalDistance;
                     state.Phase = RunPhase.Won;
                 }
-                else if (kb.f3Key.wasPressedThisFrame)
+                else if (input.DebugLosePressed)
                 {
                     state.Phase = RunPhase.Lost;
                     state.Loss = LossReason.CaughtByHorde;

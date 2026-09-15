@@ -23114,6 +23114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8383bd58a173f64c9341733b454f497, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Zombineta::Zombineta.Player.PlayerInputReader
+  actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
 --- !u!114 &1170739139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23226,6 +23227,7 @@ MonoBehaviour:
   cameraRig: {fileID: 542714084}
   scooter: {fileID: 1391902535}
   pauseAction: {fileID: -8338598726356848359, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  input: {fileID: 1170739138}
   characterColors:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 0.75, g: 0.9, b: 1, a: 1}

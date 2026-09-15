@@ -5,44 +5,68 @@ using Zombineta.Core;
 namespace Zombineta.Player
 {
     /// <summary>
-    /// Traduce teclado y mouse a un PlayerIntent. Es el unico lugar del proyecto
-    /// que sabe que teclas existen: cambiar el esquema de control no toca reglas.
+    /// Traduce los controles (teclado, mouse o joystick) a un PlayerIntent. Lee el mapa de
+    /// acciones "Moto": que tecla o boton hace que vive en el asset de acciones, no aca.
     /// </summary>
     public sealed class PlayerInputReader : MonoBehaviour
     {
+        /// <summary>Desde cuanto cuenta un gatillo como apretado.</summary>
+        public const float TriggerThreshold = 0.3f;
+
+        [SerializeField] InputActionAsset actions;
+
+        InputActionMap map;
+        InputAction laneUp, laneDown, turbo, reverse, fire, headlight, quickRestart, debugWin, debugLose;
+
+        void OnEnable()
+        {
+            if (map == null && actions != null)
+                Bind(actions.FindActionMap("Moto", true));
+            map?.Enable();
+        }
+
+        void OnDisable() => map?.Disable();
+
+        public void Bind(InputActionMap moto)
+        {
+            map = moto;
+            laneUp = moto.FindAction("LaneUp", true);
+            laneDown = moto.FindAction("LaneDown", true);
+            turbo = moto.FindAction("Turbo", true);
+            reverse = moto.FindAction("Reverse", true);
+            fire = moto.FindAction("Fire", true);
+            headlight = moto.FindAction("Headlight", true);
+            quickRestart = moto.FindAction("QuickRestart", true);
+            debugWin = moto.FindAction("DebugWin", true);
+            debugLose = moto.FindAction("DebugLose", true);
+            moto.Enable();
+        }
+
         public PlayerIntent Read()
         {
             var intent = PlayerIntent.Idle;
-
-            var kb = Keyboard.current;
-            if (kb == null)
+            if (map == null)
                 return intent;
 
-            if (kb.upArrowKey.wasPressedThisFrame || kb.wKey.wasPressedThisFrame)
+            if (laneUp.WasPressedThisFrame())
                 intent.LaneDelta += 1;
-            if (kb.downArrowKey.wasPressedThisFrame || kb.sKey.wasPressedThisFrame)
+            if (laneDown.WasPressedThisFrame())
                 intent.LaneDelta -= 1;
 
-            bool turbo = kb.rightArrowKey.isPressed || kb.dKey.isPressed;
-            bool reverse = kb.leftArrowKey.isPressed || kb.aKey.isPressed;
-
-            if (turbo && !reverse)
+            bool isTurbo = turbo.ReadValue<float>() >= TriggerThreshold;
+            bool isReverse = reverse.ReadValue<float>() >= TriggerThreshold;
+            if (isTurbo && !isReverse)
                 intent.Mode = DriveMode.Turbo;
-            else if (reverse && !turbo)
+            else if (isReverse && !isTurbo)
                 intent.Mode = DriveMode.Reverse;
-            else
-                intent.Mode = DriveMode.Normal;
 
-            intent.ToggleHeadlight = kb.spaceKey.wasPressedThisFrame;
-
-            var mouse = Mouse.current;
-            intent.Fire = kb.xKey.wasPressedThisFrame
-                          || (mouse != null && mouse.leftButton.wasPressedThisFrame);
-
+            intent.ToggleHeadlight = headlight.WasPressedThisFrame();
+            intent.Fire = fire.WasPressedThisFrame();
             return intent;
         }
 
-        public bool RestartPressed =>
-            Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame;
+        public bool RestartPressed => quickRestart != null && quickRestart.WasPressedThisFrame();
+        public bool DebugWinPressed => debugWin != null && debugWin.WasPressedThisFrame();
+        public bool DebugLosePressed => debugLose != null && debugLose.WasPressedThisFrame();
     }
 }
