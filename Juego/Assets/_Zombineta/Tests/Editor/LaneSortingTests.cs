@@ -41,10 +41,14 @@ namespace Zombineta.Juego.Tests
         [Test]
         public void EverythingStaysBetweenTheStreetAndTheForeground()
         {
-            // Calle en -20 y primer plano en 40 son ordenes de capas de escenario en OTRA sorting
-            // layer de valores bajos; el juego vive en su propio rango positivo.
+            // Calle/fondo van en ordenes negativos y el primer plano de escenario en 2000/2010,
+            // todos en la MISMA sorting layer que los carriles: el juego vive en el rango positivo
+            // de en medio, por debajo del primer plano.
             Assert.Greater(LaneSorting.Order(2f, SortSlot.Shadow), 0);
             Assert.Less(LaneSorting.Order(-0.5f, SortSlot.Effect), 32767);
+            // Ni con el carril mas adelantado (visualLane negativo, fuera de rango) el contenido de
+            // carril puede llegar a pisar el primer plano del escenario.
+            Assert.Less(LaneSorting.Order(-0.5f, SortSlot.Effect), 2000);
         }
     }
 }
