@@ -939,7 +939,7 @@ Estas costaron tiempo real en esta sesión:
 
 **NO verificado — pendiente de que alguien lo juegue:**
 - **El teclado en los menús.** El flujo se manejó por su API; nunca se apretó una tecla real.
-  Es lo primero a probar: W/S, ENTER, ESC, A/D en Opciones, R en Game Over.
+  Es lo primero a probar: W/S, ENTER, ESC, A/D en Opciones.
 - Si la capa frontal molesta al jugar: árboles y farolas pasan en silueta por delante de los
   carriles y pueden tapar un obstáculo o la moto un instante, **más con el plano cerrado**
   (cuando la horda está encima). Se ajusta en la capa "Frontal" de `Escenario.asset` (tinte,

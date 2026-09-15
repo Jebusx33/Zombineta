@@ -93,11 +93,12 @@ namespace Zombineta.Fx
         /// </summary>
         void Silence(bool force = false)
         {
+            // Siempre se vacia el director (solo memoria): un evento del mismo frame en que se
+            // pauso no queda congelado para sonar al seguir.
+            director.Stop();
             if (silenced && !force)
                 return;
             silenced = true;
-
-            director.Stop();
             appliedLow = appliedHigh = 0f;
 
             var pad = lastPad;
