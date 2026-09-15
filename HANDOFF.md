@@ -1,14 +1,14 @@
 # Zombineta — Handoff
 
-Última actualización: 14 de septiembre de 2026, tras el sub-proyecto 4: la escala y el encuadre
-del juego definitivo calzan con la referencia de arte (carriles abajo, más fondo, personajes
-grandes), con zombies por arquetipo y sombras por carril.
+Última actualización: 15 de septiembre de 2026, tras sumar el joystick: un nivel de `Juego/` se
+juega de punta a punta con gatillos para la velocidad, vibración opcional y ayuda de controles
+en la pausa, sin romper teclado y mouse — probado con gamepad real por José, vibración incluida.
 
 **Estado:** el prototipo se recorre de punta a punta con el flujo del GDD (menú, opciones,
 personaje, cinemática, dos niveles, victoria, game over, final), sobre un escenario de
 placeholders con parallax en varias capas, una cámara que reacciona a la persecución y rampas
 con un salto que se regula inclinando en el aire, y una horda de zombies individuales
-con tipos y arte propio por arquetipo. 186 tests EditMode en verde.
+con tipos y arte propio por arquetipo. 209 tests EditMode en verde.
 
 **Ojo:** con el balance vigente la meta **no se alcanza jugando** (ver sección 4). Para
 recorrer el flujo completo existen F2 (ganar) y F3 (perder), solo en editor y builds de
@@ -98,9 +98,10 @@ pausa, opciones sobre la pausa, volver, seguir, ganar, nivel 2, perder, reintent
 desde la pausa, final y menú) dejó en cada paso exactamente las escenas esperadas. Y Play directo
 desde `Level_02` arranca jugando el nivel 2.
 
-**Verificado a mano (José, 13/09):** los menús se navegan bien con teclado. **No verificado:**
-joystick. Los textos de los interruptores de Opciones se ven algo borrosos porque el control
-está escalado: es un placeholder para que arte rehaga.
+**Verificado a mano (José, 13/09):** los menús se navegan bien con teclado. Joystick verificado
+después, junto con el resto de los controles (ver "Controles" más arriba). Los textos de los
+interruptores de Opciones se ven algo borrosos porque el control está escalado: es un
+placeholder para que arte rehaga.
 
 ### Niveles armados a mano (`Juego/`)
 
@@ -241,6 +242,64 @@ piso puesto, si sigue leyéndose bien qué carril ocupa cada cosa con personajes
 rellenos (no silueta fina), cordón y vereda como franjas grises lisas, los looks de una sola pose
 (oficinista, vagabundo, mujer, adolescente) mueren en un solo cuadro por falta de arte de caída, y
 la capa `Frontal` (árboles a parallax 2,5) sigue cruzando los carriles por delante.
+
+### Controles (`Juego/`)
+
+Diseño: `docs/superpowers/specs/2026-09-15-joystick-design.md`. Un nivel se juega de punta a
+punta con teclado/mouse o con joystick (Xbox, PlayStation o cualquiera que el Input System
+reconozca como `Gamepad`), sin tocar las reglas: los dos caminos arman el mismo `PlayerIntent`.
+
+**Mapa de acciones `Moto`** (nuevo, en `Assets/Settings/InputSystem_Actions.inputactions`, junto
+a `Player` y `UI`, que no cambiaron). `PlayerInputReader` ya no lee `Keyboard`/`Mouse`
+directo: lee las acciones de este mapa. **Para cambiar un binding se edita ese mapa.**
+
+| Acción | Teclado / mouse | Joystick |
+|---|---|---|
+| Cambiar carril | W/S, ↑/↓ | stick izq. arriba/abajo, D-pad |
+| Turbo (mantener) | D, → | gatillo derecho (RT/R2), desde 0,3 |
+| Retroceso (mantener) | A, ← | gatillo izquierdo (LT/L2), desde 0,3 |
+| Disparar | X, click izquierdo | botón oeste (X/□), hombro derecho (RB/R1) |
+| Faro (toggle) | Espacio | botón norte (Y/△) |
+| Pausa | Esc | Start |
+| Reinicio rápido (Game Over) | R | — (solo teclado) |
+| F2 ganar / F3 perder (editor y builds de desarrollo) | F2 / F3 | Select + RB / Select + LB |
+
+Los dos juntos (turbo + retroceso) dan Normal, igual que D+A hoy. El stick de carril usa punto
+de presión 0,5 y libera por debajo de ≈0,375 (default del Input System): un empujón sostenido
+cambia un solo carril, no varios.
+
+**Vibración.** `RumbleDirector` (C# plano, testeado,
+`Scripts/Gameplay/Fx/RumbleDirector.cs`) traduce los eventos de la partida a una fuerza de
+motor grave/agudo que decae sola; `GamepadRumble` (componente en `Nivel`, junto a
+`LevelFlowBridge`) la aplica cada frame a `Gamepad.current.SetMotorSpeeds`. Los valores viven
+en `Settings/Rumble.asset`:
+
+| Evento | Grave (low) | Agudo (high) | Duración |
+|---|---|---|---|
+| Disparo | 0,05 | 0,15 | 0,08 s |
+| Choque | 0,6 | 0,4 | 0,25 s |
+| Caída (rampa) | 0,7 | 0,5 | 0,35 s |
+| Atropello | 0,4 | 0,6 | 0,2 s |
+| Explosión | 0,9 | 0,6 | 0,45 s |
+| Atrapada por la horda | 1 | 0,8 | 0,9 s |
+
+Con varios eventos a la vez, cada motor toma el más fuerte vigente. Interruptor "Vibracion" en
+Opciones (`GameSettings.Vibration`, PlayerPrefs `zombineta.vibration`, default encendida,
+mismo patrón que "Sacudidas"). Se corta (`Stop` + `SetMotorSpeeds(0,0)`) con la opción apagada,
+fuera de `Playing` (pausa, opciones, fin de nivel — salvo que siga sonando la atrapada), al
+perder el foco de la ventana y al descargar el nivel.
+
+**Ayuda de controles en la pausa.** `InputDeviceTracker` (estático,
+`Scripts/Gameplay/Player/InputDeviceTracker.cs`) escucha `InputSystem.onActionChange` y
+recuerda si el último control usado fue de un `Gamepad` o de teclado/mouse; `ControlHints`, en
+la escena `Pause`, pinta el texto del esquema actual y se repinta cuando cambia.
+
+**Límites conocidos:**
+- Un joystick genérico que el Input System no reconoce como `Gamepad` (algunos DirectInput
+  viejos) se queda sin los bindings de gatillo (Turbo/Retroceso). El soporte se probó con
+  Xbox y PlayStation.
+- La vibración de un control de PlayStation en Windows depende del driver instalado; si no
+  vibra no es necesariamente un bug del juego.
 
 ---
 
@@ -798,6 +857,41 @@ Estas costaron tiempo real en esta sesión:
     tiene un frame real o se llama `ApplyVisual` a mano. Antes de dar por buena una escena con
     `ZombieFront`, abrirla, forzar `ApplyVisual` (o esperar un tick real) y guardar.
 
+34. **`InputTestFixture` (tests de Input System) no anda solo con instalar el paquete.** Hace
+    falta agregar `"testables": ["com.unity.inputsystem"]` en `Juego/Packages/manifest.json` y
+    referenciar `Unity.InputSystem` + `Unity.InputSystem.TestFramework` en el asmdef de los
+    tests (`Zombineta.Juego.Tests.asmdef`). Sin eso, `InputTestFixture` y los dispositivos
+    virtuales (`InputSystem.AddDevice<Gamepad>()`) ni compilan.
+
+35. **`Unity_ManageGameObject` (`set_component_property`) falla al asignar una referencia de
+    otro componente** (p. ej. un campo `PlayerInputReader` o `Text` en otro MonoBehaviour), con
+    un error de deserialización confuso ("Property 'x' not found. Did you mean: x?"). Pasa incluso
+    cuando el campo existe y el tipo es el correcto. La alternativa que funciona es un
+    `Unity_RunCommand` con `SerializedObject`/`FindProperty` sobre el componente de destino.
+
+36. **Crear UI con `Unity_ManageGameObject` (`create`, con `parent` apuntando dentro de un
+    `Canvas` con `CanvasScaler`) hornea `localScale = 1/escala del Canvas` en el hijo nuevo**,
+    porque esa acción reparenta preservando el tamaño en mundo (`worldPositionStays=true`) en vez
+    de copiar la convención `(1,1,1)` que usa el resto de la UI del proyecto (que se arma con
+    `transform.SetParent(parent, false)`). Si el Canvas está achicado (como el de `Pause`,
+    ≈0,577), el objeto nuevo queda agrandado y se puede superponer con sus hermanos. Después de
+    crear UI así, fijar `localScale (1,1,1)` a mano si hace falta.
+
+37. **Con un gamepad virtual, apretar el botón Sur (A) también dispara `UI/Submit`** si el mapa
+    `UI` del asset de acciones está activo: si hay un botón seleccionado (p. ej. "Seguir" en la
+    pausa), lo clickea y cierra la pantalla que se está probando. Para verificar solo el cambio
+    de esquema de `InputDeviceTracker` sin ese efecto colateral, usar el stick (dispara
+    `Navigate`, no `Submit`) en vez del botón Sur.
+
+38. **Un suscriptor de `InputSystem.onActionChange` enganchado solo en
+    `[RuntimeInitializeOnLoadMethod(SubsystemRegistration)]` deja de reaccionar en Play.** El
+    Input System reinicia su propio estado interno *después* de `SubsystemRegistration` al entrar
+    en Play, así que una suscripción hecha tan temprano queda sin efecto silenciosamente (sin
+    error). Hay que repetir el enganche en `AfterSceneLoad` (con el nivel ya cargado). En el
+    editor, además, hay que desadjuntarlo en `EnteredEditMode` (no en `ExitingPlayMode`, que
+    interfiere con el último frame de Play) para no acumular suscripciones entre sesiones
+    sucesivas de Play sin recarga de dominio (trampa #26).
+
 ---
 
 ## 6. Qué está verificado y qué no
@@ -832,6 +926,13 @@ Estas costaron tiempo real en esta sesión:
   orden por carril tapa correctamente sin parpadeo durante el tween de cambio de carril, y la
   horda muestra la mezcla de looks por arquetipo con impacto y muerte animados por código.
   `Prototipo/` sin tocar.
+- Joystick (15/09): 209 tests EditMode en verde (186 base + 14 de `PlayerInputReaderTests` + 6
+  de `RumbleDirectorTests` + 3 de `InputDeviceTrackerTests`). En Play por MCP con un gamepad
+  virtual: cambio de carril, turbo, retroceso, disparo, faro, pausa y F2/F3 con
+  Select+RB/Select+LB; la vibración sube con un choque y vuelve a 0, y se corta en pausa; la
+  ayuda de controles de la pausa cambia de teclado a joystick (y viceversa) según el último
+  dispositivo usado. Consola sin errores en toda la secuencia. **José probó con joystick real
+  todo el recorrido, incluida la vibración (15/09).**
 
 **NO verificado — pendiente de que alguien lo juegue:**
 - **El teclado en los menús.** El flujo se manejó por su API; nunca se apretó una tecla real.
@@ -877,6 +978,13 @@ normal maps de arte.** Mientras tanto: jugarlo con teclado para sentir el encuad
 (siluetas del primer plano, aire de salto, lectura de carril — ver sección 6), limpiar los 4
 encimados de `Level_01` y decidir `goalDistance`. Lo que sigue abajo es de antes de la
 reestructura.
+
+**15/09:** joystick hecho (ver "Controles" en la sección 0): mapa de acciones `Moto`,
+vibración con `RumbleDirector`/`GamepadRumble` y su opción en Opciones, y ayuda de controles en
+la pausa según el último dispositivo usado. 209 tests EditMode en verde y recorrido verificado
+por MCP con gamepad virtual; José además lo jugó de punta a punta con un joystick real,
+vibración incluida. **Lo próximo es el sub-proyecto 5 (iluminación 2D con URP)**, que sigue
+necesitando normal maps de arte.
 
 Lo último que se hizo fueron las rampas y el salto (T12). Lo que el usuario ya anunció como
 próximo paso son **las animaciones de spritesheet de la protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
