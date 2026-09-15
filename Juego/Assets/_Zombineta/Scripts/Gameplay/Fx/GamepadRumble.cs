@@ -20,6 +20,8 @@ namespace Zombineta.Fx
         RumbleDirector director;
         bool caughtTriggered;
         float appliedLow, appliedHigh;
+        bool silenced;
+        Gamepad lastPad;
 
         void Awake() => director = new RumbleDirector(config);
 
@@ -33,13 +35,14 @@ namespace Zombineta.Fx
         {
             if (run != null)
                 run.Stepped -= director.Trigger;
-            Silence();
+            Silence(force: true);
         }
 
         void OnDestroy()
         {
             if (run != null)
                 run.Stepped -= director.Trigger;
+            Silence(force: true);
         }
 
         void Update()
@@ -74,14 +77,31 @@ namespace Zombineta.Fx
                 return;
             appliedLow = director.Low;
             appliedHigh = director.High;
-            Gamepad.current?.SetMotorSpeeds(appliedLow, appliedHigh);
+
+            var pad = Gamepad.current;
+            lastPad = pad;
+            if (appliedLow > 0f || appliedHigh > 0f)
+                silenced = false;
+            pad?.SetMotorSpeeds(appliedLow, appliedHigh);
         }
 
-        void Silence()
+        /// <summary>
+        /// Apaga el motor. Se llama cada frame mientras no corresponde vibrar, asi que una vez
+        /// aplicado el silencio no repite SetMotorSpeeds/ResetHaptics hasta que algo vuelva a
+        /// sonar (Apply lo nota). "force" (OnDisable, OnDestroy, perdida de foco) lo pasa por
+        /// alto para garantizar que el control quede en silencio pase lo que pase con la bandera.
+        /// </summary>
+        void Silence(bool force = false)
         {
+            if (silenced && !force)
+                return;
+            silenced = true;
+
             director.Stop();
             appliedLow = appliedHigh = 0f;
-            var pad = Gamepad.current;
+
+            var pad = lastPad;
+            lastPad = null;
             if (pad == null)
                 return;
             pad.SetMotorSpeeds(0f, 0f);
@@ -91,7 +111,7 @@ namespace Zombineta.Fx
         void OnApplicationFocus(bool focus)
         {
             if (!focus)
-                Silence();
+                Silence(force: true);
         }
 
 #if UNITY_EDITOR
