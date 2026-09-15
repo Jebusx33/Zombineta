@@ -11,6 +11,11 @@ namespace Zombineta.Juego.Screens
 
         const string SecondLine = "En el aire, turbo y retroceso inclinan la moto.";
 
+        // Guardado aparte de InputDeviceTracker.Shared: si Shared cambiara mientras este objeto
+        // esta habilitado (recarga de dominio, ciclo de Play/Edit), OnDisable debe desuscribirse
+        // del MISMO tracker al que se suscribio OnEnable, no del que sea Shared en ese momento.
+        InputDeviceTracker tracker;
+
         public static string TextFor(ControlScheme scheme)
         {
             string firstLine = scheme == ControlScheme.Gamepad
@@ -21,7 +26,7 @@ namespace Zombineta.Juego.Screens
 
         void OnEnable()
         {
-            var tracker = InputDeviceTracker.Shared;
+            tracker = InputDeviceTracker.Shared;
             if (tracker == null)
                 return;
             Paint(tracker.Current);
@@ -30,9 +35,9 @@ namespace Zombineta.Juego.Screens
 
         void OnDisable()
         {
-            var tracker = InputDeviceTracker.Shared;
             if (tracker != null)
                 tracker.Changed -= Paint;
+            tracker = null;
         }
 
         void Paint(ControlScheme scheme)

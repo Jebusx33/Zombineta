@@ -36,6 +36,26 @@ namespace Zombineta.Player
             Shared.Attach();
         }
 
+#if UNITY_EDITOR
+        // En el editor, Shared se desadjunta al volver a Edit mode (no al salir de Play: en ese
+        // momento el juego todavia puede estar leyendo Current un frame mas, y de cualquier forma
+        // el enganche en AfterSceneLoad recrea y readjunta Shared en la proxima entrada a Play).
+        // [InitializeOnLoadMethod] corre una sola vez por dominio, asi que esta suscripcion no se
+        // duplica entre sesiones de Play sucesivas.
+        [UnityEditor.InitializeOnLoadMethod]
+        static void WatchPlayModeInEditor()
+        {
+            UnityEditor.EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+            UnityEditor.EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+        }
+
+        static void OnPlayModeStateChanged(UnityEditor.PlayModeStateChange change)
+        {
+            if (change == UnityEditor.PlayModeStateChange.EnteredEditMode)
+                Shared?.Detach();
+        }
+#endif
+
         public static ControlScheme SchemeOf(InputDevice device) =>
             device is Gamepad || device is Joystick ? ControlScheme.Gamepad : ControlScheme.KeyboardMouse;
 
