@@ -170,7 +170,7 @@ horda lejos, no un momento de tensión.
   `ScreenSpaceOverlay`, `HideFlags.DontSave`: no llega a builds ni ensucia la escena). `Elegir
   imagen…` cambia el PNG; `Opacidad +`/`Opacidad -` ajustan la mezcla (default 0,4). Sigue viva en
   Play y al cambiar de escena.
-- `Capturar comparación` (`FramingCapture`) renderiza `Camera.main` a 1920×1080, le mezcla la
+- `Capturar comparacion` (`FramingCapture`) renderiza `Camera.main` a 1920×1080, le mezcla la
   referencia encima al mismo opacity, y guarda el PNG en `Juego/Temp/Encuadre/`. Es la forma de
   comparar sin depender del tamaño ni el foco de la ventana del Game view (trampa #29).
 
