@@ -24,7 +24,20 @@ namespace Zombineta.Player
 
         Light2D light2d;
 
-        void Awake() => light2d = GetComponent<Light2D>();
+        void Awake()
+        {
+            light2d = GetComponent<Light2D>();
+
+            // El faro tiene que alcanzar la calle (el piso que se ve) y el juego (moto, zombies,
+            // items): las mismas dos capas que los destellos. Por targetSortingLayers, la API
+            // publica de Light2D, no por SerializedObject (ver Task 3: eso se compila fuera del
+            // build y deja las luces sin capas asignadas).
+            light2d.targetSortingLayers = new[]
+            {
+                SortingLayer.NameToID("Calle"),
+                SortingLayer.NameToID("Juego"),
+            };
+        }
 
         void LateUpdate()
         {
