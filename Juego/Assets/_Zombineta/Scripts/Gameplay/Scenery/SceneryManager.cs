@@ -68,14 +68,16 @@ namespace Zombineta.Scenery
             }
         }
 
-        /// <summary>Una capa viva: su raiz, su reparto de tiles y los sprites que recicla.</summary>
+        /// <summary>Una capa viva: su raiz, su reparto de tiles y las instancias de prefab que recicla.</summary>
         sealed class LayerRuntime
         {
             readonly SceneryLayer cfg;
             readonly Transform root;
             readonly SceneryLayout layout;
             readonly float[] scales;
-            readonly List<SpriteRenderer> pool = new List<SpriteRenderer>();
+            readonly Vector3[] mins; // bounds.min del sprite de cada variante, para el pivot
+            readonly List<Transform>[] poolPorVariante;
+            readonly int[] usadosPorVariante;
             readonly List<TilePlacement> visible = new List<TilePlacement>();
 
             public LayerRuntime(Transform parent, SceneryLayer cfg)
@@ -89,17 +91,31 @@ namespace Zombineta.Scenery
                 var widths = new float[n];
                 var weights = new float[n];
                 scales = new float[n];
+                mins = new Vector3[n];
+                poolPorVariante = new List<Transform>[n];
+                usadosPorVariante = new int[n];
 
                 for (int i = 0; i < n; i++)
                 {
-                    var v = cfg.variants[i];
-                    if (v == null || v.sprite == null)
-                        continue; // ancho 0: el layout la ignora
+                    poolPorVariante[i] = new List<Transform>();
 
-                    Vector3 size = v.sprite.bounds.size;
-                    scales[i] = cfg.height * v.heightScale / size.y;
-                    widths[i] = size.x * scales[i];
+                    var v = cfg.variants[i];
+                    if (v == null || v.prefab == null)
+                        continue; // sin prefab migrado: ancho 0, el layout la ignora
+
+                    var sr = v.prefab.GetComponent<SpriteRenderer>();
+                    if (sr == null || sr.sprite == null)
+                    {
+                        Debug.LogWarning("SceneryManager: el prefab '" + v.prefab.name +
+                                         "' de la capa '" + cfg.name + "' no tiene sprite.");
+                        continue;
+                    }
+
+                    Bounds b = sr.sprite.bounds;
+                    scales[i] = cfg.height * v.heightScale / b.size.y;
+                    widths[i] = b.size.x * scales[i];
                     weights[i] = v.weight;
+                    mins[i] = b.min;
                 }
 
                 layout = new SceneryLayout(widths, weights, cfg.gapChance, cfg.gapMin,
@@ -114,49 +130,83 @@ namespace Zombineta.Scenery
                 float center = ParallaxMath.LocalViewCenter(camX, cfg.parallax);
                 layout.Query(center - halfWidth, center + halfWidth, visible);
 
-                while (pool.Count < visible.Count)
-                    pool.Add(CreateRenderer());
+                for (int i = 0; i < usadosPorVariante.Length; i++)
+                    usadosPorVariante[i] = 0;
 
                 for (int i = 0; i < visible.Count; i++)
-                    Place(pool[i], visible[i]);
+                    Place(visible[i]);
 
-                for (int i = visible.Count; i < pool.Count; i++)
-                    if (pool[i].enabled)
-                        pool[i].enabled = false;
+                for (int vi = 0; vi < poolPorVariante.Length; vi++)
+                {
+                    var list = poolPorVariante[vi];
+                    for (int i = usadosPorVariante[vi]; i < list.Count; i++)
+                        if (list[i].gameObject.activeSelf)
+                            list[i].gameObject.SetActive(false);
+                }
             }
 
-            void Place(SpriteRenderer sr, TilePlacement tile)
+            void Place(TilePlacement tile)
             {
-                var v = cfg.variants[tile.Variant];
-                float s = scales[tile.Variant];
+                int vi = tile.Variant;
+                var v = cfg.variants[vi];
+                float s = scales[vi];
 
-                if (sr.sprite != v.sprite)
-                    sr.sprite = v.sprite;
+                Transform inst = GetInstance(vi, v);
+                if (inst == null)
+                    return;
 
                 // Compensa el pivot del sprite, sea cual sea: el tile siempre queda con su
                 // borde izquierdo en tile.X y su base en la linea de la capa.
-                Bounds b = v.sprite.bounds;
-                sr.transform.localScale = new Vector3(s, s, 1f);
-                sr.transform.localPosition = new Vector3(
-                    tile.X - b.min.x * s,
-                    cfg.baselineY + v.yOffset - b.min.y * s,
+                inst.localScale = new Vector3(s, s, 1f);
+                inst.localPosition = new Vector3(
+                    tile.X - mins[vi].x * s,
+                    cfg.baselineY + v.yOffset - mins[vi].y * s,
                     0f);
 
-                sr.enabled = true;
+                if (!inst.gameObject.activeSelf)
+                    inst.gameObject.SetActive(true);
             }
 
-            SpriteRenderer CreateRenderer()
+            Transform GetInstance(int variantIndex, SceneryVariant v)
             {
-                var go = new GameObject("Tile");
-                go.transform.SetParent(root, false);
-                var sr = go.AddComponent<SpriteRenderer>();
-                sr.sortingOrder = cfg.sortingOrder;
-                sr.sortingLayerName = cfg.sortingLayer;
-                sr.color = cfg.tint;
-                if (cfg.material != null)
-                    sr.sharedMaterial = cfg.material;
-                sr.enabled = false;
-                return sr;
+                var list = poolPorVariante[variantIndex];
+                int used = usadosPorVariante[variantIndex];
+
+                Transform inst;
+                if (used < list.Count)
+                {
+                    inst = list[used];
+                }
+                else
+                {
+                    inst = CreateInstance(v);
+                    if (inst == null)
+                        return null;
+                    list.Add(inst);
+                }
+
+                usadosPorVariante[variantIndex] = used + 1;
+                return inst;
+            }
+
+            Transform CreateInstance(SceneryVariant v)
+            {
+                if (v.prefab == null)
+                    return null;
+
+                var go = Object.Instantiate(v.prefab, root);
+
+                var sr = go.GetComponent<SpriteRenderer>();
+                if (sr != null)
+                {
+                    sr.sortingOrder = cfg.sortingOrder;
+                    sr.sortingLayerName = cfg.sortingLayer;
+                    sr.color = cfg.tint;
+                    if (cfg.material != null)
+                        sr.sharedMaterial = cfg.material;
+                }
+
+                return go.transform;
             }
 
             public void Dispose()

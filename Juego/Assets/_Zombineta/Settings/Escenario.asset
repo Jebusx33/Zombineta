@@ -29,6 +29,8 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     variants:
     - sprite: {fileID: 21300000, guid: 0a56c5594d5fa8f4893455e48812aa87, type: 3}
+      prefab: {fileID: 2397860195985427030, guid: e2d331a1b836fd047a6ca3b3a7b06e5e, type: 3}
+      grupo: ciudad
       weight: 1
       heightScale: 1
       yOffset: 0
@@ -48,22 +50,32 @@ MonoBehaviour:
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 2cd8205bf436ef44d900599a7877b795, type: 3}
+      prefab: {fileID: 6710405339712923448, guid: eacb0ea3ec4aeb34a9a4e6cf5bd8c8f1, type: 3}
+      grupo: ciudad
       weight: 3
       heightScale: 1
       yOffset: 0
     - sprite: {fileID: 21300000, guid: 16254c25dd00e9a4eb907a06a53f95b8, type: 3}
+      prefab: {fileID: 1106796538738022115, guid: f2be6170b1b96814e825e317e5da4a22, type: 3}
+      grupo: ciudad
       weight: 3
       heightScale: 1
       yOffset: 0
     - sprite: {fileID: 21300000, guid: 0a131f4c2a00a2d4da757d56d3ad7f4c, type: 3}
+      prefab: {fileID: 3052133390208807794, guid: a2970245a4d7f6c4f86b0cf724a773fb, type: 3}
+      grupo: ciudad
       weight: 3
       heightScale: 1
       yOffset: 0
     - sprite: {fileID: 21300000, guid: a5fe197d641ca9e46a62f851d183e67b, type: 3}
+      prefab: {fileID: 4381694546646039009, guid: eb41bb547478ca64d9874a387b1b8b69, type: 3}
+      grupo: ciudad
       weight: 1.5
       heightScale: 1
       yOffset: 0
     - sprite: {fileID: 21300000, guid: 604cf17f4fb1d864cb8d39a66ad8c5c3, type: 3}
+      prefab: {fileID: 7046992371874166357, guid: 7c8f208464bf0a0488ed07e6c20425ad, type: 3}
+      grupo: ciudad
       weight: 1
       heightScale: 0.62
       yOffset: 0
@@ -83,10 +95,14 @@ MonoBehaviour:
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 7b797a31302444a489662b27e037d601, type: 3}
+      prefab: {fileID: 5129608159295903019, guid: d3bee24e467adf54fad90e8a083cd553, type: 3}
+      grupo: ciudad
       weight: 1
       heightScale: 1
       yOffset: 0
     - sprite: {fileID: 21300000, guid: 08b16d1a81e6e144991adc03c790e7a1, type: 3}
+      prefab: {fileID: 7647716502082669866, guid: 3c40cf7a9ce2b6547a479fa75184863c, type: 3}
+      grupo: ciudad
       weight: 1
       heightScale: 1
       yOffset: 0
@@ -106,6 +122,8 @@ MonoBehaviour:
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 34ecad7966b14874d8f90643e4f60aba, type: 3}
+      prefab: {fileID: 4967997145572580600, guid: 120fede6a9b6e114f8636eb367078ccd, type: 3}
+      grupo: ciudad
       weight: 1
       heightScale: 1
       yOffset: 0
@@ -125,6 +143,8 @@ MonoBehaviour:
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 76753e779300aa244ac484a6606f941f, type: 3}
+      prefab: {fileID: 6702490767672615423, guid: 3d74981b8aa5f1d4cad670729cd618f7, type: 3}
+      grupo: ciudad
       weight: 1
       heightScale: 1
       yOffset: 0
@@ -144,6 +164,8 @@ MonoBehaviour:
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 34ecad7966b14874d8f90643e4f60aba, type: 3}
+      prefab: {fileID: 4967997145572580600, guid: 120fede6a9b6e114f8636eb367078ccd, type: 3}
+      grupo: ciudad
       weight: 1
       heightScale: 1
       yOffset: 0
@@ -163,6 +185,8 @@ MonoBehaviour:
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 3ede235060f4b6f46a33e521b24a5b42, type: 3}
+      prefab: {fileID: 2609778686563737701, guid: 20370ff1ec9c34e42909a541a04d01e5, type: 3}
+      grupo: ciudad
       weight: 1
       heightScale: 1
       yOffset: 0
@@ -182,6 +206,8 @@ MonoBehaviour:
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: fad0fd806da039c48a4df3d3eae13c36, type: 3}
+      prefab: {fileID: 7517338373364795859, guid: b7f6870b5aa9fb64ba7d4ca8dfe551f7, type: 3}
+      grupo: ciudad
       weight: 1
       heightScale: 1
       yOffset: 0
@@ -201,6 +227,8 @@ MonoBehaviour:
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 9bed828f767365a4dba936fd66724daa, type: 3}
+      prefab: {fileID: 1485698084605273024, guid: 5588cf7f46f58f14bbc4810f6178c3fc, type: 3}
+      grupo: ciudad
       weight: 1
       heightScale: 1
       yOffset: 0
@@ -220,18 +248,26 @@ MonoBehaviour:
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: e3998443b205f23419ecc6d8d3c4ebc7, type: 3}
+      prefab: {fileID: 1503768673699883496, guid: 647601735d69667478b5cd8ae96371ae, type: 3}
+      grupo: ciudad
       weight: 2
       heightScale: 1
       yOffset: 0
     - sprite: {fileID: 21300000, guid: fa0807634cae81b468ed1cbe5da93a29, type: 3}
+      prefab: {fileID: 6286245457572346225, guid: 3d3cdc0ae24209a44aa1071ec3ba9612, type: 3}
+      grupo: ciudad
       weight: 1.5
       heightScale: 0.7
       yOffset: 0
     - sprite: {fileID: 21300000, guid: 871e6fb7969afc243a3bf5a2ca7866d5, type: 3}
+      prefab: {fileID: 2035240381058095866, guid: 8099847428ed67c489da6abeca1896ae, type: 3}
+      grupo: ciudad
       weight: 1
       heightScale: 0.35
       yOffset: 1.9
     - sprite: {fileID: 21300000, guid: d06db305a7321a049a276fc81415ac62, type: 3}
+      prefab: {fileID: 73856211976670759, guid: 17e1a45becd289c479ea644eeba54ab7, type: 3}
+      grupo: ciudad
       weight: 1.5
       heightScale: 0.9
       yOffset: 0
@@ -251,26 +287,38 @@ MonoBehaviour:
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: e3998443b205f23419ecc6d8d3c4ebc7, type: 3}
+      prefab: {fileID: 1503768673699883496, guid: 647601735d69667478b5cd8ae96371ae, type: 3}
+      grupo: ciudad
       weight: 0
       heightScale: 1.05
       yOffset: 0
     - sprite: {fileID: 21300000, guid: d06db305a7321a049a276fc81415ac62, type: 3}
+      prefab: {fileID: 73856211976670759, guid: 17e1a45becd289c479ea644eeba54ab7, type: 3}
+      grupo: ciudad
       weight: 0
       heightScale: 0.95
       yOffset: 0
     - sprite: {fileID: 21300000, guid: fa0807634cae81b468ed1cbe5da93a29, type: 3}
+      prefab: {fileID: 6286245457572346225, guid: 3d3cdc0ae24209a44aa1071ec3ba9612, type: 3}
+      grupo: ciudad
       weight: 0
       heightScale: 0.85
       yOffset: 0
     - sprite: {fileID: 21300000, guid: 7b797a31302444a489662b27e037d601, type: 3}
+      prefab: {fileID: 5129608159295903019, guid: d3bee24e467adf54fad90e8a083cd553, type: 3}
+      grupo: ciudad
       weight: 1
       heightScale: 1.1
       yOffset: 0
     - sprite: {fileID: 21300000, guid: 08b16d1a81e6e144991adc03c790e7a1, type: 3}
+      prefab: {fileID: 7647716502082669866, guid: 3c40cf7a9ce2b6547a479fa75184863c, type: 3}
+      grupo: ciudad
       weight: 1
       heightScale: 1.2
       yOffset: 0
     - sprite: {fileID: 21300000, guid: 871e6fb7969afc243a3bf5a2ca7866d5, type: 3}
+      prefab: {fileID: 2035240381058095866, guid: 8099847428ed67c489da6abeca1896ae, type: 3}
+      grupo: ciudad
       weight: 0
       heightScale: 0.3
       yOffset: 0.2

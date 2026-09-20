@@ -8,7 +8,16 @@ namespace Zombineta.Scenery
     [Serializable]
     public sealed class SceneryVariant
     {
-        public Sprite sprite;
+        [Tooltip("Solo lo usa la migracion a prefabs (Zombineta/Luz/Migrar tiles a prefabs). " +
+                 "En runtime el tile sale de 'prefab'.")]
+        [HideInInspector] public Sprite sprite;
+
+        [Tooltip("El tile como prefab: su raiz trae el SpriteRenderer (y, si arte le puso, " +
+                 "Light2D/ShadowCaster2D/Flicker como hijos).")]
+        public GameObject prefab;
+
+        [Tooltip("Grupo de arte al que pertenece este tile (para reclasificar mas adelante).")]
+        public string grupo = "ciudad";
 
         [Tooltip("Probabilidad relativa. 0 = no se usa (sirve para apagar un tile sin borrarlo).")]
         [Min(0f)] public float weight = 1f;
