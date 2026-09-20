@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f062f3e382c11ea44a6b9ba9b4e457ae, type: 3}
+  m_Name: Noche
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Luz.PerfilDeLuz
+  capas:
+  - capa: Cielo
+    color: {r: 0.35, g: 0.35, b: 0.55, a: 1}
+    intensidad: 0.8
+  - capa: Fondo
+    color: {r: 0.22, g: 0.24, b: 0.5, a: 1}
+    intensidad: 0.35
+  - capa: Calle
+    color: {r: 0.28, g: 0.3, b: 0.5, a: 1}
+    intensidad: 0.25
+  - capa: Juego
+    color: {r: 0.3, g: 0.32, b: 0.5, a: 1}
+    intensidad: 0.3
+  - capa: Frente
+    color: {r: 0.1, g: 0.1, b: 0.2, a: 1}
+    intensidad: 0.15
+  colorGeneral: {r: 0, g: 0, b: 0, a: 1}
+  intensidadGeneral: 0

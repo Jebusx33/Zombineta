@@ -4,6 +4,7 @@ using Zombineta.Core;
 using Zombineta.Enemies;
 using Zombineta.Fx;
 using Zombineta.Level;
+using Zombineta.Luz;
 
 namespace Zombineta.Juego.Levels
 {
@@ -40,11 +41,16 @@ namespace Zombineta.Juego.Levels
         [SerializeField] Sprite shadowSprite;
         [SerializeField] Color shadowColor = new Color(0f, 0f, 0f, 0.45f);
 
+        [Header("Luz")]
+        [Tooltip("Ambiente de este nivel: cuanta luz recibe cada capa de dibujo. Lo usa LightingDirector.")]
+        [SerializeField] PerfilDeLuz perfil;
+
         public GameConfig Config => config;
         public LevelItemPalette Palette => palette;
         public float GoalDistance => goalDistance;
         public Transform ItemsRoot => itemsRoot != null ? itemsRoot : transform;
         public LevelGeneratorSettings Generator => generator;
+        public PerfilDeLuz Perfil => perfil;
 
         // Sin config asignada: usar los valores actuales de Settings/GameConfig.asset (no los
         // defaults viejos de la clase GameConfig, que ya no coinciden con el asset en uso).

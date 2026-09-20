@@ -1429,7 +1429,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1039717298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1779,6 +1779,7 @@ GameObject:
   - component: {fileID: 1171654546}
   - component: {fileID: 1171654548}
   - component: {fileID: 1171654549}
+  - component: {fileID: 1171654550}
   m_Layer: 0
   m_Name: Nivel
   m_TagString: Untagged
@@ -1819,6 +1820,7 @@ MonoBehaviour:
   lookSeed: 12345
   shadowSprite: {fileID: 21300000, guid: 8c1bb8c15f5a47141b8d044f53482a77, type: 3}
   shadowColor: {r: 0, g: 0, b: 0, a: 0.45}
+  perfil: {fileID: 11400000, guid: 4d1ab6a5e1baa0a4488968a8390a2194, type: 2}
 --- !u!4 &1171654547
 Transform:
   m_ObjectHideFlags: 0
@@ -1869,6 +1871,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Fx.GamepadRumble
   run: {fileID: 1170739137}
   config: {fileID: 11400000, guid: 57f9d516a5a88c74dbdb38be88310910, type: 2}
+--- !u!114 &1171654550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171654545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37ac69707ec84ab4cbcbff8e99feb698, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Luz.LightingDirector
+  perfil: {fileID: 11400000, guid: 4d1ab6a5e1baa0a4488968a8390a2194, type: 2}
 --- !u!1 &1200186253
 GameObject:
   m_ObjectHideFlags: 0
