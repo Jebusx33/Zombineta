@@ -35,6 +35,9 @@ namespace Zombineta.Scenery
         [Tooltip("Orden de dibujo. La moto esta en 10: el fondo va abajo, el frente arriba.")]
         public int sortingOrder;
 
+        [Tooltip("Sorting Layer de esta capa: Cielo, Fondo, Calle, Juego o Frente.")]
+        public string sortingLayer = "Fondo";
+
         [Header("Ubicacion y tamano")]
         [Tooltip("Altura en mundo de la base de los tiles.")]
         public float baselineY;

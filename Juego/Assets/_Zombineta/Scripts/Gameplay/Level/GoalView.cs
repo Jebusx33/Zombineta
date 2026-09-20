@@ -32,7 +32,10 @@ namespace Zombineta.Level
 
             var renderer = gate.GetComponent<SpriteRenderer>();
             if (renderer != null)
+            {
                 renderer.sortingOrder = SortingOrder;
+                renderer.sortingLayerName = LaneSorting.GameLayer;
+            }
         }
     }
 }

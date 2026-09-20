@@ -78,6 +78,7 @@ namespace Zombineta.Fx
             shadow.color = color;
 
             shadow.sortingOrder = LaneSorting.Order(visualLane, SortSlot.Shadow);
+            shadow.sortingLayerName = LaneSorting.GameLayer;
         }
     }
 }

@@ -151,6 +151,7 @@ namespace Zombineta.Scenery
                 go.transform.SetParent(root, false);
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.sortingOrder = cfg.sortingOrder;
+                sr.sortingLayerName = cfg.sortingLayer;
                 sr.color = cfg.tint;
                 if (cfg.material != null)
                     sr.sharedMaterial = cfg.material;

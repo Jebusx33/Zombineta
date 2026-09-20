@@ -14,6 +14,11 @@ namespace Zombineta.Core
         public const int Base = 1000;
         public const int PerLane = 100;
 
+        /// <summary>Sorting Layer donde vive todo lo del juego (moto, horda, items, sombras,
+        /// efectos): entre "Calle" y "Frente" del escenario, para que una Light2D pueda
+        /// alcanzarlo sin lavar el fondo ni la calle.</summary>
+        public const string GameLayer = "Juego";
+
         public static int Order(float visualLane, SortSlot slot) =>
             Base - Mathf.RoundToInt(visualLane * PerLane) + (int)slot;
     }

@@ -265,6 +265,7 @@ namespace Zombineta.Enemies
 
                     // De pie tapa lo de arriba; caido queda como cualquier cosa tirada en el piso.
                     sprites[i].sortingOrder = LaneSorting.Order(u.Lane, u.Alive ? SortSlot.Zombie : SortSlot.Item);
+                    sprites[i].sortingLayerName = LaneSorting.GameLayer;
                 }
 
                 if (shadows[i] != null)

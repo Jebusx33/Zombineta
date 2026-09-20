@@ -50,5 +50,13 @@ namespace Zombineta.Juego.Tests
             // carril puede llegar a pisar el primer plano del escenario.
             Assert.Less(LaneSorting.Order(-0.5f, SortSlot.Effect), 2000);
         }
+
+        [Test]
+        public void TheGameLayer_IsNamedAndExists()
+        {
+            Assert.AreEqual("Juego", LaneSorting.GameLayer);
+            Assert.IsTrue(System.Array.Exists(UnityEngine.SortingLayer.layers,
+                l => l.name == LaneSorting.GameLayer), "falta la Sorting Layer del juego");
+        }
     }
 }

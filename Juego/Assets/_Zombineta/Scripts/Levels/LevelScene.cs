@@ -278,6 +278,7 @@ namespace Zombineta.Juego.Levels
             if (sr.sprite != sprite) sr.sprite = sprite;
             if (sr.color != color) sr.color = color;
             if (sr.sortingOrder != order) sr.sortingOrder = order;
+            if (sr.sortingLayerName != LaneSorting.GameLayer) sr.sortingLayerName = LaneSorting.GameLayer;
             bool flip = item.kind == LevelEntryKind.ZombieFront;   // mira hacia la jugadora
             if (sr.flipX != flip) sr.flipX = flip;
             if (item.transform.localScale != scale) item.transform.localScale = scale;
