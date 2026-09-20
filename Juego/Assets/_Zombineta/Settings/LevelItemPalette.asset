@@ -19,39 +19,46 @@ MonoBehaviour:
     scale: {x: 2.09, y: 2.28}
     sortingOrder: 6
     shadowWidth: 1.1
+    prefab: {fileID: 5196542637121712966, guid: a58eceffd7013cf47bd1dc7b126ffd72, type: 3}
   - kind: 1
     sprite: {fileID: 21300000, guid: 34ecad7966b14874d8f90643e4f60aba, type: 3}
     color: {r: 1, g: 0.65, b: 0.15, a: 1}
     scale: {x: 1.045, y: 1.045}
     sortingOrder: 6
     shadowWidth: 0.9
+    prefab: {fileID: 6572160695765378482, guid: a0ad9b07fa2971c4db09f5547b60d8d1, type: 3}
   - kind: 2
     sprite: {fileID: 21300000, guid: 34ecad7966b14874d8f90643e4f60aba, type: 3}
     color: {r: 0.3, g: 0.85, b: 0.95, a: 1}
     scale: {x: 1.045, y: 1.045}
     sortingOrder: 6
     shadowWidth: 0.9
+    prefab: {fileID: 2001699172337466805, guid: cea97ec9492186a4e9c531546bad6853, type: 3}
   - kind: 3
     sprite: {fileID: 21300000, guid: 34ecad7966b14874d8f90643e4f60aba, type: 3}
     color: {r: 0.95, g: 0.9, b: 0.4, a: 1}
     scale: {x: 1.045, y: 1.045}
     sortingOrder: 6
     shadowWidth: 0.9
+    prefab: {fileID: 1770876272673370977, guid: fc7a945539ebb554bbb22bb4f52cb16f, type: 3}
   - kind: 4
     sprite: {fileID: 21300000, guid: 2bb0697335c876c47ba60a63e8224098, type: 3}
     color: {r: 0.85, g: 0.45, b: 0.2, a: 1}
     scale: {x: 1.9, y: 1.9}
     sortingOrder: 6
     shadowWidth: 1
+    prefab: {fileID: 867541154687633716, guid: 746cb1b89d1af8144a71942823357e6a, type: 3}
   - kind: 5
     sprite: {fileID: 21300000, guid: 00b8ec328b7dcd9419475488dff9251c, type: 3}
     color: {r: 0.9, g: 0.55, b: 0.15, a: 1}
     scale: {x: 1.3299999, y: 1.7099999}
     sortingOrder: 6
     shadowWidth: 1
+    prefab: {fileID: 3062576876391638412, guid: c1322193a78bb2d4ea67c97efb7d5462, type: 3}
   - kind: 6
     sprite: {fileID: 1471499687, guid: d368c40d1a2a0054eb2bd61891e8689d, type: 3}
     color: {r: 1, g: 1, b: 1, a: 1}
     scale: {x: 1.9, y: 1.9}
     sortingOrder: 6
     shadowWidth: 0.8
+    prefab: {fileID: 0}

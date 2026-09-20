@@ -23,6 +23,12 @@ namespace Zombineta.Juego.Levels
 
             [Tooltip("Ancho de la sombra en el piso, relativo al ancho de sombra.png (1 = igual).")]
             public float shadowWidth = 1f;
+
+            [Tooltip("Prefab con la vista de este tipo (sprite propio, material lit, y opcional " +
+                     "ShadowCaster2D/Light2D). Si esta asignado, LevelScene lo instancia como hijo " +
+                     "del item y no pinta sprite/color de aca: asi arte le da luz y sombra propias " +
+                     "sin tocar codigo. Sin asignar, todo sigue como antes (sprite/color de arriba).")]
+            public GameObject prefab;
         }
 
         public List<Look> looks = new List<Look>();

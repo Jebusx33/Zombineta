@@ -67,8 +67,12 @@ namespace Zombineta.Juego.Levels
         /// <summary>Nombre fijo del hijo que dibuja la sombra: asi se lo puede encontrar y reusar.</summary>
         const string ShadowChildName = "Sombra";
 
-        readonly List<(LevelItem item, int index, GroundShadow shadow)> bound =
-            new List<(LevelItem, int, GroundShadow)>();
+        /// <summary>Nombre fijo del hijo que instancia el prefab del look: asi se lo puede encontrar,
+        /// reusar y (en juego) apagar junto con el item consumido.</summary>
+        const string LookChildName = "Vista";
+
+        readonly List<(LevelItem item, int index, GroundShadow shadow, GameObject look)> bound =
+            new List<(LevelItem, int, GroundShadow, GameObject)>();
         RunController run;
 
         // --- Datos para la simulacion ------------------------------------------------
@@ -123,7 +127,9 @@ namespace Zombineta.Juego.Levels
                     {
                         var shadowT = pool[k].transform.Find(ShadowChildName);
                         var shadow = shadowT != null ? shadowT.GetComponent<GroundShadow>() : null;
-                        bound.Add((pool[k], i, shadow));
+                        var lookT = pool[k].transform.Find(LookChildName);
+                        var look = lookT != null ? lookT.gameObject : null;
+                        bound.Add((pool[k], i, shadow, look));
                         pool.RemoveAt(k);
                         break;
                     }
@@ -159,14 +165,22 @@ namespace Zombineta.Juego.Levels
                 if (run == null || run.Level == null)
                     return;
                 var runtime = run.Level.Items;
-                foreach (var (item, index, shadow) in bound)
+                foreach (var (item, index, shadow, look) in bound)
                 {
                     if (item == null)
                         continue;
                     bool visible = !runtime[index].Consumed;
-                    var sr = item.GetComponent<SpriteRenderer>();
-                    if (sr != null)
-                        sr.enabled = visible;
+                    // Con prefab, la vista vive en "Vista" (hijo): apagar ese GameObject entero
+                    // (sprite, luz y sombra propia del prefab juntos). Sin prefab, el sprite sigue
+                    // en el propio item, como antes.
+                    if (look != null)
+                        look.SetActive(visible);
+                    else
+                    {
+                        var sr = item.GetComponent<SpriteRenderer>();
+                        if (sr != null)
+                            sr.enabled = visible;
+                    }
                     if (shadow != null)
                         shadow.Visible = visible;
                 }
@@ -281,13 +295,27 @@ namespace Zombineta.Juego.Levels
                 scale = new Vector3(scale.x * typeScale * lookScale, scale.y * typeScale * lookScale, 1f);
             }
 
-            if (sr.sprite != sprite) sr.sprite = sprite;
-            if (sr.color != color) sr.color = color;
-            if (sr.sortingOrder != order) sr.sortingOrder = order;
-            if (sr.sortingLayerName != LaneSorting.GameLayer) sr.sortingLayerName = LaneSorting.GameLayer;
-            bool flip = item.kind == LevelEntryKind.ZombieFront;   // mira hacia la jugadora
-            if (sr.flipX != flip) sr.flipX = flip;
+            // El carril y el generador siguen decidiendo la escala del item, tenga o no prefab.
             if (item.transform.localScale != scale) item.transform.localScale = scale;
+
+            if (look != null && look.prefab != null)
+            {
+                // La vista viene del prefab: el propio SpriteRenderer del item queda apagado y sin
+                // pintar, para no dibujar el sprite dos veces.
+                ApplyLookPrefab(item, look, order);
+                if (sr.enabled) sr.enabled = false;
+            }
+            else
+            {
+                RemoveLookPrefab(item);
+                if (!sr.enabled) sr.enabled = true;
+                if (sr.sprite != sprite) sr.sprite = sprite;
+                if (sr.color != color) sr.color = color;
+                if (sr.sortingOrder != order) sr.sortingOrder = order;
+                if (sr.sortingLayerName != LaneSorting.GameLayer) sr.sortingLayerName = LaneSorting.GameLayer;
+                bool flip = item.kind == LevelEntryKind.ZombieFront;   // mira hacia la jugadora
+                if (sr.flipX != flip) sr.flipX = flip;
+            }
 
             // La rampa ya se pisa: no necesita su propia sombra en el piso.
             if (isRamp)
@@ -347,6 +375,66 @@ namespace Zombineta.Juego.Levels
         void RemoveShadow(LevelItem item)
         {
             var t = item.transform.Find(ShadowChildName);
+            if (t == null)
+                return;
+
+            if (Application.isPlaying)
+                Destroy(t.gameObject);
+            else
+                DestroyImmediate(t.gameObject);
+        }
+
+        /// <summary>
+        /// Instancia (o reusa) el prefab del look como hijo fijo "Vista": arte le da luz y sombra
+        /// propias sin tocar este script. Solo la capa y el orden de dibujo los sigue poniendo el
+        /// sistema, igual que antes con el sprite propio del item.
+        /// </summary>
+        void ApplyLookPrefab(LevelItem item, LevelItemPalette.Look look, int order)
+        {
+            var t = item.transform.Find(LookChildName);
+            GameObject go = t != null ? t.gameObject : null;
+
+            bool needsNew = go == null;
+#if UNITY_EDITOR
+            if (!needsNew && UnityEditor.PrefabUtility.GetCorrespondingObjectFromSource(go) != (Object)look.prefab)
+                needsNew = true;
+#endif
+
+            if (needsNew)
+            {
+                if (go != null)
+                {
+                    if (Application.isPlaying)
+                        Destroy(go);
+                    else
+                        DestroyImmediate(go);
+                }
+
+#if UNITY_EDITOR
+                go = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(look.prefab, item.transform);
+#else
+                go = Instantiate(look.prefab, item.transform);
+#endif
+                go.name = LookChildName;
+                go.transform.localPosition = Vector3.zero;
+                go.transform.localRotation = Quaternion.identity;
+                go.transform.localScale = Vector3.one;
+                go.hideFlags = Application.isPlaying ? HideFlags.None : HideFlags.DontSave;
+            }
+
+            // Contrato del prefab: sprite y material en la raiz. Sombra/luz (si las tiene) son
+            // hijas suyas y no necesitan capa ni orden propios.
+            var prefabSr = go.GetComponent<SpriteRenderer>();
+            if (prefabSr != null)
+            {
+                if (prefabSr.sortingLayerName != LaneSorting.GameLayer) prefabSr.sortingLayerName = LaneSorting.GameLayer;
+                if (prefabSr.sortingOrder != order) prefabSr.sortingOrder = order;
+            }
+        }
+
+        void RemoveLookPrefab(LevelItem item)
+        {
+            var t = item.transform.Find(LookChildName);
             if (t == null)
                 return;
 
