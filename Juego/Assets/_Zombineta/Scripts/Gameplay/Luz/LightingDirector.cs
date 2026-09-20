@@ -4,10 +4,6 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using Zombineta.Juego.Levels;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 namespace Zombineta.Luz
 {
     /// <summary>
@@ -129,26 +125,24 @@ namespace Zombineta.Luz
                 }
             }
 
-#if UNITY_EDITOR
-            var so = new SerializedObject(luz);
-            var prop = so.FindProperty("m_ApplyToSortingLayers");
-            prop.ClearArray();
-            for (int i = 0; i < ids.Count; i++)
-            {
-                prop.InsertArrayElementAtIndex(i);
-                prop.GetArrayElementAtIndex(i).intValue = ids[i];
-            }
-            so.ApplyModifiedPropertiesWithoutUndo();
-#endif
+            // Sin #if UNITY_EDITOR/SerializedObject: targetSortingLayers es una API publica de
+            // Light2D, funciona igual en editor y en build. La version anterior con
+            // SerializedObject se compilaba fuera del build, dejando sin capas asignadas a todas
+            // las luces ambiente (pantalla negra en un player).
+            luz.targetSortingLayers = ids.ToArray();
         }
 
+        // Excluye "Default" de la luz "General": si algun sprite queda sin reasignar de esa capa
+        // (la que trae Unity por defecto, no una de las cinco del juego), no lo deja negro sin
+        // aviso cuando colorGeneral/intensidadGeneral estan en 0 como en Noche.asset.
         static string[] TodasLasCapas()
         {
             var capas = SortingLayer.layers;
-            var nombres = new string[capas.Length];
-            for (int i = 0; i < capas.Length; i++)
-                nombres[i] = capas[i].name;
-            return nombres;
+            var nombres = new List<string>(capas.Length);
+            foreach (var capa in capas)
+                if (capa.name != "Default")
+                    nombres.Add(capa.name);
+            return nombres.ToArray();
         }
 
         void DestruirHijos()
