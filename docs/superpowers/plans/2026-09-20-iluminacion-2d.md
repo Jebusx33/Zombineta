@@ -350,8 +350,9 @@ namespace Zombineta.Luz
 - [ ] **Step 5: `LightingDirector`** — `[ExecuteAlways]`, `[DefaultExecutionOrder(-150)]`:
   - `Rebuild()`: borra los hijos que creó (marcados con `HideFlags.DontSave` en edición) y crea uno
     por entrada del perfil: `GameObject("Luz Global " + capa)` con `Light2D` de tipo `Global`,
-    `blendStyleIndex = 0` (Multiply), `color`, `intensity`, y solo esa capa en `m_ApplyToSortingLayers`
-    (usar `SerializedObject` sobre la `Light2D`, porque la API pública de capas es limitada).
+    `blendStyleIndex = 0` (Multiply), `color`, `intensity`, y solo esa capa en
+    `Light2D.targetSortingLayers` (API pública, funciona igual en editor y en build; **no** usar
+    `SerializedObject`, que solo existe en el editor y deja las luces sin capa en la build).
   - `Update`: si cambió el perfil o alguno de sus valores (comparar con un hash guardado:
     cantidad de capas, nombres, colores e intensidades), `Rebuild()`. Así arte ve el cambio en vivo.
   - Si `perfil == null`: ninguna luz global, y un `Debug.LogWarning` una sola vez.
@@ -717,7 +718,7 @@ namespace Zombineta.Juego.Tests
     `Update`: `Tick(Time.unscaledDeltaTime)` y vuelca los vivos al pool.
   - `Destellos.asset`: Shot blanco 1.5 / radio 2 / 0.06 s; Crash (1, 0.85, 0.6) 1.2 / 3 / 0.12 s;
     RanOver (1, 0.3, 0.3) 1.2 / 2.5 / 0.15 s; Explosion (1, 0.6, 0.2) 3 / 6 / 0.3 s.
-  - `HeadlightView`: sumar las capas `Calle` y `Juego` a su `Light2D` (por `SerializedObject`,
+  - `HeadlightView`: sumar las capas `Calle` y `Juego` a su `Light2D` (por `targetSortingLayers`,
     igual que el director), sin tocar la lógica de intensidad ni de batería.
   - `HordeGlow` (en el objeto `Nivel`): `Light2D` global-free puntual grande que sigue
     `run.ToWorldX(state.HordeX)`; intensidad `Lerp(0, max, 1 - clamp01(gap / dangerGapMeters))`
