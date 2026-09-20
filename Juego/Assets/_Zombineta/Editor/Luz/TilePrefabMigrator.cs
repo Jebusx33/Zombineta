@@ -4,11 +4,14 @@ using UnityEditor;
 using UnityEngine;
 using Zombineta.Scenery;
 
-namespace Zombineta.Juego.EditorTools
+namespace Zombineta.Juego.EditorTools.Luz
 {
     // Convierte cada SceneryVariant.sprite del tileset en un prefab propio, para que
     // arte tenga un objeto donde meterle Light2D/ShadowCaster2D/Flicker. No borra
     // 'sprite': lo deja solo como dato de migracion.
+    //
+    // Re-ejecutable a mano: si 'variant.prefab' ya esta asignado (arte lo eligio a mano,
+    // o quedo de una corrida anterior), no lo toca. Solo completa lo que falta.
     public static class TilePrefabMigrator
     {
         const string PrefabFolder = "Assets/_Zombineta/Art/Tileset/Prefabs";
@@ -53,18 +56,27 @@ namespace Zombineta.Juego.EditorTools
 
                     foreach (var variant in layer.variants)
                     {
-                        if (variant == null || variant.sprite == null)
+                        if (variant == null)
+                            continue;
+
+                        // Se normaliza el grupo siempre, tenga sprite migrable o no: una
+                        // variante sin sprite tambien es un tile de arte que hay que poder
+                        // reclasificar mas adelante.
+                        if (string.IsNullOrEmpty(variant.grupo))
+                        {
+                            variant.grupo = "ciudad";
+                            dirty = true;
+                        }
+
+                        if (variant.sprite == null)
                         {
                             sinPrefab++;
                             continue;
                         }
 
-                        if (string.IsNullOrEmpty(variant.grupo))
-                            variant.grupo = "ciudad";
-
                         if (cache.TryGetValue(variant.sprite, out GameObject cached))
                         {
-                            if (variant.prefab != cached)
+                            if (variant.prefab == null)
                             {
                                 variant.prefab = cached;
                                 dirty = true;
@@ -81,9 +93,21 @@ namespace Zombineta.Juego.EditorTools
                             prefab = CreatePrefab(variant.sprite, material, prefabPath);
                             creados++;
                         }
+                        else
+                        {
+                            var existingSprite = prefab.GetComponent<SpriteRenderer>()?.sprite;
+                            if (existingSprite != variant.sprite)
+                            {
+                                Debug.LogError("TilePrefabMigrator: el prefab en '" + prefabPath +
+                                               "' no corresponde al sprite de la variante (capa '" +
+                                               layer.name + "', sprite '" + variant.sprite.name +
+                                               "'). Se salteo esa variante.");
+                                continue;
+                            }
+                        }
 
                         cache[variant.sprite] = prefab;
-                        if (variant.prefab != prefab)
+                        if (variant.prefab == null)
                         {
                             variant.prefab = prefab;
                             dirty = true;
@@ -99,6 +123,7 @@ namespace Zombineta.Juego.EditorTools
             AssetDatabase.Refresh();
 
             Debug.Log("TilePrefabMigrator: " + creados + " prefabs creados, " +
+                      reutilizados + " variantes reutilizaron un prefab ya migrado, " +
                       sinPrefab + " variantes sin sprite (quedan sin prefab).");
         }
 
