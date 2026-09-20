@@ -118,7 +118,38 @@ Herramienta `Zombineta > Luz > Construir taller` que genera `Scenes/TallerLuz.un
 - Un objeto con el `LightingDirector` para poder cambiar de perfil desde el inspector.
 - Se puede regenerar cuando arte agrega prefabs; no se edita a mano.
 
-## 8. Pruebas
+## 8. Guía para arte
+
+Un documento aparte del HANDOFF (que es de programación), escrito para alguien que abre Unity a
+trabajar y no quiere leer código: `docs/Guia-de-iluminacion-para-arte.md`, en castellano, con
+capturas del editor.
+
+Contenido, en orden de uso:
+
+1. **Abrir el proyecto**: `Juego/` desde Unity Hub (nunca la raíz), qué escena abrir para cada cosa
+   (Taller de luz para trabajar un asset, `Level_01` para verlo en el juego).
+2. **Cómo está armado el escenario**: capas, parallax y a qué Sorting Layer va cada una; por qué el
+   fondo se arma solo y qué significa eso para el arte (un tile tiene que empalmar consigo mismo).
+3. **Hacer un asset nuevo paso a paso**: preparar el PNG (fondo transparente, tamaño, pivot en la
+   base), importarlo, generar el normal map y engancharlo como Secondary Texture, crear el prefab a
+   partir de la plantilla, agregarlo a la capa que corresponde en `Escenario.asset` con su grupo.
+4. **Ponerle luz**: qué tipo de `Light2D` usar en cada caso (Point para un farol, Freeform para una
+   vidriera, Sprite para un cartel), qué capas tiene que alcanzar, cuándo usar un sprite "prendido"
+   en vez de una luz real, y cómo usar el componente de parpadeo.
+5. **Sombras**: cuándo agregar `ShadowCaster2D` y cómo dibujar la silueta simple.
+6. **El ambiente**: qué es el `PerfilDeLuz`, cómo cambiarlo y cómo probar el mismo asset de noche
+   cerrada y al atardecer.
+7. **Ver el resultado**: el taller, "Probar desde acá" en un nivel, y el interruptor Alta/Baja.
+8. **Presupuesto**: qué significa que una luz sea "de adorno", cuántas entran por pantalla y qué
+   pasa cuando se pasa del tope.
+9. **Qué no tocar**: la capa y el orden los pone el sistema; los números del recorrido y de la
+   cámara son de programación.
+10. **Checklist antes de subir** y cómo subir el trabajo (Git LFS ya configurado, qué rama).
+
+Se escribe al final, con la herramienta ya andando, y se verifica pidiéndole a alguien que siga los
+pasos con un asset de prueba.
+
+## 9. Pruebas
 
 **EditMode:**
 - `LightBudget`: respeta el tope; prioriza las más cercanas; con tope 0 apaga todo; determinista.
@@ -132,7 +163,7 @@ Herramienta `Zombineta > Luz > Construir taller` que genera `Scenes/TallerLuz.un
 - Tiempo de cuadro promedio antes y después del sub-proyecto, en el mismo tramo, en Alta y en Baja.
 - Consola sin errores; recorrido del flujo hasta el nivel.
 
-**A mano:** arte abre un prefab, le cambia una luz y lo ve en el taller y en el nivel.
+**A mano:** alguien de arte sigue la guía con un asset de prueba, abre un prefab, le cambia una luz y lo ve en el taller y en el nivel.
 
 ## Riesgos
 
