@@ -17,9 +17,9 @@ MonoBehaviour:
     lineas: []
   - titulo: Equipo
     lineas:
-    - German
-    - Jesus
-    - Jose
+    - "Germ\xE1n"
+    - "Jes\xFAs"
+    - "Jos\xE9"
     - Juana
     - Seba
   - titulo: Taller de Proyecto Integral 212

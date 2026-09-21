@@ -232,7 +232,7 @@ namespace Zombineta.Juego.EditorTools
                 creditos.secciones.Add(new Seccion
                 {
                     titulo = "Equipo",
-                    lineas = new[] { "German", "Jesus", "Jose", "Juana", "Seba" },
+                    lineas = new[] { "Germán", "Jesús", "José", "Juana", "Seba" },
                 });
                 creditos.secciones.Add(new Seccion { titulo = "Taller de Proyecto Integral 212" });
                 creditos.secciones.Add(new Seccion { titulo = "Gracias por jugar" });
@@ -262,9 +262,22 @@ namespace Zombineta.Juego.EditorTools
                 SceneNames.LevelComplete, SceneNames.GameOver, SceneNames.Ending, SceneNames.Credits, SceneNames.Pause,
             });
 
+            var managedPaths = new HashSet<string>();
             var scenes = new List<EditorBuildSettingsScene>();
             foreach (var n in names)
-                scenes.Add(new EditorBuildSettingsScene(ScenesDir + "/" + n + ".unity", true));
+            {
+                string path = ScenesDir + "/" + n + ".unity";
+                managedPaths.Add(path);
+                scenes.Add(new EditorBuildSettingsScene(path, true));
+            }
+
+            // Conserva entradas que este metodo no administra (p.ej. escenas de arte como
+            // TallerLuz.unity, con su enabled tal cual estaba), al final de la lista, en vez de
+            // pisar toda la lista de Build Settings.
+            foreach (var existing in EditorBuildSettings.scenes)
+                if (!managedPaths.Contains(existing.path))
+                    scenes.Add(existing);
+
             EditorBuildSettings.scenes = scenes.ToArray();
         }
 
@@ -294,7 +307,7 @@ namespace Zombineta.Juego.EditorTools
             var buttons = AddMenu(canvas.transform, 60f,
                 ("Jugar", screen.Play),
                 ("Opciones", screen.OpenOptions),
-                ("Creditos", screen.OpenCredits),
+                ("Créditos", screen.OpenCredits),
                 ("Salir", screen.Quit));
 
             AddText(canvas.transform, "Pie", "Esqueleto del juego definitivo - pantallas placeholder", 26,
@@ -424,25 +437,43 @@ namespace Zombineta.Juego.EditorTools
             Save(scene, SceneNames.Ending);
         }
 
+        // El boton Volver queda fijo en (0,-500) con alto 84: su borde de arriba esta a
+        // alto/2 - 500 del centro del canvas. El viewport recorta a este margen desde abajo
+        // (mismo pixel de referencia que anchoredPosition, sin depender de la resolucion real),
+        // que le deja mas de 40px de aire libre sobre el boton.
+        const float VolverY = -500f;
+        const float ViewportMargenInferior = 160f;
+
         static void BuildCredits()
         {
             var (scene, canvas) = NewScreen(true, 0, new Color(0.05f, 0.05f, 0.08f), "");
             Object.DestroyImmediate(canvas.transform.Find("Titulo").gameObject);
             var screen = canvas.gameObject.AddComponent<CreditsScreen>();
 
+            // Viewport: recorta con RectMask2D desde arriba del canvas hasta el margen de abajo,
+            // que deja el boton Volver siempre libre y fuera del area con scroll.
+            var viewportGo = new GameObject("Viewport", typeof(RectTransform), typeof(RectMask2D));
+            viewportGo.transform.SetParent(canvas.transform, false);
+            var viewport = (RectTransform)viewportGo.transform;
+            viewport.anchorMin = Vector2.zero;
+            viewport.anchorMax = Vector2.one;
+            viewport.offsetMin = new Vector2(0f, ViewportMargenInferior);
+            viewport.offsetMax = Vector2.zero;
+
             var contenedorGo = new GameObject("Contenedor", typeof(RectTransform));
-            contenedorGo.transform.SetParent(canvas.transform, false);
+            contenedorGo.transform.SetParent(viewport, false);
             var contenedor = (RectTransform)contenedorGo.transform;
             contenedor.anchorMin = contenedor.anchorMax = new Vector2(0.5f, 0f);
             contenedor.pivot = new Vector2(0.5f, 1f);
             contenedor.sizeDelta = new Vector2(1600f, 0f);
             contenedor.anchoredPosition = Vector2.zero;
 
-            var volver = AddButton(canvas.transform, "Volver", new Vector2(0f, -500f), screen.Volver);
+            var volver = AddButton(canvas.transform, "Volver", new Vector2(0f, VolverY), screen.Volver);
 
             // Se recarga justo antes de asignarlo: la escena nueva descarga los assets sin uso.
             var creditos = AssetDatabase.LoadAssetAtPath<Creditos>(CreditosPath);
             Set(screen, "datos", creditos);
+            Set(screen, "viewport", viewport);
             Set(screen, "contenedor", contenedor);
             Set(screen, "submitAction", FindAction("UI/Submit"));
             Set(screen, "cancelAction", FindAction("UI/Cancel"));

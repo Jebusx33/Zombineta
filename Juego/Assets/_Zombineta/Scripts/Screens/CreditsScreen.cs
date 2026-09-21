@@ -7,15 +7,21 @@ namespace Zombineta.Juego.Screens
 {
     /// <summary>
     /// Los creditos: arma un Text por linea de Creditos.asset dentro de un contenedor que sube
-    /// solo, en tiempo real (unscaledDeltaTime). Submit acelera x3 mientras se lo mantiene
-    /// apretado. Cuando la ultima linea pasa el borde de arriba se espera pausaFinal y se
-    /// vuelve al menu; Cancel o el boton "Volver" vuelven al toque.
+    /// solo, en tiempo real (unscaledDeltaTime), adentro de un viewport recortado (RectMask2D)
+    /// que termina antes del boton Volver: el texto entra por el borde de abajo del viewport y
+    /// sale recortado por el de arriba, sin pisar el boton. Submit acelera x3 mientras se lo
+    /// mantiene apretado. Cuando la ultima linea pasa el borde de arriba del viewport se espera
+    /// pausaFinal y se vuelve al menu; Cancel o el boton "Volver" vuelven al toque.
     /// </summary>
     public sealed class CreditsScreen : ScreenBase
     {
         [SerializeField] Creditos datos;
 
-        [Tooltip("Contenedor que sube: pivote arriba-centro, anclado abajo-centro del canvas.")]
+        [Tooltip("Recorte de arriba a un margen sobre el boton Volver: RectMask2D, por eso lo que " +
+                 "sale de su rect no se ve.")]
+        [SerializeField] RectTransform viewport;
+
+        [Tooltip("Contenedor que sube: pivote arriba-centro, anclado abajo-centro del viewport.")]
         [SerializeField] RectTransform contenedor;
 
         [SerializeField] InputActionReference submitAction;
@@ -122,7 +128,7 @@ namespace Zombineta.Juego.Screens
             pos.y += velocidad * Time.unscaledDeltaTime;
             contenedor.anchoredPosition = pos;
 
-            float techo = ((RectTransform)transform).rect.height;
+            float techo = viewport != null ? viewport.rect.height : ((RectTransform)transform).rect.height;
             if (pos.y - altoContenido >= techo)
             {
                 espera += Time.unscaledDeltaTime;
