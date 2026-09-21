@@ -99,6 +99,68 @@ namespace Zombineta.Juego.Levels
         }
 
         /// <summary>
+        /// En juego (Play o build) la vista del prefab tiene que existir desde el arranque: el
+        /// Update de este componente en juego solo prende/apaga (no instancia), y la instancia que
+        /// arma el editor es HideFlags.DontSave, asi que una escena recien cargada no la trae
+        /// guardada. Se arma una sola vez aca, con Instantiate comun (no PrefabUtility, que es de
+        /// editor). Por DefaultExecutionOrder(-200) esto corre antes que RunController.Awake()
+        /// (-100), que es quien llama a Bind() y busca el hijo "Vista".
+        /// </summary>
+        void Awake()
+        {
+            if (!Application.isPlaying)
+                return;
+
+            foreach (var item in Items)
+                EnsurePlayLook(item);
+        }
+
+        void EnsurePlayLook(LevelItem item)
+        {
+            var look = palette != null ? palette.Get(item.kind) : null;
+            if (look == null || look.prefab == null)
+                return;
+
+            // El sprite propio del item no se pinta cuando hay prefab (ver ApplyVisual): puede
+            // haber quedado guardado en true en una escena que nunca paso por el editor con esta
+            // paleta. Apagarlo aca de nuevo es gratis e idempotente.
+            var sr = item.GetComponent<SpriteRenderer>();
+            if (sr != null && sr.enabled)
+                sr.enabled = false;
+
+            if (item.transform.Find(LookChildName) != null)
+                return; // Ya la armo el editor en esta misma sesion (sin reload de escena).
+
+            var scale = new Vector3(look.scale.x, look.scale.y, 1f);
+            if (item.transform.localScale != scale)
+                item.transform.localScale = scale;
+
+            var go = Instantiate(look.prefab, item.transform);
+            go.name = LookChildName;
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+            go.transform.localScale = Vector3.one;
+            go.hideFlags = HideFlags.None;
+
+            var prefabSr = go.GetComponent<SpriteRenderer>();
+            if (prefabSr != null)
+            {
+                prefabSr.sortingLayerName = LaneSorting.GameLayer;
+                prefabSr.sortingOrder = ItemOrder(item);
+            }
+        }
+
+        /// <summary>Orden de dibujo de un item: lo mismo que calculaba ApplyVisual, factoreado para
+        /// que EnsurePlayLook (juego) y ApplyVisual (editor) no se puedan desincronizar.</summary>
+        static int ItemOrder(LevelItem item)
+        {
+            bool isRamp = item.kind == LevelEntryKind.Ramp;
+            return isRamp
+                ? LaneSorting.Order(item.lane, SortSlot.Shadow) + 1
+                : LaneSorting.Order(item.lane, SortSlot.Item);
+        }
+
+        /// <summary>
         /// Une cada item de la escena con su entrada en el LevelRuntime (que las ordena a su manera),
         /// para apagar el que la simulacion consume.
         /// </summary>
@@ -260,9 +322,7 @@ namespace Zombineta.Juego.Levels
 
             // La rampa se pisa: va justo encima de la sombra del carril, no donde van los items.
             bool isRamp = item.kind == LevelEntryKind.Ramp;
-            int order = isRamp
-                ? LaneSorting.Order(item.lane, SortSlot.Shadow) + 1
-                : LaneSorting.Order(item.lane, SortSlot.Item);
+            int order = ItemOrder(item);
 
             // Escala del look del ZombieFront: empareja la resolucion de su hoja, no el tamano del cuerpo,
             // asi que la sombra (hija del item) la descuenta.
