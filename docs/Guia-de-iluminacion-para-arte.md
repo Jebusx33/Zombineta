@@ -73,8 +73,13 @@ recorrido (bidón, barril, rampa, obstáculo).
 - Sprite Mode: **Single** (o **Multiple** si es una hoja con varias piezas — recortalo con
   `Assets > Zombineta > Recortar por transparencia`, ver el HANDOFF si tenés dudas de esa parte).
 - El material del `Sprite Renderer` tiene que ser uno **Lit** (`Sprite-Lit-Default`, el que ya usan
-  todos los tiles y los items): es el que reacciona a las luces 2D. Con el material de siempre
-  (`Sprite-Unlit-Default`), tu asset se va a ver siempre igual de brillante, de día o de noche.
+  todos los tiles y los items, incluido el cielo): es el que reacciona a las luces 2D. Con el
+  material de siempre (`Sprite-Unlit-Default`), tu asset se va a ver siempre igual de brillante,
+  de día o de noche.
+- Si tu tile es de escenario: el **tinte** que le pongas a la capa en `Escenario.asset` (sección
+  3.5) siempre pisa el color del `Sprite Renderer` de tu prefab, y si esa capa además tiene un
+  **material** propio asignado, ese material pisa el tuyo (hoy ninguna capa lo tiene — ni siquiera
+  el cielo, que antes sí — así que tu material Lit del prefab es el que se usa).
 
 ### 3.3. Normal map (opcional, todavía no lo usa nadie)
 
@@ -106,7 +111,8 @@ existente que ya cumple el contrato y cambiarle el sprite:
   ejemplo `Barril.prefab`, que ya tiene `Light2D` y `ShadowCaster2D`).
 
 **La capa de dibujo, el orden de dibujo y la escala del tile los pone el sistema solo al
-instanciarlo — lo que vos le pongas en el prefab a esos tres campos se pisa.** No pierdas tiempo
+instanciarlo — lo que vos le pongas en el prefab a esos tres campos se pisa.** El tinte y el
+material de la capa (si tiene uno, ver 3.2) también pisan los del prefab. No pierdas tiempo
 ajustándolos ahí.
 
 ### 3.5. Engancharlo
@@ -256,8 +262,11 @@ Tenés tres formas de ver tu trabajo, de la más aislada a la más real:
 No todas las luces de adorno de la pantalla quedan prendidas al mismo tiempo — sería carísimo
 para la máquina. Una luz es "de adorno" cuando **no hace falta para jugar**: el brillo de una
 vidriera, un cartel de neón, el farol de una esquina. (El faro de la moto, los destellos de
-disparo/choque/explosión y el resplandor de la horda **no** entran en esta cuenta: esos se
-prenden siempre.)
+disparo/choque/atropello/explosión y el resplandor de la horda **no** entran en esta cuenta de
+presupuesto — ninguno gasta del cupo de 12/0 de abajo. Pero no los trates a todos igual en Baja:
+**el faro y el resplandor de la horda se prenden siempre**, en Alta y en Baja; **los destellos, en
+cambio, se apagan del todo en Baja** — es una decisión de rendimiento aparte del presupuesto de
+adorno, no un bug si no los ves en calidad Baja.)
 
 Cómo funciona, en criollo: el sistema mira todas las luces de adorno que hay cerca de la cámara y
 solo deja prendidas las más cercanas, hasta un tope (hoy **12** en calidad Alta; **0** en Baja —
@@ -290,6 +299,8 @@ las sombras y adornos) es el techo; en Baja tiene que seguir siendo legible sin 
 - **La capa de dibujo, el orden de dibujo (sorting order) y la escala** de un tile o de un item:
   las pone el sistema al instanciar el prefab, siempre. Lo que dejes puesto en esos campos dentro
   del prefab se pisa apenas entra en juego — no pierdas tiempo ajustándolos ahí (ver sección 3.4).
+  Si es un tile de escenario, lo mismo pasa con el **tinte** (siempre) y el **material** (solo si
+  la capa tiene uno propio asignado) de `Escenario.asset` (ver sección 3.2).
 - **Los números del recorrido** (dónde va cada bidón, cada rampa, la distancia del nivel) y **los
   números de la cámara** (tamaño, velocidad de zoom, anticipación) son de programación/diseño de
   nivel, no de arte de iluminación. Si algo de eso te haría falta cambiar para que tu luz se vea

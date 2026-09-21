@@ -338,7 +338,10 @@ luz en vivo apenas cambia el asset o la referencia. Hoy `Level_01` y `Level_02` 
 `Calle`+`Juego` con sombra propia; `FlashDirector`/`FlashLights` disparan destellos (Additive,
 mismas dos capas) para disparo, choque, atropello y explosión de barril, enganchados al mismo
 `RunEvent` que ya usan partículas y vibración; `HordeGlow` es una luz tenue que sigue al frente de
-la horda y crece con la misma distancia que la barra de amenaza del HUD.
+la horda y crece con la misma distancia que la barra de amenaza del HUD. De estas tres, solo el
+faro y `HordeGlow` se prenden siempre (Alta y Baja); los destellos de `FlashLights` se apagan del
+todo en Baja (`OnStepped` corta apenas ve `LightQuality.Baja`), aparte y además del presupuesto de
+adorno.
 
 **Sombras.** `ShadowCaster2D` con silueta simple (no el contorno del sprite) en lo cercano a la
 calle: faroles, carteles, vallas, obstáculos, barriles, la moto y los zombies. El fondo lejano no
@@ -348,8 +351,9 @@ proyecta.
 (`DecorLight`, con su propio campo `priority`) más cercanas a la cámara hasta un tope
 (`LightBudgetRunner.budgetAlta = 12`); las luces de gameplay quedan afuera de esta cuenta.
 `GameSettings.LightQuality` (Alta/Baja, PlayerPrefs `zombineta.lightQuality`, desplegable
-"Iluminacion" en Opciones): en Baja se apagan todas las sombras (`ShadowQuality`) y no queda
-ninguna luz de adorno prendida (presupuesto en 0); el ambiente y el faro siguen.
+"Iluminacion" en Opciones): en Baja se apagan todas las sombras (`ShadowCasterQuality`), no queda
+ninguna luz de adorno prendida (presupuesto en 0) y tampoco se disparan los destellos de
+`FlashLights`; el ambiente, el faro y `HordeGlow` siguen igual en las dos calidades.
 
 **Taller de luz.** `Zombineta > Luz > Construir taller` regenera `Scenes/TallerLuz.unity`: una
 copia de cada prefab de escenario y de item, agrupada por capa a su altura y escala reales, con
@@ -987,22 +991,25 @@ Estas costaron tiempo real en esta sesión:
     que se toque una luz desde código que corre en runtime.
 
 41. **Algo que crea sombra propia (`ShadowCaster2D`) después del primer barrido de
-    `ShadowQuality` queda con la calidad vieja, sin importar qué calidad esté activa.**
-    `ShadowQuality` solo recorre toda la escena en su `Start()` y cuando cambia
+    `ShadowCasterQuality` queda con la calidad vieja, sin importar qué calidad esté activa.**
+    `ShadowCasterQuality` solo recorre toda la escena en su `Start()` y cuando cambia
     `GameSettings.LightQualityChanged`; nunca vuelve a mirar lo que se instancia después de eso
     (tiles nuevos de `SceneryManager` al avanzar la cámara, cada zombie nuevo de `HordeView`, la
     vista de un item armada en Play). El síntoma: en calidad Baja quedaban sombras prendidas que
     deberían estar apagadas (28 de más, medido). El arreglo es un método estático,
-    `ShadowQuality.Apply(GameObject go)`, que aplica la calidad **actual** solo a esa jerarquía
-    puntual (sin recorrer la escena, sin costo por frame) — **hay que llamarlo desde cualquier
-    lugar nuevo que instancie algo con `ShadowCaster2D`** además de dejar el barrido completo para
-    cuando cambia la calidad en vivo.
+    `ShadowCasterQuality.Apply(GameObject go)`, que aplica la calidad **actual** solo a esa
+    jerarquía puntual (sin recorrer la escena, sin costo por frame) — **hay que llamarlo desde
+    cualquier lugar nuevo que instancie algo con `ShadowCaster2D`** además de dejar el barrido
+    completo para cuando cambia la calidad en vivo. Además, tanto el barrido como `Apply` respetan
+    el `enabled` que dejó el autor la primera vez que ven cada caster: en Alta se restaura ESE
+    valor, no se fuerza `true` a ciegas (si no, se prendería un caster que arte apagó a propósito).
 
-42. **La clase propia `ShadowQuality` (namespace `Zombineta.Luz`) choca de nombre con
-    `UnityEngine.ShadowQuality`** (un enum del motor, de sombras 3D). En cualquier archivo que ya
-    tenga `using UnityEngine;`, escribir `ShadowQuality.Apply(...)` a secas es ambiguo y no
-    compila: hay que calificarlo entero, `Zombineta.Luz.ShadowQuality.Apply(...)`. Queda pendiente
-    renombrar la clase propia para que esto deje de hacer falta.
+42. **Resuelto (revisión final).** La clase propia se llamaba `ShadowQuality` y chocaba de nombre
+    con `UnityEngine.ShadowQuality` (un enum del motor, de sombras 3D): en cualquier archivo con
+    `using UnityEngine;`, escribir `ShadowQuality.Apply(...)` a secas era ambiguo y no compilaba,
+    había que calificarlo entero. Se renombró a **`ShadowCasterQuality`** (archivo y clase, mismo
+    GUID vía `AssetDatabase.RenameAsset`) y los llamadores (`LevelScene`, `SceneryManager`,
+    `HordeView`) ya no necesitan calificar el nombre.
 
 ---
 
