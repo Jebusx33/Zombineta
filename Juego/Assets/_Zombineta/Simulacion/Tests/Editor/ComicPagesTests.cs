@@ -45,6 +45,15 @@ namespace Zombineta.Tests
         }
 
         [Test]
+        public void TodasAbrenPagina()
+        {
+            var p = Panels(true, true, true);
+            Assert.IsTrue(ComicPages.OpensPage(p, 0));
+            Assert.IsTrue(ComicPages.OpensPage(p, 1));
+            Assert.IsTrue(ComicPages.OpensPage(p, 2));
+        }
+
+        [Test]
         public void FueraDeRangoNoAbre()
         {
             Assert.IsFalse(ComicPages.OpensPage(Panels(true), 5));

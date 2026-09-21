@@ -74,6 +74,9 @@ namespace Zombineta.Juego.Screens
                     SetAlpha(panelGroup, 1f);
                 }
 
+                if (panels[i] == null)
+                    continue;
+
                 advance = false;
                 var img = NextImage(panels[i].image);
                 yield return FadeImage(img, 1f);
@@ -107,6 +110,7 @@ namespace Zombineta.Juego.Screens
             pageCount++;
             img.transform.SetAsLastSibling();
             img.sprite = sprite;
+            img.enabled = sprite != null;
             img.gameObject.SetActive(true);
             img.color = new Color(1f, 1f, 1f, 0f);
             return img;

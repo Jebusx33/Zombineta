@@ -80,16 +80,22 @@ Diseño: `docs/superpowers/specs/2026-09-13-escenas-juego-design.md`.
   (título), `sceneName` (su escena) y `comicPanels` (imagen, segundos y `nuevaPagina` de cada
   viñeta). Nivel 2 sigue con viñetas placeholder en `Art/Placeholder/` (una pantalla completa por
   viñeta, como antes).
-- **La apertura del nivel 1 arma una página de comic apilando viñetas.** El arte final vive en
-  `Assets/_Zombineta/Art/Cinematicas/Nivel01/art_opn_page_2k_frame_1.png` … `frame_9.png` (una
-  página de 3840x2160 recortada en 9 franjas; `frame_1` es opaca y hace de fondo, el resto son
-  transparentes y se van sumando encima). `ComicPanel.nuevaPagina` decide si una viñeta limpia la
-  página (fundido a negro, `true`) o se suma a las que ya están (`false`, como las 8 restantes del
-  nivel 1). `CinematicPlayer.PlayPanels` crea una `Image` hija de `panel` por viñeta (mismo
+- **La apertura del nivel 1 arma una página de comic apilando viñetas.** El arte vive en
+  `Assets/_Zombineta/Art/Cinematicas/Nivel01/art_opn_page_2k_frame_1.png` … `frame_9.png`; hoy esa
+  carpeta tiene los bocetos. `frame_1` es opaca y hace de fondo, el resto son transparentes y se
+  van sumando encima. `ComicPanel.nuevaPagina` decide si una viñeta limpia la página (fundido a
+  negro, `true`) o se suma a las que ya están (`false`, como las 8 restantes del nivel 1).
+  `CinematicPlayer.PlayPanels` crea una `Image` hija de `panel` por viñeta (mismo
   `preserveAspect` de la plantilla) y las deja fijas: nunca se reacomodan, solo se agregan con
-  fundido. Para reemplazar el arte final: pisar cada PNG con el mismo nombre en esa carpeta y
-  reimportar (el `.meta` ya apunta a la referencia correcta, no hace falta tocar
-  `Niveles.asset`).
+  fundido. **Regla para reemplazar el arte por la versión final:**
+  - Cada archivo final tiene que medir 3840x2160, igual que el boceto: es el canvas completo de
+    la página, con fondo transparente.
+  - Cada viñeta tiene que quedar en la misma posición que en el boceto. La única excepción es
+    `frame_1`, que es el fondo opaco.
+  - Se reemplaza pisando cada archivo con el mismo nombre (el `.meta` ya apunta a la referencia
+    correcta, no hace falta tocar `Niveles.asset`).
+  - Después de reemplazar, comparar el resultado contra
+    `Arte/Bocetos/scene_opening/[position_references].png`.
 - **Los menús son botones de uGUI.** Teclado y joystick navegan con el `EventSystem`; cada
   pantalla elige su primer botón en `firstSelected`. Para cambiar un menú alcanza con mover o
   agregar botones en la escena y enganchar su `OnClick`.
