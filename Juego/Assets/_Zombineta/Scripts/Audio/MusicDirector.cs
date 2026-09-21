@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Zombineta.Flow;
 using Zombineta.Juego.Flow;
 
@@ -48,6 +49,7 @@ namespace Zombineta.Audio
         FuenteConBus fuenteTension;
         AudioSource sourceTension;
         bool tensionActiva;
+        bool apagandoTension;
         float amenazaObjetivo;
         float velocidadAmenaza;
 
@@ -93,7 +95,9 @@ namespace Zombineta.Audio
 
         void Update()
         {
-            if (!tensionActiva)
+            // Mientras se apaga (fundido de salida), solo Fundir escribe volumenPropio: si el
+            // SmoothDamp tambien escribiera, competiria con el fundido y la tension no llegaria a 0.
+            if (!tensionActiva || apagandoTension)
                 return;
             fuenteTension.volumenPropio = Mathf.SmoothDamp(fuenteTension.volumenPropio, amenazaObjetivo,
                 ref velocidadAmenaza, SuavizadoAmenaza, Mathf.Infinity, Time.unscaledDeltaTime);
@@ -149,6 +153,8 @@ namespace Zombineta.Audio
             }
             if (pantalla == GameScreen.Paused)
                 return null; // la pausa no cambia el tema, solo lo atenua el bus.
+            if (pantalla == GameScreen.Options && PausaDebajo())
+                return null; // opciones abiertas desde la pausa: el nivel sigue debajo, no cambia el tema.
 
             return musica != null ? musica.Para(pantalla) : null;
         }
@@ -158,6 +164,18 @@ namespace Zombineta.Audio
             var root = GameRoot.Instance;
             var nivel = root != null ? root.CurrentLevel : null;
             return nivel != null ? nivel.audio as AudioDeNivel : null;
+        }
+
+        /// <summary>
+        /// Mismo criterio que AudioDirector.EstaPausado: la pantalla actual es Paused, o la
+        /// escena de pausa sigue cargada debajo de Opciones (Opciones abierta desde la pausa).
+        /// </summary>
+        static bool PausaDebajo()
+        {
+            var flow = GameRoot.Flow;
+            if (flow != null && flow.Current == GameScreen.Paused)
+                return true;
+            return SceneManager.GetSceneByName(SceneNames.Pause).isLoaded;
         }
 
         void Cruzar(AudioClip clip, GameScreen pantalla, AudioDeNivel nivelParaTension)
@@ -179,6 +197,7 @@ namespace Zombineta.Audio
             bool debeIniciarTension = pantalla == GameScreen.Playing && nivelParaTension != null &&
                 nivelParaTension.tension != null;
             bool apagarTension = tensionActiva && !debeIniciarTension;
+            apagandoTension = apagarTension;
 
             if (debeIniciarTension)
                 IniciarTension(nivelParaTension, horaInicio);
@@ -209,6 +228,7 @@ namespace Zombineta.Audio
 
             tensionActiva = true;
             velocidadAmenaza = 0f;
+            amenazaObjetivo = 0f; // que no herede la amenaza del nivel anterior: arranca en 0 y sigue a SetAmenaza.
         }
 
         IEnumerator Fundir(FuenteConBus saliente, AudioSource salienteSource, FuenteConBus entrante, float segundos,
@@ -240,6 +260,7 @@ namespace Zombineta.Audio
                 fuenteTension.volumenPropio = 0f;
                 sourceTension.Stop();
                 tensionActiva = false;
+                apagandoTension = false;
             }
 
             fundidoRoutine = null;
