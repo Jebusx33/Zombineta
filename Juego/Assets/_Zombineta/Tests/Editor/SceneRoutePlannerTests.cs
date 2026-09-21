@@ -133,5 +133,24 @@ namespace Zombineta.Juego.Tests
             CollectionAssert.AreEqual(new[] { SceneNames.Options }, plan.Unload);
             CollectionAssert.AreEqual(new[] { SceneNames.MainMenu }, plan.Load);
         }
+
+        // --- Creditos ------------------------------------------------------------
+
+        [Test]
+        public void CreditsIsABase()
+        {
+            Assert.AreEqual(SceneNames.Credits, SceneRoutePlanner.ScreenScene(GameScreen.Credits));
+        }
+
+        [Test]
+        public void FromTheMenu_CreditsUnloadsTheMenuAndLoadsCredits_WithFade()
+        {
+            var plan = At(SceneNames.MainMenu).Go(GameScreen.Credits, null, false);
+
+            CollectionAssert.AreEqual(new[] { SceneNames.MainMenu }, plan.Unload);
+            CollectionAssert.AreEqual(new[] { SceneNames.Credits }, plan.Load);
+            Assert.AreEqual(SceneNames.Credits, plan.Active);
+            Assert.IsTrue(plan.Fade);
+        }
     }
 }

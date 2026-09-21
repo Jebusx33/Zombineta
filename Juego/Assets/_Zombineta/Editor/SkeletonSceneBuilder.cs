@@ -29,6 +29,7 @@ namespace Zombineta.Juego.EditorTools
         const string ScenesDir = "Assets/_Zombineta/Scenes";
         const string ArtDir = "Assets/_Zombineta/Art/Placeholder";
         const string LevelsPath = "Assets/_Zombineta/Settings/Niveles.asset";
+        const string CreditosPath = "Assets/_Zombineta/Settings/Creditos.asset";
         const string ActionsPath = "Assets/Settings/InputSystem_Actions.inputactions";
 
         static readonly Color Accent = new Color(0.95f, 0.55f, 0.2f);
@@ -46,6 +47,35 @@ namespace Zombineta.Juego.EditorTools
                 Build(true);
         }
 
+        /// <summary>
+        /// Solo el flujo de creditos: crea Creditos.asset y Credits.unity si faltan, y
+        /// reconstruye Menu y Final con el boton nuevo (pisa esas dos nada mas).
+        /// </summary>
+        [MenuItem("Zombineta/Esqueleto/Reconstruir Creditos (Menu, Final, Creditos)")]
+        public static void BuildCreditsFlow()
+        {
+            BuildCreditos();
+            int built = 0;
+            built += Scene(SceneNames.Credits, false, BuildCredits);
+            built += Scene(SceneNames.MainMenu, true, BuildMainMenu);
+            built += Scene(SceneNames.Ending, true, BuildEnding);
+
+            RegisterBuildScenes(LevelSceneNames());
+            EditorSceneManager.OpenScene(ScenesDir + "/" + SceneNames.Boot + ".unity");
+            Debug.Log("Creditos: " + built + " escena(s) construida(s) (Menu y Final reconstruidas), " +
+                      EditorBuildSettings.scenes.Length + " en Build Settings.");
+        }
+
+        static List<string> LevelSceneNames()
+        {
+            var names = new List<string>();
+            var levels = AssetDatabase.LoadAssetAtPath<LevelSequence>(LevelsPath);
+            if (levels != null)
+                foreach (var level in levels.levels)
+                    names.Add(level.sceneName);
+            return names;
+        }
+
         /// <param name="overwrite">True pisa las escenas existentes; false solo crea las que faltan.</param>
         public static void Build(bool overwrite)
         {
@@ -56,6 +86,7 @@ namespace Zombineta.Juego.EditorTools
             var levelScenes = new List<string>();
             foreach (var level in BuildLevels(panels).levels)
                 levelScenes.Add(level.sceneName);
+            BuildCreditos();
 
             // Ojo: cada escena nueva descarga de memoria los assets que nadie usa. Por eso las
             // referencias a assets (niveles, acciones) se cargan de nuevo justo antes de asignarlas.
@@ -70,6 +101,7 @@ namespace Zombineta.Juego.EditorTools
             built += Scene(SceneNames.LevelComplete, overwrite, BuildLevelComplete);
             built += Scene(SceneNames.GameOver, overwrite, BuildGameOver);
             built += Scene(SceneNames.Ending, overwrite, BuildEnding);
+            built += Scene(SceneNames.Credits, overwrite, BuildCredits);
             built += Scene(SceneNames.Pause, overwrite, BuildPause);
 
             RegisterBuildScenes(levelScenes);
@@ -183,6 +215,33 @@ namespace Zombineta.Juego.EditorTools
             return levels;
         }
 
+        /// <summary>Crea Creditos.asset con secciones placeholder si no tiene ninguna. No pisa lo editado.</summary>
+        static Creditos BuildCreditos()
+        {
+            var creditos = AssetDatabase.LoadAssetAtPath<Creditos>(CreditosPath);
+            if (creditos == null)
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(CreditosPath));
+                creditos = ScriptableObject.CreateInstance<Creditos>();
+                AssetDatabase.CreateAsset(creditos, CreditosPath);
+            }
+
+            if (creditos.secciones.Count == 0)
+            {
+                creditos.secciones.Add(new Seccion { titulo = "Zombineta" });
+                creditos.secciones.Add(new Seccion
+                {
+                    titulo = "Equipo",
+                    lineas = new[] { "German", "Jesus", "Jose", "Juana", "Seba" },
+                });
+                creditos.secciones.Add(new Seccion { titulo = "Taller de Proyecto Integral 212" });
+                creditos.secciones.Add(new Seccion { titulo = "Gracias por jugar" });
+                EditorUtility.SetDirty(creditos);
+                AssetDatabase.SaveAssets();
+            }
+            return creditos;
+        }
+
         static LevelInfo NewLevel(string title, string scene, List<Sprite> panels, int first)
         {
             var level = new LevelInfo { displayName = title, sceneName = scene };
@@ -198,7 +257,10 @@ namespace Zombineta.Juego.EditorTools
                 SceneNames.Boot, SceneNames.MainMenu, SceneNames.Options, SceneNames.CharacterSelect, SceneNames.Cinematic,
             };
             names.AddRange(levelScenes);
-            names.AddRange(new[] { SceneNames.LevelComplete, SceneNames.GameOver, SceneNames.Ending, SceneNames.Pause });
+            names.AddRange(new[]
+            {
+                SceneNames.LevelComplete, SceneNames.GameOver, SceneNames.Ending, SceneNames.Credits, SceneNames.Pause,
+            });
 
             var scenes = new List<EditorBuildSettingsScene>();
             foreach (var n in names)
@@ -232,6 +294,7 @@ namespace Zombineta.Juego.EditorTools
             var buttons = AddMenu(canvas.transform, 60f,
                 ("Jugar", screen.Play),
                 ("Opciones", screen.OpenOptions),
+                ("Creditos", screen.OpenCredits),
                 ("Salir", screen.Quit));
 
             AddText(canvas.transform, "Pie", "Esqueleto del juego definitivo - pantallas placeholder", 26,
@@ -356,9 +419,35 @@ namespace Zombineta.Juego.EditorTools
             var screen = canvas.gameObject.AddComponent<EndingScreen>();
             AddText(canvas.transform, "Texto", "Llegaste al refugio. El pedido llego caliente.", 40,
                 new Vector2(0f, 160f), new Vector2(1500f, 80f));
-            var menu = AddButton(canvas.transform, "Menu principal", new Vector2(0f, -80f), screen.ToMenu);
-            Set(screen, "firstSelected", menu);
+            var continuar = AddButton(canvas.transform, "Continuar", new Vector2(0f, -80f), screen.ShowCredits);
+            Set(screen, "firstSelected", continuar);
             Save(scene, SceneNames.Ending);
+        }
+
+        static void BuildCredits()
+        {
+            var (scene, canvas) = NewScreen(true, 0, new Color(0.05f, 0.05f, 0.08f), "");
+            Object.DestroyImmediate(canvas.transform.Find("Titulo").gameObject);
+            var screen = canvas.gameObject.AddComponent<CreditsScreen>();
+
+            var contenedorGo = new GameObject("Contenedor", typeof(RectTransform));
+            contenedorGo.transform.SetParent(canvas.transform, false);
+            var contenedor = (RectTransform)contenedorGo.transform;
+            contenedor.anchorMin = contenedor.anchorMax = new Vector2(0.5f, 0f);
+            contenedor.pivot = new Vector2(0.5f, 1f);
+            contenedor.sizeDelta = new Vector2(1600f, 0f);
+            contenedor.anchoredPosition = Vector2.zero;
+
+            var volver = AddButton(canvas.transform, "Volver", new Vector2(0f, -500f), screen.Volver);
+
+            // Se recarga justo antes de asignarlo: la escena nueva descarga los assets sin uso.
+            var creditos = AssetDatabase.LoadAssetAtPath<Creditos>(CreditosPath);
+            Set(screen, "datos", creditos);
+            Set(screen, "contenedor", contenedor);
+            Set(screen, "submitAction", FindAction("UI/Submit"));
+            Set(screen, "cancelAction", FindAction("UI/Cancel"));
+            Set(screen, "firstSelected", volver);
+            Save(scene, SceneNames.Credits);
         }
 
         static void BuildPause()

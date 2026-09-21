@@ -36,11 +36,11 @@ EditorBuildSettings:
     path: Assets/_Zombineta/Scenes/Ending.unity
     guid: def8e88e4097a994f835422c128f153e
   - enabled: 1
+    path: Assets/_Zombineta/Scenes/Credits.unity
+    guid: 04292b6ea664f9848b39ca9be087bb7e
+  - enabled: 1
     path: Assets/_Zombineta/Scenes/Pause.unity
     guid: 9d83e98d2ba0318479f94c44b8c539ae
-  - enabled: 0
-    path: Assets/_Zombineta/Scenes/TallerLuz.unity
-    guid: f2ab86bdf99b80b4b947b138d887c7f6
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

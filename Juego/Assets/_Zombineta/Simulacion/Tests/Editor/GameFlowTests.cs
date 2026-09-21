@@ -257,5 +257,73 @@ namespace Zombineta.Tests
             Assert.AreEqual(0, changes);
             Assert.IsTrue(f.Pause(), "desde ahi el flujo sigue normal");
         }
+
+        // --- Creditos ----------------------------------------------------------
+
+        [Test]
+        public void OpenCreditsDesdeElMenu()
+        {
+            var f = new GameFlow(2);
+
+            Assert.IsTrue(f.OpenCredits());
+            Assert.AreEqual(GameScreen.Credits, f.Current);
+        }
+
+        [Test]
+        public void OpenCreditsFueraDelMenuNoHaceNada()
+        {
+            var playing = InLevel(levels: 2, level: 0);
+            Assert.IsFalse(playing.OpenCredits());
+            Assert.AreEqual(GameScreen.Playing, playing.Current);
+
+            var ending = InLevel(levels: 2, level: 1);
+            ending.LevelWon();
+            ending.Continue();
+            Assert.AreEqual(GameScreen.Ending, ending.Current);
+
+            Assert.IsFalse(ending.OpenCredits());
+            Assert.AreEqual(GameScreen.Ending, ending.Current);
+        }
+
+        [Test]
+        public void ShowCreditsDesdeElEnding()
+        {
+            var f = InLevel(levels: 2, level: 1);
+            f.LevelWon();
+            f.Continue();
+            Assert.AreEqual(GameScreen.Ending, f.Current);
+
+            Assert.IsTrue(f.ShowCredits());
+            Assert.AreEqual(GameScreen.Credits, f.Current);
+        }
+
+        [Test]
+        public void ShowCreditsFueraDelEndingNoHaceNada()
+        {
+            var menu = new GameFlow(2);
+            Assert.IsFalse(menu.ShowCredits());
+            Assert.AreEqual(GameScreen.MainMenu, menu.Current);
+
+            var playing = InLevel(levels: 2, level: 0);
+            Assert.IsFalse(playing.ShowCredits());
+            Assert.AreEqual(GameScreen.Playing, playing.Current);
+        }
+
+        [Test]
+        public void DeCreditosAlMenu()
+        {
+            var f = new GameFlow(2);
+            f.OpenCredits();
+            Assert.AreEqual(GameScreen.Credits, f.Current);
+
+            Assert.IsTrue(f.ToMainMenu());
+            Assert.AreEqual(GameScreen.MainMenu, f.Current);
+        }
+
+        [Test]
+        public void CreditsEsElUltimoDelEnum()
+        {
+            Assert.AreEqual((int)GameScreen.Credits, System.Enum.GetValues(typeof(GameScreen)).Length - 1);
+        }
     }
 }

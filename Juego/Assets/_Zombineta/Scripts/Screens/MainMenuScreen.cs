@@ -8,6 +8,8 @@ namespace Zombineta.Juego.Screens
 
         public void OpenOptions() => Flow?.OpenOptions();
 
+        public void OpenCredits() => Flow?.OpenCredits();
+
         public void Quit()
         {
 #if UNITY_EDITOR

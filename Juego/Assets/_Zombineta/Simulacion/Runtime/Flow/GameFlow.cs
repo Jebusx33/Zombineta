@@ -14,6 +14,8 @@ namespace Zombineta.Flow
         GameOver,
         Ending,
         Paused,
+        // Nuevo al final: cambio aditivo, no rompe lo ya serializado (el prototipo no la usa).
+        Credits,
     }
 
     /// <summary>
@@ -22,9 +24,11 @@ namespace Zombineta.Flow
     /// nivel") y el flujo decide a donde se va.
     ///
     ///   Menu <-> Opciones <-> Pausa
+    ///   Menu <-> Creditos
     ///   Menu -> Personaje -> Cinematica -> Nivel <-> Pausa
     ///   Nivel gano   -> Nivel completo -> Cinematica del siguiente (o Final si era el ultimo)
     ///   Nivel perdio -> Game Over -> Reintentar (mismo nivel) o Menu
+    ///   Final -> Creditos -> Menu
     ///
     /// Una accion que no corresponde a la pantalla actual se ignora y devuelve false:
     /// un ENTER que llega tarde no puede saltear pantallas.
@@ -141,10 +145,19 @@ namespace Zombineta.Flow
 
         public bool ToMainMenu()
         {
-            if (Current == GameScreen.GameOver || Current == GameScreen.Ending || Current == GameScreen.Paused)
+            if (Current == GameScreen.GameOver || Current == GameScreen.Ending || Current == GameScreen.Paused ||
+                Current == GameScreen.Credits)
                 return Switch(GameScreen.MainMenu);
             return false;
         }
+
+        // --- Creditos ----------------------------------------------------------
+
+        /// <summary>Desde el menu principal.</summary>
+        public bool OpenCredits() => Go(GameScreen.MainMenu, GameScreen.Credits);
+
+        /// <summary>A lo que lleva el boton Continuar del final.</summary>
+        public bool ShowCredits() => Go(GameScreen.Ending, GameScreen.Credits);
 
         /// <summary>
         /// Pone el flujo en una pantalla sin pasar por las anteriores y sin avisar. Solo para

@@ -214,6 +214,7 @@ namespace Zombineta.Juego.Flow
                 case SceneNames.LevelComplete: screen = GameScreen.LevelComplete; return true;
                 case SceneNames.GameOver: screen = GameScreen.GameOver; return true;
                 case SceneNames.Ending: screen = GameScreen.Ending; return true;
+                case SceneNames.Credits: screen = GameScreen.Credits; return true;
                 default: screen = GameScreen.MainMenu; return false;
             }
         }
