@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using Zombineta.Juego.Levels;
@@ -8,18 +7,21 @@ namespace Zombineta.Luz
 {
     /// <summary>
     /// Arma la luz ambiente del nivel a partir de un PerfilDeLuz: un hijo "Luz Global <capa>" por
-    /// cada entrada del perfil (mas una general), cada uno con una Light2D global en Multiply para
-    /// no pelear con las luces puntuales (faro, etc.) que ya cubren las seis capas. Se reconstruye
-    /// solo si el perfil o alguno de sus valores cambio, asi que arte lo ve en vivo sin tocar la
-    /// escena.
+    /// cada capa del juego con algo de luz (propia o de General), cada uno con una Light2D global
+    /// en Multiply para no pelear con las luces puntuales (faro, etc.) que ya cubren esas capas.
+    /// No existe una luz "General" propia: URP 2D solo permite una luz global por capa y estilo de
+    /// mezcla, asi que esa luz se sumaria a las de capa sin ningun efecto (ver PerfilDeLuz.Resolver,
+    /// que hace la suma en el color en vez de crear otra luz). Se reconstruye solo si el perfil (o
+    /// la referencia asignada) cambio, asi que arte lo ve en vivo sin tocar la escena.
     /// </summary>
     [ExecuteAlways]
     [DefaultExecutionOrder(-150)]
     public sealed class LightingDirector : MonoBehaviour
     {
         const string ChildPrefix = "Luz Global ";
-        const string GeneralName = ChildPrefix + "General";
 
+        [Tooltip("Solo para escenas sin LevelScene (por ejemplo el taller). Si este GameObject " +
+                 "tiene un LevelScene, su Perfil manda siempre y este campo se pisa.")]
         [SerializeField] PerfilDeLuz perfil;
 
         public PerfilDeLuz Perfil
@@ -29,47 +31,60 @@ namespace Zombineta.Luz
         }
 
         readonly List<GameObject> hijos = new List<GameObject>();
+        LevelScene escena;
+        bool escenaBuscada;
         PerfilDeLuz perfilConstruido;
-        string hashConstruido;
+        int versionConstruida;
         bool avisoSinPerfil;
 
         void Awake()
         {
-            TomarPerfilDeLevelScene();
+            SincronizarPerfilDeLevelScene();
         }
 
         void OnEnable()
         {
-            TomarPerfilDeLevelScene();
+            SincronizarPerfilDeLevelScene();
             Rebuild();
         }
 
         void OnValidate()
         {
-            TomarPerfilDeLevelScene();
+            SincronizarPerfilDeLevelScene();
         }
 
         void Update()
         {
-            if (perfil != perfilConstruido || Hash(perfil) != hashConstruido)
+            SincronizarPerfilDeLevelScene();
+            if (perfil != perfilConstruido || Version(perfil) != versionConstruida)
                 Rebuild();
         }
 
-        void TomarPerfilDeLevelScene()
+        /// <summary>
+        /// Si este GameObject tiene un LevelScene, su Perfil es la unica fuente real (item 1 del
+        /// arreglo final): se sincroniza siempre, no solo cuando 'perfil' esta vacio, para que
+        /// tambien se note un cambio de referencia hecho en el LevelScene. Sin LevelScene (el
+        /// taller, que arma un LightingDirector suelto), el campo propio manda.
+        /// </summary>
+        void SincronizarPerfilDeLevelScene()
         {
-            if (perfil != null)
-                return;
+            if (!escenaBuscada)
+            {
+                escena = GetComponent<LevelScene>();
+                escenaBuscada = true;
+            }
 
-            var escena = GetComponent<LevelScene>();
-            if (escena != null && escena.Perfil != null)
+            if (escena != null)
                 perfil = escena.Perfil;
         }
+
+        static int Version(PerfilDeLuz p) => p != null ? p.Version : -1;
 
         public void Rebuild()
         {
             DestruirHijos();
             perfilConstruido = perfil;
-            hashConstruido = Hash(perfil);
+            versionConstruida = Version(perfil);
 
             if (perfil == null)
             {
@@ -83,18 +98,13 @@ namespace Zombineta.Luz
 
             avisoSinPerfil = false;
 
-            foreach (var ambiente in perfil.capas)
-            {
-                if (ambiente == null || string.IsNullOrEmpty(ambiente.capa))
-                    continue;
-
-                CrearLuz(ChildPrefix + ambiente.capa, ambiente.color, ambiente.intensidad, new[] { ambiente.capa });
-            }
-
-            CrearLuz(GeneralName, perfil.colorGeneral, perfil.intensidadGeneral, TodasLasCapas());
+            // Una luz por capa con su color ya combinado (propio + General, ver
+            // PerfilDeLuz.Resolver): sin luz "General" aparte, que URP ignoraria de todos modos.
+            foreach (var resuelta in perfil.Resolver(TodasLasCapas()))
+                CrearLuz(ChildPrefix + resuelta.capa, resuelta.color, new[] { resuelta.capa });
         }
 
-        void CrearLuz(string nombre, Color color, float intensidad, string[] capas)
+        void CrearLuz(string nombre, Color color, string[] capas)
         {
             var go = new GameObject(nombre);
             go.transform.SetParent(transform, false);
@@ -104,7 +114,7 @@ namespace Zombineta.Luz
             luz.lightType = Light2D.LightType.Global;
             luz.blendStyleIndex = 0; // Multiply: no pelea con las luces puntuales existentes.
             luz.color = color;
-            luz.intensity = intensidad;
+            luz.intensity = 1f; // La intensidad ya esta en el color (PerfilDeLuz.Resolver la aplico).
 
             AplicarCapas(luz, capas);
             hijos.Add(go);
@@ -132,9 +142,9 @@ namespace Zombineta.Luz
             luz.targetSortingLayers = ids.ToArray();
         }
 
-        // Excluye "Default" de la luz "General": si algun sprite queda sin reasignar de esa capa
-        // (la que trae Unity por defecto, no una de las cinco del juego), no lo deja negro sin
-        // aviso cuando colorGeneral/intensidadGeneral estan en 0 como en Noche.asset.
+        // Excluye "Default": si algun sprite queda sin reasignar de esa capa (la que trae Unity
+        // por defecto, no una de las cinco del juego), no lo deja negro sin aviso cuando General
+        // esta en 0 como en Noche.asset.
         static string[] TodasLasCapas()
         {
             var capas = SortingLayer.layers;
@@ -161,27 +171,6 @@ namespace Zombineta.Luz
         void OnDisable()
         {
             DestruirHijos();
-        }
-
-        /// <summary>Resumen de perfil + valores, para saber si hay que reconstruir.</summary>
-        static string Hash(PerfilDeLuz p)
-        {
-            if (p == null)
-                return "null";
-
-            var sb = new StringBuilder();
-            sb.Append(p.capas.Count).Append('|');
-            foreach (var a in p.capas)
-            {
-                if (a == null)
-                {
-                    sb.Append("null;");
-                    continue;
-                }
-                sb.Append(a.capa).Append(':').Append(a.color).Append(':').Append(a.intensidad).Append(';');
-            }
-            sb.Append(p.colorGeneral).Append('|').Append(p.intensidadGeneral);
-            return sb.ToString();
         }
     }
 }

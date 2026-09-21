@@ -1888,7 +1888,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ac69707ec84ab4cbcbff8e99feb698, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Luz.LightingDirector
-  perfil: {fileID: 11400000, guid: 4d1ab6a5e1baa0a4488968a8390a2194, type: 2}
+  perfil: {fileID: 0}
 --- !u!114 &1171654551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2004,7 +2004,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 88c866b44bc68584c86b87c82c1e1a92, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Luz.ShadowQuality
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Luz.ShadowCasterQuality
 --- !u!114 &1171654555
 MonoBehaviour:
   m_ObjectHideFlags: 0
