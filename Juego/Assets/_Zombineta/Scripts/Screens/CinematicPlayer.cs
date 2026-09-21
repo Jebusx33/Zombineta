@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -8,9 +9,10 @@ using Zombineta.Juego.Flow;
 namespace Zombineta.Juego.Screens
 {
     /// <summary>
-    /// La cinematica de entrada de un nivel: el titulo y despues las vinetas de comic, en
-    /// secuencia y con fundido. Submit pasa a la siguiente vineta; Cancel saltea todo.
-    /// Lee que nivel toca del flujo: una sola escena sirve para todos.
+    /// La cinematica de entrada de un nivel: el titulo y despues las vinetas de comic, que se
+    /// suman en la pagina (ver ComicPanel.nuevaPagina), en secuencia y con fundido. Submit pasa
+    /// a la siguiente vineta; Cancel saltea todo. Lee que nivel toca del flujo: una sola escena
+    /// sirve para todos.
     /// </summary>
     public sealed class CinematicPlayer : MonoBehaviour
     {
@@ -48,18 +50,87 @@ namespace Zombineta.Juego.Screens
             yield return Show(titleGroup, titleSeconds);
 
             if (level != null)
-            {
-                foreach (var p in level.comicPanels)
-                {
-                    if (skip)
-                        break;
-                    if (panel != null)
-                        panel.sprite = p.image;
-                    yield return Show(panelGroup, p.seconds);
-                }
-            }
+                yield return PlayPanels(level.comicPanels);
 
             Finish();
+        }
+
+        readonly List<Image> pageImages = new List<Image>();
+        int pageCount;
+
+        IEnumerator PlayPanels(List<ComicPanel> panels)
+        {
+            if (panel == null)
+                yield break;
+            panel.enabled = false;
+
+            for (int i = 0; i < panels.Count && !skip; i++)
+            {
+                if (ComicPages.OpensPage(panels, i))
+                {
+                    if (i > 0)
+                        yield return Fade(panelGroup, 0f);
+                    ClearPage();
+                    SetAlpha(panelGroup, 1f);
+                }
+
+                advance = false;
+                var img = NextImage(panels[i].image);
+                yield return FadeImage(img, 1f);
+                advance = false; // un Submit durante el fundido solo lo completa
+                for (float t = 0f; t < panels[i].seconds && !advance && !skip; t += Time.unscaledDeltaTime)
+                    yield return null;
+            }
+
+            yield return Fade(panelGroup, 0f);
+        }
+
+        Image NextImage(Sprite sprite)
+        {
+            Image img;
+            if (pageCount < pageImages.Count)
+                img = pageImages[pageCount];
+            else
+            {
+                var go = new GameObject("Vineta " + (pageCount + 1), typeof(RectTransform), typeof(Image));
+                var rt = (RectTransform)go.transform;
+                rt.SetParent(panel.transform, false);
+                rt.anchorMin = Vector2.zero;
+                rt.anchorMax = Vector2.one;
+                rt.offsetMin = Vector2.zero;
+                rt.offsetMax = Vector2.zero;
+                img = go.GetComponent<Image>();
+                img.preserveAspect = panel.preserveAspect;
+                img.raycastTarget = false;
+                pageImages.Add(img);
+            }
+            pageCount++;
+            img.transform.SetAsLastSibling();
+            img.sprite = sprite;
+            img.gameObject.SetActive(true);
+            img.color = new Color(1f, 1f, 1f, 0f);
+            return img;
+        }
+
+        void ClearPage()
+        {
+            foreach (var img in pageImages)
+                img.gameObject.SetActive(false);
+            pageCount = 0;
+        }
+
+        IEnumerator FadeImage(Image img, float target)
+        {
+            var c = img.color;
+            float start = c.a;
+            for (float t = 0f; t < fadeSeconds && !skip && !advance; t += Time.unscaledDeltaTime)
+            {
+                c.a = Mathf.Lerp(start, target, t / fadeSeconds);
+                img.color = c;
+                yield return null;
+            }
+            c.a = target;
+            img.color = c;
         }
 
         void Update()

@@ -18,12 +18,33 @@ MonoBehaviour:
     route: {fileID: 0}
     sceneName: Level_01
     comicPanels:
-    - image: {fileID: 21300000, guid: 18100e7c8597ac348aaf48d7fb1ba31e, type: 3}
+    - image: {fileID: 21300000, guid: c1c1b26a7dd39bd43a4f6a7d60a36540, type: 3}
       seconds: 2.5
-    - image: {fileID: 21300000, guid: 2b9343e2d8cdef548a14fd49f917cfa2, type: 3}
+      nuevaPagina: 1
+    - image: {fileID: 21300000, guid: ae762fb0667516e4d9bc91d48f6a153d, type: 3}
       seconds: 2.5
-    - image: {fileID: 21300000, guid: 4cac2bb7106457e4eaf4aa740c238e8d, type: 3}
+      nuevaPagina: 0
+    - image: {fileID: 21300000, guid: f9c373cd3614a94429f0293bb70cc7e0, type: 3}
       seconds: 2.5
+      nuevaPagina: 0
+    - image: {fileID: 21300000, guid: 47d169d33f2714f499c48a65c0a52931, type: 3}
+      seconds: 2.5
+      nuevaPagina: 0
+    - image: {fileID: 21300000, guid: 7e66f0dd97bcb1d4f88731528c607846, type: 3}
+      seconds: 2.5
+      nuevaPagina: 0
+    - image: {fileID: 21300000, guid: 2cc56d6ded08c844c92f8c21f02548e2, type: 3}
+      seconds: 2.5
+      nuevaPagina: 0
+    - image: {fileID: 21300000, guid: ac3e18e2e8387f648b585e9a274a8c51, type: 3}
+      seconds: 2.5
+      nuevaPagina: 0
+    - image: {fileID: 21300000, guid: 259dae891dc9cd14ab4168bca4b59121, type: 3}
+      seconds: 2.5
+      nuevaPagina: 0
+    - image: {fileID: 21300000, guid: 69a344a03c8fbce499f6b083a5e82a8f, type: 3}
+      seconds: 2.5
+      nuevaPagina: 0
   - displayName: 'Nivel 2: El puente'
     introLines: []
     route: {fileID: 0}
@@ -31,7 +52,10 @@ MonoBehaviour:
     comicPanels:
     - image: {fileID: 21300000, guid: 4f24426ff245b6c469fcb0b67ed2dcf8, type: 3}
       seconds: 2.5
+      nuevaPagina: 1
     - image: {fileID: 21300000, guid: 15099ee69b4ecb1499cd3a7e2f489843, type: 3}
       seconds: 2.5
+      nuevaPagina: 1
     - image: {fileID: 21300000, guid: 668993e93c073ff4d9c7db9aed4c68d3, type: 3}
       seconds: 2.5
+      nuevaPagina: 1
