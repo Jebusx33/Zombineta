@@ -73,7 +73,7 @@ namespace Zombineta.Player
                 return;
 
             body.sortingOrder = LaneSorting.Order(state.LaneVisual, SortSlot.Player);
-            body.sortingLayerName = LaneSorting.GameLayer;
+            body.sortingLayerID = LaneSorting.GameLayerId;
 
             Color tint = Color.white;
             if (state.StunRemaining > 0f || state.Fuel <= 0f)

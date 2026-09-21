@@ -46,7 +46,7 @@ namespace Zombineta.Player
             {
                 int order = LaneSorting.Order(state.LaneVisual, SortSlot.Player) - 1;
                 if (dustRenderer.sortingOrder != order) dustRenderer.sortingOrder = order;
-                if (dustRenderer.sortingLayerName != LaneSorting.GameLayer) dustRenderer.sortingLayerName = LaneSorting.GameLayer;
+                if (dustRenderer.sortingLayerID != LaneSorting.GameLayerId) dustRenderer.sortingLayerID = LaneSorting.GameLayerId;
             }
         }
     }

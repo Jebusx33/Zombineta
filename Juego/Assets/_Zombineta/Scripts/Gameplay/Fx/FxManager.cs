@@ -141,7 +141,7 @@ namespace Zombineta.Fx
             tracer.SetPosition(0, new Vector3(run.ToWorldX(e.FromX), y, 0f));
             tracer.SetPosition(1, new Vector3(run.ToWorldX(e.X), y, 0f));
             tracer.sortingOrder = LaneSorting.Order(e.Lane, SortSlot.Effect);
-            tracer.sortingLayerName = LaneSorting.GameLayer;
+            tracer.sortingLayerID = LaneSorting.GameLayerId;
             tracer.enabled = true;
             tracerLeft = tracerSeconds;
         }
@@ -167,7 +167,7 @@ namespace Zombineta.Fx
             if (renderer != null)
             {
                 renderer.sortingOrder = LaneSorting.Order(lane, SortSlot.Effect);
-                renderer.sortingLayerName = LaneSorting.GameLayer;
+                renderer.sortingLayerID = LaneSorting.GameLayerId;
             }
             chosen.Clear();
             chosen.Play();
@@ -185,7 +185,7 @@ namespace Zombineta.Fx
             d.color = bloodColor;
             // Mancha en el asfalto: se pisa, como la rampa.
             d.sortingOrder = LaneSorting.Order(lane, SortSlot.Shadow) + 1;
-            d.sortingLayerName = LaneSorting.GameLayer;
+            d.sortingLayerID = LaneSorting.GameLayerId;
             d.enabled = true;
         }
     }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using Zombineta.Core;
 using Zombineta.Fx;
+using Zombineta.Luz;
 
 namespace Zombineta.Enemies
 {
@@ -104,7 +105,7 @@ namespace Zombineta.Enemies
             for (int i = 0; i < count; i++)
             {
                 bodies[i] = Instantiate(zombiePrefab, transform);
-                Zombineta.Luz.ShadowQuality.Apply(bodies[i].gameObject);
+                ShadowCasterQuality.Apply(bodies[i].gameObject);
                 sprites[i] = bodies[i].GetComponentInChildren<SpriteRenderer>();
                 animators[i] = bodies[i].GetComponentInChildren<Animator>();
                 generations[i] = -1;
@@ -266,7 +267,7 @@ namespace Zombineta.Enemies
 
                     // De pie tapa lo de arriba; caido queda como cualquier cosa tirada en el piso.
                     sprites[i].sortingOrder = LaneSorting.Order(u.Lane, u.Alive ? SortSlot.Zombie : SortSlot.Item);
-                    sprites[i].sortingLayerName = LaneSorting.GameLayer;
+                    sprites[i].sortingLayerID = LaneSorting.GameLayerId;
                 }
 
                 if (shadows[i] != null)
