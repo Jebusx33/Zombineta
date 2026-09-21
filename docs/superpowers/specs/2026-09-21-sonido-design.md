@@ -18,8 +18,8 @@ Fuera de alcance: middleware (FMOD/Wwise), voces, mezcla fina y arte sonoro fina
 
 ## Decisiones tomadas
 
-- **Motor:** sistema propio sobre el audio de Unity: `AudioMixer`, un director en `Boot` y
-  ScriptableObjects editables. El paneo y la atenuación los calculamos nosotros.
+- **Motor:** sistema propio sobre el audio de Unity: buses de volumen por código, un director
+  en `Boot` y ScriptableObjects editables. El paneo y la atenuación los calculamos nosotros.
 - **Volúmenes:** General, Música y Efectos. Se guardan y reemplazan al slider único de hoy.
 - **Música:**
   - un tema por pantalla y por nivel, con fundido cruzado;
@@ -34,25 +34,21 @@ Fuera de alcance: middleware (FMOD/Wwise), voces, mezcla fina y arte sonoro fina
 
 ## 1. Mezcla
 
-`Settings/Audio/Zombineta.mixer`:
+Unity no permite crear un `AudioMixer` por script con su API pública (solo con una API interna
+de editor, frágil, que además el MCP bloquea). La mezcla se hace con **buses por código**:
 
-| Grupo | Contiene | Parámetro expuesto |
-|---|---|---|
-| Master | todo | `VolMaster` |
-| Musica | temas y capa de tensión | `VolMusica` |
-| Efectos | partida, motor, horda | `VolEfectos` |
-| Efectos/Ambiente | loops de ambiente | — |
-| UI | navegación de menús | — (cuelga de Efectos) |
-
+- `AudioBuses` (C# plano, testeado) guarda la ganancia de cada bus: `General`, `Musica`,
+  `Efectos` (con `Ambiente` adentro) y `UI` (cuelga de Efectos). La ganancia final de una fuente
+  es `volumenPropio × bus × General`, y la de Efectos/Ambiente además por el "ducking" de pausa.
 - `GameSettings` suma `MusicVolume` y `SfxVolume` (0–1, claves `zombineta.musicVolume` y
-  `zombineta.sfxVolume`, default 0,8). `Volume` pasa a ser el General.
-- El volumen lineal se convierte a dB con `20·log10(v)`, con piso en −80 dB. Es una función pura,
-  testeada.
-- `GameRoot.ApplySettings` deja de tocar `AudioListener.volume` y escribe los tres parámetros del
-  mixer.
-- Opciones muestra tres sliders.
-- En la pausa, Efectos baja a −80 dB con un fundido de 0,2 s y la música se atenúa −8 dB. Al
-  seguir jugando vuelve todo. Se hace con snapshots del mixer (`Normal`, `Pausa`).
+  `zombineta.sfxVolume`, default 0,8); `Volume` pasa a ser el General.
+- Los sliders son lineales pero la ganancia usa una curva perceptual (`v²`), testeada.
+- `GameRoot.ApplySettings` deja de tocar `AudioListener.volume` (queda en 1) y escribe los
+  buses. Opciones muestra tres sliders.
+- **Pausa:** Efectos y Ambiente bajan a 0 en 0,2 s (tiempo real) y la música a ×0,4; al
+  reanudar vuelve todo. UI no se toca.
+- Toda fuente del juego pasa por un componente que aplica su bus cada cuadro; ningún script
+  asigna `AudioSource.volume` directo.
 
 ## 2. Música
 
@@ -61,7 +57,7 @@ Fuera de alcance: middleware (FMOD/Wwise), voces, mezcla fina y arte sonoro fina
 - **`MusicaDelJuego`** (ScriptableObject, `Settings/Audio/Musica.asset`) asigna un clip a cada
   pantalla: menú, opciones, personaje, cinemática, nivel completo, Game Over, Ending y Créditos.
   - Opciones y personaje pueden quedar vacías: en ese caso siguen con el tema que venía sonando.
-  - La pausa no cambia el tema; solo lo atenúa por el snapshot.
+  - La pausa no cambia el tema; solo lo atenúa (ver 1).
 - **Nivel:** `LevelInfo` suma `AudioDeNivel audio` (ver 3), con `musica` (el tema del nivel) y
   `tension` (la capa de tensión, de la misma duración que el tema).
 - **Fundido cruzado:** dos `AudioSource` que alternan, con 1,5 s por defecto (campo del asset).
@@ -103,14 +99,14 @@ semilla inyectable.
 | Grupo | Claves |
 |---|---|
 | Partida | `Disparo`, `SinBalas`, `CambioCarril`, `Choque`, `Atropello`, `ExplosionBarril`, `PickupNafta`, `PickupBateria`, `PickupMunicion`, `FaroOn`, `FaroOff`, `SinNafta`, `Salto`, `Aterrizaje`, `AterrizajePerfecto`, `Victoria`, `Derrota` |
+| Continuos | `Motor`, `Horda`, `Ambiente` (este último sale de `AudioDeNivel`) |
+| UI | `UiMover`, `UiConfirmar`, `UiVolver` |
 
 Cada clave sale de un `RunEvent` (`Shot`, `ShotDenied`, `LaneChanged`, `Crashed`, `RanOver`,
 `Explosion`, `PickedUp`, `HeadlightOn/Off`, `RanOutOfFuel`, `Launched`, `Landed`,
 `LandedPerfect`). `PickedUp` es una sola bandera; el tipo de pickup se deduce del estado de la
 simulación en ese paso (qué recurso subió). Si no alcanza, se agrega un dato aditivo a la
 simulación sin cambiar reglas.
-| Continuos | `Motor`, `Horda`, `Ambiente` (este último sale de `AudioDeNivel`) |
-| UI | `UiMover`, `UiConfirmar`, `UiVolver` |
 
 **Disparo de efectos:**
 
@@ -121,7 +117,7 @@ simulación sin cambiar reglas.
 - Victoria y Derrota se disparan al pasar el flujo a `LevelComplete` o `GameOver`.
 - **UI:** un componente `UiSonidos` en cada pantalla reproduce `UiMover` cuando cambia la
   selección del `EventSystem`, `UiConfirmar` en `Submit` y `UiVolver` en `Cancel`. Suena por el
-  grupo UI, que no se silencia en la pausa.
+  bus UI, que no se silencia en la pausa.
 - **Aleatorios de pantalla:** las pantallas Game Over, Ending y Créditos pueden tener una lista de
   `Sonido` que suena de vez en cuando (intervalo min–max en segundos). Por ejemplo, un gemido
   lejano en el Game Over. Lo maneja un componente `SonidosAleatorios` en la escena de la pantalla.
@@ -149,7 +145,7 @@ de `ZombieFront`) y la horda.
   - El tono va de 0,8 (quieta) a 1,2 (velocidad normal) y a 1,45 con turbo, con un suavizado de
     0,15 s.
   - Sin nafta, el volumen cae a 0 en 1 s. Al perder, se corta con un fundido de 0,3 s. En la
-    pausa, lo silencia el snapshot.
+    pausa, lo silencia el bus de Efectos.
   - El mapeo velocidad → tono es una función pura, testeada.
 - **Horda** (`HordaSonido`): loop posicional en el frente de la horda (`HordeX`), con el paneo y
   la atenuación de 4. Está en un objeto propio; nunca en `Nivel` (ver la trampa de `HordeGlow`).
@@ -209,7 +205,7 @@ Todos van bajo `Juego/Assets/_Zombineta/Audio/`.
 
 **EditMode:**
 
-- conversión lineal a dB;
+- buses y curva de volumen;
 - elección de variante sin repetición;
 - `SonidoEspacial` (paneo y volumen en los bordes, detrás y adelante);
 - regla de transición de la música;
@@ -227,7 +223,7 @@ Los 243 tests actuales siguen en verde.
 - el nivel tiene tema y tensión sincronizados, y la tensión sube al acercar la horda;
 - un disparo y una explosión reproducen su clave, con paneo del lado correcto;
 - en la pausa los efectos callan;
-- los sliders cambian los parámetros del mixer;
+- los sliders cambian la ganancia de los buses;
 - Game Over, Ending y Créditos tienen su tema;
 - Créditos se abre desde el menú y desde el Ending.
 
