@@ -1150,6 +1150,21 @@ Jesús, Juana y Seba quedaron al día con `master` el 14/09 (ver sección 0).
 5. Que alguien de arte siga `docs/Guia-de-iluminacion-para-arte.md` con un asset de prueba y
    avise qué paso no se entiende o no coincide con lo que ve en el editor.
 
+### Iluminación (seguimiento, no atendido en la revisión final del 21/09)
+- Material horneado del primer layer en los prefabs compartidos.
+- Los casters nuevos se crean con todas las capas asignadas en vez de solo `Calle`/`Juego`.
+- Sombras en la capa "Primer plano" (parallax 1,6) que pueden deslizarse sobre la calle —
+  revisarlo jugando, a ojo.
+- Orden de hermanos y picos por variante del pool (`SceneryManager`).
+- `LightBudget` con lista estática en vez de instancia.
+- Destello de la horda sin `effectHeight`.
+- Formas de sombra y de luz del barril placeholder, a mejorar con arte final.
+- `LightBudgetRunner.cam` sin cablear en el inspector.
+- Recapturar `img/luz/calidad_baja.png` de la guía (quedó desactualizada).
+- Zombies muertos con sombra de silueta parada (debería tirarse con el cuerpo).
+- Medir rendimiento en una build de desarrollo (no solo en el editor) antes de decidir el
+  presupuesto de luces de adorno (hoy 12 en Alta, ver sección 0 "Iluminación").
+
 ### Horda
 - Arte por tipo: hoy los tres usan el mismo sprite con tinte y escala. `Personajes.png` tiene
   seis arquetipos para elegir.
