@@ -56,10 +56,20 @@ namespace Zombineta.Juego.EditorTools.Luz
         /// para que la verificacion por MCP no se quede esperando un dialogo.</param>
         public static void Build(bool askFirst)
         {
-            if (askFirst && !EditorUtility.DisplayDialog("Reconstruir el taller de luz",
-                    "Esto regenera TallerLuz.unity y pisa cualquier cambio hecho a mano en ella.",
-                    "Reconstruir", "Cancelar"))
-                return;
+            // askFirst == false es la verificacion por MCP/codigo: sin dialogos, para que no se
+            // quede esperando una respuesta que nadie va a dar (comportamiento actual, sin tocar).
+            if (askFirst)
+            {
+                if (!EditorUtility.DisplayDialog("Reconstruir el taller de luz",
+                        "Esto regenera TallerLuz.unity y pisa cualquier cambio hecho a mano en ella.",
+                        "Reconstruir", "Cancelar"))
+                    return;
+
+                // NewScene(..., Single) de mas abajo cierra la escena actual sin avisar: si tenia
+                // cambios sin guardar, se perdian en silencio. Preguntar aca antes de pisarla.
+                if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                    return;
+            }
 
             Directory.CreateDirectory(ScenesDir);
 
@@ -133,9 +143,14 @@ namespace Zombineta.Juego.EditorTools.Luz
             if (palette != null)
                 cursor = BuildItemsRow(filas, palette, cursor, out filaItems);
 
+            // Inactivo mientras se arma: LightingDirector es [ExecuteAlways] y reconstruye en
+            // OnEnable, asi que agregarlo ya activo (sin Perfil todavia) tiraba "sin PerfilDeLuz
+            // asignado" en cada corrida. Asignar el perfil antes de activar evita ese aviso falso.
             var ambiente = new GameObject("Ambiente");
+            ambiente.SetActive(false);
             var director = ambiente.AddComponent<LightingDirector>();
             director.Perfil = noche;
+            ambiente.SetActive(true);
             director.Rebuild();
 
             Bounds? scooter = BuildScooterCopy(scene, new Vector3(-9f, 0f, 0f));
