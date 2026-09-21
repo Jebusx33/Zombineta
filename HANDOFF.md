@@ -338,7 +338,10 @@ luz en vivo apenas cambia el asset o la referencia. Hoy `Level_01` y `Level_02` 
 `Calle`+`Juego` con sombra propia; `FlashDirector`/`FlashLights` disparan destellos (Additive,
 mismas dos capas) para disparo, choque, atropello y explosión de barril, enganchados al mismo
 `RunEvent` que ya usan partículas y vibración; `HordeGlow` es una luz tenue que sigue al frente de
-la horda y crece con la misma distancia que la barra de amenaza del HUD. De estas tres, solo el
+la horda y crece con la misma distancia que la barra de amenaza del HUD. Vive en el prefab
+`Art/Luz/ResplandorHorda.prefab`, instanciado como hijo de `Nivel`; **nunca en `Nivel` mismo**:
+mueve su transform cada cuadro y arrastraba todo el recorrido (los items quedaban siempre fuera de
+pantalla). `HordeGlowSceneTests` lo cuida en las tres escenas de nivel. De estas tres, solo el
 faro y `HordeGlow` se prenden siempre (Alta y Baja); los destellos de `FlashLights` se apagan del
 todo en Baja (`OnStepped` corta apenas ve `LightQuality.Baja`), aparte y además del presupuesto de
 adorno.

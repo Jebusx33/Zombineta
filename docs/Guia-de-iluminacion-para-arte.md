@@ -225,6 +225,22 @@ ambiente puro, sin el cono de luz de la moto encima):
 
 ![El PerfilDeLuz Noche.asset en Level_01, con el faro apagado](img/luz/perfil_noche.png)
 
+### El resplandor de la horda
+
+El brillo verdoso que trae la horda es un prefab: **`Assets/_Zombineta/Art/Luz/ResplandorHorda.prefab`**.
+Abrilo y ajustá los campos del componente **`HordeGlow`** (no los de la `Light2D` de al lado, que
+se pisan al arrancar):
+
+- **Color**: el tono del resplandor.
+- **Radius**: hasta dónde llega, en unidades del mundo.
+- **Max Intensity**: el brillo cuando la horda está encima de la moto (en 0 no se ve nunca).
+- **Danger Gap Meters**: a cuántos metros empieza a notarse; más lejos, el brillo es 0.
+
+El cambio vale para todos los niveles, porque cada nivel tiene una copia de ese prefab adentro del
+objeto `Nivel`. Para verlo hay que estar en Play y dejar que la horda se acerque. No le agregues
+hijos al prefab: el objeto se mueve cada cuadro siguiendo a la horda y arrastraría lo que le
+cuelgue.
+
 ---
 
 ## 7. Ver el resultado

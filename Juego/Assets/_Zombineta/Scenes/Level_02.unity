@@ -9713,6 +9713,72 @@ Transform:
   - {fileID: 682550529}
   m_Father: {fileID: 1171654547}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &488514258
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1171654547}
+    m_Modifications:
+    - target: {fileID: 3912648188782452825, guid: 7d47a039d6ad6e8489c600bb41f8d9f3, type: 3}
+      propertyPath: run
+      value: 
+      objectReference: {fileID: 1170739137}
+    - target: {fileID: 6927080472336598850, guid: 7d47a039d6ad6e8489c600bb41f8d9f3, type: 3}
+      propertyPath: m_Name
+      value: ResplandorHorda
+      objectReference: {fileID: 0}
+    - target: {fileID: 8338016984343735119, guid: 7d47a039d6ad6e8489c600bb41f8d9f3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8338016984343735119, guid: 7d47a039d6ad6e8489c600bb41f8d9f3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8338016984343735119, guid: 7d47a039d6ad6e8489c600bb41f8d9f3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8338016984343735119, guid: 7d47a039d6ad6e8489c600bb41f8d9f3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8338016984343735119, guid: 7d47a039d6ad6e8489c600bb41f8d9f3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8338016984343735119, guid: 7d47a039d6ad6e8489c600bb41f8d9f3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8338016984343735119, guid: 7d47a039d6ad6e8489c600bb41f8d9f3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8338016984343735119, guid: 7d47a039d6ad6e8489c600bb41f8d9f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8338016984343735119, guid: 7d47a039d6ad6e8489c600bb41f8d9f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8338016984343735119, guid: 7d47a039d6ad6e8489c600bb41f8d9f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7d47a039d6ad6e8489c600bb41f8d9f3, type: 3}
+--- !u!4 &488514259 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8338016984343735119, guid: 7d47a039d6ad6e8489c600bb41f8d9f3, type: 3}
+  m_PrefabInstance: {fileID: 488514258}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &490499593
 GameObject:
   m_ObjectHideFlags: 0
@@ -24945,8 +25011,6 @@ GameObject:
   - component: {fileID: 1171654549}
   - component: {fileID: 1171654550}
   - component: {fileID: 1171654553}
-  - component: {fileID: 1171654552}
-  - component: {fileID: 1171654551}
   - component: {fileID: 1171654555}
   - component: {fileID: 1171654554}
   m_Layer: 0
@@ -25004,6 +25068,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 475886339}
+  - {fileID: 488514259}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1171654548
@@ -25052,96 +25117,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ac69707ec84ab4cbcbff8e99feb698, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Luz.LightingDirector
-  perfil: {fileID: 0}
---- !u!114 &1171654551
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1171654545}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef23a424a17d80848a48030055090c36, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Luz.HordeGlow
-  run: {fileID: 1170739137}
-  color: {r: 0.35, g: 0.85, b: 0.65, a: 1}
-  radius: 12
-  maxIntensity: 1.1
-  dangerGapMeters: 45
---- !u!114 &1171654552
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1171654545}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.Light2D
-  m_ComponentVersion: 4
-  m_LightType: 3
-  m_BlendStyleIndex: 0
-  m_Light2DProvider:
-    rid: -2
-  m_SelectionSources:
-    rid: 2255679297603502509
-  m_FalloffIntensity: 0.5
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
-  m_LightVolumeIntensity: 1
-  m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 000000000100000002000000030000000400000005000000i
-  m_LightCookieSprite: {fileID: 0}
-  m_DeprecatedPointLightCookieSprite: {fileID: 0}
-  m_LightOrder: 0
-  m_AlphaBlendOnOverlap: 0
-  m_OverlapOperation: 0
-  m_NormalMapDistance: 3
-  m_NormalMapQuality: 2
-  m_UseNormalMap: 0
-  m_ShadowsEnabled: 1
-  m_ShadowIntensity: 0.75
-  m_ShadowSoftness: 0.3
-  m_ShadowSoftnessFalloffIntensity: 0.5
-  m_ShadowVolumeIntensityEnabled: 0
-  m_ShadowVolumeIntensity: 0.75
-  m_RenderingLayersMask:
-    serializedVersion: 0
-    m_Bits: 1
-  m_LocalBounds:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0, y: 0, z: 0}
-  m_PointLightInnerAngle: 360
-  m_PointLightOuterAngle: 360
-  m_PointLightInnerRadius: 0
-  m_PointLightOuterRadius: 1
-  m_ShapeLightParametricSides: 5
-  m_ShapeLightParametricAngleOffset: 0
-  m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 0.5
-  m_ShapeLightFalloffOffset: {x: 0, y: 0}
-  m_ShapePath:
-  - {x: -0.5, y: -0.5, z: 0}
-  - {x: 0.5, y: -0.5, z: 0}
-  - {x: 0.5, y: 0.5, z: 0}
-  - {x: -0.5, y: 0.5, z: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 2255679297603502509
-      type: {class: Light2DProviderSources, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
-      data:
-        m_SelectedHashCode: 0
-        m_SelectedSource:
-          rid: -2
-        m_Provider2DCache:
-          rid: -2
+  perfil: {fileID: 11400000, guid: 4d1ab6a5e1baa0a4488968a8390a2194, type: 2}
 --- !u!114 &1171654553
 MonoBehaviour:
   m_ObjectHideFlags: 0
