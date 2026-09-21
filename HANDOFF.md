@@ -366,7 +366,7 @@ a mano**.
 `.git/sdd/luz/medicion.md`): línea de base sin luces 2,94 ms/cuadro. Con todo el sub-proyecto,
 mismo tramo de `Level_01`, faro prendido: **Alta 6,3 ms** (134 `ShadowCaster2D` habilitados, 20
 `Light2D` activos) — el faro solo ya cuesta casi tanto como el resto de sombras y luces de adorno
-juntas; **Baja 3,56 ms** (0 `ShadowCaster2D`, 8 `Light2D` activos: quedan el faro, el ambiente y
+juntas; **Baja 3,56 ms** (0 `ShadowCaster2D`, 8 `Light2D` activos —medido antes de fundir la luz General; hoy son 7—: quedan el faro, el ambiente y
 `HordeGlow`), bastante más cerca de la línea de base que de Alta.
 
 **Fuera de esta etapa (deliberado):** normal maps de personajes y objetos (solo escenario, y
@@ -1058,8 +1058,8 @@ Estas costaron tiempo real en esta sesión:
   cada corrida, ver trampa nueva #39): capturas de Alta y Baja, faro prendido y apagado, un choque
   real disparando su destello de color. Rendimiento medido en el mismo tramo (ver sección 0,
   "Iluminación", y `.git/sdd/luz/medicion.md`): línea de base 2,94 ms, **Alta 6,3 ms** (134
-  `ShadowCaster2D`, 20 `Light2D`), **Baja 3,56 ms** (0 `ShadowCaster2D`, 8 `Light2D`) tras el fix
-  de `ShadowQuality` (trampa #41). Consola sin errores en ninguna corrida. Migración a prefabs sin
+  `ShadowCaster2D`, 20 `Light2D`), **Baja 3,56 ms** (0 `ShadowCaster2D`, 8 `Light2D`; hoy 7, sin la luz General aparte) tras el fix
+  de `ShadowQuality`, hoy `ShadowCasterQuality` (trampa #41). Consola sin errores en ninguna corrida. Migración a prefabs sin
   regresión visual (0 % de diferencia contra la captura previa a la migración) ni de rendimiento
   (+0,18 ms, dentro del ruido de dos sesiones de Play).
 
