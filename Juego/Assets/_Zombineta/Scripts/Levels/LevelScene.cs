@@ -141,7 +141,7 @@ namespace Zombineta.Juego.Levels
             go.transform.localRotation = Quaternion.identity;
             go.transform.localScale = Vector3.one;
             go.hideFlags = HideFlags.None;
-            Zombineta.Luz.ShadowQuality.Apply(go);
+            ShadowCasterQuality.Apply(go);
 
             var prefabSr = go.GetComponent<SpriteRenderer>();
             if (prefabSr != null)
