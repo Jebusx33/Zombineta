@@ -74,6 +74,23 @@ namespace Zombineta.Juego.Tests
                 Assert.AreEqual(a.Pick(5), b.Pick(5));
         }
 
+        [Test] public void VariantePrimeraPuedeSerCualquiera()
+        {
+            bool saw0 = false, saw1 = false, saw2 = false;
+            for (int seed = 0; seed < 100; seed++)
+            {
+                var p = new VariantPicker(seed);
+                int first = p.Pick(3);
+                Assert.That(first, Is.InRange(0, 2));
+                if (first == 0) saw0 = true;
+                if (first == 1) saw1 = true;
+                if (first == 2) saw2 = true;
+            }
+            Assert.IsTrue(saw0);
+            Assert.IsTrue(saw1);
+            Assert.IsTrue(saw2);
+        }
+
         // --- Espacial ---
         static readonly EspacialConfig C = new EspacialConfig { anchoPaneo = 12f, distanciaPlena = 4f, distanciaMaxima = 30f };
 

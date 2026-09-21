@@ -14,7 +14,7 @@ namespace Zombineta.Audio
                 return -1;
             if (count == 1)
                 return last = 0;
-            int pick = rng.Next(count - 1);
+            int pick = last < 0 ? rng.Next(count) : rng.Next(count - 1);
             if (last >= 0 && pick >= last)
                 pick++;
             return last = pick;
