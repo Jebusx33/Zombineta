@@ -1,14 +1,16 @@
 # Zombineta — Handoff
 
-Última actualización: 15 de septiembre de 2026, tras sumar el joystick: un nivel de `Juego/` se
-juega de punta a punta con gatillos para la velocidad, vibración opcional y ayuda de controles
-en la pausa, sin romper teclado y mouse — probado con gamepad real por José, vibración incluida.
+Última actualización: 21 de septiembre de 2026, tras la iluminación 2D con URP: `Juego/` tiene
+cinco Sorting Layers reales, el escenario y los objetos del recorrido son prefabs que arte puede
+abrir y ponerles luz y sombra, un perfil de ambiente por nivel, luces de gameplay (faro, destellos,
+resplandor de la horda), presupuesto + calidad Alta/Baja, y un taller para ver todo junto. Guía
+para arte aparte (ver sección 0, "Iluminación").
 
 **Estado:** el prototipo se recorre de punta a punta con el flujo del GDD (menú, opciones,
 personaje, cinemática, dos niveles, victoria, game over, final), sobre un escenario de
-placeholders con parallax en varias capas, una cámara que reacciona a la persecución y rampas
-con un salto que se regula inclinando en el aire, y una horda de zombies individuales
-con tipos y arte propio por arquetipo. 209 tests EditMode en verde.
+placeholders con parallax en varias capas e iluminación 2D real, una cámara que reacciona a la
+persecución y rampas con un salto que se regula inclinando en el aire, y una horda de zombies
+individuales con tipos y arte propio por arquetipo. 227 tests EditMode en verde.
 
 **Ojo:** con el balance vigente la meta **no se alcanza jugando** (ver sección 4). Para
 recorrer el flujo completo existen F2 (ganar) y F3 (perder), solo en editor y builds de
@@ -44,7 +46,7 @@ Zombineta/
 
 ### El camino al juego definitivo
 
-Cinco sub-proyectos, cada uno con su diseño, plan e implementación:
+Seis sub-proyectos, cada uno con su diseño, plan e implementación:
 
 | # | Sub-proyecto | Estado |
 |---|---|---|
@@ -52,7 +54,8 @@ Cinco sub-proyectos, cada uno con su diseño, plan e implementación:
 | 2 | Escenas: `Boot` persistente + una escena por pantalla y por nivel | **Hecho** (13/09) |
 | 3 | Herramienta para armar niveles a mano (el nivel es la escena) | **Hecho** (14/09) |
 | 4 | Estética nueva: carriles más abajo, más fondo, zombies más grandes | **Hecho** (14/09) |
-| 5 | Iluminación 2D real con URP | Próximo; necesita normal maps de arte |
+| 5 | Iluminación 2D real con URP | **Hecho** (21/09) |
+| 6 | Tramos por ambiente (usar el campo `grupo` de cada variante para variar el escenario por tramo) | Próximo |
 
 ### Escenas del juego definitivo (`Juego/`)
 
@@ -302,6 +305,71 @@ la escena `Pause`, pinta el texto del esquema actual y se repinta cuando cambia.
   vibra no es necesariamente un bug del juego.
 - Mover el mouse durante la partida cambia la ayuda de controles de la pausa a teclado, aunque
   se siga jugando con joystick (es el último dispositivo que generó una acción).
+
+---
+
+### Iluminación (`Juego/`)
+
+Diseño: `docs/superpowers/specs/2026-09-20-iluminacion-2d-design.md`. Guía paso a paso para
+arte (cómo armar y enganchar un asset nuevo, sin código): **`docs/Guia-de-iluminacion-para-arte.md`**.
+
+**Capas de dibujo.** Cinco Sorting Layers nuevas, de atrás hacia adelante: `Cielo`, `Fondo`,
+`Calle`, `Juego`, `Frente`. `Default` (la que trae Unity) queda **excluida a propósito** de la
+luz de ambiente — todo lo que arte toca tiene que ir en una de las cinco. Cada `Light2D` declara
+a qué capas alcanza con su API pública `targetSortingLayers` (el inspector lo muestra como
+"Target Sorting Layers"): es lo que permite que un farol ilumine la calle sin lavarle el color al
+cielo.
+
+**Prefabs de escenario y de items.** El escenario ya no se arma con sprites sueltos: cada tile de
+`Escenario.asset` y cada tipo de `LevelItemPalette.asset` (salvo `ZombieFront`, que sigue sacando
+su sprite de `Zombies.asset`) apunta a un prefab (raíz con `SpriteRenderer` + material lit, hijos
+opcionales `Light2D`/`ShadowCaster2D`/`Flicker`). `SceneryManager` los instancia y recicla por
+variante. Prefabs de escenario en `Art/Tileset/Prefabs/`, de items en `Art/Level/Prefabs/`. El
+migrador (`Zombineta > Luz > Migrar tiles a prefabs`) hizo la conversión inicial una sola vez y
+**nunca pisa un prefab que arte ya asignó a mano** al re-ejecutarlo.
+
+**Perfil de ambiente por nivel.** `PerfilDeLuz` (ScriptableObject, `Settings/Luz/`): color e
+intensidad de luz global por cada una de las cinco capas, más una luz general. Vive **solo** en
+`LevelScene.perfil`; `LightingDirector` (en el objeto `Nivel`) lo toma de ahí y reconstruye la
+luz en vivo apenas cambia el asset o la referencia. Hoy `Level_01` y `Level_02` comparten
+`Noche.asset`.
+
+**Luz de gameplay** (nunca entra al presupuesto, sección siguiente): el faro de la moto alcanza
+`Calle`+`Juego` con sombra propia; `FlashDirector`/`FlashLights` disparan destellos (Additive,
+mismas dos capas) para disparo, choque, atropello y explosión de barril, enganchados al mismo
+`RunEvent` que ya usan partículas y vibración; `HordeGlow` es una luz tenue que sigue al frente de
+la horda y crece con la misma distancia que la barra de amenaza del HUD.
+
+**Sombras.** `ShadowCaster2D` con silueta simple (no el contorno del sprite) en lo cercano a la
+calle: faroles, carteles, vallas, obstáculos, barriles, la moto y los zombies. El fondo lejano no
+proyecta.
+
+**Presupuesto y calidad.** `LightBudget` (C# plano, testeado) prioriza las luces de adorno
+(`DecorLight`, con su propio campo `priority`) más cercanas a la cámara hasta un tope
+(`LightBudgetRunner.budgetAlta = 12`); las luces de gameplay quedan afuera de esta cuenta.
+`GameSettings.LightQuality` (Alta/Baja, PlayerPrefs `zombineta.lightQuality`, desplegable
+"Iluminacion" en Opciones): en Baja se apagan todas las sombras (`ShadowQuality`) y no queda
+ninguna luz de adorno prendida (presupuesto en 0); el ambiente y el faro siguen.
+
+**Taller de luz.** `Zombineta > Luz > Construir taller` regenera `Scenes/TallerLuz.unity`: una
+copia de cada prefab de escenario y de item, agrupada por capa a su altura y escala reales, con
+el ambiente de `Noche.asset` y la moto de referencia al lado. Las capas de escenario deshabilitadas
+en el juego (`enabled` sin marcar en `Escenario.asset`) igual se arman ahí, pero separadas del
+resto y al 50 % de alfa, marcadas "(apagada en el juego)". Se regenera con el menú; **no se edita
+a mano**.
+
+**Rendimiento** (medido en el editor, valores relativos — no FPS de build; ver
+`.git/sdd/luz/medicion.md`): línea de base sin luces 2,94 ms/cuadro. Con todo el sub-proyecto,
+mismo tramo de `Level_01`, faro prendido: **Alta 6,3 ms** (134 `ShadowCaster2D` habilitados, 20
+`Light2D` activos) — el faro solo ya cuesta casi tanto como el resto de sombras y luces de adorno
+juntas; **Baja 3,56 ms** (0 `ShadowCaster2D`, 8 `Light2D` activos: quedan el faro, el ambiente y
+`HordeGlow`), bastante más cerca de la línea de base que de Alta.
+
+**Fuera de esta etapa (deliberado):** normal maps de personajes y objetos (solo escenario, y
+todavía ninguno hecho — es un `Secondary Texture` opcional del material lit, ver la guía de arte);
+ciclo día/noche; la secuencia de tramos por ambiente (sub-proyecto 6 de la tabla de arriba — el
+campo `grupo` de cada `SceneryVariant`/el taller ya lo dejan agrupado, pero no hay lógica que lo
+use todavía para variar el escenario por tramo).
 
 ---
 
@@ -894,6 +962,48 @@ Estas costaron tiempo real en esta sesión:
     interfiere con el último frame de Play) para no acumular suscripciones entre sesiones
     sucesivas de Play sin recarga de dominio (trampa #26).
 
+39. **La vista ("Vista") de un item con prefab (`LevelScene`/`LevelItemPalette.Look.prefab`) solo
+    se arma sola en modo Edición.** `LevelScene.Update()` instancia esa vista nada más cuando
+    `!Application.isPlaying`; el proyecto recarga la escena al entrar en Play (`Reload Scene`
+    activado, solo `Reload Domain` está apagado), así que una "Vista" armada por el editor con
+    `HideFlags.DontSave` nunca llega a esa sesión de Play. Si además la escena se guardó con el
+    editor ya habiendo apagado el `SpriteRenderer` propio del item (lo hace solo, para no dibujar
+    el sprite dos veces), el resultado es un item **invisible, sin luz ni sombra** jugando de
+    verdad — aunque en el editor, fuera de Play, se vea perfecto. El arreglo es que `LevelScene`
+    arme esa vista también en su propio `Awake()` cuando `Application.isPlaying` (no solo
+    prenderla/apagarla si ya existe). **Para verificar esto por MCP, siempre reabrí la escena
+    (`EditorSceneManager.OpenScene`) justo antes de `EnterPlaymode()`, en el mismo `RunCommand`,
+    sin ningún tick de Editor en el medio**: si el editor llega a tiquear `Update()` una sola vez
+    antes de entrar en Play, la vista ya existe en memoria y el bug queda escondido (así se
+    verificó en falso la primera vez).
+
+40. **`SerializedObject` para tocar un campo privado de un componente de Unity (como
+    `Light2D.m_ApplyToSortingLayers`) no compila en un build.** El acceso vive bajo
+    `#if UNITY_EDITOR`; en el player ese bloque desaparece entero y el campo queda sin tocar — en
+    este proyecto eso hubiese dejado toda luz de ambiente sin ninguna capa asignada (pantalla
+    negra) apenas se hiciera un build real, aunque en el editor se viera bien. Antes de escribir
+    algo así, buscá si el componente ya tiene una **API pública** para lo mismo: `Light2D` la
+    tiene (`targetSortingLayers`, propiedad pública sin `#if`) y es la que hay que usar siempre
+    que se toque una luz desde código que corre en runtime.
+
+41. **Algo que crea sombra propia (`ShadowCaster2D`) después del primer barrido de
+    `ShadowQuality` queda con la calidad vieja, sin importar qué calidad esté activa.**
+    `ShadowQuality` solo recorre toda la escena en su `Start()` y cuando cambia
+    `GameSettings.LightQualityChanged`; nunca vuelve a mirar lo que se instancia después de eso
+    (tiles nuevos de `SceneryManager` al avanzar la cámara, cada zombie nuevo de `HordeView`, la
+    vista de un item armada en Play). El síntoma: en calidad Baja quedaban sombras prendidas que
+    deberían estar apagadas (28 de más, medido). El arreglo es un método estático,
+    `ShadowQuality.Apply(GameObject go)`, que aplica la calidad **actual** solo a esa jerarquía
+    puntual (sin recorrer la escena, sin costo por frame) — **hay que llamarlo desde cualquier
+    lugar nuevo que instancie algo con `ShadowCaster2D`** además de dejar el barrido completo para
+    cuando cambia la calidad en vivo.
+
+42. **La clase propia `ShadowQuality` (namespace `Zombineta.Luz`) choca de nombre con
+    `UnityEngine.ShadowQuality`** (un enum del motor, de sombras 3D). En cualquier archivo que ya
+    tenga `using UnityEngine;`, escribir `ShadowQuality.Apply(...)` a secas es ambiguo y no
+    compila: hay que calificarlo entero, `Zombineta.Luz.ShadowQuality.Apply(...)`. Queda pendiente
+    renombrar la clase propia para que esto deje de hacer falta.
+
 ---
 
 ## 6. Qué está verificado y qué no
@@ -936,8 +1046,27 @@ Estas costaron tiempo real en esta sesión:
   (cambio de carril, turbo, retroceso, disparo, faro, pausa, F2/F3 con Select+RB/Select+LB) se
   probó de punta a punta con **José y un joystick real (15/09), vibración incluida** — el
   recorrido con gamepad virtual por MCP no se hizo (decisión del usuario).
+- Iluminación (21/09): 227 tests EditMode en verde (mapeo de capas, `PerfilDeLuz`, `LightBudget`,
+  `FlickerMath`, `FlashDirector`). En Play sobre `Level_01` (escena reabierta fresca antes de
+  cada corrida, ver trampa nueva #39): capturas de Alta y Baja, faro prendido y apagado, un choque
+  real disparando su destello de color. Rendimiento medido en el mismo tramo (ver sección 0,
+  "Iluminación", y `.git/sdd/luz/medicion.md`): línea de base 2,94 ms, **Alta 6,3 ms** (134
+  `ShadowCaster2D`, 20 `Light2D`), **Baja 3,56 ms** (0 `ShadowCaster2D`, 8 `Light2D`) tras el fix
+  de `ShadowQuality` (trampa #41). Consola sin errores en ninguna corrida. Migración a prefabs sin
+  regresión visual (0 % de diferencia contra la captura previa a la migración) ni de rendimiento
+  (+0,18 ms, dentro del ruido de dos sesiones de Play).
 
 **NO verificado — pendiente de que alguien lo juegue:**
+- **La guía de arte.** Nadie de arte la siguió todavía: se escribió y se verificaron los datos
+  contra el código, pero falta que Germán o Juana abran un asset de prueba con ella al lado y
+  digan si algún paso no se entiende o no coincide con lo que ven.
+- **Normal maps.** Ningún asset del proyecto tiene uno real todavía (solo el material lit sin
+  `Secondary Texture` asignada); la guía explica el paso pero está sin probar en la práctica.
+- **El destello de explosión de barril, en vivo.** Cubierto por tests unitarios y por el mismo
+  código/pool que ya probó el destello de choque, pero nunca se vio en pantalla: simular el botón
+  de disparo desde un `RunCommand` no llegó a registrarse a tiempo en el Input System (ver Task 5
+  del sub-proyecto). Falta una forma más confiable de gatillar un disparo real por MCP, o
+  verificarlo jugando a mano.
 - **El teclado en los menús.** El flujo se manejó por su API; nunca se apretó una tecla real.
   Es lo primero a probar: W/S, ENTER, ESC, A/D en Opciones.
 - Si la capa frontal molesta al jugar: árboles y farolas pasan en silueta por delante de los
@@ -990,6 +1119,15 @@ recorrido completo, salteado por decisión del usuario), y José lo jugó de pun
 joystick real, vibración incluida. **Lo próximo es el sub-proyecto 5 (iluminación 2D con URP)**,
 que sigue necesitando normal maps de arte.
 
+**21/09:** iluminación 2D con URP hecha (sub-proyecto 5, ver "Iluminación" en la sección 0):
+cinco Sorting Layers, escenario e items como prefabs con luz y sombra propias, `PerfilDeLuz` por
+nivel, faro/destellos/resplandor de horda, presupuesto + calidad Alta/Baja, taller regenerable, y
+la guía para arte (`docs/Guia-de-iluminacion-para-arte.md`). 227 tests EditMode en verde;
+rendimiento medido en Alta y Baja contra la línea de base (ver sección 6). **Lo próximo es el
+sub-proyecto 6 (tramos por ambiente)**, más lo que sigue pendiente de antes: que alguien de arte
+siga la guía nueva con un asset de prueba, y jugarlo con teclado para balancear la horda (ver
+abajo).
+
 Lo último que se hizo fueron las rampas y el salto (T12). Lo que el usuario ya anunció como
 próximo paso son **las animaciones de spritesheet de la protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
 fill y un slicing que escanee el alfa, porque no tienen grilla exacta). Las ramas de Germán,
@@ -1002,6 +1140,8 @@ Jesús, Juana y Seba quedaron al día con `master` el 14/09 (ver sección 0).
 2. Decidir `goalDistance` con el balance nuevo, para que la meta vuelva a ser alcanzable.
 3. Rebalancear la horda (ver sección 4) y volver a jugarla.
 4. Animaciones de la protagonista a partir de las hojas `hf_*.png`.
+5. Que alguien de arte siga `docs/Guia-de-iluminacion-para-arte.md` con un asset de prueba y
+   avise qué paso no se entiende o no coincide con lo que ve en el editor.
 
 ### Horda
 - Arte por tipo: hoy los tres usan el mismo sprite con tinte y escala. `Personajes.png` tiene
@@ -1031,9 +1171,12 @@ Y **polvo en la rueda trasera** (`WheelDustView` + `Scooter/Dust`): más cantida
 rápido, el doble en turbo, nada en el aire.
 
 Los tiles son placeholders en `Assets/_Zombineta/Art/Tileset/` (copiados de
-`Arte/Bocetos/Tileset`). Para reemplazarlos por arte final alcanza con cambiar el sprite de
-cada variante en `Escenario.asset`; el ancho se calcula solo a partir de la proporción. Tres
-cosas a saber:
+`Arte/Bocetos/Tileset`). **Desde la iluminación (sub-proyecto 5) cada variante de `Escenario.asset`
+apunta a un prefab, no a un sprite suelto** (ver "Iluminación" en la sección 0 y
+`docs/Guia-de-iluminacion-para-arte.md`): para reemplazar un tile por arte final se cambia el
+sprite dentro de su prefab (`Art/Tileset/Prefabs/`), no el campo `Sprite` de la variante (ese
+campo quedó como resabio, escondido en el Inspector, y ya no hace nada). El ancho se sigue
+calculando solo a partir de la proporción del sprite. Tres cosas a saber:
 - A la copia de `pista` se le recortaron las primeras 74 columnas porque las líneas del
   boceto no llegaban al borde y dejaban costura. **El tile final tiene que empalmar consigo
   mismo en los dos bordes.**
