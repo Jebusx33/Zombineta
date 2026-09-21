@@ -1,16 +1,18 @@
 # Zombineta — Handoff
 
-Última actualización: 21 de septiembre de 2026, tras la iluminación 2D con URP: `Juego/` tiene
-cinco Sorting Layers reales, el escenario y los objetos del recorrido son prefabs que arte puede
-abrir y ponerles luz y sombra, un perfil de ambiente por nivel, luces de gameplay (faro, destellos,
-resplandor de la horda), presupuesto + calidad Alta/Baja, y un taller para ver todo junto. Guía
-para arte aparte (ver sección 0, "Iluminación").
+Última actualización: 21 de septiembre de 2026, tras la iluminación 2D con URP y el opening del
+nivel 1: `Juego/` tiene cinco Sorting Layers reales, el escenario y los objetos del recorrido son
+prefabs que arte puede abrir y ponerles luz y sombra, un perfil de ambiente por nivel, luces de
+gameplay (faro, destellos, resplandor de la horda, este último como prefab ajustable por arte),
+presupuesto + calidad Alta/Baja, y un taller para ver todo junto. Guía para arte aparte (ver
+sección 0, "Iluminación"). La cinemática del nivel 1 arma una página de cómic sumando nueve
+viñetas (bocetos, a reemplazar por el arte final; ver "Escenas del juego definitivo").
 
 **Estado:** el prototipo se recorre de punta a punta con el flujo del GDD (menú, opciones,
 personaje, cinemática, dos niveles, victoria, game over, final), sobre un escenario de
 placeholders con parallax en varias capas e iluminación 2D real, una cámara que reacciona a la
 persecución y rampas con un salto que se regula inclinando en el aire, y una horda de zombies
-individuales con tipos y arte propio por arquetipo. 227 tests EditMode en verde.
+individuales con tipos y arte propio por arquetipo. 243 tests EditMode en verde.
 
 **Ojo:** con el balance vigente la meta **no se alcanza jugando** (ver sección 4). Para
 recorrer el flujo completo existen F2 (ganar) y F3 (perder), solo en editor y builds de
@@ -40,8 +42,8 @@ Zombineta/
 - Se abre **cada proyecto por separado** desde Unity Hub (`Prototipo/` o `Juego/`), nunca la raíz.
 - **Clonar en una ruta corta.** La ruta de trabajo actual es muy larga y un paquete de Unity ya
   supera los 260 caracteres de Windows (trampa #21).
-- **Ramas del equipo:** las de Germán, Jesús, Juana y Seba se llevaron a `master` el 14/09 (no
-  tenían trabajo propio). Cada uno: `git fetch` y `git checkout <su rama>` + `git pull`; si ya
+- **Ramas del equipo:** las de Germán, Jesús, Juana y Seba se llevaron a `master` por última vez
+  el 21/09, con la iluminación y el opening del nivel 1 (no tenían trabajo propio). Cada uno: `git fetch` y `git checkout <su rama>` + `git pull`; si ya
   tenía la rama local vieja, `git reset --hard origin/<su rama>` (no había nada propio que perder).
 
 ### El camino al juego definitivo
@@ -1082,6 +1084,16 @@ Estas costaron tiempo real en esta sesión:
   de `ShadowQuality`, hoy `ShadowCasterQuality` (trampa #41). Consola sin errores en ninguna corrida. Migración a prefabs sin
   regresión visual (0 % de diferencia contra la captura previa a la migración) ni de rendimiento
   (+0,18 ms, dentro del ruido de dos sesiones de Play).
+- Arreglos de la revisión final de iluminación (21/09): 234 tests; el perfil sale siempre de
+  `LevelScene`, el cielo responde a su luz, una luz global por capa (la "General" se suma en
+  cada una). Después, **el resplandor de la horda arrastraba todo el recorrido** (estaba en
+  `Nivel`): se lo pasó a su prefab y se verificó en Play entrando por el menú que los items
+  quedan quietos y aparecen al llegar; `HordeGlowSceneTests` lo cuida (237 tests).
+- Opening del nivel 1 (21/09): 243 tests (`ComicPagesTests`). Por MCP, entrando por el menú:
+  capturas de la primera viñeta, la quinta y la página completa, que coincide con
+  `[position_references].png` a pantalla completa; el nivel 2 sigue con una viñeta por vez.
+  Enter (siguiente) y Esc (saltear) los probó José a mano: el sandbox del MCP no deja simular
+  teclas.
 
 **NO verificado — pendiente de que alguien lo juegue:**
 - **La guía de arte.** Nadie de arte la siguió todavía: se escribió y se verificaron los datos
@@ -1155,10 +1167,18 @@ sub-proyecto 6 (tramos por ambiente)**, más lo que sigue pendiente de antes: qu
 siga la guía nueva con un asset de prueba, y jugarlo con teclado para balancear la horda (ver
 abajo).
 
+**21/09, más tarde:** se cerró la revisión final de iluminación, se arregló el resplandor de la
+horda que se llevaba los items del recorrido fuera de pantalla, y se hizo el opening del nivel 1
+(página de cómic que se arma viñeta por viñeta, con los bocetos de
+`Arte/Bocetos/scene_opening`). 243 tests EditMode en verde. `master` y las ramas de Germán,
+Jesús, Juana y Seba quedaron al día. **Pendiente de arte:** las viñetas finales del opening
+(misma medida y posición que los bocetos, ver la regla en "Escenas del juego definitivo") y
+subir la intensidad de la capa `Juego` en `Noche.asset` si los items se ven muy oscuros.
+
 Lo último que se hizo fueron las rampas y el salto (T12). Lo que el usuario ya anunció como
 próximo paso son **las animaciones de spritesheet de la protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
-fill y un slicing que escanee el alfa, porque no tienen grilla exacta). Las ramas de Germán,
-Jesús, Juana y Seba quedaron al día con `master` el 14/09 (ver sección 0).
+fill y un slicing que escanee el alfa, porque no tienen grilla exacta). (Las ramas del equipo: ver
+sección 0.)
 
 ### Inmediato
 1. Jugarlo con teclado y anotar qué se siente mal. Es lo único que el simulador no contesta.
