@@ -26,7 +26,7 @@ MonoBehaviour:
     noImmediateRepeat: 0
     seed: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
-    material: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+    material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 0a56c5594d5fa8f4893455e48812aa87, type: 3}
       prefab: {fileID: 2397860195985427030, guid: e2d331a1b836fd047a6ca3b3a7b06e5e, type: 3}

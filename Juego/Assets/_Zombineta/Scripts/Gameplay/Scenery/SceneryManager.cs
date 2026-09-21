@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Zombineta.Luz;
 
 namespace Zombineta.Scenery
 {
@@ -195,7 +196,7 @@ namespace Zombineta.Scenery
                     return null;
 
                 var go = Object.Instantiate(v.prefab, root);
-                Zombineta.Luz.ShadowQuality.Apply(go);
+                ShadowCasterQuality.Apply(go);
 
                 var sr = go.GetComponent<SpriteRenderer>();
                 if (sr != null)
@@ -203,6 +204,10 @@ namespace Zombineta.Scenery
                     sr.sortingOrder = cfg.sortingOrder;
                     sr.sortingLayerName = cfg.sortingLayer;
                     sr.color = cfg.tint;
+                    // Solo pisa el material del prefab si la capa tiene uno propio asignado
+                    // (Escenario.asset, campo "Material"); sin uno (caso normal: null en las ocho
+                    // capas menos Cielo, que ahora tampoco lo tiene), el tile usa el material Lit
+                    // que ya trae su prefab, para que reciba la luz de ambiente igual que el resto.
                     if (cfg.material != null)
                         sr.sharedMaterial = cfg.material;
                 }
