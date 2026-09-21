@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Zombineta.Juego.Levels;
@@ -21,7 +22,10 @@ namespace Zombineta.Juego.EditorTools.Luz
     ///
     /// Cada capa del escenario es una "fila": todas sus variantes side-by-side, en su propia
     /// franja de X (para que no se tapen entre capas que en el juego comparten altura), pero a
-    /// la altura Y real (baselineY) de esa capa. Regenerar pisa la escena entera (NewScene), asi
+    /// la altura Y real (baselineY) de esa capa. Las capas con SceneryLayer.enabled == false (que
+    /// SceneryManager no arma en el juego, ver SceneryManager.Rebuild) se muestran igual, pero en
+    /// un bloque aparte por debajo del de las activas, atenuadas y con el titulo marcado, para que
+    /// no se confundan con lo que se ve jugando. Regenerar pisa la escena entera (NewScene), asi
     /// que correrlo dos veces seguidas no duplica nada.
     /// </summary>
     public static class TallerBuilder
@@ -35,6 +39,15 @@ namespace Zombineta.Juego.EditorTools.Luz
 
         const float TileGap = 2f;
         const float RowGap = 6f;
+
+        /// <summary>Separacion vertical entre el bloque de capas activas y el de apagadas.</summary>
+        const float ShelfGap = 5f;
+
+        /// <summary>Alfa que llevan los tiles de una capa apagada en el juego, para no confundirlos
+        /// con lo que se ve jugando.</summary>
+        const float ApagadaAlfa = 0.5f;
+
+        const string SufijoApagada = " (apagada en el juego)";
 
         [MenuItem("Zombineta/Luz/Construir taller")]
         static void ConstruirDesdeMenu() => Build(true);
@@ -69,21 +82,49 @@ namespace Zombineta.Juego.EditorTools.Luz
 
             float cursor = 0f;
             int filasCreadas = 0;
+            int filasApagadasCreadas = 0;
             Bounds? primeraFila = null;
 
             if (tileset != null)
             {
-                foreach (var layer in tileset.layers)
-                {
-                    if (layer == null)
-                        continue;
+                // Solo las capas habilitadas son las que arma SceneryManager en el juego real
+                // (ver SceneryManager.Rebuild: "if (cfg != null && cfg.enabled)"). Las apagadas se
+                // muestran igual (arte puede querer tunearlas antes de prenderlas) pero en un
+                // bloque aparte, mas abajo, para que nadie las confunda con lo que se ve jugando.
+                var layers = tileset.layers.Where(l => l != null).ToList();
+                var activas = layers.Where(l => l.enabled).ToList();
+                var apagadas = layers.Where(l => !l.enabled).ToList();
 
-                    cursor = BuildSceneryRow(filas, layer, cursor, out Bounds? rowBounds);
+                float minActivaY = float.PositiveInfinity;
+
+                foreach (var layer in activas)
+                {
+                    cursor = BuildSceneryRow(filas, layer, cursor, true, 0f, out Bounds? rowBounds);
                     if (rowBounds.HasValue)
                     {
                         filasCreadas++;
                         if (primeraFila == null)
                             primeraFila = rowBounds;
+                        minActivaY = Mathf.Min(minActivaY, rowBounds.Value.min.y);
+                    }
+                }
+
+                if (apagadas.Count > 0)
+                {
+                    // Un solo corrimiento vertical para todo el bloque de apagadas: deja su punto
+                    // mas alto (estimado con baselineY + height, sin compensar pivot: alcanza para
+                    // separar con margen) a ShelfGap por debajo del punto mas bajo del bloque
+                    // activo, sin per de la altura relativa entre las capas apagadas entre si.
+                    float techoApagadas = apagadas.Max(l => l.baselineY + l.height);
+                    float pisoActivas = float.IsPositiveInfinity(minActivaY) ? 0f : minActivaY;
+                    float corrimiento = pisoActivas - ShelfGap - techoApagadas;
+
+                    float cursorApagadas = 0f;
+                    foreach (var layer in apagadas)
+                    {
+                        cursorApagadas = BuildSceneryRow(filas, layer, cursorApagadas, false, corrimiento, out Bounds? rowBounds);
+                        if (rowBounds.HasValue)
+                            filasApagadasCreadas++;
                     }
                 }
             }
@@ -107,15 +148,19 @@ namespace Zombineta.Juego.EditorTools.Luz
             EditorSceneManager.SaveScene(scene, ScenePath);
             RegisterSceneDisabled(ScenePath);
 
-            Debug.Log("TallerLuz: " + filasCreadas + " fila(s) de escenografia, fila de items " +
+            Debug.Log("TallerLuz: " + filasCreadas + " fila(s) de escenografia activa, " +
+                      filasApagadasCreadas + " fila(s) apagada(s) en el juego, fila de items " +
                       (filaItems.HasValue ? "creada" : "omitida") + ", moto de referencia " +
                       (scooter.HasValue ? "copiada" : "omitida") + ". Guardada en " + ScenePath + ".");
         }
 
         // --- Filas de escenografia --------------------------------------------------
 
-        /// <summary>Una fila con cada variante de una capa, side-by-side, a la altura real de esa capa.</summary>
-        static float BuildSceneryRow(Transform parent, SceneryLayer layer, float startX, out Bounds? bounds)
+        /// <summary>Una fila con cada variante de una capa, side-by-side, a la altura real de esa
+        /// capa (mas 'yShift', que solo usan las capas apagadas para caer en su propio bloque).
+        /// Una capa apagada en el juego (SceneryLayer.enabled == false, ver 'activa') se arma igual
+        /// pero atenuada, para que arte la vea sin confundirla con lo que se ve jugando.</summary>
+        static float BuildSceneryRow(Transform parent, SceneryLayer layer, float startX, bool activa, float yShift, out Bounds? bounds)
         {
             bounds = null;
 
@@ -127,7 +172,7 @@ namespace Zombineta.Juego.EditorTools.Luz
             if (variants.Count == 0)
                 return startX;
 
-            var rowRoot = new GameObject("Fila - " + layer.name).transform;
+            var rowRoot = new GameObject("Fila - " + layer.name + (activa ? string.Empty : " (apagada)")).transform;
             rowRoot.SetParent(parent, false);
 
             float cursor = startX;
@@ -153,7 +198,7 @@ namespace Zombineta.Juego.EditorTools.Luz
                 var inst = (GameObject)PrefabUtility.InstantiatePrefab(v.prefab, rowRoot);
                 inst.transform.localScale = new Vector3(scale, scale, 1f);
                 float x = cursor - b.min.x * scale;
-                float y = layer.baselineY + v.yOffset - b.min.y * scale;
+                float y = layer.baselineY + v.yOffset - b.min.y * scale + yShift;
                 inst.transform.localPosition = new Vector3(x, y, 0f);
 
                 var sr = inst.GetComponent<SpriteRenderer>();
@@ -161,7 +206,10 @@ namespace Zombineta.Juego.EditorTools.Luz
                 {
                     sr.sortingLayerName = layer.sortingLayer;
                     sr.sortingOrder = layer.sortingOrder;
-                    sr.color = layer.tint;
+                    var color = layer.tint;
+                    if (!activa)
+                        color.a *= ApagadaAlfa;
+                    sr.color = color;
                     if (layer.material != null)
                         sr.sharedMaterial = layer.material;
                 }
@@ -178,7 +226,8 @@ namespace Zombineta.Juego.EditorTools.Luz
 
             if (acc.HasValue)
             {
-                AddWorldLabel(rowRoot, "Titulo", layer.name, new Vector3(startX, acc.Value.max.y + 1.1f, 0f), 44);
+                string titulo = layer.name + (activa ? string.Empty : SufijoApagada);
+                AddWorldLabel(rowRoot, "Titulo", titulo, new Vector3(startX, acc.Value.max.y + 1.1f, 0f), 44);
                 bounds = acc;
                 return cursor + RowGap;
             }
@@ -306,8 +355,11 @@ namespace Zombineta.Juego.EditorTools.Luz
         /// Copia "Scooter" de NivelBase.unity (no es un prefab: vive armada a mano en esa
         /// escena), le saca los scripts de juego que necesitan un RunController (ScooterView,
         /// WheelDustView, HeadlightView) y apaga el rastro y el polvo, que son efectos de
-        /// movimiento sin sentido en una moto quieta. El faro (Light2D) queda como esta en
-        /// NivelBase: ya viene encendido (m_Enabled true, intensidad 1.6) en esa escena.
+        /// movimiento sin sentido en una moto quieta. El faro (Light2D) queda encendido con la
+        /// intensidad y el color que ya trae NivelBase; como se le saco HeadlightView (que es
+        /// quien fija targetSortingLayers en Awake, ver HeadlightView.cs), se lo dejamos en las
+        /// mismas dos capas que usa en el juego real (Calle y Juego) por codigo, con la API
+        /// publica de Light2D, no con SerializedObject (mismo motivo que HeadlightView.cs).
         /// </summary>
         static Bounds? BuildScooterCopy(Scene targetScene, Vector3 position)
         {
@@ -354,6 +406,18 @@ namespace Zombineta.Juego.EditorTools.Luz
                 Object.DestroyImmediate(c);
             foreach (var c in copy.GetComponentsInChildren<HeadlightView>(true))
                 Object.DestroyImmediate(c);
+
+            var headlight = copy.transform.Find("Headlight");
+            if (headlight != null)
+            {
+                var light2d = headlight.GetComponent<Light2D>();
+                if (light2d != null)
+                    light2d.targetSortingLayers = new[]
+                    {
+                        SortingLayer.NameToID("Calle"),
+                        SortingLayer.NameToID("Juego"),
+                    };
+            }
 
             var dust = copy.transform.Find("Dust");
             if (dust != null)

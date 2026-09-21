@@ -6,7 +6,8 @@
         "Zombineta.Simulacion",
         "Unity.InputSystem",
         "UnityEngine.UI",
-        "Unity.2D.Sprite.Editor"
+        "Unity.2D.Sprite.Editor",
+        "Unity.RenderPipelines.Universal.2D.Runtime"
     ],
     "includePlatforms": [
         "Editor"
