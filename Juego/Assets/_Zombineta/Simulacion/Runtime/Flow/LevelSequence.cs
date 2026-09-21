@@ -37,6 +37,12 @@ namespace Zombineta.Flow
 
         [Tooltip("Vinetas de la cinematica de entrada, en orden. El titulo es displayName.")]
         public List<ComicPanel> comicPanels = new List<ComicPanel>();
+
+        // Tipado como ScriptableObject: LevelInfo vive en Zombineta.Simulacion, que no ve
+        // Zombineta.Juego (donde esta AudioDeNivel). El juego lo castea. Aditivo, sin
+        // arrastrar dependencias nuevas a la simulacion.
+        [Tooltip("un AudioDeNivel")]
+        public ScriptableObject audio;
     }
 
     /// <summary>

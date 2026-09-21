@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Zombineta.Core;
 using Zombineta.Juego.Flow;
@@ -9,7 +10,10 @@ namespace Zombineta.Juego.Screens
     /// <summary>Capa de opciones. Escribe GameSettings apenas cambia algo: no hay "aplicar".</summary>
     public sealed class OptionsScreen : ScreenBase
     {
-        [SerializeField] Slider volume;
+        [FormerlySerializedAs("volume")]
+        [SerializeField] Slider volumeGeneral;
+        [SerializeField] Slider volumeMusica;
+        [SerializeField] Slider volumeEfectos;
         [SerializeField] Toggle fullscreen;
         [SerializeField] Toggle cameraEffects;
         [SerializeField] Toggle cameraShake;
@@ -20,7 +24,9 @@ namespace Zombineta.Juego.Screens
 
         void Awake()
         {
-            volume?.onValueChanged.AddListener(v => { GameSettings.Volume = v; GameRoot.Instance?.ApplySettings(); });
+            volumeGeneral?.onValueChanged.AddListener(v => { GameSettings.Volume = v; GameRoot.Instance?.ApplySettings(); });
+            volumeMusica?.onValueChanged.AddListener(v => { GameSettings.MusicVolume = v; GameRoot.Instance?.ApplySettings(); });
+            volumeEfectos?.onValueChanged.AddListener(v => { GameSettings.SfxVolume = v; GameRoot.Instance?.ApplySettings(); });
             fullscreen?.onValueChanged.AddListener(v => { GameSettings.Fullscreen = v; GameRoot.Instance?.ApplySettings(); });
             cameraEffects?.onValueChanged.AddListener(v => GameSettings.CameraEffects = v);
             cameraShake?.onValueChanged.AddListener(v => GameSettings.CameraShake = v);
@@ -32,7 +38,9 @@ namespace Zombineta.Juego.Screens
         void OnEnable()
         {
             cancelAction?.action.Enable();
-            volume?.SetValueWithoutNotify(GameSettings.Volume);
+            volumeGeneral?.SetValueWithoutNotify(GameSettings.Volume);
+            volumeMusica?.SetValueWithoutNotify(GameSettings.MusicVolume);
+            volumeEfectos?.SetValueWithoutNotify(GameSettings.SfxVolume);
             fullscreen?.SetIsOnWithoutNotify(GameSettings.Fullscreen);
             cameraEffects?.SetIsOnWithoutNotify(GameSettings.CameraEffects);
             cameraShake?.SetIsOnWithoutNotify(GameSettings.CameraShake);

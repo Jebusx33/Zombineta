@@ -58,6 +58,9 @@ namespace Zombineta.Core
         const string VolumeKey = "zombineta.volume";
         static float? volume;
 
+        /// <summary>Se dispara cuando cambia cualquiera de los tres volumenes (General, Musica, Efectos).</summary>
+        public static event System.Action AudioSettingsChanged;
+
         /// <summary>Volumen general, de 0 a 1.</summary>
         public static float Volume
         {
@@ -67,6 +70,39 @@ namespace Zombineta.Core
                 volume = Mathf.Clamp01(value);
                 PlayerPrefs.SetFloat(VolumeKey, volume.Value);
                 PlayerPrefs.Save();
+                AudioSettingsChanged?.Invoke();
+            }
+        }
+
+        const string MusicVolumeKey = "zombineta.musicVolume";
+        static float? musicVolume;
+
+        /// <summary>Volumen del bus Musica, de 0 a 1.</summary>
+        public static float MusicVolume
+        {
+            get => musicVolume ??= PlayerPrefs.GetFloat(MusicVolumeKey, 0.8f);
+            set
+            {
+                musicVolume = Mathf.Clamp01(value);
+                PlayerPrefs.SetFloat(MusicVolumeKey, musicVolume.Value);
+                PlayerPrefs.Save();
+                AudioSettingsChanged?.Invoke();
+            }
+        }
+
+        const string SfxVolumeKey = "zombineta.sfxVolume";
+        static float? sfxVolume;
+
+        /// <summary>Volumen del bus Efectos (Ambiente y UI cuelgan de el), de 0 a 1.</summary>
+        public static float SfxVolume
+        {
+            get => sfxVolume ??= PlayerPrefs.GetFloat(SfxVolumeKey, 0.8f);
+            set
+            {
+                sfxVolume = Mathf.Clamp01(value);
+                PlayerPrefs.SetFloat(SfxVolumeKey, sfxVolume.Value);
+                PlayerPrefs.Save();
+                AudioSettingsChanged?.Invoke();
             }
         }
 

@@ -102,9 +102,11 @@ namespace Zombineta.Juego.Flow
             Enqueue(planner.Go(GameScreen.MainMenu, null, false));
         }
 
+        // El volumen ya no pasa por AudioListener: los tres buses (General, Musica, Efectos)
+        // los aplica el AudioDirector (Task 4), que escucha GameSettings.AudioSettingsChanged.
         public void ApplySettings()
         {
-            AudioListener.volume = GameSettings.Volume;
+            AudioListener.volume = 1f;
             if (!Application.isEditor)
                 Screen.fullScreen = GameSettings.Fullscreen;
         }
