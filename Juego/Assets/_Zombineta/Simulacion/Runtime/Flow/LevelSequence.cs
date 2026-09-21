@@ -14,6 +14,10 @@ namespace Zombineta.Flow
         [Min(0.5f)]
         [Tooltip("Segundos en pantalla si nadie la pasa antes.")]
         public float seconds = 3f;
+
+        [Tooltip("Si esta prendido, la pagina anterior se va y esta vineta arranca una limpia. " +
+                 "Apagado, se suma encima de las que ya estan. La primera siempre abre pagina.")]
+        public bool nuevaPagina = true;
     }
 
     /// <summary>Un nivel de la campana: su recorrido y lo que cuenta la cinematica de entrada.</summary>
