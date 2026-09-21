@@ -104,6 +104,7 @@ namespace Zombineta.Enemies
             for (int i = 0; i < count; i++)
             {
                 bodies[i] = Instantiate(zombiePrefab, transform);
+                Zombineta.Luz.ShadowQuality.Apply(bodies[i].gameObject);
                 sprites[i] = bodies[i].GetComponentInChildren<SpriteRenderer>();
                 animators[i] = bodies[i].GetComponentInChildren<Animator>();
                 generations[i] = -1;

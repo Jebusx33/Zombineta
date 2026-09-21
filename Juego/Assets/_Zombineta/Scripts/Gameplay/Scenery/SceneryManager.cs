@@ -195,6 +195,7 @@ namespace Zombineta.Scenery
                     return null;
 
                 var go = Object.Instantiate(v.prefab, root);
+                Zombineta.Luz.ShadowQuality.Apply(go);
 
                 var sr = go.GetComponent<SpriteRenderer>();
                 if (sr != null)
