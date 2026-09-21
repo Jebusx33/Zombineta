@@ -60,7 +60,7 @@ namespace Zombineta.Luz
 
         void OnStepped(RunEvent events)
         {
-            if (run.Sim == null)
+            if (run.Sim == null || GameSettings.LightQuality == LightQuality.Baja)
                 return;
 
             var state = run.Sim.State;

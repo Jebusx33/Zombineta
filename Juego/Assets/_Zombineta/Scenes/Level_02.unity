@@ -24947,6 +24947,8 @@ GameObject:
   - component: {fileID: 1171654553}
   - component: {fileID: 1171654552}
   - component: {fileID: 1171654551}
+  - component: {fileID: 1171654555}
+  - component: {fileID: 1171654554}
   m_Layer: 0
   m_Name: Nivel
   m_TagString: Untagged
@@ -25155,6 +25157,33 @@ MonoBehaviour:
   run: {fileID: 1170739137}
   config: {fileID: 11400000, guid: ffe6813666fb98d4393c01454591f0ec, type: 2}
   capacity: 8
+--- !u!114 &1171654554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171654545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88c866b44bc68584c86b87c82c1e1a92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Luz.ShadowQuality
+--- !u!114 &1171654555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171654545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 390f8bd75f683d848827c6c9de02d970, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Luz.LightBudgetRunner
+  cam: {fileID: 0}
+  budgetAlta: 12
+  intervalSeconds: 0.2
 --- !u!1 &1177832482
 GameObject:
   m_ObjectHideFlags: 0

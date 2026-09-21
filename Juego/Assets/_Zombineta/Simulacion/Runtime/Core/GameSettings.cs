@@ -1,7 +1,16 @@
 using UnityEngine;
 
+// Alias solo para este archivo: GameSettings.LightQuality (la propiedad) y LightQuality (el enum)
+// comparten nombre a proposito (lo pide la spec de la tarea). Referenciar "LightQuality.Alta" a
+// secas adentro de la clase resolveria contra la propiedad, no el tipo (CS0119): con el alias
+// evitamos el choque sin tocar la API publica.
+using LQ = Zombineta.Core.LightQuality;
+
 namespace Zombineta.Core
 {
+    /// <summary>Calidad de iluminacion: Alta prende todo; Baja apaga lo caro para una maquina lenta.</summary>
+    public enum LightQuality { Alta, Baja }
+
     /// <summary>
     /// Preferencias de la jugadora que sobreviven entre sesiones (PlayerPrefs). Las lee
     /// quien las necesita; la pantalla de Opciones es la unica que las escribe.
@@ -87,6 +96,26 @@ namespace Zombineta.Core
                 vibration = value;
                 PlayerPrefs.SetInt(VibrationKey, value ? 1 : 0);
                 PlayerPrefs.Save();
+            }
+        }
+
+        const string LightQualityKey = "zombineta.lightQuality";
+        static LQ? lightQuality;
+
+        /// <summary>Avisa a los componentes vivos (runners de presupuesto, sombras) que la calidad cambio.</summary>
+        public static event System.Action<LQ> LightQualityChanged;
+
+        /// <summary>Alta prende ambiente, faro, destellos, sombras y luces de adorno hasta el tope.
+        /// Baja apaga sombras y destellos y no deja ninguna luz de adorno prendida.</summary>
+        public static LQ LightQuality
+        {
+            get => lightQuality ??= (LQ)PlayerPrefs.GetInt(LightQualityKey, (int)LQ.Alta);
+            set
+            {
+                lightQuality = value;
+                PlayerPrefs.SetInt(LightQualityKey, (int)value);
+                PlayerPrefs.Save();
+                LightQualityChanged?.Invoke(value);
             }
         }
     }
