@@ -60,7 +60,7 @@ namespace Zombineta.Juego.Screens
 
         IEnumerator PlayPanels(List<ComicPanel> panels)
         {
-            if (panel == null)
+            if (panels == null || panel == null)
                 yield break;
             panel.enabled = false;
 
