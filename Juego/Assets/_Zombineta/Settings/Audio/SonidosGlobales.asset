@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffbb75def13c6ab4289ed3759418ac3e, type: 3}
+  m_Name: SonidosGlobales
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.BancoDeSonidos
+  entradas:
+  - clave: 0
+    sonido: {fileID: 11400000, guid: ddbaa64509929ba42bbda686accbf0b7, type: 2}
+  - clave: 1
+    sonido: {fileID: 11400000, guid: 1233a77627904d04bb658ae722abc2dd, type: 2}
+  - clave: 2
+    sonido: {fileID: 11400000, guid: db5b14a98c9343f47986b7a6f8370071, type: 2}
+  - clave: 3
+    sonido: {fileID: 11400000, guid: 0126475dc031ad547adab54704623833, type: 2}
+  - clave: 4
+    sonido: {fileID: 11400000, guid: 824a574f189e6dc4fbff3598264463df, type: 2}
+  - clave: 5
+    sonido: {fileID: 11400000, guid: 56a2399aaf31c304eb854d34afc1c30c, type: 2}
+  - clave: 6
+    sonido: {fileID: 11400000, guid: efcffb99e1975c445a59ddea4abfe70b, type: 2}
+  - clave: 7
+    sonido: {fileID: 11400000, guid: c644b6d2ff513884988c186c49e53833, type: 2}
+  - clave: 8
+    sonido: {fileID: 11400000, guid: 2401a44aafcc0f047a24625548a5e8a7, type: 2}
+  - clave: 9
+    sonido: {fileID: 11400000, guid: f5f4513da9ca0274ab2e48e22b9d40cd, type: 2}
+  - clave: 10
+    sonido: {fileID: 11400000, guid: 2b3fae3ea3b14c04182c75626145519d, type: 2}
+  - clave: 11
+    sonido: {fileID: 11400000, guid: 23d30849d64f8f3428bc4bfda1a6e448, type: 2}
+  - clave: 12
+    sonido: {fileID: 11400000, guid: 6b15ff424f3440a4aa667ed0ddd507e1, type: 2}
+  - clave: 13
+    sonido: {fileID: 11400000, guid: e1df9c6d855b0a04c90bad0dd00c86e1, type: 2}
+  - clave: 14
+    sonido: {fileID: 11400000, guid: 08c6fb6f40cd9c3449ce9c2ae25571de, type: 2}
+  - clave: 15
+    sonido: {fileID: 11400000, guid: 9522b8d0685037e478cfda50462b21af, type: 2}
+  - clave: 16
+    sonido: {fileID: 11400000, guid: d4a631d4ae19acf4b851d85e44c0da84, type: 2}
+  - clave: 17
+    sonido: {fileID: 11400000, guid: 8a52db1270667554aab12e90aab51f45, type: 2}
+  - clave: 18
+    sonido: {fileID: 11400000, guid: 3e705da3b830a3b429d9d6c0219a6aec, type: 2}
+  - clave: 19
+    sonido: {fileID: 11400000, guid: 33b45c05228ae034fa8598a24078277c, type: 2}
+  - clave: 20
+    sonido: {fileID: 11400000, guid: a8377a736201ae44bb0dbe52e0d164ae, type: 2}
+  - clave: 21
+    sonido: {fileID: 11400000, guid: 9c9d19b6020d4e54e983777b8cf0916f, type: 2}
+  - clave: 22
+    sonido: {fileID: 11400000, guid: ac628bef0fd020f4884d2e07b2035a98, type: 2}

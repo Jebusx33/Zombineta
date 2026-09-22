@@ -45,6 +45,7 @@ MonoBehaviour:
     - image: {fileID: 21300000, guid: 69a344a03c8fbce499f6b083a5e82a8f, type: 3}
       seconds: 2.5
       nuevaPagina: 0
+    audio: {fileID: 11400000, guid: 2eeff290192671d4187c0bbee7feb538, type: 2}
   - displayName: 'Nivel 2: El puente'
     introLines: []
     route: {fileID: 0}
@@ -59,3 +60,4 @@ MonoBehaviour:
     - image: {fileID: 21300000, guid: 668993e93c073ff4d9c7db9aed4c68d3, type: 3}
       seconds: 2.5
       nuevaPagina: 1
+    audio: {fileID: 11400000, guid: b15a828131f9d6e4c9c32ef1cd743d09, type: 2}

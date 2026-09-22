@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2de9dda1e49a95345a40f97f5024135f, type: 3}
+  m_Name: Nivel02
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.AudioDeNivel
+  musica: {fileID: 8300000, guid: 420772009fdb05d419e24550f28d7364, type: 3}
+  tension: {fileID: 8300000, guid: f0fb9a826e6e0f24cba3ea7df2ec060d, type: 3}
+  ambiente: {fileID: 11400000, guid: da01a5e20cf8fb340b12aaeb6f79eeee, type: 2}
+  banco: {fileID: 11400000, guid: aff76a1dbb4b7264082f09111825d284, type: 2}

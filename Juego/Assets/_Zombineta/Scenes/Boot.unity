@@ -297,8 +297,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb48120ea800b9d46a1a136ea13b89ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.AudioDirector
-  global: {fileID: 0}
-  espacial: {fileID: 0}
+  global: {fileID: 11400000, guid: 8b28aa092e4b23c4a8e1c84def31ed45, type: 2}
+  espacial: {fileID: 11400000, guid: c639bc12fe5397d48ba2af7eb8e2eab9, type: 2}
 --- !u!4 &1116042137
 Transform:
   m_ObjectHideFlags: 0
@@ -326,7 +326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c7f9b7fc0345f3428a9af0062e50cd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.MusicDirector
-  musica: {fileID: 0}
+  musica: {fileID: 11400000, guid: 038dde38c010e0947a2d85778a55ed30, type: 2}
 --- !u!1 &1166025188
 GameObject:
   m_ObjectHideFlags: 0
