@@ -12,7 +12,9 @@ viñetas (bocetos, a reemplazar por el arte final; ver "Escenas del juego defini
 personaje, cinemática, dos niveles, victoria, game over, final), sobre un escenario de
 placeholders con parallax en varias capas e iluminación 2D real, una cámara que reacciona a la
 persecución y rampas con un salto que se regula inclinando en el aire, y una horda de zombies
-individuales con tipos y arte propio por arquetipo. 243 tests EditMode en verde.
+individuales con tipos y arte propio por arquetipo. Desde el 21/09 también suena: música por
+pantalla y por nivel con fundido cruzado, efectos posicionales, buses de volumen sin `AudioMixer`
+y una pantalla de Créditos nueva (ver sección 0, "Sonido"). 278 tests EditMode en verde.
 
 **Ojo:** con el balance vigente la meta **no se alcanza jugando** (ver sección 4). Para
 recorrer el flujo completo existen F2 (ganar) y F3 (perder), solo en editor y builds de
@@ -67,8 +69,8 @@ Diseño: `docs/superpowers/specs/2026-09-13-escenas-juego-design.md`.
 
 | Escena | Qué es |
 |---|---|
-| `Boot` | Nunca se descarga. `GameRoot` (flujo + director de escenas), `EventSystem` y el fundido |
-| `MainMenu`, `CharacterSelect`, `Cinematic`, `LevelComplete`, `GameOver`, `Ending` | Pantallas base: reemplazan a la anterior con fundido |
+| `Boot` | Nunca se descarga. `GameRoot` (flujo + director de escenas), `EventSystem`, el fundido y el `Audio` (`AudioDirector`/`MusicDirector`, ver sección 0 "Sonido") |
+| `MainMenu`, `CharacterSelect`, `Cinematic`, `LevelComplete`, `GameOver`, `Ending`, `Credits` | Pantallas base: reemplazan a la anterior con fundido |
 | `Level_01`, `Level_02` | Niveles jugables, armados sobre `Scenes/Templates/NivelBase` (ver "Niveles armados a mano"). F2 gana, F3 pierde (editor), Esc/Start pausa |
 | `Options`, `Pause` | Capas: se cargan encima sin descargar lo de abajo. Con la pausa encima el tiempo se congela |
 
@@ -103,6 +105,13 @@ Diseño: `docs/superpowers/specs/2026-09-13-escenas-juego-design.md`.
   agregar botones en la escena y enganchar su `OnClick`.
 - **Input:** la acción `Pause` (Esc, Start) está en el mapa `Player` de
   `Assets/Settings/InputSystem_Actions`. La cinemática usa `UI/Submit` y `UI/Cancel`.
+- **Pantalla de Créditos**, sumada el 21/09 (ver sección 0, "Sonido"): `GameScreen.Credits` se
+  agregó al final del enum para no romper lo serializado. Se entra desde el menú principal
+  (botón "Créditos", entre Opciones y Salir) o desde el Final al ganar (botón Continuar del
+  Ending). El texto (secciones con título y líneas) sale de `Settings/Creditos.asset` y sube solo
+  en la escena `Credits`; Submit acelera el rodado ×3 mientras se mantiene apretado, Cancel o el
+  botón Volver saltean directo al menú. Tiene su propio tema y su propio sonido aleatorio de
+  fondo (viento), igual que el Final.
 
 **Cómo agregar cosas:**
 - *Un nivel:* agregar una entrada en `Niveles.asset` con su `sceneName`, y correr
@@ -396,6 +405,47 @@ todavía ninguno hecho — es un `Secondary Texture` opcional del material lit, 
 ciclo día/noche; la secuencia de tramos por ambiente (sub-proyecto 6 de la tabla de arriba — el
 campo `grupo` de cada `SceneryVariant`/el taller ya lo dejan agrupado, pero no hay lógica que lo
 use todavía para variar el escenario por tramo).
+
+---
+
+### Sonido (`Juego/`)
+
+Diseño: `docs/superpowers/specs/2026-09-21-sonido-design.md`. Guía paso a paso para quien hace
+sonido, sin código: **`docs/Guia-de-sonido.md`**.
+
+**Arquitectura en diez líneas.** `AudioDirector` (en `Boot`, nunca se descarga) reproduce los
+efectos: resuelve una `SonidoClave` contra el banco del nivel (pisa al global), elige variante,
+volumen y tono al azar, panea si es posicional y respeta el cooldown, con un pool de 16
+`AudioSource`. `MusicDirector` (mismo objeto `Audio`) maneja un tema por pantalla
+(`MusicaDelJuego`) y, en el nivel, una tercera fuente de tensión que arranca sample-exacta con el
+tema (mismo `PlayScheduled`) y sigue la distancia a la horda. `FuenteConBus` es el único
+componente que escribe `AudioSource.volume`, cada cuadro, como `volumenPropio × espacial ×
+AudioDirector.Buses.Gain(bus)`. No hay `AudioMixer`: la mezcla son cuatro buses por código
+(`AudioBuses`, C# plano y testeado) — General, Música, Efectos y UI (UI y Ambiente cuelgan de
+Efectos) — con curva perceptual (`v²`) y un "ducking" de pausa que calla Efectos/Ambiente y deja
+la Música al 40 % en 0,2 s reales; UI no se toca. `SonidoDeNivel` (prefab suelto en la escena de
+cada nivel, nunca en `Nivel` — misma trampa que `HordeGlow`) registra el banco del nivel y avisa
+la amenaza de la horda cuadro a cuadro; `SfxDirector`, `MotorSonido`, `HordaSonido` y
+`AmbienteSonido` son sus cuatro hijos.
+
+**Dónde está cada cosa:**
+- Scripts: `Scripts/Audio/` (`Core/` y `Data/` son C# plano y testeado; el resto son
+  `MonoBehaviour`).
+- Editor: `Editor/Audio/PlaceholderAudioGenerator.cs` (menú `Zombineta > Audio > Generar
+  placeholders`, nunca pisa un archivo existente) y `AudioImportRules.cs` (aplica Streaming+Vorbis
+  a música/ambiente y DecompressOnLoad+ADPCM a efectos en la primera importación).
+- Assets de datos: `Settings/Audio/` (`Musica.asset`, `Espacial.asset`, `SonidosGlobales.asset`,
+  `Nivel01.asset`/`Nivel02.asset`, `BancoNivel02.asset`) y `Settings/Audio/Sonidos/` (un `Sonido`
+  por clave).
+- Audio (58 WAV placeholder, nombre y duración definitivos): `Audio/{Musica,Sfx,Ambiente}/`.
+
+**Por qué no hay `AudioMixer`:** Unity no deja crear uno por script con su API pública; la única
+forma es una API interna y frágil del editor, que además el MCP bloquea (misma familia de
+problema que la trampa #29 con `EditorWindow.Focus()`). Se resolvió con los cuatro buses por
+código de arriba en vez de sumar esa fragilidad — ver la trampa nueva #43.
+
+**Verificado:** ver sección 6, entrada 21/09 (sonido). **Pendiente:** que José lo juegue con
+auriculares y confirme que el paneo y los fundidos se sienten bien (sección 7).
 
 ---
 
@@ -1033,6 +1083,20 @@ Estas costaron tiempo real en esta sesión:
     GUID vía `AssetDatabase.RenameAsset`) y los llamadores (`LevelScene`, `SceneryManager`,
     `HordeView`) ya no necesitan calificar el nombre.
 
+43. **Nunca asignar `AudioSource.volume` directo: siempre pasa por `FuenteConBus`.** Todas las
+    fuentes del juego (el pool de `AudioDirector`, las tres del `MusicDirector`, el motor, la
+    horda, el ambiente) llevan un componente `FuenteConBus` que en `LateUpdate` calcula
+    `source.volume = volumenPropio × espacial × AudioDirector.Buses.Gain(bus)`. Si un script nuevo
+    escribe `AudioSource.volume` a mano, ese valor se pisa solo en el próximo cuadro (no rompe
+    nada visiblemente raro, pero el efecto no respeta los sliders de Opciones ni el ducking de la
+    pausa, y es muy difícil de notar a simple oído). Para verificarlo en cualquier momento: `grep`
+    de `\.volume\s*=` sobre `Scripts/Audio/` tiene que dar una sola coincidencia,
+    `FuenteConBus.cs`. Por qué no hay un `AudioMixer` de Unity en su lugar: no se puede crear uno
+    por script con la API pública (solo con una API interna y frágil del editor, que además el
+    MCP bloquea, misma familia de problema que la trampa #29) — por eso la mezcla se resolvió con
+    estos cuatro buses por código (`AudioBuses`, C# plano, testeado) en vez de sumar esa
+    fragilidad.
+
 ---
 
 ## 6. Qué está verificado y qué no
@@ -1094,6 +1158,27 @@ Estas costaron tiempo real en esta sesión:
   `[position_references].png` a pantalla completa; el nivel 2 sigue con una viñeta por vez.
   Enter (siguiente) y Esc (saltear) los probó José a mano: el sandbox del MCP no deja simular
   teclas.
+- Sonido (21/09): 278 tests EditMode en verde (buses y curva de volumen, elección de variante sin
+  repetir, `SonidoEspacial`, la regla de transición de música, el tono del motor, la resolución
+  del banco y el flujo de Créditos). Por MCP, entrando por el menú principal en `Boot`: el tema
+  suena en cada pantalla (menú, personaje —con tema propio desde esta tarea, cruza sin cortarse—,
+  cinemática, Nivel 1, Nivel 2, Nivel completo, Game Over, Final, Créditos); tema y tensión del
+  nivel arrancan sample-exactas (0 muestras de diferencia) y la tensión sube de 0,035 a 0,906 al
+  forzar la horda a 6 m; un disparo real (`Tick` con `Fire=true`) suena sin paneo (no es
+  posicional) con el pitch dentro de rango, y una explosión forzada a ±8 m panea ±0,667 exacto
+  (`8/12`, la fórmula de `SonidoEspacial`); en la pausa el bus Efectos cae a 0 y la música queda
+  exactamente al 40 % (ratio 0,400); los tres sliders cambian sus buses y se restauran solos;
+  Créditos se abre desde el menú y, ganando los dos niveles, desde el Final; los sonidos de UI
+  (mover con `EventSystem.SetSelectedGameObject`, confirmar con la misma llamada que hace
+  `UiSonidos` en Submit) suenan por el bus correcto. Consola sin errores. **Un desvío de
+  metodología, no del juego:** la primera pasada de esta verificación disparó las transiciones de
+  pantalla más rápido de lo que `GameRoot` podía cargarlas (sin esperar `GameRoot.Busy == false`
+  entre una y otra) y eso sí generó un error real de consola (`No se pudo cargar la escena
+  'CharacterSelect'`); repetida respetando `Busy`, cero errores.
+- **Enter con teclado real** sigue sin probarse por MCP (confirmado de nuevo en esta tarea): un
+  teclado virtual del Input System no llega a tiempo de forma confiable a este sandbox. El sonido
+  de "confirmar" se verificó con la misma llamada de audio que dispara `UiSonidos` en producción,
+  no con una tecla real.
 
 **NO verificado — pendiente de que alguien lo juegue:**
 - **La guía de arte.** Nadie de arte la siguió todavía: se escribió y se verificaron los datos
@@ -1128,6 +1213,12 @@ Estas costaron tiempo real en esta sesión:
   manos: si las siluetas del primer plano tapan un carril un instante, si el aire para saltar
   alcanza con el ancla del piso puesto, y si se sigue leyendo bien el carril de cada cosa con
   personajes al doble de alto.
+- **El sonido final, con auriculares.** Todo lo de la sección de arriba se verificó leyendo el
+  estado de las fuentes (clip, volumen, `panStereo`, `isPlaying`) desde MCP, nunca escuchando de
+  verdad. Falta que José lo juegue con auriculares y confirme que el paneo de los efectos
+  posicionales (choque, atropello, explosión, horda) se siente del lado correcto, que los
+  fundidos cruzados de música no se notan bruscos, y que los placeholders sintetizados no cansan
+  antes de que el equipo tenga tiempo de reemplazarlos por audio real.
 
 ---
 
@@ -1174,6 +1265,16 @@ horda que se llevaba los items del recorrido fuera de pantalla, y se hizo el ope
 Jesús, Juana y Seba quedaron al día. **Pendiente de arte:** las viñetas finales del opening
 (misma medida y posición que los bocetos, ver la regla en "Escenas del juego definitivo") y
 subir la intensidad de la capa `Juego` en `Noche.asset` si los items se ven muy oscuros.
+
+**21/09, sonido:** sub-proyecto de sonido hecho (ver "Sonido" en la sección 0): buses de volumen
+sin `AudioMixer`, música por pantalla y por nivel con fundido cruzado y capa de tensión
+sincronizada, efectos de partida/UI/ambiente con variantes y paneo posicional, 58 placeholders
+generados por código con nombre y duración definitivos, y la pantalla de Créditos (desde el menú
+o desde el Final). Guía para sonido aparte (`docs/Guia-de-sonido.md`). 278 tests EditMode en
+verde; verificación completa por MCP entrando por el menú (ver sección 6, entrada 21/09 de
+sonido), consola sin errores. **Pendiente:** que José lo juegue con auriculares (sección 7) y
+reemplazar los placeholders por audio definitivo pisando los archivos de `Audio/` (la guía explica
+cómo).
 
 Lo último que se hizo fueron las rampas y el salto (T12). Lo que el usuario ya anunció como
 próximo paso son **las animaciones de spritesheet de la protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
