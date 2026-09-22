@@ -53,6 +53,13 @@ namespace Zombineta.Audio
         /// <summary>Debug/Play: las 16 fuentes del pool (esten o no sonando en este instante).</summary>
         public AudioSource[] ActiveSources => sources;
 
+        /// <summary>Debug/Play: asigna el banco global en tiempo de ejecucion (Boot lo deja vacio hasta la Task 7).</summary>
+        public BancoDeSonidos DebugGlobal
+        {
+            get => global;
+            set => global = value;
+        }
+
         readonly AudioBuses buses = new AudioBuses();
         readonly Dictionary<Sonido, float> ultimoUso = new Dictionary<Sonido, float>();
         readonly Dictionary<Sonido, VariantPicker> pickers = new Dictionary<Sonido, VariantPicker>();
@@ -136,6 +143,12 @@ namespace Zombineta.Audio
 
         public void Play(SonidoClave clave, float? worldX = null) =>
             Play(BancoDeSonidos.Resolver(BancoNivel, global, clave), worldX);
+
+        /// <summary>
+        /// Resuelve una clave contra el banco de nivel y el global, sin reproducirla: la usan los
+        /// loops propios (Motor, Horda), que Play() rechaza por ser loops.
+        /// </summary>
+        public Sonido Resolver(SonidoClave clave) => BancoDeSonidos.Resolver(BancoNivel, global, clave);
 
         public void Play(Sonido sonido, float? worldX = null)
         {
