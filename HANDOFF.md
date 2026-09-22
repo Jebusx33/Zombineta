@@ -421,12 +421,14 @@ volumen y tono al azar, panea si es posicional y respeta el cooldown, con un poo
 tema (mismo `PlayScheduled`) y sigue la distancia a la horda. `FuenteConBus` es el único
 componente que escribe `AudioSource.volume`, cada cuadro, como `volumenPropio × espacial ×
 AudioDirector.Buses.Gain(bus)`. No hay `AudioMixer`: la mezcla son cuatro buses por código
-(`AudioBuses`, C# plano y testeado) — General, Música, Efectos y UI (UI y Ambiente cuelgan de
+(`AudioBuses`, C# plano y testeado) — Música, Efectos, Ambiente y UI (Ambiente y UI cuelgan de
 Efectos) — con curva perceptual (`v²`) y un "ducking" de pausa que calla Efectos/Ambiente y deja
-la Música al 40 % en 0,2 s reales; UI no se toca. `SonidoDeNivel` (prefab suelto en la escena de
-cada nivel, nunca en `Nivel` — misma trampa que `HordeGlow`) registra el banco del nivel y avisa
-la amenaza de la horda cuadro a cuadro; `SfxDirector`, `MotorSonido`, `HordaSonido` y
-`AmbienteSonido` son sus cuatro hijos.
+la Música al 40 % en 0,2 s reales; UI no se toca. `General` no es un bus mas: es una ganancia
+aparte que se multiplica arriba de los cuatro. El prefab del sonido de nivel es
+`Art/Audio/SonidoDelNivel.prefab` (raíz `SonidoDeNivel`, suelto en la escena de cada nivel, nunca
+en `Nivel` — misma trampa que `HordeGlow`), que registra el banco del nivel y avisa la amenaza de
+la horda cuadro a cuadro; `SfxDirector`, `MotorSonido`, `HordaSonido` y `AmbienteSonido` son sus
+cuatro hijos.
 
 **Dónde está cada cosa:**
 - Scripts: `Scripts/Audio/` (`Core/` y `Data/` son C# plano y testeado; el resto son
@@ -1193,6 +1195,13 @@ Estas costaron tiempo real en esta sesión:
   verificarlo jugando a mano.
 - **El teclado en los menús.** El flujo se manejó por su API; nunca se apretó una tecla real.
   Es lo primero a probar: W/S, ENTER, ESC, A/D en Opciones.
+- **Enter en Créditos y los sonidos de confirmar/volver, con teclado o joystick real.** La
+  revisión final del 22/09 corrigió `ZombieAdelante`, dejó Créditos sin selección inicial,
+  agregó `UiSonidos.sonarAlCancelar` y le puso `[DefaultExecutionOrder(-500)]` para que no
+  dependa del orden de scripts — pero todo se verificó por MCP (`AudioDirector.Play` directo o
+  `EventSystem.SetSelectedGameObject`), nunca apretando una tecla real. Falta que José confirme
+  con teclado o joystick que mantener Enter acelera los créditos ×3, que Esc vuelve al menú, y
+  que Confirmar/Volver suenan (o no, según la pantalla) al apretar Enter/Esc de verdad.
 - Si la capa frontal molesta al jugar: árboles y farolas pasan en silueta por delante de los
   carriles y pueden tapar un obstáculo o la moto un instante, **más con el plano cerrado**
   (cuando la horda está encima). Se ajusta en la capa "Frontal" de `Escenario.asset` (tinte,
@@ -1354,6 +1363,24 @@ Los paneles son objetos de escena bajo el Canvas, a propósito: arte puede poner
 (`Arte/Referencias/sketch_menu_color.png`) de fondo en `MainMenuPanel` desde el editor. Los
 textos de las cinemáticas se editan en `Niveles.asset`. Agregar un nivel es agregar una
 entrada ahí.
+
+### Sonido (seguimiento, revisión final del 22/09)
+- `SfxDirector.OnRestarted` sigue sin un Play check propio (se agregó `MotorSonido.OnRestarted`
+  en esta revisión, pero no se verificó en Play un reintento completo con `SfxDirector`).
+- En `AudioDirector.ElegirSlot`, la rama `if (sources[i].loop) continue;` es código muerto: nada
+  del pool pasa nunca `loop = true` (Motor/Horda tienen su propio `AudioSource`, fuera del pool),
+  así que esa condición nunca se cumple.
+- Los valores por defecto del `AudioSource` en el prefab `SonidoDelNivel.prefab` no coinciden con
+  los que pone `Awake` en código (loop/spatialBlend/playOnAwake): funciona porque el código los
+  pisa siempre al arrancar, pero si alguien mira el prefab en el Inspector antes de que corra
+  puede confundirse.
+- La música y el ambiente se cortan en seco al descargar la escena del nivel, en vez de fundir
+  junto con el tema saliente (el spec solo pide el fundido de salida para la tensión).
+- F3 (perder en el editor) no dispara `RunEvent.Lost`, así que `MotorSonido` no llega a fundir el
+  motor por ese camino: el fundido de 0,3 s solo se ve perdiendo de verdad en la partida.
+- Un fundido cruzado de música interrumpido a la mitad (cambiar de pantalla dos veces rápido)
+  puede saltar de volumen y hacer clic, porque la corutina nueva no parte del volumen actual de
+  la que estaba fundiendo.
 
 ### Fase 3 — Contenido y balance (T17, T23)
 La ruta ya existe y es superable, pero está generada por algoritmo. Falta pasarle la mano:

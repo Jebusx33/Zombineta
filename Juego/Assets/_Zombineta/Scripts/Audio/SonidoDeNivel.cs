@@ -10,8 +10,11 @@ namespace Zombineta.Audio
     /// horda a MusicDirector cada cuadro. Vive suelto en la escena (nunca en "Nivel": ver la
     /// trampa de HordeGlow en HordeGlowSceneTests, que HordeGlow arrastraba todo el recorrido).
     /// Busca su RunController si no esta cableado: el prefab no puede guardar una referencia
-    /// de escena.
+    /// de escena. Orden de ejecucion -50 (por debajo de 0, por encima de AudioDirector/-900 y
+    /// GameRoot/-1000): asi BancoNivel queda puesto antes de que MotorSonido/HordaSonido/
+    /// AmbienteSonido (orden por defecto, 0) resuelvan sus clips en su propio OnEnable.
     /// </summary>
+    [DefaultExecutionOrder(-50)]
     public sealed class SonidoDeNivel : MonoBehaviour
     {
         [Tooltip("La misma distancia que usa el HUD y HordeGlow para la amenaza de la horda.")]

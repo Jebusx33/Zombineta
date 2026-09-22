@@ -13,9 +13,11 @@ namespace Zombineta.Audio
     /// flujo que usan los efectos visuales (FxManager) y la vibracion (GamepadRumble); para
     /// Atropello y ExplosionBarril lee run.Sim.Horde.Events del mismo Epoch, tambien como
     /// FxManager; para ZombieAdelante recorre run.Level.Items buscando un ZombieFront que haya
-    /// entrado en rango por delante de la moto; y escucha GameRoot.Flow.Changed para Victoria y
-    /// Derrota (Won/Lost no disparan sonido por si solos). Vive en el prefab SonidoDeNivel, como
-    /// hijo suyo. Busca su RunController si no esta cableado.
+    /// entrado dentro de distanciaAvisoZombie (12 m por defecto) por delante de la moto: cerca a
+    /// proposito, porque a distanciaMaxima (30 m) la atenuacion espacial ya dio 0 y no se
+    /// escuchaba; y escucha GameRoot.Flow.Changed para Victoria y Derrota (Won/Lost no disparan
+    /// sonido por si solos). Vive en el prefab SonidoDeNivel, como hijo suyo. Busca su
+    /// RunController si no esta cableado.
     /// </summary>
     [DefaultExecutionOrder(15)]
     public sealed class SfxDirector : MonoBehaviour
@@ -23,6 +25,11 @@ namespace Zombineta.Audio
         const float EpsilonRecurso = 0.0001f;
 
         [SerializeField] RunController run;
+
+        [Tooltip("Distancia (m) por delante de la moto a la que suena ZombieAdelante: cerca, para " +
+                 "que la atenuacion espacial no lo deje en silencio (a distanciaMaxima el volumen " +
+                 "da 0).")]
+        [SerializeField] float distanciaAvisoZombie = 12f;
 
         readonly HashSet<LevelRuntime.Item> zombieAdelanteSonado = new HashSet<LevelRuntime.Item>();
 
@@ -131,7 +138,6 @@ namespace Zombineta.Audio
                 return;
 
             float playerX = run.Sim.State.PlayerX;
-            float distanciaMaxima = audio.Espacial.distanciaMaxima;
             var items = run.Level.Items;
             for (int i = 0; i < items.Length; i++)
             {
@@ -139,16 +145,24 @@ namespace Zombineta.Audio
                 if (item.Entry.kind != LevelEntryKind.ZombieFront)
                     continue;
                 if (zombieAdelanteSonado.Contains(item))
-                    continue;
+                    continue; // ya sonado: no lo vuelve a evaluar cuadro a cuadro.
 
                 float dx = item.Entry.distance - playerX;
-                if (dx <= 0f || dx > distanciaMaxima)
+                if (!EnRangoDeAviso(dx, distanciaAvisoZombie))
                     continue;
 
                 zombieAdelanteSonado.Add(item);
                 audio.Play(SonidoClave.ZombieAdelante, run.ToWorldX(item.Entry.distance));
             }
         }
+
+        /// <summary>
+        /// Regla pura de disparo de ZombieAdelante: adelante de la moto (dx > 0) y dentro del
+        /// aviso (dx <= aviso). A distanciaAvisoZombie = 12 m la atenuacion espacial da ~0,69
+        /// (con distanciaPlena=4/distanciaMaxima=30 por defecto), asi que se escucha; a
+        /// distanciaMaxima (30 m, el umbral viejo) el volumen ya dio 0.
+        /// </summary>
+        public static bool EnRangoDeAviso(float dx, float aviso) => dx > 0f && dx <= aviso;
 
         void EscanearEventosDeHorda()
         {

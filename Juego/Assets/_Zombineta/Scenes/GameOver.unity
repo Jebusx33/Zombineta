@@ -424,6 +424,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.UiSonidos
   submitAction: {fileID: 392368643174621059, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   cancelAction: {fileID: 7727032971491509709, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  sonarAlCancelar: 0
 --- !u!1 &640582562
 GameObject:
   m_ObjectHideFlags: 0

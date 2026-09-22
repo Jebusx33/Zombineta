@@ -131,6 +131,17 @@ namespace Zombineta.Juego.Tests
             Assert.AreEqual(MusicaAccion.Cruzar, MusicaRegla.Decidir(null, new object()));
         }
 
+        // --- Zombie adelante ---
+        [Test] public void ZombieAdelanteSuenaSoloDentroDelAviso()
+        {
+            Assert.IsTrue(SfxDirector.EnRangoDeAviso(1f, 12f));
+            Assert.IsTrue(SfxDirector.EnRangoDeAviso(12f, 12f)); // borde inclusive
+            Assert.IsFalse(SfxDirector.EnRangoDeAviso(12.01f, 12f)); // justo afuera
+            Assert.IsFalse(SfxDirector.EnRangoDeAviso(0f, 12f)); // encima de la moto, no adelante
+            Assert.IsFalse(SfxDirector.EnRangoDeAviso(-1f, 12f)); // atras de la moto
+            Assert.IsFalse(SfxDirector.EnRangoDeAviso(20f, 12f)); // el rango viejo (30 m) ya no alcanza
+        }
+
         // --- Motor ---
         [Test] public void TonoDelMotor()
         {

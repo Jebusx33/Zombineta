@@ -8,7 +8,9 @@ namespace Zombineta.Audio
     /// Loop del motor de la moto, por el bus Efectos. El tono persigue a MotorTono.Objetivo con
     /// un suavizado de 0,15 s; sin nafta el volumen cae a 0 en 1 s; al perder se apaga con un
     /// fundido de 0,3 s y se detiene. Arranca al activarse (la escena del nivel se carga al
-    /// entrar a Playing). Hijo del prefab SonidoDeNivel.
+    /// entrar a Playing). Tambien escucha RunController.Restarted (reintento o nivel nuevo, sin
+    /// recargar la escena) para deshacer el apagado de Lost: si no, un reintento despues de
+    /// perder dejaria el motor mudo para siempre. Hijo del prefab SonidoDeNivel.
     /// </summary>
     [RequireComponent(typeof(AudioSource))]
     [RequireComponent(typeof(FuenteConBus))]
@@ -42,8 +44,33 @@ namespace Zombineta.Audio
         void OnEnable()
         {
             if (run != null)
+            {
                 run.Stepped += OnStepped;
+                run.Restarted += OnRestarted;
+            }
 
+            ReiniciarMotor();
+        }
+
+        void OnDisable()
+        {
+            if (run != null)
+            {
+                run.Stepped -= OnStepped;
+                run.Restarted -= OnRestarted;
+            }
+            StopAllCoroutines();
+            apagandoAlPerder = false;
+        }
+
+        /// <summary>
+        /// Deshace el apagado de Lost y vuelve a arrancar el loop: lo usan tanto OnEnable como
+        /// Restarted (reintento o nivel nuevo sin recargar la escena, asi que OnEnable no vuelve
+        /// a correr).
+        /// </summary>
+        void ReiniciarMotor()
+        {
+            StopAllCoroutines();
             ResolverClip();
             apagandoAlPerder = false;
             fuente.volumenPropio = 1f;
@@ -51,13 +78,7 @@ namespace Zombineta.Audio
                 source.Play();
         }
 
-        void OnDisable()
-        {
-            if (run != null)
-                run.Stepped -= OnStepped;
-            StopAllCoroutines();
-            apagandoAlPerder = false;
-        }
+        void OnRestarted() => ReiniciarMotor();
 
         void ResolverClip()
         {

@@ -8,14 +8,23 @@ namespace Zombineta.Audio
     /// <summary>
     /// En cada pantalla con menu: UiMover cuando cambia la seleccion del EventSystem (pero no en
     /// el primer frame en que se selecciona sola, sin que nadie haya movido nada), UiConfirmar en
-    /// Submit y UiVolver en Cancel. Suena por el bus UI, que la pausa no silencia. Solo actua
-    /// mientras esta escena es la de arriba, y no repite el sonido de la pantalla anterior en el
-    /// mismo frame del cambio.
+    /// Submit y UiVolver en Cancel (solo si sonarAlCancelar, para pantallas sin accion de
+    /// volver). Suena por el bus UI, que la pausa no silencia. Solo actua mientras esta escena es
+    /// la de arriba, y no repite el sonido de la pantalla anterior en el mismo frame del cambio.
+    /// Orden de ejecucion -500: tiene que leer TopScene/LastChangeFrame y el estado de
+    /// submit/cancel antes de que el click de este mismo frame cambie de pantalla (EventSystem y
+    /// las pantallas corren en el orden por defecto, 0); si UiSonidos corriera despues, un click
+    /// que cambia de pantalla ya habria movido LastChangeFrame/TopScene y el sonido se perderia.
     /// </summary>
+    [DefaultExecutionOrder(-500)]
     public sealed class UiSonidos : MonoBehaviour
     {
         [SerializeField] InputActionReference submitAction;
         [SerializeField] InputActionReference cancelAction;
+
+        [Tooltip("Si esta pantalla no tiene accion de volver (Cancel no hace nada), dejar en false " +
+                 "para que UiVolver no suene sin motivo. Por defecto true.")]
+        [SerializeField] bool sonarAlCancelar = true;
 
         GameObject ultimaSeleccion;
 
@@ -39,7 +48,7 @@ namespace Zombineta.Audio
 
             if (submitAction != null && submitAction.action.WasPressedThisFrame())
                 AudioDirector.Instance?.Play(SonidoClave.UiConfirmar);
-            if (cancelAction != null && cancelAction.action.WasPressedThisFrame())
+            if (sonarAlCancelar && cancelAction != null && cancelAction.action.WasPressedThisFrame())
                 AudioDirector.Instance?.Play(SonidoClave.UiVolver);
         }
 

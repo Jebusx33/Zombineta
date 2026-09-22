@@ -20,7 +20,7 @@ programación antes de seguir.
 - Para escuchar algo hace falta darle Play. Podés arrancar desde cualquier escena de pantalla
   (`MainMenu`, `Level_01`, `GameOver`, etc.): `Boot` se carga sola al lado y el flujo arranca en
   esa pantalla. No hace falta recorrer el juego entero para probar un sonido de una pantalla
-  puntual — ver la tabla de la sección 7.
+  puntual — ver la tabla de la sección 10.
 
 ---
 
@@ -28,9 +28,11 @@ programación antes de seguir.
 
 - No hay un `AudioMixer` de Unity: no se puede crear uno por código, y la herramienta que sí
   podría (una API interna del editor) es frágil y además el MCP la bloquea. En su lugar hay
-  **cuatro "canillas" de volumen manejadas por código** (los buses): **General**, **Música**,
-  **Efectos** y **UI** (UI cuelga de Efectos, pero no se le va la mano en la pausa — ver más
-  abajo). Los tres sliders de Opciones son General, Música y Efectos.
+  **cuatro "canillas" de volumen manejadas por código** (los buses): **Música**, **Efectos**,
+  **Ambiente** y **UI** (Ambiente y UI cuelgan de Efectos, pero UI no se le va la mano en la
+  pausa — ver más abajo). **General** no es un bus más: es una ganancia aparte que se multiplica
+  arriba de los cuatro buses, así que un cambio en General afecta a todo por igual. Los tres
+  sliders de Opciones son General, Música y Efectos.
 - **`AudioDirector`** (vive en `Boot`, nunca se descarga) es quien reproduce los efectos: recibe
   una clave (por ejemplo "Disparo"), elige una variante al azar, un volumen y un tono dentro del
   rango que vos definiste, y lo reproduce. Nunca lo llamás vos a mano: lo dispara el código del
@@ -66,7 +68,7 @@ programación antes de seguir.
 
 Todo lo de abajo es lo que hay hoy en disco (58 archivos), con su duración real, si hace loop, sus
 variantes y qué lo dispara en el juego. Las duraciones son las definitivas: el archivo final tiene
-que medir lo mismo (ver la sección 6, por qué importa sobre todo en tema/tensión).
+que medir lo mismo (ver la sección 7, por qué importa sobre todo en tema/tensión).
 
 ### Música (todas en loop, 16 s)
 
@@ -126,7 +128,7 @@ redondeo de la compresión ADPCM al importar — la diferencia es de a lo sumo ~
 | (aleatorio de pantalla) Ending y Créditos | `sfx_screen_wind_01` (1,501 s) | — | Cada tanto (6 a 14 s), viento en el Final y en Créditos |
 
 Todos los efectos son mono, 44,1 kHz. Los "posicional" son los que se escuchan más de un lado
-según dónde pasa (ver sección 7 para probarlo).
+según dónde pasa (ver sección 10 para probarlo).
 
 ---
 
@@ -267,7 +269,8 @@ escena que te interesa (`Boot` carga sola al lado):
 | Tema y viento de Créditos | `Credits` | Nada (se llega desde el menú con el botón "Créditos", o desde el Final) |
 | Efectos de menú (mover, confirmar, volver) | cualquier pantalla con menú | Navegar con W/S o el stick, confirmar con Enter, volver con Esc |
 | Pausa silenciando efectos | cualquier nivel | Esc — los efectos y el ambiente se callan, la música baja pero sigue sonando de fondo |
-| Los tres sliders de volumen | `Options` | Mover "General", "Musica" y "Efectos" y confirmar que cada uno afecta lo suyo |
+| Los tres sliders de volumen | `MainMenu`, abrir Opciones desde el botón del menú (no le des Play directo a `Options.unity`) | Mover "General", "Musica" y "Efectos" y confirmar que cada uno afecta lo suyo |
+| Créditos: acelerar y volver | `Credits` | Enter (Submit) acelera el texto ×3 mientras se mantiene apretado; Esc (Cancel) vuelve al menú al toque |
 
 ---
 
