@@ -524,12 +524,22 @@ efectos de cámara y sacudidas) y un segundo nivel (`Ruta02`, generado igual que
   de abajo y edificios y cielo arriba. Al hacer zoom se mueve el borde de arriba, nunca la
   calle.
 
-### MCP de Unity
+### Manejar Unity desde un agente: la Unity CLI (desde el 24/09)
 
-Viene nativo con `com.unity.ai.assistant` (ya instalado). El relay está en
-`C:\Users\kabub\.unity\relay\relay_win.exe` y la config vive en el `.mcp.json` de la carpeta
-padre (`Taller de proyecto integral/`). Con Unity abierto: *Edit > Project Settings > AI >
-Unity MCP*, Bridge en **Running**, y las 54 tools habilitadas.
+El editor abierto se maneja con la **Unity CLI** (`unity`, 1.0.0-beta.5) a través del paquete
+`com.unity.pipeline`, que ya está en `Juego/Packages/manifest.json`. Qué hace falta en cada máquina:
+
+- Instalar la CLI (canal beta, ver la skill oficial `unity-cli`: `unity skill install claude-code`).
+- Instalar la skill de flujo de trabajo `driving-unity-editor`: la carpeta va en
+  `~/.claude/skills/`. Trae `scripts/u.py`, que compila, corre tests, entra y sale de Play,
+  evalúa C#, captura y lee la consola, con una línea de salida por acción.
+- Con Unity abierto, `unity status` tiene que mostrar el proyecto en `ready`.
+
+**El MCP de antes quedó retirado:** Unity deprecó el de `com.unity.ai.assistant`. El 24/09 se
+quitó ese paquete de `Juego/` y se borró el `.mcp.json` de `Taller de proyecto integral/`.
+`Prototipo/` lo conserva porque está congelado. Las trampas de la sección 5 que mencionan
+`Unity_RunCommand` o `Unity_ReadConsole` son de esa época; los problemas de Unity de fondo
+(tiempo real entre comandos, fake null al abrir escenas, orden de ejecución) siguen valiendo.
 
 ---
 
