@@ -25,6 +25,10 @@ namespace Zombineta.Juego.Levels
         [Tooltip("Color de la moto por personaje, en el orden de la pantalla de seleccion.")]
         [SerializeField] Color[] characterColors = { Color.white, new Color(0.75f, 0.9f, 1f) };
 
+        [Tooltip("En el tutorial, la victoria espera al menos esto para que el cartel final " +
+                 "('Listo! Ya sabes jugar') se llegue a leer, aunque el plano de camara sea mas corto.")]
+        [SerializeField] float tutorialVictoryMinHold = 2f;
+
         float finaleLeft;
         bool finaleWon;
         bool finished;
@@ -88,7 +92,12 @@ namespace Zombineta.Juego.Levels
             }
 #endif
 
-            if (state.Phase == RunPhase.Won || state.Phase == RunPhase.Lost)
+            // En el tutorial, un Lost es la horda alcanzando en el paso final: lo perdona y lo
+            // deshace el TutorialDirector (tarea 4) en su LateUpdate de este mismo cuadro, asi que
+            // aca no tiene que arrancar el plano de "atrapada" (si lo hiciera, quedaria pegado
+            // esperando un final que nunca llega, porque el director ya lo devolvio a Running).
+            bool loSuelta = state.Phase == RunPhase.Lost && !(flow != null && flow.EnTutorial);
+            if (state.Phase == RunPhase.Won || loSuelta)
             {
                 BeginFinale(state.Phase == RunPhase.Won);
                 return;
@@ -106,6 +115,13 @@ namespace Zombineta.Juego.Levels
             float hold = 0f;
             if (cameraRig != null)
                 hold = won ? cameraRig.PlayVictory() : cameraRig.PlayCatch();
+
+            // En el tutorial, ganar tiene que dar tiempo a leer el cartel final del director
+            // (tarea 4): si el plano de victoria es mas corto que eso, se estira el final.
+            var flow = GameRoot.Flow;
+            if (won && flow != null && flow.EnTutorial)
+                hold = Mathf.Max(hold, tutorialVictoryMinHold);
+
             if (hold <= 0f)
                 Finish();
             else

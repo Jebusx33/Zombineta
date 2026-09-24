@@ -229,6 +229,13 @@ namespace Zombineta.Core
             return config.victoryHoldSeconds;
         }
 
+        /// <summary>
+        /// La proxima vez que se actualice la camara, salta directo a la pose (sin interpolar).
+        /// La usa el TutorialDirector tras un rebobinado: sin esto la camara cruzaria en un
+        /// cuadro todo el tramo que se salteo el jugador.
+        /// </summary>
+        public void SnapNextFrame() => needsSnap = true;
+
         /// <summary>Fin del final: el tiempo vuelve a la normalidad antes de la pantalla siguiente.</summary>
         public void EndFinale()
         {

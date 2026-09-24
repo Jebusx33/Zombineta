@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Zombineta.Core;
@@ -34,6 +35,37 @@ namespace Zombineta.UI
 
         [Tooltip("Distancia a la horda, en metros, a partir de la cual la barra grita.")]
         [SerializeField] float dangerGapMeters = 45f;
+
+        // --- Accesores de solo lectura: el TutorialDirector los usa para el marco que resalta
+        // la barra del paso actual, sin duplicar referencias a las mismas Image en la escena. ---
+
+        /// <summary>El fondo de la barra de nafta (el padre de fuelFill), o null si no esta asignada.</summary>
+        public RectTransform FuelBarRect => BackgroundOf(fuelFill);
+
+        /// <summary>El fondo de la barra de bateria, o null si no esta asignada.</summary>
+        public RectTransform BatteryBarRect => BackgroundOf(batteryFill);
+
+        /// <summary>El fondo de la barra de amenaza (horda), o null si no esta asignada.</summary>
+        public RectTransform ThreatBarRect => BackgroundOf(threatFill);
+
+        /// <summary>Las balas (pips), para resaltarlas todas juntas. Nunca null; puede estar vacio.</summary>
+        public RectTransform[] AmmoPipRects
+        {
+            get
+            {
+                if (ammoPips == null)
+                    return System.Array.Empty<RectTransform>();
+
+                var list = new List<RectTransform>(ammoPips.Length);
+                foreach (var pip in ammoPips)
+                    if (pip != null)
+                        list.Add(pip.rectTransform);
+                return list.ToArray();
+            }
+        }
+
+        static RectTransform BackgroundOf(Image fill) =>
+            fill != null ? fill.rectTransform.parent as RectTransform : null;
 
         void LateUpdate()
         {

@@ -9,6 +9,7 @@ using Zombineta.Core;
 using Zombineta.Juego.Levels;
 using Zombineta.Level;
 using Zombineta.Luz;
+using Zombineta.Tutorial;
 
 namespace Zombineta.Juego.Tests
 {
@@ -162,6 +163,36 @@ namespace Zombineta.Juego.Tests
             Assert.IsFalse(
                 sonidos[0].transform.IsChildOf(levelScene.transform),
                 "SonidoDeNivel no puede colgar de Nivel");
+        }
+
+        [Test]
+        public void ElRecorridoNoTieneProblemasDeLevelValidator()
+        {
+            var levelScene = FindInScene<LevelScene>(escena);
+            Assert.IsNotNull(levelScene);
+
+            var issues = LevelValidator.Check(levelScene.CurrentEntries());
+            string detalle = string.Join(
+                "; ", issues.ConvertAll(i => i.Message + " @" + i.distance + "m carril " + i.lane));
+            Assert.AreEqual(0, issues.Count, "LevelValidator encontro problemas: " + detalle);
+        }
+
+        [Test]
+        public void HayExactamenteUnTutorialDirectorYNoCuelgaDeNivel()
+        {
+            var levelScene = FindInScene<LevelScene>(escena);
+            Assert.IsNotNull(levelScene);
+
+            var directores = FindAllInScene<TutorialDirector>(escena);
+            Assert.AreEqual(1, directores.Count, "Tiene que haber exactamente un TutorialDirector");
+
+            var director = directores[0];
+            Assert.IsFalse(
+                director.transform.IsChildOf(levelScene.transform),
+                "TutorialDirector no puede colgar de Nivel");
+            Assert.IsNull(
+                director.GetComponent<LevelScene>(),
+                "TutorialDirector no puede compartir objeto con LevelScene");
         }
     }
 }
