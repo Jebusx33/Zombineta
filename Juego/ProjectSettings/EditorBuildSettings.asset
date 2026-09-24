@@ -21,6 +21,9 @@ EditorBuildSettings:
     path: Assets/_Zombineta/Scenes/Cinematic.unity
     guid: bfaa93de95e08204d8d5a35518424b08
   - enabled: 1
+    path: Assets/_Zombineta/Scenes/Tutorial.unity
+    guid: c1fc6b1666e4a584b81a1d6d50dc1c40
+  - enabled: 1
     path: Assets/_Zombineta/Scenes/Level_01.unity
     guid: 8191f7bdd7263c84ea291e4a80b9f499
   - enabled: 1

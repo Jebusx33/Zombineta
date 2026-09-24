@@ -252,6 +252,13 @@ MonoBehaviour:
   levels: {fileID: 11400000, guid: 8441459797a7cad40a19dbbb26c3bb98, type: 2}
   fader: {fileID: 181858174}
   fadeSeconds: 0.25
+  tutorial:
+    displayName: Tutorial
+    introLines: []
+    route: {fileID: 0}
+    sceneName: Tutorial
+    comicPanels: []
+    audio: {fileID: 11400000, guid: 2eeff290192671d4187c0bbee7feb538, type: 2}
 --- !u!4 &916758482
 Transform:
   m_ObjectHideFlags: 0

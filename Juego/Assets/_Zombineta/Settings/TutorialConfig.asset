@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9cee9c0d0d171e4f948c61233c56465, type: 3}
+  m_Name: TutorialConfig
+  m_EditorClassIdentifier: 
+  goalDistance: 650
+  startingGap: 150
+  laneSpacing: 0.99
+  laneChangeDuration: 0.15
+  normalSpeed: 12
+  turboSpeedMultiplier: 1.8
+  reverseSpeedMultiplier: -0.5
+  fuelMax: 100
+  fuelBurnPerSecond: 2.6
+  turboBurnMultiplier: 3
+  reverseBurnMultiplier: 0.5
+  fuelPickupAmount: 45
+  batteryMax: 100
+  batteryDrainPerSecond: 8
+  batteryPickupAmount: 40
+  headlightHordeSlowFactor: 0.5
+  ammoMax: 6
+  ammoAtStart: 3
+  ammoPickupAmount: 2
+  zombies: {fileID: 11400000, guid: a7ea75bfdd548d14883c0f9ae0cc1c19, type: 2}
+  hordeCount: 24
+  hordeDepthMeters: 14
+  corpseSeconds: 1.2
+  hordeSeed: 2026
+  hordeBaseSpeed: 11.25
+  rubberBandStartGap: 25
+  rubberBandRange: 35
+  rubberBandMaxBonus: 9
+  shotRangeMeters: 60
+  deathScareRadius: 4
+  deathScareSeconds: 0.5
+  explosionRadius: 8
+  explosionScareRadius: 16
+  explosionScareSeconds: 1
+  crashStunDuration: 0.2
+  crashFuelPenalty: 2
+  rampLaunchSlope: 0.75
+  jumpGravity: 20
+  leanLift: 0.35
+  launchPitch: 20
+  launchSpinPerExcessSpeed: 2.6
+  leanRate: 60
+  maxPitch: 80
+  perfectLandingAngle: 8
+  safeLandingAngle: 25
+  landingBoostMultiplier: 1.25
+  landingBoostDuration: 1.5
+  fallStunDuration: 1.6
+  fallFuelPenalty: 10
+  aerialPickupTolerance: 1.5
+  worldUnitsPerMeter: 0.75
+  cameraTrailMeters: 18
+  jumpHeightToWorld: 2.1375

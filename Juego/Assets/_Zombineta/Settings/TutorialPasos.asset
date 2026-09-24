@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bf4e4513b9c8904c86ae84a6fcfbfb6, type: 3}
+  m_Name: TutorialPasos
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Tutorial.TutorialPasos
+  pasos:
+  - texto: "Manten\xE9 {Turbo} para acelerar."
+    condicion: 0
+    cantidad: 1.5
+    resaltar: 0
+    hordaSuelta: 0
+  - texto: "Manten\xE9 {Reverse} para frenar y retroceder."
+    condicion: 1
+    cantidad: 1
+    resaltar: 0
+    hordaSuelta: 0
+  - texto: "{LaneUp} / {LaneDown} cambian de carril. Prob\xE1 hacia los dos lados."
+    condicion: 2
+    cantidad: 0
+    resaltar: 0
+    hordaSuelta: 0
+  - texto: "Pas\xE1 por una rampa. En el aire, {Turbo} / {Reverse} inclinan la moto."
+    condicion: 3
+    cantidad: 1
+    resaltar: 0
+    hordaSuelta: 0
+  - texto: "Agarr\xE1 un bid\xF3n: es tu nafta."
+    condicion: 4
+    cantidad: 1
+    resaltar: 1
+    hordaSuelta: 0
+  - texto: "La bater\xEDa alimenta el faro. Agarr\xE1 una."
+    condicion: 5
+    cantidad: 1
+    resaltar: 2
+    hordaSuelta: 0
+  - texto: "Agarr\xE1 balas para defenderte."
+    condicion: 6
+    cantidad: 1
+    resaltar: 3
+    hordaSuelta: 0
+  - texto: "{Headlight} prende el faro. Gasta bater\xEDa: dejalo prendido un rato."
+    condicion: 7
+    cantidad: 2
+    resaltar: 2
+    hordaSuelta: 0
+  - texto: '{Fire} dispara. Pegale a un zombie de adelante.'
+    condicion: 8
+    cantidad: 1
+    resaltar: 3
+    hordaSuelta: 0
+  - texto: "\xA1La horda! Disparar la empuja y el faro la frena. Lleg\xE1 al refugio."
+    condicion: 9
+    cantidad: 0
+    resaltar: 4
+    hordaSuelta: 1
