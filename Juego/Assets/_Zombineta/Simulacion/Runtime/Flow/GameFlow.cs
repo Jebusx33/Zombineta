@@ -63,8 +63,23 @@ namespace Zombineta.Flow
 
         public bool IsLastLevel => LevelIndex >= levelCount - 1;
 
+        /// <summary>
+        /// Lo pone GameRoot desde GameSettings.TutorialVisto al arrancar: si esta en true, la
+        /// proxima vez que se elija personaje se entra al tutorial en vez de a la cinematica.
+        /// </summary>
+        public bool TutorialPendiente { get; set; }
+
+        /// <summary>La partida en curso es el tutorial (sigue siendo GameScreen.Playing).</summary>
+        public bool EnTutorial { get; private set; }
+
+        /// <summary>El tutorial actual se abrio con OpenTutorial (a pedido), no desde el flujo normal.</summary>
+        public bool TutorialDesdeMenu { get; private set; }
+
         /// <summary>Se dispara en cada cambio de pantalla: (desde, hacia).</summary>
         public event Action<GameScreen, GameScreen> Changed;
+
+        /// <summary>Se dispara al terminar el tutorial, ya sea completandolo o salteandolo.</summary>
+        public event Action TutorialTerminado;
 
         // --- Menu principal --------------------------------------------------
 
@@ -91,7 +106,10 @@ namespace Zombineta.Flow
 
         // --- Partida ---------------------------------------------------------
 
-        /// <summary>Elegir personaje arranca siempre desde el primer nivel.</summary>
+        /// <summary>
+        /// Elegir personaje arranca siempre desde el primer nivel. Si el tutorial esta
+        /// pendiente, la primera partida pasa por el en vez de ir directo a la cinematica.
+        /// </summary>
         public bool ChooseCharacter(int index)
         {
             if (Current != GameScreen.CharacterSelect || index < 0)
@@ -99,6 +117,14 @@ namespace Zombineta.Flow
 
             CharacterIndex = index;
             LevelIndex = 0;
+
+            if (TutorialPendiente)
+            {
+                EnTutorial = true;
+                Attempt++;
+                return Switch(GameScreen.Playing);
+            }
+
             return Switch(GameScreen.Cinematic);
         }
 
@@ -110,9 +136,64 @@ namespace Zombineta.Flow
             return Switch(GameScreen.Playing);
         }
 
-        public bool LevelWon() => Go(GameScreen.Playing, GameScreen.LevelComplete);
+        /// <summary>Ignorado durante el tutorial: no se puede perder ni ganar como un nivel.</summary>
+        public bool LevelWon() => !EnTutorial && Go(GameScreen.Playing, GameScreen.LevelComplete);
 
-        public bool LevelLost() => Go(GameScreen.Playing, GameScreen.GameOver);
+        /// <summary>Ignorado durante el tutorial: no se puede perder ni ganar como un nivel.</summary>
+        public bool LevelLost() => !EnTutorial && Go(GameScreen.Playing, GameScreen.GameOver);
+
+        // --- Tutorial ----------------------------------------------------------
+
+        /// <summary>Tutorial a pedido desde el menu principal. Usa el ultimo personaje elegido.</summary>
+        public bool OpenTutorial()
+        {
+            if (Current != GameScreen.MainMenu)
+                return false;
+
+            EnTutorial = true;
+            TutorialDesdeMenu = true;
+            Attempt++;
+            return Switch(GameScreen.Playing);
+        }
+
+        /// <summary>
+        /// Termina el tutorial, completado o salteado: apaga EnTutorial, marca que ya no esta
+        /// pendiente, avisa por TutorialTerminado y sigue por donde corresponda.
+        /// </summary>
+        public bool TutorialFinished()
+        {
+            if (!EnTutorial || (Current != GameScreen.Playing && Current != GameScreen.Paused))
+                return false;
+
+            EnTutorial = false;
+            TutorialPendiente = false;
+            bool desdeMenu = TutorialDesdeMenu;
+            TutorialDesdeMenu = false;
+            TutorialTerminado?.Invoke();
+
+            return Switch(desdeMenu ? GameScreen.MainMenu : GameScreen.Cinematic);
+        }
+
+        /// <summary>Saltear desde la pausa, dentro del tutorial: equivale a terminarlo.</summary>
+        public bool SkipTutorial()
+        {
+            if (Current != GameScreen.Paused || !EnTutorial)
+                return false;
+            return TutorialFinished();
+        }
+
+        /// <summary>
+        /// Como JumpTo, pero directo al tutorial: para dar Play en Tutorial.unity desde el
+        /// editor, igual que JumpTo hace con un nivel.
+        /// </summary>
+        public void JumpToTutorial()
+        {
+            LevelIndex = 0;
+            EnTutorial = true;
+            Attempt++;
+            optionsReturn = GameScreen.MainMenu;
+            Current = GameScreen.Playing;
+        }
 
         public bool Pause() => Go(GameScreen.Playing, GameScreen.Paused);
 
@@ -143,11 +224,19 @@ namespace Zombineta.Flow
             return Switch(GameScreen.Playing);
         }
 
+        /// <summary>
+        /// Sale de la partida al menu. Desde la pausa del tutorial lo saca sin marcarlo como
+        /// visto ni disparar TutorialTerminado: no lo termino, solo se fue.
+        /// </summary>
         public bool ToMainMenu()
         {
             if (Current == GameScreen.GameOver || Current == GameScreen.Ending || Current == GameScreen.Paused ||
                 Current == GameScreen.Credits)
+            {
+                EnTutorial = false;
+                TutorialDesdeMenu = false;
                 return Switch(GameScreen.MainMenu);
+            }
             return false;
         }
 

@@ -135,6 +135,21 @@ namespace Zombineta.Core
             }
         }
 
+        const string TutorialVistoKey = "zombineta.tutorialSeen";
+        static bool? tutorialVisto;
+
+        /// <summary>Si ya jugo el tutorial de controles alguna vez. Lo pone GameRoot al terminarlo.</summary>
+        public static bool TutorialVisto
+        {
+            get => tutorialVisto ??= PlayerPrefs.GetInt(TutorialVistoKey, 0) != 0;
+            set
+            {
+                tutorialVisto = value;
+                PlayerPrefs.SetInt(TutorialVistoKey, value ? 1 : 0);
+                PlayerPrefs.Save();
+            }
+        }
+
         const string LightQualityKey = "zombineta.lightQuality";
         static LQ? lightQuality;
 

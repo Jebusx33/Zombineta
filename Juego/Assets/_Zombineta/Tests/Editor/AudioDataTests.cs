@@ -90,19 +90,23 @@ namespace Zombineta.Juego.Tests
 
         const string MusicKey = "zombineta.musicVolume";
         const string SfxKey = "zombineta.sfxVolume";
+        const string TutorialVistoKey = "zombineta.tutorialSeen";
         float? prevMusic;
         float? prevSfx;
+        bool? prevTutorialVisto;
 
         [SetUp] public void SetUp()
         {
             prevMusic = PlayerPrefs.HasKey(MusicKey) ? (float?)PlayerPrefs.GetFloat(MusicKey) : null;
             prevSfx = PlayerPrefs.HasKey(SfxKey) ? (float?)PlayerPrefs.GetFloat(SfxKey) : null;
+            prevTutorialVisto = PlayerPrefs.HasKey(TutorialVistoKey) ? (bool?)(PlayerPrefs.GetInt(TutorialVistoKey) != 0) : null;
         }
 
         [TearDown] public void TearDown()
         {
             if (prevMusic.HasValue) PlayerPrefs.SetFloat(MusicKey, prevMusic.Value); else PlayerPrefs.DeleteKey(MusicKey);
             if (prevSfx.HasValue) PlayerPrefs.SetFloat(SfxKey, prevSfx.Value); else PlayerPrefs.DeleteKey(SfxKey);
+            if (prevTutorialVisto.HasValue) PlayerPrefs.SetInt(TutorialVistoKey, prevTutorialVisto.Value ? 1 : 0); else PlayerPrefs.DeleteKey(TutorialVistoKey);
             ResetCache();
         }
 
@@ -113,6 +117,7 @@ namespace Zombineta.Juego.Tests
             var t = typeof(GameSettings);
             t.GetField("musicVolume", BindingFlags.NonPublic | BindingFlags.Static)?.SetValue(null, null);
             t.GetField("sfxVolume", BindingFlags.NonPublic | BindingFlags.Static)?.SetValue(null, null);
+            t.GetField("tutorialVisto", BindingFlags.NonPublic | BindingFlags.Static)?.SetValue(null, null);
         }
 
         [Test] public void MusicVolumeDefaultEsPuntoOcho()
@@ -140,6 +145,22 @@ namespace Zombineta.Juego.Tests
             Assert.AreEqual(1f, GameSettings.SfxVolume, 1e-5f);
             GameSettings.SfxVolume = -5f;
             Assert.AreEqual(0f, GameSettings.SfxVolume, 1e-5f);
+        }
+
+        // --- TutorialVisto ---
+
+        [Test] public void TutorialVistoDefaultEsFalse()
+        {
+            PlayerPrefs.DeleteKey(TutorialVistoKey);
+            ResetCache();
+            Assert.IsFalse(GameSettings.TutorialVisto);
+        }
+
+        [Test] public void TutorialVistoPersiste()
+        {
+            GameSettings.TutorialVisto = true;
+            ResetCache();
+            Assert.IsTrue(GameSettings.TutorialVisto, "tiene que leerse de PlayerPrefs, no solo del cache");
         }
     }
 }

@@ -325,5 +325,174 @@ namespace Zombineta.Tests
         {
             Assert.AreEqual((int)GameScreen.Credits, System.Enum.GetValues(typeof(GameScreen)).Length - 1);
         }
+
+        // --- Tutorial ----------------------------------------------------------
+
+        [Test]
+        public void ChooseCharacter_ConTutorialPendiente_EntraAlTutorial()
+        {
+            var f = new GameFlow(2);
+            f.TutorialPendiente = true;
+            f.Play();
+
+            int attempt = f.Attempt;
+            Assert.IsTrue(f.ChooseCharacter(0));
+
+            Assert.AreEqual(GameScreen.Playing, f.Current);
+            Assert.IsTrue(f.EnTutorial);
+            Assert.AreEqual(0, f.LevelIndex);
+            Assert.AreEqual(attempt + 1, f.Attempt);
+        }
+
+        [Test]
+        public void ChooseCharacter_SinTutorialPendiente_VaComoSiempreACinematica()
+        {
+            var f = new GameFlow(2);
+            f.Play();
+
+            Assert.IsTrue(f.ChooseCharacter(0));
+
+            Assert.AreEqual(GameScreen.Cinematic, f.Current);
+            Assert.IsFalse(f.EnTutorial);
+        }
+
+        [Test]
+        public void TutorialFinished_DesdeElPersonaje_VaACinematica_YMarcaComoTerminado()
+        {
+            var f = new GameFlow(2);
+            f.TutorialPendiente = true;
+            f.Play();
+            f.ChooseCharacter(0);
+
+            int terminados = 0;
+            f.TutorialTerminado += () => terminados++;
+
+            Assert.IsTrue(f.TutorialFinished());
+
+            Assert.AreEqual(GameScreen.Cinematic, f.Current);
+            Assert.AreEqual(1, terminados);
+            Assert.IsFalse(f.TutorialPendiente);
+            Assert.IsFalse(f.EnTutorial);
+        }
+
+        [Test]
+        public void OpenTutorial_DesdeElMenu_YTutorialFinished_VuelveAlMenu()
+        {
+            var f = new GameFlow(2);
+
+            Assert.IsTrue(f.OpenTutorial());
+            Assert.AreEqual(GameScreen.Playing, f.Current);
+            Assert.IsTrue(f.EnTutorial);
+            Assert.IsTrue(f.TutorialDesdeMenu);
+
+            Assert.IsTrue(f.TutorialFinished());
+            Assert.AreEqual(GameScreen.MainMenu, f.Current);
+            Assert.IsFalse(f.EnTutorial);
+        }
+
+        [Test]
+        public void OpenTutorial_DesdeOtraPantalla_DevuelveFalse()
+        {
+            var f = InLevel(levels: 2, level: 0);
+            Assert.IsFalse(f.OpenTutorial());
+            Assert.AreEqual(GameScreen.Playing, f.Current);
+            Assert.IsFalse(f.EnTutorial);
+        }
+
+        [Test]
+        public void SkipTutorial_DesdeLaPausa_EquivaleATutorialFinished()
+        {
+            var f = new GameFlow(2);
+            f.TutorialPendiente = true;
+            f.Play();
+            f.ChooseCharacter(0);
+            f.Pause();
+
+            int terminados = 0;
+            f.TutorialTerminado += () => terminados++;
+
+            Assert.IsTrue(f.SkipTutorial());
+
+            Assert.AreEqual(GameScreen.Cinematic, f.Current);
+            Assert.AreEqual(1, terminados);
+            Assert.IsFalse(f.TutorialPendiente);
+            Assert.IsFalse(f.EnTutorial);
+        }
+
+        [Test]
+        public void SkipTutorial_FueraDelTutorial_DevuelveFalse()
+        {
+            var f = InLevel(levels: 2, level: 0);
+            f.Pause();
+
+            Assert.IsFalse(f.SkipTutorial());
+            Assert.AreEqual(GameScreen.Paused, f.Current);
+        }
+
+        [Test]
+        public void PauseYResume_DentroDelTutorial_MantienenEnTutorial()
+        {
+            var f = new GameFlow(2);
+            f.TutorialPendiente = true;
+            f.Play();
+            f.ChooseCharacter(0);
+
+            Assert.IsTrue(f.Pause());
+            Assert.IsTrue(f.EnTutorial);
+            Assert.IsTrue(f.Resume());
+            Assert.IsTrue(f.EnTutorial);
+        }
+
+        [Test]
+        public void Retry_DesdeLaPausaDelTutorial_SumaIntentoYSigueEnElTutorial()
+        {
+            var f = new GameFlow(2);
+            f.TutorialPendiente = true;
+            f.Play();
+            f.ChooseCharacter(0);
+            f.Pause();
+            int attempt = f.Attempt;
+
+            Assert.IsTrue(f.Retry());
+
+            Assert.AreEqual(GameScreen.Playing, f.Current);
+            Assert.AreEqual(attempt + 1, f.Attempt);
+            Assert.IsTrue(f.EnTutorial);
+        }
+
+        [Test]
+        public void LevelWonYLevelLost_DentroDelTutorial_NoHacenNada()
+        {
+            var f = new GameFlow(2);
+            f.TutorialPendiente = true;
+            f.Play();
+            f.ChooseCharacter(0);
+
+            Assert.IsFalse(f.LevelWon());
+            Assert.AreEqual(GameScreen.Playing, f.Current);
+
+            Assert.IsFalse(f.LevelLost());
+            Assert.AreEqual(GameScreen.Playing, f.Current);
+        }
+
+        [Test]
+        public void ToMainMenu_DesdeLaPausaDelTutorial_NoDisparaTutorialTerminado()
+        {
+            var f = new GameFlow(2);
+            f.TutorialPendiente = true;
+            f.Play();
+            f.ChooseCharacter(0);
+            f.Pause();
+
+            int terminados = 0;
+            f.TutorialTerminado += () => terminados++;
+
+            Assert.IsTrue(f.ToMainMenu());
+
+            Assert.AreEqual(GameScreen.MainMenu, f.Current);
+            Assert.AreEqual(0, terminados);
+            Assert.IsFalse(f.EnTutorial);
+            Assert.IsTrue(f.TutorialPendiente, "no lo termino, asi que sigue pendiente");
+        }
     }
 }

@@ -79,8 +79,9 @@ namespace Zombineta.Juego.Levels
                     state.PlayerX = run.Config.goalDistance;
                     state.Phase = RunPhase.Won;
                 }
-                else if (input.DebugLosePressed)
+                else if (input.DebugLosePressed && !(flow != null && flow.EnTutorial))
                 {
+                    // En el tutorial no se puede perder: F3 no hace nada.
                     state.Phase = RunPhase.Lost;
                     state.Loss = LossReason.CaughtByHorde;
                 }
@@ -122,6 +123,16 @@ namespace Zombineta.Juego.Levels
             var flow = GameRoot.Flow;
             if (flow == null)
                 return;
+
+            if (flow.EnTutorial)
+            {
+                // Ganar termina el tutorial; al perder no se llama a nada, lo maneja el
+                // TutorialDirector (tarea 4).
+                if (finaleWon)
+                    flow.TutorialFinished();
+                return;
+            }
+
             if (finaleWon)
                 flow.LevelWon();
             else

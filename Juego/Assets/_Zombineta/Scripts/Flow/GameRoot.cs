@@ -19,6 +19,9 @@ namespace Zombineta.Juego.Flow
         [SerializeField] ScreenFader fader;
         [SerializeField] float fadeSeconds = 0.25f;
 
+        [Tooltip("El nivel del tutorial: no forma parte de Niveles.asset. Se cablea en la tarea 3.")]
+        [SerializeField] LevelInfo tutorial;
+
         public static GameRoot Instance { get; private set; }
 
         /// <summary>El flujo de pantallas. Null hasta que Boot termina de cargar.</summary>
@@ -56,6 +59,8 @@ namespace Zombineta.Juego.Flow
             int count = levels != null ? Mathf.Max(1, levels.levels.Count) : 1;
             flow = new GameFlow(count);
             flow.Changed += OnChanged;
+            flow.TutorialTerminado += OnTutorialTerminado;
+            flow.TutorialPendiente = !GameSettings.TutorialVisto;
             ApplySettings();
         }
 
@@ -71,6 +76,16 @@ namespace Zombineta.Juego.Flow
         void Start()
         {
             string entry = Bootstrapper.EntryScene;
+
+            // Play desde la escena del tutorial: arranca el tutorial directo, sin recargarla.
+            if (entry == TutorialScene())
+            {
+                flow.JumpToTutorial();
+                lastAttempt = flow.Attempt;
+                planner.Start(entry);
+                fader?.SetOpacity(0f);
+                return;
+            }
 
             // Play desde un nivel: el flujo arranca jugando ese nivel, sin recargarlo.
             int level = LevelIndexOf(entry);
@@ -111,10 +126,12 @@ namespace Zombineta.Juego.Flow
                 Screen.fullScreen = GameSettings.Fullscreen;
         }
 
-        public LevelInfo CurrentLevel =>
+        public LevelInfo CurrentLevel => flow.EnTutorial ? tutorial :
             levels != null && flow.LevelIndex < levels.levels.Count ? levels.levels[flow.LevelIndex] : null;
 
         // --- Director ------------------------------------------------------------
+
+        void OnTutorialTerminado() => GameSettings.TutorialVisto = true;
 
         void OnChanged(GameScreen from, GameScreen to)
         {
@@ -190,11 +207,17 @@ namespace Zombineta.Juego.Flow
 
         string LevelScene(int index)
         {
+            if (flow.EnTutorial)
+                return TutorialScene();
             if (levels != null && index >= 0 && index < levels.levels.Count &&
                 !string.IsNullOrEmpty(levels.levels[index].sceneName))
                 return levels.levels[index].sceneName;
             return "Level_" + (index + 1).ToString("00");
         }
+
+        /// <summary>La escena del tutorial: la del LevelInfo cableado, o "Tutorial" si esta vacio.</summary>
+        string TutorialScene() =>
+            tutorial != null && !string.IsNullOrEmpty(tutorial.sceneName) ? tutorial.sceneName : SceneNames.Tutorial;
 
         int LevelIndexOf(string scene)
         {

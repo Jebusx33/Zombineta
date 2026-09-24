@@ -11,6 +11,7 @@ namespace Zombineta.Juego.Flow
         public const string Options = "Options";
         public const string CharacterSelect = "CharacterSelect";
         public const string Cinematic = "Cinematic";
+        public const string Tutorial = "Tutorial";
         public const string LevelComplete = "LevelComplete";
         public const string GameOver = "GameOver";
         public const string Ending = "Ending";
