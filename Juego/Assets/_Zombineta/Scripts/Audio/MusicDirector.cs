@@ -23,7 +23,6 @@ namespace Zombineta.Audio
         const float FundidoPorDefecto = 1.5f;
 
         const float ToleranciaDuracionTension = 0.05f;
-        const float SuavizadoAmenaza = 0.5f;
 
         [SerializeField] MusicaDelJuego musica;
 
@@ -100,7 +99,7 @@ namespace Zombineta.Audio
             if (!tensionActiva || apagandoTension)
                 return;
             fuenteTension.volumenPropio = Mathf.SmoothDamp(fuenteTension.volumenPropio, amenazaObjetivo,
-                ref velocidadAmenaza, SuavizadoAmenaza, Mathf.Infinity, Time.unscaledDeltaTime);
+                ref velocidadAmenaza, AudioDirector.Mezcla.suavizadoTension, Mathf.Infinity, Time.unscaledDeltaTime);
         }
 
         /// <summary>La llama el nivel (Task 6) cada cuadro con 0 (lejos) a 1 (encima de la moto).</summary>

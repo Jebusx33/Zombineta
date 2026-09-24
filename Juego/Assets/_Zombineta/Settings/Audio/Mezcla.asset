@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d607d8439a9586468c46d9d1bb66851, type: 3}
+  m_Name: Mezcla
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.MezclaAudio
+  tonoQuieta: 0.8
+  tonoNormal: 1.2
+  tonoTurbo: 1.45
+  suavizadoTono: 0.15
+  fundidoSinNafta: 1
+  fundidoAlPerder: 0.3
+  distanciaAmenaza: 45
+  suavizadoTension: 0.5
+  musicaEnPausa: 0.4
+  fundidoPausa: 0.2
+  exponenteVolumen: 2

@@ -17,9 +17,6 @@ namespace Zombineta.Audio
     [DefaultExecutionOrder(-50)]
     public sealed class SonidoDeNivel : MonoBehaviour
     {
-        [Tooltip("La misma distancia que usa el HUD y HordeGlow para la amenaza de la horda.")]
-        [SerializeField] float dangerGapMeters = 45f;
-
         [SerializeField] RunController run;
 
         void Awake()
@@ -58,7 +55,7 @@ namespace Zombineta.Audio
 
             var music = MusicDirector.Instance;
             if (music != null)
-                music.SetAmenaza(1f - Mathf.Clamp01(state.Gap / dangerGapMeters));
+                music.SetAmenaza(1f - Mathf.Clamp01(state.Gap / AudioDirector.Mezcla.distanciaAmenaza));
         }
 
         static BancoDeSonidos BancoDelNivelActual()

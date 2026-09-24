@@ -19,14 +19,14 @@ namespace Zombineta.Audio
     {
         const int TamanioPool = 16;
 
-        // 1 / 0,2 s: la pausa calla o vuelve Efectos y Ambiente en 0,2 segundos reales.
-        const float DuckPorSegundo = 1f / 0.2f;
-
         static readonly EspacialConfig EspacialPorDefecto =
             new EspacialConfig { anchoPaneo = 12f, distanciaPlena = 4f, distanciaMaxima = 30f };
 
         [SerializeField] BancoDeSonidos global;
         [SerializeField] EspacialAsset espacial;
+
+        [Tooltip("Tono del motor, capa de tension, pausa y curva de volumen (Settings/Audio/Mezcla.asset).")]
+        [SerializeField] MezclaAudio mezcla;
 
         public static AudioDirector Instance { get; private set; }
 
@@ -34,6 +34,10 @@ namespace Zombineta.Audio
 
         /// <summary>Nunca null: si no hay director en escena, un AudioBuses por defecto (ganancia 1).</summary>
         public static AudioBuses Buses => Instance != null ? Instance.buses : fallback;
+
+        /// <summary>Nunca null: el asset asignado, o los valores por defecto si falta.</summary>
+        public static MezclaAudio Mezcla =>
+            Instance != null && Instance.mezcla != null ? Instance.mezcla : MezclaAudio.PorDefecto;
 
         /// <summary>Banco del nivel actual. Lo pone el nivel al entrar; null fuera de partida.</summary>
         public BancoDeSonidos BancoNivel { get; set; }
@@ -97,7 +101,10 @@ namespace Zombineta.Audio
         {
             bool pausado = EstaPausado();
             float objetivo = pausado ? 0f : 1f;
-            buses.PausaDuck = Mathf.MoveTowards(buses.PausaDuck, objetivo, DuckPorSegundo * Time.unscaledDeltaTime);
+            var m = Mezcla;
+            buses.MusicaEnPausa = m.musicaEnPausa;
+            buses.ExponenteCurva = m.exponenteVolumen;
+            buses.PausaDuck = Mathf.MoveTowards(buses.PausaDuck, objetivo, Time.unscaledDeltaTime / m.fundidoPausa);
         }
 
         void ArmarPool()

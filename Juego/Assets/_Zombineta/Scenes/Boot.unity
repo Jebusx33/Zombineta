@@ -299,6 +299,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.AudioDirector
   global: {fileID: 11400000, guid: 8b28aa092e4b23c4a8e1c84def31ed45, type: 2}
   espacial: {fileID: 11400000, guid: c639bc12fe5397d48ba2af7eb8e2eab9, type: 2}
+  mezcla: {fileID: 11400000, guid: e1264f8a1913d18409a63a49ac29f85d, type: 2}
 --- !u!4 &1116042137
 Transform:
   m_ObjectHideFlags: 0

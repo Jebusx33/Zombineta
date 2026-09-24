@@ -6,8 +6,8 @@ namespace Zombineta.Audio
 {
     /// <summary>
     /// Loop del motor de la moto, por el bus Efectos. El tono persigue a MotorTono.Objetivo con
-    /// un suavizado de 0,15 s; sin nafta el volumen cae a 0 en 1 s; al perder se apaga con un
-    /// fundido de 0,3 s y se detiene. Arranca al activarse (la escena del nivel se carga al
+    /// un suavizado; sin nafta el volumen cae a 0; al perder se apaga con un fundido y se
+    /// detiene. Tonos y tiempos salen de AudioDirector.Mezcla (Settings/Audio/Mezcla.asset). Arranca al activarse (la escena del nivel se carga al
     /// entrar a Playing). Tambien escucha RunController.Restarted (reintento o nivel nuevo, sin
     /// recargar la escena) para deshacer el apagado de Lost: si no, un reintento despues de
     /// perder dejaria el motor mudo para siempre. Hijo del prefab SonidoDeNivel.
@@ -16,10 +16,6 @@ namespace Zombineta.Audio
     [RequireComponent(typeof(FuenteConBus))]
     public sealed class MotorSonido : MonoBehaviour
     {
-        const float SuavizadoPitch = 0.15f;
-        const float FundidoSinNafta = 1f;
-        const float FundidoAlPerder = 0.3f;
-
         [SerializeField] RunController run;
 
         AudioSource source;
@@ -96,16 +92,18 @@ namespace Zombineta.Audio
 
             var state = run.Sim.State;
             bool turbo = state.Mode == DriveMode.Turbo;
-            float pitchObjetivo = MotorTono.Objetivo(run.Sim.PlayerSpeed, run.Config.normalSpeed, turbo);
+            var m = AudioDirector.Mezcla;
+            float pitchObjetivo = MotorTono.Objetivo(run.Sim.PlayerSpeed, run.Config.normalSpeed, turbo,
+                m.tonoQuieta, m.tonoNormal, m.tonoTurbo);
             source.pitch = Mathf.SmoothDamp(source.pitch, pitchObjetivo, ref velocidadPitch,
-                SuavizadoPitch, Mathf.Infinity, Time.unscaledDeltaTime);
+                m.suavizadoTono, Mathf.Infinity, Time.unscaledDeltaTime);
 
             if (apagandoAlPerder)
                 return; // el fundido de Lost es dueno exclusivo de volumenPropio mientras dura.
 
             float volumenObjetivo = state.Fuel <= 0f ? 0f : 1f;
             fuente.volumenPropio = Mathf.MoveTowards(fuente.volumenPropio, volumenObjetivo,
-                Time.unscaledDeltaTime / FundidoSinNafta);
+                Time.unscaledDeltaTime / m.fundidoSinNafta);
         }
 
         void OnStepped(RunEvent events)
@@ -118,9 +116,10 @@ namespace Zombineta.Audio
         {
             apagandoAlPerder = true;
             float desde = fuente.volumenPropio;
-            for (float t = 0f; t < FundidoAlPerder; t += Time.unscaledDeltaTime)
+            float duracion = AudioDirector.Mezcla.fundidoAlPerder;
+            for (float t = 0f; t < duracion; t += Time.unscaledDeltaTime)
             {
-                fuente.volumenPropio = Mathf.Lerp(desde, 0f, t / FundidoAlPerder);
+                fuente.volumenPropio = Mathf.Lerp(desde, 0f, t / duracion);
                 yield return null;
             }
             fuente.volumenPropio = 0f;

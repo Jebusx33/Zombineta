@@ -423,7 +423,10 @@ componente que escribe `AudioSource.volume`, cada cuadro, como `volumenPropio ×
 AudioDirector.Buses.Gain(bus)`. No hay `AudioMixer`: la mezcla son cuatro buses por código
 (`AudioBuses`, C# plano y testeado) — Música, Efectos, Ambiente y UI (Ambiente y UI cuelgan de
 Efectos) — con curva perceptual (`v²`) y un "ducking" de pausa que calla Efectos/Ambiente y deja
-la Música al 40 % en 0,2 s reales; UI no se toca. `General` no es un bus mas: es una ganancia
+la Música al 40 % en 0,2 s reales; UI no se toca. Esos números, más el tono y los fundidos del
+motor y la distancia y el suavizado de la tensión, están en `Settings/Audio/Mezcla.asset`
+(`MezclaAudio`, enganchado al `AudioDirector` de Boot y leído cada cuadro; sin asset se usan los
+mismos valores por defecto, que `MezclaAudioTests` fija). `General` no es un bus mas: es una ganancia
 aparte que se multiplica arriba de los cuatro. El prefab del sonido de nivel es
 `Art/Audio/SonidoDelNivel.prefab` (raíz `SonidoDeNivel`, suelto en la escena de cada nivel, nunca
 en `Nivel` — misma trampa que `HordeGlow`), que registra el banco del nivel y avisa la amenaza de

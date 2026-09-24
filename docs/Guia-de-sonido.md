@@ -221,6 +221,26 @@ subís el rango de `Volumen` (por ejemplo de 0,6–0,8 a 0,75–0,9). Guardás e
 hace falta tocar código ni volver a entrar a Play desde cero: el próximo disparo ya sale con el
 volumen nuevo.
 
+### La mezcla general: `Mezcla.asset`
+
+Lo que no es de un efecto en particular vive en **`Settings/Audio/Mezcla.asset`**. El juego lo
+lee en cada cuadro, así que los cambios se oyen al instante, incluso con el juego en Play. Si
+lo cambiás durante Play, guardalo después de salir. Campos:
+
+| Grupo | Campo | Qué hace | Hoy |
+|---|---|---|---|
+| Motor | `Tono Quieta` / `Tono Normal` / `Tono Turbo` | Tono del loop con la moto quieta, a velocidad normal y con turbo. Entre quieta y normal sube en proporción a la velocidad | 0,8 / 1,2 / 1,45 |
+| Motor | `Suavizado Tono` | Segundos que tarda el tono en llegar al valor nuevo | 0,15 |
+| Motor | `Fundido Sin Nafta` / `Fundido Al Perder` | Segundos en que se apaga el motor | 1 / 0,3 |
+| Tensión | `Distancia Amenaza` | A cuántos metros de la moto la horda empieza a subir la capa de tensión; encima de la moto, al máximo | 45 |
+| Tensión | `Suavizado Tension` | Segundos que tarda la tensión en seguir a la horda | 0,5 |
+| Pausa | `Musica En Pausa` | Volumen de la música con el juego en pausa (1 = igual que jugando). Los efectos se callan siempre | 0,4 |
+| Pausa | `Fundido Pausa` | Segundos del fundido al pausar y al volver | 0,2 |
+| Opciones | `Exponente Volumen` | Curva de los sliders: 1 = lineal; 2 = más parejo al oído; más alto baja más rápido los valores chicos | 2 |
+
+Para probar el motor, entrá a un nivel y alterná entre acelerar, soltar y turbo. Para la tensión,
+dejá que la horda se acerque. Para la pausa, pausá y volvé a jugar.
+
 ---
 
 ## 9. El paneo y la distancia (sonidos posicionales)
