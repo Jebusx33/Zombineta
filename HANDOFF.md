@@ -1,20 +1,24 @@
 # Zombineta — Handoff
 
-Última actualización: 21 de septiembre de 2026, tras la iluminación 2D con URP y el opening del
-nivel 1: `Juego/` tiene cinco Sorting Layers reales, el escenario y los objetos del recorrido son
-prefabs que arte puede abrir y ponerles luz y sombra, un perfil de ambiente por nivel, luces de
-gameplay (faro, destellos, resplandor de la horda, este último como prefab ajustable por arte),
-presupuesto + calidad Alta/Baja, y un taller para ver todo junto. Guía para arte aparte (ver
-sección 0, "Iluminación"). La cinemática del nivel 1 arma una página de cómic sumando nueve
-viñetas (bocetos, a reemplazar por el arte final; ver "Escenas del juego definitivo").
+Última actualización: 24 de septiembre de 2026, tras el tutorial de controles: `Juego/` suma un
+nivel corto y no perdible (`Tutorial.unity`) que enseña turbo/retroceso/carril/salto/recursos/
+disparo/faro antes de la primera partida, con botón propio en el menú principal y "Saltear
+tutorial" en la pausa (ver sección 0, "Tutorial"). Antes, el 21/09: iluminación 2D con URP y
+opening del nivel 1 (`Juego/` tiene cinco Sorting Layers reales, el escenario y los objetos del
+recorrido son prefabs que arte puede abrir y ponerles luz y sombra, un perfil de ambiente por
+nivel, luces de gameplay —faro, destellos, resplandor de la horda, este último como prefab
+ajustable por arte—, presupuesto + calidad Alta/Baja, y un taller para ver todo junto; guía para
+arte aparte, ver sección 0 "Iluminación"). La cinemática del nivel 1 arma una página de cómic
+sumando nueve viñetas (bocetos, a reemplazar por el arte final; ver "Escenas del juego
+definitivo").
 
 **Estado:** el prototipo se recorre de punta a punta con el flujo del GDD (menú, opciones,
-personaje, cinemática, dos niveles, victoria, game over, final), sobre un escenario de
+personaje, tutorial o cinemática, dos niveles, victoria, game over, final), sobre un escenario de
 placeholders con parallax en varias capas e iluminación 2D real, una cámara que reacciona a la
 persecución y rampas con un salto que se regula inclinando en el aire, y una horda de zombies
 individuales con tipos y arte propio por arquetipo. Desde el 21/09 también suena: música por
 pantalla y por nivel con fundido cruzado, efectos posicionales, buses de volumen sin `AudioMixer`
-y una pantalla de Créditos nueva (ver sección 0, "Sonido"). 278 tests EditMode en verde.
+y una pantalla de Créditos nueva (ver sección 0, "Sonido"). 356 tests EditMode en verde.
 
 **Ojo:** con el balance vigente la meta **no se alcanza jugando** (ver sección 4). Para
 recorrer el flujo completo existen F2 (ganar) y F3 (perder), solo en editor y builds de
@@ -451,6 +455,86 @@ código de arriba en vez de sumar esa fragilidad — ver la trampa nueva #43.
 
 **Verificado:** ver sección 6, entrada 21/09 (sonido). **Pendiente:** que José lo juegue con
 auriculares y confirme que el paneo y los fundidos se sienten bien (sección 7).
+
+### Tutorial (`Juego/`)
+
+Diseño: `docs/superpowers/specs/2026-09-24-tutorial-design.md`. Un nivel corto que enseña los
+controles y la gestión de recursos antes de jugar. **No se puede perder.**
+
+**Cuándo aparece:** la primera vez que se juega, después de elegir personaje (Jugar → Personaje →
+**Tutorial** → Cinemática → Nivel 1); las siguientes veces, Personaje va directo a la Cinemática
+como siempre. También se puede abrir a pedido con el botón "Tutorial" del menú principal (entre
+Jugar y Opciones), que usa el último personaje elegido y al terminar vuelve al menú en vez de ir a
+la Cinemática. Desde la pausa, "Saltear tutorial" (visible solo mientras se está en el tutorial)
+lo termina igual que completarlo. `GameSettings.TutorialVisto` (PlayerPrefs
+`zombineta.tutorialSeen`) es lo único que se guarda: en `true` no vuelve a aparecer solo.
+
+**Arquitectura en pocas líneas.** El tutorial corre como una partida más
+(`GameScreen.Playing`) con `GameFlow.EnTutorial` en `true`: no hay pantalla nueva, la moto, la
+cámara, la pausa y el sonido ya tratan `Playing` como "la partida está corriendo". `GameFlow`
+suma `TutorialPendiente`, `EnTutorial`, `TutorialDesdeMenu`, el evento `TutorialTerminado`,
+`OpenTutorial()` (solo desde el menú), `TutorialFinished()`/`SkipTutorial()` y `JumpToTutorial()`
+(Play directo en `Scenes/Tutorial.unity` desde el editor); durante el tutorial `LevelWon()` y
+`LevelLost()` se ignoran. La escena `Tutorial.unity` se armó sobre `Templates/NivelBase`, con su
+propia configuración (`Settings/TutorialConfig.asset`: copia de `GameConfig` con la horda más
+lenta y un `startingGap` grande) y su propio recorrido (`Settings/Niveles/Tutorial.asset`, ~650 m,
+armado con la paleta de nivel): un tramo por paso, cada uno repitiendo su objeto cada 30-40 m para
+que el paso nunca se trabe si el jugador se pasa uno. `Settings/TutorialPasos.asset` (SO
+`TutorialPasos`) tiene los 10 pasos en orden, cada uno con su cartel (texto con marcadores tipo
+`{Turbo}`/`{Reverse}`, resueltos por esquema de control con la misma tabla que usa
+`ControlHints.Accion`/`Resolver`), su condición y, si corresponde, qué barra del HUD resaltar.
+`TutorialDirector` (`Scripts/Tutorial/TutorialDirector.cs`, en su propio GameObject raíz, NO
+cuelga de `Nivel`) encadena todo sin tocar las reglas de la simulación:
+- **Horda:** en los pasos 1 a 9 la mantiene fija 60 m detrás de la moto (`Sim.Horde.Reset`), así
+  nunca amenaza. En el paso 10 (el único con `hordaSuelta`) la suelta; si alcanza a la moto no hay
+  Game Over: la horda vuelve 35 m atrás, sale "¡Te alcanzaron! Dispará o usá el faro" y se repite
+  el paso.
+- **Recursos:** nafta o batería por debajo del 20 % avisan una vez por cruce del umbral; en 0 se
+  recargan solos al 60 % ("En el juego te quedarías sin nafta/batería..."); la munición también se
+  recarga en 0 durante los pasos 9 y 10 para que siempre se pueda disparar. Las reglas de consumo
+  no cambian, es la misma escritura de `RunState` que ya usa "Probar desde acá".
+- **Rebobinado:** si el auto-avance de la moto se pasa de largo el tramo de un paso (un lector
+  lento, o el navegador de la escena), `TutorialRewind` (C# plano, testeado) decide volver a una
+  posición segura antes del tramo con el aviso "Volvamos a intentarlo.", para que el paso nunca
+  quede imposible de cumplir.
+- **UI:** `TutorialCartel` maneja el cartel del paso (con fundido), los avisos (2,5 s) y el marco
+  de resaltado sobre la barra del HUD indicada.
+
+**Menú y pausa:** el botón "Tutorial" (`MainMenuScreen.OpenTutorial()`) se agregó duplicando un
+botón existente del menú (mismo estilo, fuente y enganches de `UiSonidos`, que es por pantalla y
+no por botón) y recableando la navegación explícita de los cinco botones. "Saltear tutorial"
+(`PauseScreen.SkipTutorial()`) se agregó igual en `Pause.unity`, entre Reintentar y Opciones;
+`PauseScreen` guarda además las referencias a Reintentar/Opciones para recalcular su navegación
+cada vez que se abre la pausa (`OnEnable`): con `Flow.EnTutorial` en `false` el botón queda
+inactivo y la cadena salta directo de Reintentar a Opciones, sin dejar un botón invisible
+enganchado en el medio. Ninguna de las dos escenas usa un Layout Group: cada fila tiene su propio
+`anchoredPosition` fijo, así que sumar una fila implica recalcular a mano la posición de las que
+quedan debajo (ver la sección 6 para el detalle del bug que esto causó y cómo se arregló).
+"Reintentar" en la pausa del tutorial ya reiniciaba desde el paso 1 sin necesitar ningún cambio:
+`Attempt++` hace que `SceneRoutePlanner` recargue `Tutorial.unity` entera (no solo la pausa), así
+que `TutorialDirector`/`TutorialProgreso` nacen de cero.
+
+**Dónde está cada cosa:**
+- Scripts: `Scripts/Tutorial/` (`TutorialPasos.cs`, `TutorialProgreso.cs` y `TutorialRecursos.cs`
+  son C# plano y testeados; `TutorialDirector.cs`, `TutorialCartel.cs` son `MonoBehaviour`;
+  `TutorialRewind.cs` es C# plano).
+- Escena: `Scenes/Tutorial.unity`.
+- Assets de datos: `Settings/TutorialConfig.asset`, `Settings/TutorialPasos.asset`,
+  `Settings/Niveles/Tutorial.asset` (el recorrido).
+- Menú y pausa: `Scripts/Screens/MainMenuScreen.cs` (`OpenTutorial`), `Scripts/Screens/
+  PauseScreen.cs` (`SkipTutorial` + la navegación condicional).
+
+**Cómo tocarlo sin código:**
+- **Textos y condiciones de los pasos:** `Settings/TutorialPasos.asset`, en el Inspector (lista de
+  `Paso`: `texto` con marcadores `{Turbo}`/`{Reverse}`/`{LaneUp}`/`{LaneDown}`/`{Fire}`/
+  `{Headlight}`, `condicion`, `cantidad`, `resaltar`).
+- **El recorrido:** `Scenes/Tutorial.unity`, con la misma paleta "Nivel Zombineta" que arma
+  `Level_01`/`Level_02` (ver "Niveles armados a mano" arriba).
+- **Balance del tutorial** (velocidad de la horda, distancia inicial, largo): `Settings/
+  TutorialConfig.asset`, los mismos campos que `GameConfig`.
+
+**Verificado:** ver sección 6, entrada 24/09 (tutorial). **Pendiente:** que José lo juegue de
+punta a punta con teclado y con joystick (sección 7).
 
 ---
 
@@ -1190,6 +1274,41 @@ Estas costaron tiempo real en esta sesión:
   pantalla más rápido de lo que `GameRoot` podía cargarlas (sin esperar `GameRoot.Busy == false`
   entre una y otra) y eso sí generó un error real de consola (`No se pudo cargar la escena
   'CharacterSelect'`); repetida respetando `Busy`, cero errores.
+- Tutorial (24/09): 356 tests EditMode en verde (sin tests nuevos en esta tarea: es cableado de
+  UI sobre la lógica de las tareas 1-4). Por CLI, desde `Boot`, con `GameSettings` reseteado por
+  reflexión (mismo patrón que `AudioDataTests`) y `zombineta.tutorialSeen` confirmado ausente en
+  `PlayerPrefs` antes de empezar: Personaje lleva al tutorial (`EnTutorial=true`); los 10 pasos se
+  forzaron uno a uno llamando directamente a `TutorialProgreso.Avanzar` (por reflexión sobre el
+  campo privado `TutorialDirector.progreso`) con un `EntradaPaso` armado a mano por paso —se
+  descartó "escribir `Sim.State.Mode` y esperar" (la técnica de la tarea 4) porque en esta sesión
+  se confirmó que no sirve: `RunController.Update` sobreescribe `State.Mode` con el intent real
+  (sin input, `Normal`) en cada cuadro real, así que un valor puesto a mano no sobrevive ni un
+  cuadro de autotick—; los 10 carteles resueltos coincidieron con el texto del spec. En el paso
+  10 la horda se puso 1 m delante de la moto: `Phase` pasó a `Lost` y en el mismo cuadro volvió a
+  `Running` (perdonado), con el aviso "¡Te alcanzaron! Dispará o usá el faro", sin Game Over. La
+  recarga en 0 se confirmó (`Fuel=0` → recargó a ~58 tras 0,3 s reales de consumo). Al llegar a
+  `goalDistance` (forzando `PlayerX`/`Phase=Won` igual que la tarea 4) el flujo completó el
+  tutorial de verdad: cartel final, `EnTutorial=false`, `Cinematic` del nivel 1,
+  `GameSettings.TutorialVisto=true`. Un segundo `Play()` → `ChooseCharacter` fue directo a
+  `Cinematic` sin pasar por el tutorial. "Tutorial" desde el menú (click real sobre
+  `MainMenuScreen.OpenTutorial`, el método que cablea el botón) completado de punta a punta volvió
+  al `MainMenu`. "Saltear tutorial" desde la pausa: con el tutorial abierto por primera vez llevó
+  a `Cinematic`; abierto desde el menú, volvió a `MainMenu`. "Reintentar" desde la pausa, a mitad
+  del paso 3, volvió al paso 1 (`TutorialDirector`/`TutorialProgreso` nuevos: `Attempt++` hace que
+  `SceneRoutePlanner` recargue `Tutorial.unity` entera, no solo la pausa). Capturas del menú con
+  el botón nuevo y de la pausa del tutorial con "Saltear tutorial" visible. Consola sin errores
+  propios del juego (quedaron 3 líneas de "Main thread operation timed out" del propio servidor
+  de la CLI, de un momento en que se solaparon un `tests editor` largo con otros comandos; no son
+  errores del juego ni de esta sesión de Play). `zombineta.tutorialSeen` restaurado a "ausente"
+  (su estado antes de esta tarea) al terminar.
+  - **Bug encontrado y arreglado en el camino:** el botón nuevo, al duplicar un botón existente,
+    heredó su mismo `anchoredPosition` — ninguna de las dos escenas (`MainMenu.unity`,
+    `Pause.unity`) usa un Layout Group, cada fila tiene una posición fija a mano. El botón quedó
+    tapado exactamente detrás del que se duplicó (mismo lugar, dibujado atrás en el orden de
+    hermanos) hasta que se recalcularon a mano las posiciones de todos los botones de cada menú.
+    Se encontró mirando la primera captura del menú (faltaba "Tutorial") y se repitió al revés en
+    la pausa (faltaba "Reintentar", tapado por "Saltear tutorial"); las posiciones finales quedan
+    documentadas en la sección 0, "Tutorial".
 - **Enter con teclado real** sigue sin probarse por MCP (confirmado de nuevo en esta tarea): un
   teclado virtual del Input System no llega a tiempo de forma confiable a este sandbox. El sonido
   de "confirmar" se verificó con la misma llamada de audio que dispara `UiSonidos` en producción,
@@ -1298,6 +1417,18 @@ sonido), consola sin errores. **Pendiente:** que José lo juegue con auriculares
 reemplazar los placeholders por audio definitivo pisando los archivos de `Audio/` (la guía explica
 cómo).
 
+**24/09, tutorial:** sub-proyecto 8 hecho (ver "Tutorial" en la sección 0): flujo `EnTutorial`
+aditivo en `GameFlow`, lógica pura de pasos y recursos (`TutorialProgreso`/`TutorialRecursos`,
+testeadas), la escena `Tutorial.unity` con su recorrido y configuración propios, el
+`TutorialDirector` que encadena carteles/horda/recargas/rebobinado, y el botón "Tutorial" del menú
+principal más "Saltear tutorial" en la pausa. 356 tests EditMode en verde (sin tests nuevos en
+esta última tarea). Verificación completa por CLI desde `Boot` forzando los 10 pasos, la horda
+perdonada en el paso final, la recarga en 0, y los cinco caminos del flujo (primera vez → nivel 1,
+segunda vez sin tutorial, "Tutorial" del menú → menú, "Saltear" desde ambos orígenes, "Reintentar"
+al paso 1) — ver sección 6, entrada 24/09. **Pendiente:** que José lo juegue de punta a punta con
+teclado y con joystick (sección 7); el marco de resaltado de barra sigue siendo un placeholder sin
+arte (sección 6/7, tarea 4).
+
 Lo último que se hizo fueron las rampas y el salto (T12). Lo que el usuario ya anunció como
 próximo paso son **las animaciones de spritesheet de la protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
 fill y un slicing que escanee el alfa, porque no tienen grilla exacta). (Las ramas del equipo: ver
@@ -1394,6 +1525,32 @@ entrada ahí.
 - Un fundido cruzado de música interrumpido a la mitad (cambiar de pantalla dos veces rápido)
   puede saltar de volumen y hacer clic, porque la corutina nueva no parte del volumen actual de
   la que estaba fundiendo.
+
+### Tutorial (seguimiento, sub-proyecto 8)
+- **Jugarlo con teclado y con joystick, a mano (José).** Toda la verificación del tutorial se
+  hizo por CLI forzando el estado de la simulación y llamando a los métodos del flujo
+  directamente: nadie sostuvo Turbo/Retroceso ni disparó de verdad. Es lo primero antes de darlo
+  por terminado.
+- **El marco de resaltado de barra es un placeholder.** Una `Image` sólida semitransparente, no
+  un contorno hueco de 9-slices (no había arte de UI para eso en la tarea 4). Cumple la función
+  pero es una aproximación visual; si se suma arte de marco más adelante, solo hay que asignarle
+  un sprite 9-sliced a `TutorialUI/Resaltado` en el Canvas de `Tutorial.unity`.
+- `hordeBaseSpeed` de `TutorialConfig.asset` es 11,25: el comentario original decía "10 % más
+  lenta", pero la base real del juego es 14 (no los 12,5 de `GameConfig` por defecto), así que en
+  la práctica la horda del tutorial es ~20 % más lenta, no 10 %. No es un problema (la horda del
+  tutorial no importa hasta que el `TutorialDirector` la suelta en el paso final, y ahí la
+  distancia la maneja el propio Director), pero el número está mal explicado en el comentario.
+- `ResplandorHorda` sigue colgado de "Nivel" en `NivelBase.unity`, `Level_01.unity` y
+  `Level_02.unity` (hallazgo de la tarea 3): en `Tutorial.unity` se lo reparentó a la raíz porque
+  el test nuevo de esa tarea lo exige, pero los tres niveles viejos quedaron con el criterio
+  anterior (no rompe nada hoy, ver sección 0 "Escenas del juego definitivo"). Si se quiere
+  unificar el criterio es un cambio de una línea por escena.
+- Sin test EditMode de `GameFlow.JumpToTutorial()` (tarea 1) ni de la carrera de etiquetas del
+  cartel a mitad de un fundido de esquema de control (tarea 4, ver su reporte "Fix (review 1)").
+- `LevelFlowBridge` ignorando un `Lost` durante el tutorial no tiene cobertura automática, solo
+  el Play check dirigido de la tarea 4 que encontró el bug original.
+- `InputDeviceTrackerTests.HintsText_MatchesTheScheme` solo verifica `Contains` sobre el texto
+  armado, no una comparación exacta carácter a carácter.
 
 ### Fase 3 — Contenido y balance (T17, T23)
 La ruta ya existe y es superable, pero está generada por algoritmo. Falta pasarle la mano:

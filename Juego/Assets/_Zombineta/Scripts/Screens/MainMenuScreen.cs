@@ -6,6 +6,8 @@ namespace Zombineta.Juego.Screens
     {
         public void Play() => Flow?.Play();
 
+        public void OpenTutorial() => Flow?.OpenTutorial();
+
         public void OpenOptions() => Flow?.OpenOptions();
 
         public void OpenCredits() => Flow?.OpenCredits();
