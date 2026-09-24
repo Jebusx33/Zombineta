@@ -29,36 +29,36 @@ reglas de la simulación.
 
 ## 1. Flujo
 
-`GameScreen` suma `Tutorial` al final del enum. Es un cambio aditivo en la simulación compartida,
-y el prototipo no lo usa.
+El tutorial corre como una partida más (`GameScreen.Playing`), con la marca
+`GameFlow.EnTutorial` en `true`. No se agrega una pantalla nueva: la moto, la cámara, la pausa,
+la vibración, la música y el sonido ya tratan `Playing` como "la partida está corriendo", y así
+siguen andando sin tocarlos. `GameFlow` es compartido, y todo lo que suma es aditivo:
 
-`GameFlow` suma:
+- `bool TutorialPendiente { get; set; }`: lo pone `GameRoot` desde `GameSettings.TutorialVisto`.
+- `bool EnTutorial { get; }`.
+- `event Action TutorialTerminado`: `GameRoot` marca `TutorialVisto = true` al recibirlo.
+- `ChooseCharacter(i)`: si `TutorialPendiente`, entra al tutorial (`EnTutorial = true`,
+  `LevelIndex = 0`, `Attempt++`, pasa a `Playing`). Si no, va a `Cinematic` como hoy.
+- `OpenTutorial()`: solo desde `MainMenu`. Entra al tutorial y recuerda que vino del menú.
+- `TutorialFinished()`: solo con `EnTutorial`, desde `Playing` o `Paused`. Apaga `EnTutorial`,
+  pone `TutorialPendiente = false`, dispara `TutorialTerminado`, y va a `MainMenu` si vino del
+  menú; si no, a `Cinematic` del nivel 1.
+- `SkipTutorial()`: solo desde `Paused` con `EnTutorial`. Equivale a `TutorialFinished()`.
+- Durante el tutorial, `LevelWon()` y `LevelLost()` se ignoran (devuelven false).
+- `Retry()` desde la pausa reinicia el tutorial: es el comportamiento que ya tiene.
+- `ToMainMenu()` desde la pausa sale del tutorial sin marcarlo como visto.
+- `JumpToTutorial()`: para dar Play directo en `Tutorial.unity` desde el editor.
 
-- **`bool TutorialPendiente { get; set; }`**: lo pone `GameRoot` desde
-  `GameSettings.TutorialVisto`. El flujo no lee settings.
-- **`ChooseCharacter(i)`**: si `TutorialPendiente`, va a `Tutorial` con `LevelIndex = 0`. Si no,
-  va a `Cinematic`, como hoy.
-- **`OpenTutorial()`**: solo desde `MainMenu`. Va a `Tutorial` y recuerda que vino del menú.
-- **`TutorialFinished()`**: solo desde `Tutorial`. Si vino del menú, vuelve a `MainMenu`. Si no,
-  sigue a `Cinematic` del nivel 1. En los dos casos pone `TutorialPendiente = false`.
-- **Pausa:**
-  - `Pause()` / `Resume()` se aceptan también desde y hacia `Tutorial`.
-  - La pausa recuerda si venía de `Playing` o de `Tutorial`.
-  - `Retry()` desde la pausa del tutorial reinicia el tutorial.
-- **Saltear:** `SkipTutorial()`, desde la pausa del tutorial, equivale a `TutorialFinished()`.
-- **`Attempt`:** entrar al tutorial lo incrementa, igual que empezar un nivel, para que la escena
-  se recargue de cero.
+`GameSettings.TutorialVisto`: bool, clave `zombineta.tutorialSeen`, default false.
 
-`GameSettings.TutorialVisto` es un bool, clave `zombineta.tutorialSeen`, default false. `GameRoot`
-lo marca en `true` cuando el flujo sale de `Tutorial` hacia `Cinematic` o `MainMenu`, y copia su
-valor a `TutorialPendiente` al arrancar.
-
-`SceneRoutePlanner`:
-
-- `Tutorial` es una base, con escena `Tutorial`.
-- La pausa del tutorial es la misma capa `Pause`.
-- `SceneNames.Tutorial`, Build Settings después de `Cinematic`, y `GameRoot.TryScreenOf` la
-  conocen, para poder dar Play desde la escena.
+`GameRoot`:
+- Carga la escena `Tutorial` en vez de la del nivel cuando `EnTutorial`.
+- `CurrentLevel` devuelve el `LevelInfo` del tutorial, un campo serializado propio de `GameRoot`
+  con `sceneName = "Tutorial"` y el `audio` del nivel 1. No forma parte de `Niveles.asset`,
+  porque no es un nivel de la campaña.
+- Reconoce `Tutorial.unity` como escena de entrada.
+- `SceneNames.Tutorial`.
+- Build Settings la tiene después de `Cinematic`.
 
 ## 2. Escena y recorrido
 
@@ -78,8 +78,6 @@ valor a `TutorialPendiente` al arrancar.
   - zombies de adelante;
   - el refugio al final.
 - **La música del nivel 1**, a través de su `AudioDeNivel`.
-- **Su propio `LevelInfo`:** no forma parte de `Niveles.asset`, porque no es un nivel de la
-  campaña. Lo referencian directamente `GameRoot` y el director.
 
 ## 3. Pasos
 
@@ -134,9 +132,8 @@ recargas:
   2. aleja la horda 35 m;
   3. muestra "¡Te alcanzaron! Dispará o usá el faro";
   4. sigue en el paso 10.
-- **`LevelFlowBridge` en el tutorial** tiene la propiedad `EsTutorial`. No llama a `LevelLost`.
-  Al ganar llama a `Flow.TutorialFinished()` en vez de `LevelWon`, así que no pasa por
-  `LevelComplete`.
+- **`LevelFlowBridge` con `Flow.EnTutorial`:** nunca llama a `LevelLost`. Al ganar llama a
+  `Flow.TutorialFinished()` en vez de `LevelWon`, así que no pasa por `LevelComplete`.
 - **Victoria:** la moto llega al refugio con la animación de siempre. Después sale el cartel
   "¡Listo! Ya sabés jugar" durante 2 s, y el director pasa al flujo.
 
@@ -146,7 +143,7 @@ recargas:
   Es legible sobre el escenario gracias a un fondo semitransparente y un contorno.
 - **Resaltado de barra:** un marco que titila sobre la barra del HUD indicada.
 - **Avisos:** en un panel más chico, abajo del cartel del paso. Duran 2,5 s.
-- **Pausa:** la opción "Saltear tutorial" se muestra solo si la pausa viene del tutorial. En el
+- **Pausa:** la opción "Saltear tutorial" se muestra solo con `EnTutorial`. En el
   tutorial, "Reintentar" reinicia desde el paso 1.
 - **Menú principal:** el botón "Tutorial" va entre Jugar y Opciones, con la navegación rehecha.
 
@@ -159,8 +156,8 @@ recargas:
   - `OpenTutorial` desde el menú vuelve al menú;
   - `SkipTutorial`;
   - pausa y reanudar desde el tutorial;
-  - `Tutorial` es el último valor del enum.
-- Planner: `Tutorial` es una base.
+  - `LevelWon` y `LevelLost` se ignoran en el tutorial;
+  - `ToMainMenu` desde la pausa no marca el tutorial como visto.
 - `TutorialProgreso`: cada condición, y que los eventos de otro paso no hagan avanzar.
 - `TutorialRecursos`: el umbral, que avise una sola vez, la recarga en 0 y la munición en los
   pasos finales.
