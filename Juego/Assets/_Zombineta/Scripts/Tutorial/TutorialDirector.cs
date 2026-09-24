@@ -61,7 +61,6 @@ namespace Zombineta.Tutorial
         int prevAmmo;
 
         ControlScheme esquemaActual;
-        bool finalMostrado;
 
         void OnEnable()
         {
@@ -107,7 +106,7 @@ namespace Zombineta.Tutorial
         void OnEsquemaCambiado(ControlScheme scheme)
         {
             esquemaActual = scheme;
-            if (!finalMostrado && progreso != null && progreso.Actual != null && cartel != null)
+            if (progreso != null && progreso.Actual != null && cartel != null)
                 cartel.MostrarPasoInmediato(ControlHints.Resolver(progreso.Actual.texto, esquemaActual));
         }
 
@@ -137,21 +136,25 @@ namespace Zombineta.Tutorial
             if (d.recargarNafta)
             {
                 state.Fuel = cfg.fuelMax * recursos.Recarga;
-                cartel.MostrarAviso(RecargaNaftaTexto, duracionAviso);
+                if (cartel != null)
+                    cartel.MostrarAviso(RecargaNaftaTexto, duracionAviso);
             }
             else if (d.avisoNafta)
             {
-                cartel.MostrarAviso(AvisoNaftaTexto, duracionAviso);
+                if (cartel != null)
+                    cartel.MostrarAviso(AvisoNaftaTexto, duracionAviso);
             }
 
             if (d.recargarBateria)
             {
                 state.Battery = cfg.batteryMax * recursos.Recarga;
-                cartel.MostrarAviso(RecargaBateriaTexto, duracionAviso);
+                if (cartel != null)
+                    cartel.MostrarAviso(RecargaBateriaTexto, duracionAviso);
             }
             else if (d.avisoBateria)
             {
-                cartel.MostrarAviso(AvisoBateriaTexto, duracionAviso);
+                if (cartel != null)
+                    cartel.MostrarAviso(AvisoBateriaTexto, duracionAviso);
             }
 
             if (d.recargarMunicion)
@@ -172,25 +175,42 @@ namespace Zombineta.Tutorial
 
             ActualizarHorda(state);
 
-            if (!finalMostrado && state.Phase == RunPhase.Won)
+            // Ya se completo el progreso en un cuadro anterior (ver mas abajo): no seguir
+            // evaluando pasos, resaltado ni rebobinado. LevelFlowBridge maneja el resto del flujo
+            // despues del plano de victoria.
+            if (progreso.Terminado)
             {
-                finalMostrado = true;
-                cartel.Resaltar(null);
-                cartel.MostrarPaso(FinalTexto);
                 eventosDelCuadro = RunEvent.None;
                 return;
             }
 
-            if (state.Phase != RunPhase.Running)
+            // Running y Won (recien llegada la meta) pasan por ConstruirEntrada/Avanzar: el
+            // paso LlegarMeta necesita EntradaPaso.meta para que TutorialProgreso.Terminado
+            // llegue a ser true. Cualquier otra fase (Lost sin perdonar todavia, por ejemplo) no
+            // tiene nada util que avanzar este cuadro.
+            if (state.Phase != RunPhase.Running && state.Phase != RunPhase.Won)
             {
                 eventosDelCuadro = RunEvent.None;
                 return;
             }
 
             var entrada = ConstruirEntrada(state);
-            bool avanzo = !progreso.Terminado && progreso.Avanzar(entrada);
+            bool avanzo = progreso.Avanzar(entrada);
             ActualizarCache(state);
             eventosDelCuadro = RunEvent.None;
+
+            if (progreso.Terminado)
+            {
+                // El Avanzar de este cuadro fue el que cerro el ultimo paso (LlegarMeta): mostrar
+                // el cartel final una sola vez, en el mismo cuadro (el guard de arriba evita que
+                // se repita en los siguientes).
+                if (cartel != null)
+                {
+                    cartel.Resaltar(null);
+                    cartel.MostrarPaso(FinalTexto);
+                }
+                return;
+            }
 
             if (avanzo)
                 MostrarPasoActual();

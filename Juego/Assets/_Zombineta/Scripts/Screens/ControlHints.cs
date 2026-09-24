@@ -38,11 +38,26 @@ namespace Zombineta.Juego.Screens
 
         static readonly Regex Marcador = new Regex("\\{(\\w+)\\}", RegexOptions.Compiled);
 
+        // "carril" (combina LaneUp+LaneDown en una sola frase distinta de sus etiquetas
+        // individuales) y "pausa" (la accion de pausa no esta en la tabla de marcadores) no se
+        // pueden armar a partir de EtiquetasTeclado/EtiquetasGamepad sin inventar una regla ad
+        // hoc: quedan como literales minimos. Turbo/Reverse/Fire/Headlight si duplicaban la tabla
+        // letra por letra, asi que salen de Accion(...) para vivir en un solo lugar.
         public static string TextFor(ControlScheme scheme)
         {
-            string firstLine = scheme == ControlScheme.Gamepad
-                ? "Stick o cruceta carril · RT turbo · LT retroceso · X o RB disparar · Y faro · Start pausa"
-                : "W/S o ↑/↓ carril · D turbo · A retroceso · X o click disparar · Espacio faro · Esc pausa";
+            bool gamepad = scheme == ControlScheme.Gamepad;
+            string carril = gamepad ? "Stick o cruceta carril" : "W/S o ↑/↓ carril";
+            string pausa = gamepad ? "Start pausa" : "Esc pausa";
+
+            string firstLine = string.Join(" · ", new[]
+            {
+                carril,
+                Accion("Turbo", scheme) + " turbo",
+                Accion("Reverse", scheme) + " retroceso",
+                Accion("Fire", scheme) + " disparar",
+                Accion("Headlight", scheme) + " faro",
+                pausa,
+            });
             return firstLine + "\n" + SecondLine;
         }
 

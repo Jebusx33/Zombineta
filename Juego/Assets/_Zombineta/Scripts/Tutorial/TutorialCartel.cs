@@ -34,6 +34,13 @@ namespace Zombineta.Tutorial
         Coroutine avisoRoutine;
         RectTransform[] resaltadoObjetivos;
 
+        // El texto que "deberia" estar mostrandose ahora mismo: lo actualizan tanto MostrarPaso
+        // como MostrarPasoInmediato, y es lo unico que lee FundirYCambiar en el momento del
+        // cambio (no un string capturado al arrancar la corrutina). Asi, si un cambio de esquema
+        // llega a mitad de un fundido, el ultimo texto pedido es siempre el que queda escrito,
+        // sin importar el orden de llegada.
+        string textoPendiente;
+
         void Awake()
         {
             if (pasoGroup != null) pasoGroup.alpha = 0f;
@@ -44,6 +51,8 @@ namespace Zombineta.Tutorial
         /// <summary>Cambia el cartel del paso con un fundido: se apaga, cambia el texto y se prende.</summary>
         public void MostrarPaso(string texto)
         {
+            textoPendiente = texto;
+
             if (pasoGroup == null)
             {
                 MostrarPasoInmediato(texto);
@@ -52,12 +61,18 @@ namespace Zombineta.Tutorial
 
             if (pasoRoutine != null)
                 StopCoroutine(pasoRoutine);
-            pasoRoutine = StartCoroutine(FundirYCambiar(pasoGroup, pasoText, texto, duracionFade));
+            pasoRoutine = StartCoroutine(FundirYCambiar(pasoGroup, pasoText, duracionFade));
         }
 
-        /// <summary>Cambia el texto sin fundido: para cuando solo cambio el dispositivo (los marcadores).</summary>
+        /// <summary>
+        /// Cambia el texto sin fundido: para cuando solo cambio el dispositivo (los marcadores).
+        /// Tambien actualiza textoPendiente, asi que si llega a mitad de un fundido en curso
+        /// (MostrarPaso todavia corriendo), ese fundido escribe este texto en vez del que tenia
+        /// capturado al arrancar.
+        /// </summary>
         public void MostrarPasoInmediato(string texto)
         {
+            textoPendiente = texto;
             if (pasoText != null)
                 pasoText.text = texto;
             if (pasoGroup != null && pasoRoutine == null)
@@ -160,12 +175,14 @@ namespace Zombineta.Tutorial
             resaltadoFrame.anchoredPosition = (min + max) * 0.5f - anchorRef;
         }
 
-        IEnumerator FundirYCambiar(CanvasGroup grupo, Text texto, string nuevo, float duracion)
+        IEnumerator FundirYCambiar(CanvasGroup grupo, Text texto, float duracion)
         {
             float mitad = Mathf.Max(0.01f, duracion * 0.5f);
             yield return Fundir(grupo, grupo.alpha, 0f, mitad);
+            // Lee textoPendiente ahora, no un valor capturado al arrancar: si MostrarPasoInmediato
+            // se llamo mientras se apagaba (cambio de esquema a mitad del fundido), gana su texto.
             if (texto != null)
-                texto.text = nuevo;
+                texto.text = textoPendiente;
             yield return Fundir(grupo, 0f, 1f, mitad);
             pasoRoutine = null;
         }
