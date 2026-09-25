@@ -144,3 +144,7 @@ __pycache__/
 .pytest_cache/
 desktop.ini
 ~$*
+
+# Audio: originales reemplazados que se guardan a mano en una carpeta "old" (solo locales)
+/Juego/Assets/_Zombineta/Audio/**/old/
+/Juego/Assets/_Zombineta/Audio/**/old.meta
