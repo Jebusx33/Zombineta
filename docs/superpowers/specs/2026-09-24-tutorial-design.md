@@ -66,9 +66,9 @@ siguen andando sin tocarlos. `GameFlow` es compartido, y todo lo que suma es adi
 
 - **Su propia configuración**, `Settings/TutorialConfig.asset`: una copia de `GameConfig` con la
   horda más lenta y arrancando lejos (`startingGap` grande). La horda queda fuera de juego hasta
-  el paso final, porque el director la mantiene lejos (ver 5).
-- **Su recorrido**, `Settings/Niveles/Tutorial.asset`, de unos 600 a 700 m, armado con el editor
-  de niveles. Tiene un tramo por paso, y cada tramo **repite su objeto** cada 30 a 40 m para que
+  el paso de disparo, porque el director la mantiene lejos (ver 5).
+- **Su recorrido**, armado en la propia escena como `LevelItem` hijos de `Nivel` (la misma fuente
+  que usa `LevelScene` en los niveles armados a mano), de unos 600 a 700 m. Tiene un tramo por paso, y cada tramo **repite su objeto** cada 30 a 40 m para que
   el paso nunca se trabe si el jugador se pasa uno:
   - rampas;
   - bidones;
@@ -99,11 +99,19 @@ de `Paso`:
 | 2 | Mantené {Reverse} para frenar y retroceder | Marcha atrás sostenida 1 s |
 | 3 | {LaneUp} / {LaneDown} cambian de carril | Un cambio de carril hacia cada lado |
 | 4 | Pasá por la rampa. En el aire, {Turbo} / {Reverse} inclinan | `Launched` y después `Landed` |
-| 5 | Agarrá un bidón: es tu nafta | `PickedUp` de nafta |
-| 6 | La batería alimenta el faro | `PickedUp` de batería |
-| 7 | Balas para defenderte | `PickedUp` de munición |
+| 5 | Agarrá un bidón: es tu nafta | Un bidón del recorrido consumido |
+| 6 | La batería alimenta el faro | Una batería del recorrido consumida |
+| 7 | Balas para defenderte | Una caja de balas del recorrido consumida |
 | 8 | {Headlight} prende el faro: gasta batería | Faro prendido 2 s |
-| 9 | {Fire} dispara a los zombies de adelante | `Shot` que golpea (`ShotMissed` no cuenta) |
+| 9 | {Fire} dispara hacia atrás. Pegale a la horda. | `Shot` que golpea (`ShotMissed` no cuenta) |
+
+Los pickups se cuentan por el item consumido (`LevelRuntime.Item.Consumed` pasa de false a true
+ese cuadro), no porque el recurso suba: la batería arranca llena y recién el faro (paso 8) la
+gasta, así que con la regla "el recurso subió" el paso 6 no se podía cumplir.
+
+El arma solo dispara hacia atrás (`RunSimulation.ApplyFire` busca `Horde.NearestBehind` o un
+barril); los zombies de frente del recorrido solo se pueden arrollar y quedan como obstáculos. Por
+eso el paso 9 enseña a dispararle a la horda de atrás, que el director acerca para ese paso (ver 5).
 | 10 | ¡La horda! Disparar la empuja y el faro la frena. Llegá al refugio | Llegar a la meta |
 
 La lógica de avance es C# plano y está testeada: `TutorialProgreso`. Recibe los eventos y la
@@ -124,14 +132,24 @@ recargas:
 
 ## 5. Horda y final
 
-- **Pasos 1 a 9:** en cada cuadro, el director mantiene la horda a una distancia fija detrás de
-  la moto (60 m) con `Sim.Horde.Reset(...)`. Así no amenaza y la barra de amenaza queda vacía.
-- **Paso 10:** la suelta. Si la alcanza (`Phase == Lost` con `LossReason.CaughtByHorde`), el
-  director:
-  1. devuelve `Phase` a `Running`;
-  2. aleja la horda 35 m;
-  3. muestra "¡Te alcanzaron! Dispará o usá el faro";
-  4. sigue en el paso 10.
+- **Pasos 1 a 8:** en cada cuadro, antes del Tick, el director mantiene la horda a una distancia
+  fija detrás de la moto (60 m) con `Sim.Horde.ShiftTo(...)`: corre la horda entera sin
+  regenerarla, así conserva carriles, looks y los eventos del tick para sonido y efectos. No
+  amenaza.
+- **Paso 9:** la misma horda tenida, pero a 12 m: bien adentro del alcance del tiro
+  (`shotRangeMeters`, 60 m) y con los primeros zombies a la vista en pantalla.
+- **Paso 10:** la suelta. Si en el Tick de este cuadro te puede alcanzar (la distancia es menor
+  que 2 m más lo que la horda puede cerrar en ese dt; la simulación pierde con
+  `HordeX >= PlayerX`), el director, **antes** del Tick:
+  1. aleja la horda 35 m;
+  2. muestra "¡Te alcanzaron! Dispará o usá el faro";
+  3. sigue en el paso 10.
+  Así la simulación nunca emite `Lost` y el motor, la cámara y el flujo no se enteran. Si igual
+  se colara un `Lost` (un dt enorme), el director lo devuelve a `Running` después del Tick como
+  red de seguridad, y `MotorSonido` vuelve a arrancar si ve `Running` después de haberse apagado.
+- **Llegar al refugio antes del paso 10** (F2 en el editor, un salto de tiempo) no cuenta: el
+  director deshace el `Won` y rebobina como el guardia de la meta, y `LevelFlowBridge` no arranca
+  el plano de victoria.
 - **`LevelFlowBridge` con `Flow.EnTutorial`:** nunca llama a `LevelLost`. Al ganar llama a
   `Flow.TutorialFinished()` en vez de `LevelWon`, así que no pasa por `LevelComplete`.
 - **Victoria:** la moto llega al refugio con la animación de siempre. Después sale el cartel

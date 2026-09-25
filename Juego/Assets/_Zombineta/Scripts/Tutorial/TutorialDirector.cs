@@ -8,16 +8,15 @@ using Zombineta.UI;
 namespace Zombineta.Tutorial
 {
     /// <summary>
-    /// Encadena los pasos del tutorial sin tocar las reglas del juego (spec
-    /// docs/superpowers/specs/2026-09-24-tutorial-design.md, secciones 3 a 6): arma el
-    /// EntradaPaso de cada cuadro a partir de RunController, avisa y recarga recursos en 0,
-    /// mantiene la horda a raya hasta el ultimo paso y perdona si te alcanza, resalta la barra
-    /// del HUD del paso actual y rebobina si un lector lento se paso de largo un tramo entero.
+    /// Adaptador de Unity del tutorial (spec docs/superpowers/specs/2026-09-24-tutorial-design.md,
+    /// secciones 3 a 6). La logica de cada cuadro vive en TutorialSesion (C# plano, testeada de
+    /// punta a punta); aca solo se la llama en el orden correcto y se muestra lo que pide:
+    /// cartel del paso, avisos, resaltado de la barra del HUD y el salto de camara al rebobinar.
     ///
-    /// Orden de ejecucion -150: antes que RunController (-100). Update aplica la recarga de
-    /// recursos ANTES del Tick de este cuadro (para que la nafta nunca llegue a 0 en la
-    /// simulacion); LateUpdate (siempre despues de todos los Update, sea cual sea su orden) lee
-    /// lo que dejo el Tick: eventos, horda, rebobinado y el cartel del paso.
+    /// Orden de ejecucion -150: antes que RunController (-100). Update llama a
+    /// TutorialSesion.AntesDelTick (recargas, horda tenida y perdon del alcance ANTES del Tick,
+    /// asi los eventos del Tick llegan enteros a sonido y efectos y nunca se emite Lost);
+    /// LateUpdate (despues de todos los Update) llama a DespuesDelTick con los eventos del Tick.
     /// </summary>
     [DefaultExecutionOrder(-150)]
     public sealed class TutorialDirector : MonoBehaviour
@@ -31,8 +30,14 @@ namespace Zombineta.Tutorial
         [Header("Horda")]
         [Tooltip("Metros detras del jugador donde se mantiene la horda mientras el paso no la suelta.")]
         [SerializeField] float distanciaHordaTenida = 60f;
+        [Tooltip("Metros detras del jugador donde se mantiene la horda en el paso de disparo: dentro " +
+                 "del alcance del tiro (shotRangeMeters) y con los primeros zombies a la vista.")]
+        [SerializeField] float distanciaHordaDisparo = 12f;
         [Tooltip("Metros que se aleja la horda cuando alcanza al jugador en el paso final.")]
         [SerializeField] float distanciaHordaAlAlcanzar = 35f;
+        [Tooltip("Con la horda a menos de esto (mas lo que puede cerrar en el cuadro) se perdona el " +
+                 "alcance antes del Tick.")]
+        [SerializeField] float margenAlcance = 2f;
 
         [Header("Recursos")]
         [SerializeField] float umbralAvisoRecurso = 0.2f;
@@ -41,31 +46,41 @@ namespace Zombineta.Tutorial
         [Header("Tiempos")]
         [SerializeField] float duracionAviso = 2.5f;
 
-        // --- Textos verbatim del spec (§4-§5) ---------------------------------------------
-
-        const string AvisoNaftaTexto = "¡Poca nafta! Agarrá un bidón.";
-        const string AvisoBateriaTexto = "¡Poca batería! Agarrá una batería.";
-        const string RecargaNaftaTexto = "En el juego te quedarías sin nafta: te la recargamos para que sigas.";
-        const string RecargaBateriaTexto = "En el juego te quedarías sin batería: te la recargamos para que sigas.";
-        const string AlcanzadoTexto = "¡Te alcanzaron! Dispará o usá el faro";
-        const string FinalTexto = "¡Listo! Ya sabés jugar";
-        const string RebobinadoTexto = "Volvamos a intentarlo.";
-
-        TutorialProgreso progreso;
-        TutorialRecursos recursos;
+        TutorialSesion sesion;
         InputDeviceTracker tracker;
-
         RunEvent eventosDelCuadro;
-        int prevLane;
-        float prevFuel, prevBattery;
-        int prevAmmo;
-
         ControlScheme esquemaActual;
+
+        // Los rectangulos a resaltar, armados una vez (no en cada cuadro).
+        RectTransform[] rectsNafta, rectsBateria, rectsMunicion, rectsAmenaza;
+
+        /// <summary>Los numeros de este director, tal como los usa la sesion.</summary>
+        public AjustesTutorial Ajustes => new AjustesTutorial
+        {
+            distanciaHordaTenida = distanciaHordaTenida,
+            distanciaHordaDisparo = distanciaHordaDisparo,
+            distanciaHordaAlAlcanzar = distanciaHordaAlAlcanzar,
+            margenAlcance = margenAlcance,
+            umbralAvisoRecurso = umbralAvisoRecurso,
+            recargaRecurso = recargaRecurso,
+        };
+
+        /// <summary>
+        /// Si llegar al refugio ahora termina el tutorial (solo en el ultimo paso). Lo consulta
+        /// LevelFlowBridge antes de arrancar el plano de victoria. Sin sesion, no traba nada.
+        /// </summary>
+        public bool PermiteGanar => sesion == null || sesion.PermiteGanar;
+
+        /// <summary>La sesion en curso (null antes de Start). Para depurar por la CLI.</summary>
+        public TutorialSesion Sesion => sesion;
 
         void OnEnable()
         {
             if (run != null)
+            {
                 run.Stepped += AcumularEventos;
+                run.Restarted += AlReiniciar;
+            }
 
             tracker = InputDeviceTracker.Shared;
             if (tracker != null)
@@ -78,7 +93,10 @@ namespace Zombineta.Tutorial
         void OnDisable()
         {
             if (run != null)
+            {
                 run.Stepped -= AcumularEventos;
+                run.Restarted -= AlReiniciar;
+            }
             if (tracker != null)
                 tracker.Changed -= OnEsquemaCambiado;
             tracker = null;
@@ -86,261 +104,105 @@ namespace Zombineta.Tutorial
 
         void Start()
         {
-            progreso = new TutorialProgreso(pasos != null ? (IReadOnlyList<Paso>)pasos.pasos : new List<Paso>());
-            recursos = new TutorialRecursos(umbralAvisoRecurso, recargaRecurso);
+            ArmarRects();
 
-            if (run != null && run.Sim != null)
-            {
-                var s = run.Sim.State;
-                prevLane = s.Lane;
-                prevFuel = s.Fuel;
-                prevBattery = s.Battery;
-                prevAmmo = s.Ammo;
-            }
+            if (run == null || run.Sim == null)
+                return;
+
+            var lista = pasos != null ? (IReadOnlyList<Paso>)pasos.pasos : new List<Paso>();
+            sesion = new TutorialSesion(run.Sim, run.Level, lista, Ajustes);
+            sesion.Aviso += MostrarAviso;
+            sesion.PasoCambiado += MostrarPasoActual;
+            sesion.Terminado += MostrarFinal;
+            sesion.Rebobinado += SaltarCamara;
 
             MostrarPasoActual();
         }
 
         void AcumularEventos(RunEvent e) => eventosDelCuadro |= e;
 
+        void AlReiniciar() => sesion?.Sincronizar();
+
         void OnEsquemaCambiado(ControlScheme scheme)
         {
             esquemaActual = scheme;
-            if (progreso != null && progreso.Actual != null && cartel != null)
-                cartel.MostrarPasoInmediato(ControlHints.Resolver(progreso.Actual.texto, esquemaActual));
+            var actual = sesion?.Actual;
+            if (actual != null && cartel != null)
+                cartel.MostrarPasoInmediato(ControlHints.Resolver(actual.texto, esquemaActual));
         }
 
-        // --- Update (-150, antes que RunController): recarga los recursos ANTES del Tick -------
+        // --- Update (-150, antes que RunController): recargas y horda ANTES del Tick ----------
 
         void Update()
         {
-            if (run == null || run.Sim == null || progreso == null)
-                return;
-
-            var state = run.Sim.State;
-            if (state.Phase != RunPhase.Running)
-                return;
-
-            AplicarRecarga(state);
+            sesion?.AntesDelTick(Time.deltaTime);
         }
 
-        void AplicarRecarga(RunState state)
-        {
-            var cfg = run.Config;
-            float fuel01 = cfg.fuelMax > 0f ? state.Fuel / cfg.fuelMax : 0f;
-            float battery01 = cfg.batteryMax > 0f ? state.Battery / cfg.batteryMax : 0f;
-            bool recargaMunicion = EsPasoDeRecargaMunicion();
-
-            var d = recursos.Evaluar(fuel01, battery01, state.Ammo, recargaMunicion);
-
-            if (d.recargarNafta)
-            {
-                state.Fuel = cfg.fuelMax * recursos.Recarga;
-                if (cartel != null)
-                    cartel.MostrarAviso(RecargaNaftaTexto, duracionAviso);
-            }
-            else if (d.avisoNafta)
-            {
-                if (cartel != null)
-                    cartel.MostrarAviso(AvisoNaftaTexto, duracionAviso);
-            }
-
-            if (d.recargarBateria)
-            {
-                state.Battery = cfg.batteryMax * recursos.Recarga;
-                if (cartel != null)
-                    cartel.MostrarAviso(RecargaBateriaTexto, duracionAviso);
-            }
-            else if (d.avisoBateria)
-            {
-                if (cartel != null)
-                    cartel.MostrarAviso(AvisoBateriaTexto, duracionAviso);
-            }
-
-            if (d.recargarMunicion)
-                state.Ammo = Mathf.Max(1, Mathf.RoundToInt(cfg.ammoMax * recursos.Recarga));
-        }
-
-        bool EsPasoDeRecargaMunicion() =>
-            progreso.Indice == 8 || progreso.Indice == 9;
-
-        // --- LateUpdate: siempre despues de todos los Update de este cuadro (incluido el Tick) -
+        // --- LateUpdate: despues de todos los Update de este cuadro (incluido el Tick) --------
 
         void LateUpdate()
         {
-            if (run == null || run.Sim == null || progreso == null)
+            if (sesion == null)
                 return;
 
-            var state = run.Sim.State;
-
-            ActualizarHorda(state);
-
-            // Ya se completo el progreso en un cuadro anterior (ver mas abajo): no seguir
-            // evaluando pasos, resaltado ni rebobinado. LevelFlowBridge maneja el resto del flujo
-            // despues del plano de victoria.
-            if (progreso.Terminado)
-            {
-                eventosDelCuadro = RunEvent.None;
-                return;
-            }
-
-            // Running y Won (recien llegada la meta) pasan por ConstruirEntrada/Avanzar: el
-            // paso LlegarMeta necesita EntradaPaso.meta para que TutorialProgreso.Terminado
-            // llegue a ser true. Cualquier otra fase (Lost sin perdonar todavia, por ejemplo) no
-            // tiene nada util que avanzar este cuadro.
-            if (state.Phase != RunPhase.Running && state.Phase != RunPhase.Won)
-            {
-                eventosDelCuadro = RunEvent.None;
-                return;
-            }
-
-            var entrada = ConstruirEntrada(state);
-            bool avanzo = progreso.Avanzar(entrada);
-            ActualizarCache(state);
+            sesion.DespuesDelTick(eventosDelCuadro, Time.deltaTime);
             eventosDelCuadro = RunEvent.None;
-
-            if (progreso.Terminado)
-            {
-                // El Avanzar de este cuadro fue el que cerro el ultimo paso (LlegarMeta): mostrar
-                // el cartel final una sola vez, en el mismo cuadro (el guard de arriba evita que
-                // se repita en los siguientes).
-                if (cartel != null)
-                {
-                    cartel.Resaltar(null);
-                    cartel.MostrarPaso(FinalTexto);
-                }
-                return;
-            }
-
-            if (avanzo)
-                MostrarPasoActual();
-
-            var actual = progreso.Actual;
-            if (cartel != null)
-                cartel.Resaltar(actual != null ? RectsDe(actual.resaltar) : null);
-
-            if (actual != null)
-                AplicarRebobinadoSiHaceFalta(state, actual);
         }
 
-        void ActualizarHorda(RunState state)
-        {
-            bool suelta = progreso.Terminado || (progreso.Actual != null && progreso.Actual.hordaSuelta);
-
-            if (!suelta)
-            {
-                run.Sim.Horde.Reset(state.PlayerX - distanciaHordaTenida);
-                state.HordeX = run.Sim.Horde.FrontX;
-                return;
-            }
-
-            if (state.Phase == RunPhase.Lost)
-            {
-                // Nunca hay Game Over en el tutorial: se perdona, se aleja la horda y se repite
-                // el paso final. Cubre tanto CaughtByHorde como un OutOfFuel que se hubiera
-                // colado (la recarga de Update ya deberia haberlo evitado, pero si pasa se
-                // deshace igual que el alcance de la horda).
-                state.Phase = RunPhase.Running;
-                state.Loss = LossReason.None;
-                run.Sim.Horde.Reset(state.PlayerX - distanciaHordaAlAlcanzar);
-                state.HordeX = run.Sim.Horde.FrontX;
-                if (cartel != null)
-                    cartel.MostrarAviso(AlcanzadoTexto, duracionAviso);
-            }
-        }
-
-        EntradaPaso ConstruirEntrada(RunState state)
-        {
-            int deltaCarril = state.Lane - prevLane;
-            bool acierto = (eventosDelCuadro & RunEvent.Shot) != 0 && (eventosDelCuadro & RunEvent.ShotMissed) == 0;
-
-            return new EntradaPaso
-            {
-                dt = Time.deltaTime,
-                eventos = eventosDelCuadro,
-                modo = state.Mode,
-                faroPrendido = state.HeadlightOn,
-                deltaCarril = deltaCarril,
-                nafta = state.Fuel,
-                naftaPrevia = prevFuel,
-                bateria = state.Battery,
-                bateriaPrevia = prevBattery,
-                municion = state.Ammo,
-                municionPrevia = prevAmmo,
-                meta = state.Phase == RunPhase.Won,
-                acierto = acierto,
-            };
-        }
-
-        void ActualizarCache(RunState state)
-        {
-            prevLane = state.Lane;
-            prevFuel = state.Fuel;
-            prevBattery = state.Battery;
-            prevAmmo = state.Ammo;
-        }
+        // --- Lo que pide la sesion --------------------------------------------------------
 
         void MostrarPasoActual()
         {
-            if (cartel == null || progreso.Actual == null)
+            var actual = sesion?.Actual;
+            if (cartel == null || actual == null)
                 return;
-            cartel.MostrarPaso(ControlHints.Resolver(progreso.Actual.texto, esquemaActual));
+            cartel.MostrarPaso(ControlHints.Resolver(actual.texto, esquemaActual));
+            cartel.Resaltar(RectsDe(actual.resaltar));
+        }
+
+        void MostrarFinal()
+        {
+            if (cartel == null)
+                return;
+            cartel.Resaltar(null);
+            cartel.MostrarPaso(TutorialSesion.FinalTexto);
+        }
+
+        void MostrarAviso(string texto)
+        {
+            if (cartel != null)
+                cartel.MostrarAviso(texto, duracionAviso);
+        }
+
+        void SaltarCamara()
+        {
+            // Sin esto la camara cruzaria en un cuadro todo el tramo rebobinado.
+            if (camaraFollow != null)
+                camaraFollow.SnapNextFrame();
+        }
+
+        void ArmarRects()
+        {
+            if (hud == null)
+                return;
+            rectsNafta = Uno(hud.FuelBarRect);
+            rectsBateria = Uno(hud.BatteryBarRect);
+            rectsMunicion = hud.AmmoPipRects;
+            rectsAmenaza = Uno(hud.ThreatBarRect);
         }
 
         RectTransform[] RectsDe(BarraHud barra)
         {
-            if (hud == null)
-                return null;
-
             switch (barra)
             {
-                case BarraHud.Nafta: return Uno(hud.FuelBarRect);
-                case BarraHud.Bateria: return Uno(hud.BatteryBarRect);
-                case BarraHud.Municion: return hud.AmmoPipRects;
-                case BarraHud.Amenaza: return Uno(hud.ThreatBarRect);
+                case BarraHud.Nafta: return rectsNafta;
+                case BarraHud.Bateria: return rectsBateria;
+                case BarraHud.Municion: return rectsMunicion;
+                case BarraHud.Amenaza: return rectsAmenaza;
                 default: return null;
             }
         }
 
         static RectTransform[] Uno(RectTransform t) => t != null ? new[] { t } : null;
-
-        // --- Rebobinado: nunca dejar que la moto (que avanza sola) se salteé un tramo entero ---
-
-        void AplicarRebobinadoSiHaceFalta(RunState state, Paso actual)
-        {
-            bool esUltimo = pasos != null && progreso.Indice == pasos.pasos.Count - 1;
-
-            List<float> distancias = null;
-            var kind = TutorialRewind.ItemDe(actual.condicion);
-            if (kind.HasValue && run.Level != null)
-            {
-                distancias = new List<float>();
-                foreach (var item in run.Level.Items)
-                    if (item.Entry.kind == kind.Value)
-                        distancias.Add(item.Entry.distance);
-            }
-
-            var decision = TutorialRewind.Decidir(
-                actual.condicion, esUltimo, distancias, state.PlayerX, run.Config.goalDistance);
-
-            if (!decision.Rebobinar)
-                return;
-
-            // Las mismas escrituras que "Probar desde aca": PlayerX y la horda detras suyo.
-            state.PlayerX = decision.PlayerX;
-            run.Sim.Horde.Reset(state.PlayerX - distanciaHordaTenida);
-            state.HordeX = run.Sim.Horde.FrontX;
-
-            if (decision.LimpiarItems && kind.HasValue && run.Level != null)
-                foreach (var item in run.Level.Items)
-                    if (item.Entry.kind == kind.Value)
-                        item.Consumed = false;
-
-            if (camaraFollow != null)
-                camaraFollow.SnapNextFrame();
-
-            if (cartel != null)
-                cartel.MostrarAviso(RebobinadoTexto, duracionAviso);
-        }
     }
 }

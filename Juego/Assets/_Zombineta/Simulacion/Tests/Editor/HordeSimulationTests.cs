@@ -163,5 +163,40 @@ namespace Zombineta.Tests
             foreach (var u in h.Units) if (u.Alive) alive++;
             Assert.AreEqual(h.Units.Length, alive, "todos vuelven: la horda no se vacia");
         }
+
+        [Test]
+        public void ShiftTo_MueveTodaLaMasaSinRegenerarlaNiBorrarEventos()
+        {
+            var h = Make(out _);
+            h.BeginTick();
+            h.Kill(h.Units[3], DeathCause.Bullet); // deja un evento Death y un cadaver
+            int eventos = h.Events.Count;
+            Assert.Greater(eventos, 0);
+
+            var antes = new (float x, int lane, int type, int gen, bool alive)[h.Units.Length];
+            for (int i = 0; i < h.Units.Length; i++)
+            {
+                var u = h.Units[i];
+                antes[i] = (u.X, u.Lane, u.Type, u.Generation, u.Alive);
+            }
+            float frente = h.FrontX;
+
+            h.ShiftTo(frente + 37f);
+
+            Assert.AreEqual(frente + 37f, h.FrontX, 1e-4f);
+            Assert.AreEqual(eventos, h.Events.Count, "no limpia los eventos del tick");
+            for (int i = 0; i < h.Units.Length; i++)
+            {
+                var u = h.Units[i];
+                Assert.AreEqual(antes[i].x + 37f, u.X, 1e-4f, "todos se corren lo mismo");
+                Assert.AreEqual(antes[i].lane, u.Lane, "conserva el carril");
+                Assert.AreEqual(antes[i].type, u.Type, "conserva el tipo");
+                Assert.AreEqual(antes[i].gen, u.Generation, "no cambia Generation: la vista no re-elige look");
+                Assert.AreEqual(antes[i].alive, u.Alive);
+            }
+
+            h.RecomputeFront();
+            Assert.AreEqual(frente + 37f, h.FrontX, 1e-4f, "el frente sigue siendo el vivo mas adelantado");
+        }
     }
 }

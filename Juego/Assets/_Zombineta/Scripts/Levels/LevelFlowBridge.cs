@@ -4,9 +4,18 @@ using Zombineta.Core;
 using Zombineta.Flow;
 using Zombineta.Juego.Flow;
 using Zombineta.Player;
+using Zombineta.Tutorial;
 
 namespace Zombineta.Juego.Levels
 {
+    /// <summary>Que final de partida arrancar este cuadro.</summary>
+    public enum FinalDePartida
+    {
+        Ninguno,
+        Victoria,
+        Atrapada,
+    }
+
     /// <summary>
     /// Une la partida con el flujo de pantallas: el final de camara (plano cerrado y camara lenta
     /// al ser atrapada, plano abierto al llegar) y despues avisar que se gano o se perdio; la
@@ -32,6 +41,23 @@ namespace Zombineta.Juego.Levels
         float finaleLeft;
         bool finaleWon;
         bool finished;
+        TutorialDirector tutorial;
+
+        /// <summary>
+        /// Decide el final segun la fase de la partida. Fuera del tutorial, Won es victoria y Lost
+        /// es atrapada. En el tutorial nunca hay atrapada: un Lost es transitorio y lo deshace
+        /// TutorialSesion (si arrancara el plano de "atrapada", quedaria pegado esperando un final
+        /// que nunca llega). Y Won solo es victoria si el tutorial esta en su ultimo paso; si no
+        /// (F2, un salto de tiempo), el director lo deshace y rebobina.
+        /// </summary>
+        public static FinalDePartida DecidirFinal(RunPhase fase, bool enTutorial, bool tutorialPermiteGanar)
+        {
+            if (fase == RunPhase.Won)
+                return !enTutorial || tutorialPermiteGanar ? FinalDePartida.Victoria : FinalDePartida.Ninguno;
+            if (fase == RunPhase.Lost)
+                return enTutorial ? FinalDePartida.Ninguno : FinalDePartida.Atrapada;
+            return FinalDePartida.Ninguno;
+        }
 
         void OnEnable()
         {
@@ -45,6 +71,9 @@ namespace Zombineta.Juego.Levels
                 run.QuickRestartEnabled = false;
 
             var flow = GameRoot.Flow;
+            if (flow != null && flow.EnTutorial)
+                tutorial = FindAnyObjectByType<TutorialDirector>();
+
             if (scooter != null && flow != null && characterColors.Length > 0)
                 scooter.SetCharacterColor(characterColors[Mathf.Clamp(flow.CharacterIndex, 0, characterColors.Length - 1)]);
         }
@@ -92,14 +121,11 @@ namespace Zombineta.Juego.Levels
             }
 #endif
 
-            // En el tutorial, un Lost es la horda alcanzando en el paso final: lo perdona y lo
-            // deshace el TutorialDirector (tarea 4) en su LateUpdate de este mismo cuadro, asi que
-            // aca no tiene que arrancar el plano de "atrapada" (si lo hiciera, quedaria pegado
-            // esperando un final que nunca llega, porque el director ya lo devolvio a Running).
-            bool loSuelta = state.Phase == RunPhase.Lost && !(flow != null && flow.EnTutorial);
-            if (state.Phase == RunPhase.Won || loSuelta)
+            bool enTutorial = flow != null && flow.EnTutorial;
+            var final = DecidirFinal(state.Phase, enTutorial, tutorial == null || tutorial.PermiteGanar);
+            if (final != FinalDePartida.Ninguno)
             {
-                BeginFinale(state.Phase == RunPhase.Won);
+                BeginFinale(final == FinalDePartida.Victoria);
                 return;
             }
 
@@ -116,8 +142,8 @@ namespace Zombineta.Juego.Levels
             if (cameraRig != null)
                 hold = won ? cameraRig.PlayVictory() : cameraRig.PlayCatch();
 
-            // En el tutorial, ganar tiene que dar tiempo a leer el cartel final del director
-            // (tarea 4): si el plano de victoria es mas corto que eso, se estira el final.
+            // En el tutorial, ganar tiene que dar tiempo a leer el cartel final del
+            // TutorialDirector: si el plano de victoria es mas corto que eso, se estira el final.
             var flow = GameRoot.Flow;
             if (won && flow != null && flow.EnTutorial)
                 hold = Mathf.Max(hold, tutorialVictoryMinHold);
@@ -142,8 +168,8 @@ namespace Zombineta.Juego.Levels
 
             if (flow.EnTutorial)
             {
-                // Ganar termina el tutorial; al perder no se llama a nada, lo maneja el
-                // TutorialDirector (tarea 4).
+                // Ganar termina el tutorial; perder no llega aca (DecidirFinal nunca arranca la
+                // atrapada en el tutorial).
                 if (finaleWon)
                     flow.TutorialFinished();
                 return;

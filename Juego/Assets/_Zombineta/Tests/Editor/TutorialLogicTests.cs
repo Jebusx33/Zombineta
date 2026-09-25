@@ -6,8 +6,9 @@ using Zombineta.Tutorial;
 namespace Zombineta.Juego.Tests
 {
     /// <summary>
-    /// TutorialProgreso y TutorialRecursos son C# plano: nada de escena, prefab ni asset. El
-    /// TutorialDirector (Tarea 4) los alimenta cuadro a cuadro; aca se prueba la logica sola.
+    /// TutorialProgreso y TutorialRecursos son C# plano: nada de escena, prefab ni asset.
+    /// TutorialSesion los alimenta cuadro a cuadro; aca se prueba la logica sola (la sesion
+    /// entera, con la simulacion real, esta en TutorialSesionTests).
     /// </summary>
     public class TutorialLogicTests
     {
@@ -25,9 +26,7 @@ namespace Zombineta.Juego.Tests
             DriveMode modo = DriveMode.Normal,
             bool faroPrendido = false,
             int deltaCarril = 0,
-            float nafta = 0f, float naftaPrevia = 0f,
-            float bateria = 0f, float bateriaPrevia = 0f,
-            int municion = 0, int municionPrevia = 0,
+            int pickNafta = 0, int pickBateria = 0, int pickMunicion = 0,
             bool meta = false,
             bool acierto = false) =>
             new EntradaPaso
@@ -37,12 +36,9 @@ namespace Zombineta.Juego.Tests
                 modo = modo,
                 faroPrendido = faroPrendido,
                 deltaCarril = deltaCarril,
-                nafta = nafta,
-                naftaPrevia = naftaPrevia,
-                bateria = bateria,
-                bateriaPrevia = bateriaPrevia,
-                municion = municion,
-                municionPrevia = municionPrevia,
+                pickNafta = pickNafta,
+                pickBateria = pickBateria,
+                pickMunicion = pickMunicion,
                 meta = meta,
                 acierto = acierto,
             };
@@ -180,39 +176,67 @@ namespace Zombineta.Juego.Tests
             Assert.IsTrue(p.Avanzar(Entrada(eventos: RunEvent.Landed)));
         }
 
-        // --- Pickups: cuentan solo si el recurso subio respecto al anterior ----
+        // --- Pickups: cuentan por item agarrado (Consumed false -> true), no porque el recurso suba
 
         [Test]
-        public void PickupNafta_CuentaCuandoElValorSubio()
+        public void PickupNafta_CuentaConUnItemAgarrado()
         {
             var p = Progreso(NuevoPaso(CondicionPaso.PickupNafta, 1f));
 
-            Assert.IsTrue(p.Avanzar(Entrada(eventos: RunEvent.PickedUp, nafta: 40f, naftaPrevia: 20f)));
+            Assert.IsTrue(p.Avanzar(Entrada(eventos: RunEvent.PickedUp, pickNafta: 1)));
         }
 
         [Test]
-        public void PickupNafta_NoCuentaSiNoSubio()
+        public void PickupNafta_NoCuentaSinItemAgarrado()
         {
             var p = Progreso(NuevoPaso(CondicionPaso.PickupNafta, 1f));
 
-            Assert.IsFalse(p.Avanzar(Entrada(eventos: RunEvent.PickedUp, nafta: 20f, naftaPrevia: 20f)));
+            // Un PickedUp de otra cosa (sin item de nafta consumido) no alcanza.
+            Assert.IsFalse(p.Avanzar(Entrada(eventos: RunEvent.PickedUp)));
             Assert.IsFalse(p.Terminado);
         }
 
         [Test]
-        public void PickupBateria_CuentaCuandoElValorSubio()
+        public void PickupBateria_CuentaConUnItemAgarrado()
         {
             var p = Progreso(NuevoPaso(CondicionPaso.PickupBateria, 1f));
 
-            Assert.IsTrue(p.Avanzar(Entrada(eventos: RunEvent.PickedUp, bateria: 40f, bateriaPrevia: 20f)));
+            Assert.IsTrue(p.Avanzar(Entrada(eventos: RunEvent.PickedUp, pickBateria: 1)));
         }
 
         [Test]
-        public void PickupMunicion_CuentaCuandoElValorSubio()
+        public void PickupConElRecursoAlMaximo_CuentaIgual()
+        {
+            // La bateria arranca llena y recien el faro (paso 8) la gasta: agarrar una en el paso
+            // 6 no sube el valor. Con la regla vieja ("el recurso subio") el paso nunca se cumplia.
+            // La entrada ya no trae el valor del recurso: alcanza con el item consumido.
+            var p = Progreso(
+                NuevoPaso(CondicionPaso.PickupBateria, 1f),
+                NuevoPaso(CondicionPaso.PickupMunicion, 1f));
+
+            Assert.IsTrue(p.Avanzar(Entrada(eventos: RunEvent.PickedUp, pickBateria: 1)));
+            Assert.IsTrue(p.Avanzar(Entrada(eventos: RunEvent.PickedUp, pickMunicion: 1)));
+            Assert.IsTrue(p.Terminado);
+        }
+
+        [Test]
+        public void PickupMunicion_CuentaConUnItemAgarrado()
         {
             var p = Progreso(NuevoPaso(CondicionPaso.PickupMunicion, 1f));
 
-            Assert.IsTrue(p.Avanzar(Entrada(eventos: RunEvent.PickedUp, municion: 5, municionPrevia: 3)));
+            Assert.IsTrue(p.Avanzar(Entrada(eventos: RunEvent.PickedUp, pickMunicion: 1)));
+        }
+
+        [Test]
+        public void PickupPideVariosSiCantidadEsMayor_YCuentaVariosEnElMismoCuadro()
+        {
+            var p = Progreso(NuevoPaso(CondicionPaso.PickupNafta, 2f));
+
+            Assert.IsFalse(p.Avanzar(Entrada(pickNafta: 1)));
+            Assert.IsTrue(p.Avanzar(Entrada(pickNafta: 1)));
+
+            var q = Progreso(NuevoPaso(CondicionPaso.PickupNafta, 2f));
+            Assert.IsTrue(q.Avanzar(Entrada(pickNafta: 2)));
         }
 
         [Test]
@@ -222,11 +246,11 @@ namespace Zombineta.Juego.Tests
                 NuevoPaso(CondicionPaso.PickupNafta, 1f),
                 NuevoPaso(CondicionPaso.PickupBateria, 1f));
 
-            Assert.IsTrue(p.Avanzar(Entrada(eventos: RunEvent.PickedUp, nafta: 40f, naftaPrevia: 20f)));
+            Assert.IsTrue(p.Avanzar(Entrada(eventos: RunEvent.PickedUp, pickNafta: 1)));
             Assert.AreEqual(1, p.Indice);
 
             // Ahora esta en el paso de bateria: un pickup de nafta no lo cumple.
-            Assert.IsFalse(p.Avanzar(Entrada(eventos: RunEvent.PickedUp, nafta: 60f, naftaPrevia: 40f)));
+            Assert.IsFalse(p.Avanzar(Entrada(eventos: RunEvent.PickedUp, pickNafta: 1)));
             Assert.AreEqual(1, p.Indice);
         }
 

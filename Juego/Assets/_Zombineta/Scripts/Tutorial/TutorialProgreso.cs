@@ -6,7 +6,8 @@ namespace Zombineta.Tutorial
 {
     /// <summary>
     /// Lo que paso en un cuadro, tal como lo necesita TutorialProgreso para decidir si el paso
-    /// actual se cumplio. Lo arma el TutorialDirector a partir del RunState y los eventos del tick.
+    /// actual se cumplio. Lo arma TutorialSesion a partir del RunState, los eventos del tick y los
+    /// items del recorrido.
     /// </summary>
     public struct EntradaPaso
     {
@@ -18,10 +19,14 @@ namespace Zombineta.Tutorial
         /// <summary>+1 / -1 cuando el carril cambio este cuadro; 0 si no.</summary>
         public int deltaCarril;
 
-        public float nafta, bateria;
-        public int municion;
-        public float naftaPrevia, bateriaPrevia;
-        public int municionPrevia;
+        /// <summary>
+        /// Cuantos items de nafta, bateria y municion se consumieron este cuadro (pasaron de
+        /// Consumed false a true). Se cuenta el item agarrado y no que el recurso haya subido:
+        /// con el recurso al maximo (la bateria arranca llena) el valor no sube, y el pickup
+        /// tiene que contar igual.
+        /// </summary>
+        public int pickNafta, pickBateria, pickMunicion;
+
         public bool meta;
 
         /// <summary>Un disparo pego: Shot sin ShotMissed.</summary>
@@ -30,8 +35,7 @@ namespace Zombineta.Tutorial
 
     /// <summary>
     /// C# plano: recorre la lista de pasos del tutorial cuadro a cuadro. Sin MonoBehaviour ni
-    /// dependencia de escena; el TutorialDirector (Tarea 4) es quien la alimenta y actua sobre
-    /// el resultado.
+    /// dependencia de escena; TutorialSesion es quien la alimenta y actua sobre el resultado.
     /// </summary>
     public sealed class TutorialProgreso
     {
@@ -101,18 +105,15 @@ namespace Zombineta.Tutorial
                     return contador >= Veces(paso.cantidad);
 
                 case CondicionPaso.PickupNafta:
-                    if ((e.eventos & RunEvent.PickedUp) != 0 && e.nafta > e.naftaPrevia)
-                        contador++;
+                    contador += Mathf.Max(0, e.pickNafta);
                     return contador >= Veces(paso.cantidad);
 
                 case CondicionPaso.PickupBateria:
-                    if ((e.eventos & RunEvent.PickedUp) != 0 && e.bateria > e.bateriaPrevia)
-                        contador++;
+                    contador += Mathf.Max(0, e.pickBateria);
                     return contador >= Veces(paso.cantidad);
 
                 case CondicionPaso.PickupMunicion:
-                    if ((e.eventos & RunEvent.PickedUp) != 0 && e.municion > e.municionPrevia)
-                        contador++;
+                    contador += Mathf.Max(0, e.pickMunicion);
                     return contador >= Veces(paso.cantidad);
 
                 case CondicionPaso.DisparoAcertado:

@@ -85,17 +85,29 @@ namespace Zombineta.Core
 
             var intent = input != null ? input.Read() : PlayerIntent.Idle;
 
-            float before = Sim.State.PlayerX;
-            var events = Sim.Tick(intent, Time.deltaTime);
-            float after = Sim.State.PlayerX;
-
-            // Los encuentros se resuelven despues del movimiento, sobre el tramo
-            // efectivamente recorrido: asi nada se saltea por ir rapido.
-            if (Sim.State.Phase == RunPhase.Running && !Mathf.Approximately(before, after))
-                events |= Level.Collect(Sim, before, after);
+            var events = StepSimulation(Sim, Level, intent, Time.deltaTime);
 
             if (events != RunEvent.None)
                 Stepped?.Invoke(events);
+        }
+
+        /// <summary>
+        /// Un cuadro de partida: Tick y despues los encuentros con el recorrido. Es lo que hace
+        /// Update; esta publico y estatico para que un test pueda correr la partida igual que el
+        /// juego, sin escena (el test de punta a punta del tutorial).
+        /// </summary>
+        public static RunEvent StepSimulation(RunSimulation sim, LevelRuntime level, PlayerIntent intent, float dt)
+        {
+            float before = sim.State.PlayerX;
+            var events = sim.Tick(intent, dt);
+            float after = sim.State.PlayerX;
+
+            // Los encuentros se resuelven despues del movimiento, sobre el tramo
+            // efectivamente recorrido: asi nada se saltea por ir rapido.
+            if (level != null && sim.State.Phase == RunPhase.Running && !Mathf.Approximately(before, after))
+                events |= level.Collect(sim, before, after);
+
+            return events;
         }
 
         public void Restart()

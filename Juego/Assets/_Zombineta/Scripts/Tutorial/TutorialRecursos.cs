@@ -12,8 +12,8 @@ namespace Zombineta.Tutorial
 
     /// <summary>
     /// C# plano: mira nafta, bateria y municion del paso actual y decide si hay que avisar poco
-    /// recurso o recargar. El TutorialDirector (Tarea 4) es quien aplica la recarga sobre el
-    /// RunState; esta clase solo decide.
+    /// recurso o recargar. TutorialSesion es quien aplica la recarga sobre el RunState (antes del
+    /// Tick del cuadro); esta clase solo decide.
     /// </summary>
     public sealed class TutorialRecursos
     {

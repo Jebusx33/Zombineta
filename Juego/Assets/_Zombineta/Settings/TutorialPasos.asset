@@ -53,7 +53,7 @@ MonoBehaviour:
     cantidad: 2
     resaltar: 2
     hordaSuelta: 0
-  - texto: '{Fire} dispara. Pegale a un zombie de adelante.'
+  - texto: "{Fire} dispara hacia atr\xE1s. Pegale a la horda."
     condicion: 8
     cantidad: 1
     resaltar: 3

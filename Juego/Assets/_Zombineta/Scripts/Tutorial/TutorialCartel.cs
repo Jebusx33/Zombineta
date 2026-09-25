@@ -119,6 +119,9 @@ namespace Zombineta.Tutorial
             }
         }
 
+        // Se reusa en cada cuadro: GetWorldCorners escribe sobre el mismo arreglo.
+        readonly Vector3[] esquinas = new Vector3[4];
+
         void PosicionarResaltado()
         {
             var parent = resaltadoFrame.parent as RectTransform;
@@ -128,7 +131,7 @@ namespace Zombineta.Tutorial
             bool huboAlguno = false;
             Vector2 min = Vector2.zero;
             Vector2 max = Vector2.zero;
-            var corners = new Vector3[4];
+            var corners = esquinas;
 
             foreach (var objetivo in resaltadoObjetivos)
             {

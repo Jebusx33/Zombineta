@@ -152,5 +152,16 @@ namespace Zombineta.Juego.Tests
             Assert.AreEqual(0.8f, MotorTono.Objetivo(-6f, 12f, false), 1e-5f);
             Assert.AreEqual(1.2f, MotorTono.Objetivo(30f, 12f, false), 1e-5f);
         }
+
+        [Test] public void ElMotorApagadoPorUnLostVuelveSiLaPartidaVuelveACorrer()
+        {
+            // El tutorial deshace un Lost sin Restarted: el motor tiene que volver a sonar.
+            Assert.IsTrue(MotorSonido.DebeRecuperarse(true, Zombineta.Core.RunPhase.Running));
+            // Mientras siga perdida (un nivel normal, hasta Reintentar) sigue apagado.
+            Assert.IsFalse(MotorSonido.DebeRecuperarse(true, Zombineta.Core.RunPhase.Lost));
+            Assert.IsFalse(MotorSonido.DebeRecuperarse(true, Zombineta.Core.RunPhase.Won));
+            // Sin apagado no hay nada que recuperar.
+            Assert.IsFalse(MotorSonido.DebeRecuperarse(false, Zombineta.Core.RunPhase.Running));
+        }
     }
 }

@@ -477,26 +477,48 @@ suma `TutorialPendiente`, `EnTutorial`, `TutorialDesdeMenu`, el evento `Tutorial
 (Play directo en `Scenes/Tutorial.unity` desde el editor); durante el tutorial `LevelWon()` y
 `LevelLost()` se ignoran. La escena `Tutorial.unity` se armó sobre `Templates/NivelBase`, con su
 propia configuración (`Settings/TutorialConfig.asset`: copia de `GameConfig` con la horda más
-lenta y un `startingGap` grande) y su propio recorrido (`Settings/Niveles/Tutorial.asset`, ~650 m,
-armado con la paleta de nivel): un tramo por paso, cada uno repitiendo su objeto cada 30-40 m para
+lenta y un `startingGap` grande) y su propio recorrido (~650 m, armado en la misma escena como
+`LevelItem` hijos de `Nivel`, con la paleta de nivel; no hay un `LevelDefinition` aparte): un tramo por paso, cada uno repitiendo su objeto cada 30-40 m para
 que el paso nunca se trabe si el jugador se pasa uno. `Settings/TutorialPasos.asset` (SO
 `TutorialPasos`) tiene los 10 pasos en orden, cada uno con su cartel (texto con marcadores tipo
 `{Turbo}`/`{Reverse}`, resueltos por esquema de control con la misma tabla que usa
 `ControlHints.Accion`/`Resolver`), su condición y, si corresponde, qué barra del HUD resaltar.
 `TutorialDirector` (`Scripts/Tutorial/TutorialDirector.cs`, en su propio GameObject raíz, NO
-cuelga de `Nivel`) encadena todo sin tocar las reglas de la simulación:
-- **Horda:** en los pasos 1 a 9 la mantiene fija 60 m detrás de la moto (`Sim.Horde.Reset`), así
-  nunca amenaza. En el paso 10 (el único con `hordaSuelta`) la suelta; si alcanza a la moto no hay
-  Game Over: la horda vuelve 35 m atrás, sale "¡Te alcanzaron! Dispará o usá el faro" y se repite
-  el paso.
+cuelga de `Nivel`) es solo el adaptador de Unity: la lógica de cada cuadro vive en
+`TutorialSesion` (C# plano, testeada de punta a punta con la simulación y el recorrido reales).
+Encadena todo sin tocar las reglas de la simulación:
+- **Orden del cuadro:** el `Update` del director (orden -150, antes que `RunController`) llama a
+  `TutorialSesion.AntesDelTick`: recargas, horda tenida y perdón del alcance, todo **antes** del
+  Tick. Después corre el Tick de `RunController` (`RunController.StepSimulation`). En el
+  `LateUpdate`, `DespuesDelTick` arma la entrada del paso con los eventos del Tick, avanza y
+  rebobina si hace falta.
+- **Horda:** en los pasos 1 a 8 la mantiene fija 60 m detrás de la moto y en el paso 9 (el de
+  disparo) a 12 m, al alcance del tiro y con los primeros zombies a la vista. La corre con
+  `HordeSimulation.ShiftTo` (método aditivo de la simulación compartida): mueve la masa entera sin
+  regenerarla, así conserva carriles y looks y no borra los eventos del tick que leen el sonido y
+  los efectos (con `Reset` en cada cuadro se perdían). En el paso 10 (el único con `hordaSuelta`)
+  la suelta; si en ese cuadro te puede alcanzar, se perdona **antes** del Tick: la horda vuelve
+  35 m atrás, sale "¡Te alcanzaron! Dispará o usá el faro" y se repite el paso. Así la simulación
+  nunca llega a `Lost` y el motor sigue sonando (`MotorSonido` además vuelve a arrancar si ve
+  `Running` después de un `Lost`, por si se colara uno; en un nivel normal eso no pasa sin
+  `Restarted`).
 - **Recursos:** nafta o batería por debajo del 20 % avisan una vez por cruce del umbral; en 0 se
   recargan solos al 60 % ("En el juego te quedarías sin nafta/batería..."); la munición también se
-  recarga en 0 durante los pasos 9 y 10 para que siempre se pueda disparar. Las reglas de consumo
-  no cambian, es la misma escritura de `RunState` que ya usa "Probar desde acá".
-- **Rebobinado:** si el auto-avance de la moto se pasa de largo el tramo de un paso (un lector
-  lento, o el navegador de la escena), `TutorialRewind` (C# plano, testeado) decide volver a una
-  posición segura antes del tramo con el aviso "Volvamos a intentarlo.", para que el paso nunca
-  quede imposible de cumplir.
+  recarga en 0 en el paso de disparo y en el último, para que siempre se pueda disparar. Las
+  reglas de consumo no cambian, es la misma escritura de `RunState` que ya usa "Probar desde acá".
+- **Pickups:** los pasos 5 a 7 cuentan el item del recorrido consumido (`Consumed` pasa a true),
+  no que el recurso suba: la batería arranca llena, y agarrar una con la batería al máximo cuenta.
+- **Disparo (paso 9):** "{Fire} dispara hacia atrás. Pegale a la horda." El arma solo tira hacia
+  atrás; los zombies de frente del recorrido solo se arrollan y quedan como obstáculos.
+- **Rebobinado:** si el auto-avance de la moto se pasa de largo el tramo de un paso con items
+  (rampas, bidones, baterías, balas), `TutorialRewind` (C# plano, testeado) la devuelve al hueco
+  libre antes del tramo (a 8 m o más de cualquier otro item), vuelve a poner los items del tramo y
+  avisa "Volvamos a intentarlo.". Para las rampas el margen es de 45 m (un salto con turbo mide
+  unos 35 m) y nunca rebobina con la moto en el aire. Los pasos sin items (el de disparo
+  incluido) solo tienen el guardia de la meta: a 40 m del refugio vuelven 150 m. Llegar al
+  refugio antes del paso 10 (F2, un salto de tiempo) no termina el tutorial: se deshace y se
+  rebobina igual, y `LevelFlowBridge` (con `DecidirFinal`, una función pura testeada) no arranca
+  el plano de victoria.
 - **UI:** `TutorialCartel` maneja el cartel del paso (con fundido), los avisos (2,5 s) y el marco
   de resaltado sobre la barra del HUD indicada.
 
@@ -515,12 +537,11 @@ quedan debajo (ver la sección 6 para el detalle del bug que esto causó y cómo
 que `TutorialDirector`/`TutorialProgreso` nacen de cero.
 
 **Dónde está cada cosa:**
-- Scripts: `Scripts/Tutorial/` (`TutorialPasos.cs`, `TutorialProgreso.cs` y `TutorialRecursos.cs`
-  son C# plano y testeados; `TutorialDirector.cs`, `TutorialCartel.cs` son `MonoBehaviour`;
-  `TutorialRewind.cs` es C# plano).
-- Escena: `Scenes/Tutorial.unity`.
-- Assets de datos: `Settings/TutorialConfig.asset`, `Settings/TutorialPasos.asset`,
-  `Settings/Niveles/Tutorial.asset` (el recorrido).
+- Scripts: `Scripts/Tutorial/` (`TutorialPasos.cs`, `TutorialProgreso.cs`, `TutorialRecursos.cs`,
+  `TutorialRewind.cs` y `TutorialSesion.cs` son C# plano y testeados; `TutorialDirector.cs` y
+  `TutorialCartel.cs` son `MonoBehaviour`).
+- Escena: `Scenes/Tutorial.unity` (también el recorrido, como `LevelItem`).
+- Assets de datos: `Settings/TutorialConfig.asset`, `Settings/TutorialPasos.asset`.
 - Menú y pausa: `Scripts/Screens/MainMenuScreen.cs` (`OpenTutorial`), `Scripts/Screens/
   PauseScreen.cs` (`SkipTutorial` + la navegación condicional).
 
@@ -1307,8 +1328,29 @@ Estas costaron tiempo real en esta sesión:
     tapado exactamente detrás del que se duplicó (mismo lugar, dibujado atrás en el orden de
     hermanos) hasta que se recalcularon a mano las posiciones de todos los botones de cada menú.
     Se encontró mirando la primera captura del menú (faltaba "Tutorial") y se repitió al revés en
-    la pausa (faltaba "Reintentar", tapado por "Saltear tutorial"); las posiciones finales quedan
-    documentadas en la sección 0, "Tutorial".
+    la pausa (faltaba "Reintentar", tapado por "Saltear tutorial"). Las posiciones finales se
+    leen en las escenas (`anchoredPosition` de cada botón en `MainMenu.unity` y `Pause.unity`).
+- Tutorial, revisión final (24/09): 384 tests EditMode en verde (28 nuevos). Se arregló:
+  (1) los pickups cuentan por item consumido y no porque el recurso suba (el paso 6 era imposible
+  con la batería llena); (2) el paso 9 ahora dice "{Fire} dispara hacia atrás. Pegale a la horda."
+  y la horda se tiene a 12 m en ese paso (el arma solo tira hacia atrás; antes pedía pegarle a un
+  zombie de frente, y a 60 m justos, el alcance del tiro, acertar era una casualidad de float);
+  (3) `HordeSimulation.ShiftTo` en vez de `Reset` para tener la horda (conserva eventos, carriles y
+  looks); (4) el alcance del paso 10 se perdona antes del Tick, así nunca hay `Lost` y el motor no
+  se apaga; (5) nunca rebobina en el aire, el margen de las rampas es de 45 m y se cae en el hueco
+  libre antes del tramo. La lógica del cuadro pasó a `TutorialSesion`, y
+  `TutorialDePuntaAPuntaTests` juega el tutorial entero sobre la escena real (`TutorialConfig` y
+  los `LevelItem` de `Tutorial.unity`) con `PlayerIntent` a dt fijo: un jugador que hace lo que
+  dice el cartel (45 s), uno lento que se queda 52 s sin tocar nada (rebobina 5 veces) y uno que
+  se deja alcanzar en el final (4 perdones). En los tres se cumplen los 10 pasos en orden, termina
+  en el refugio y la simulación nunca emite `Lost`. En Play, desde `Boot` con `TutorialVisto` en
+  false, se jugó el tutorial entero **por el camino real de input**: un `Gamepad` virtual del
+  Input System (se le escribe el estado de gatillos y botones en `InputSystem.onBeforeUpdate`)
+  leído por `PlayerInputReader`. El teclado virtual no sirve (el Input System lo resetea sin foco
+  en el Game view); el gamepad sí. Resultado: el paso 6 se cumplió agarrando una batería con
+  100/100; el paso 9, con un tiro a la horda a 12 m (los primeros zombies en pantalla); en el
+  paso 10 la horda alcanzó 4 veces, `Phase` siguió en `Running` y el `AudioSource` del motor
+  siguió con `isPlaying=true`; al llegar al refugio, `Cinematic` del nivel 1.
 - **Enter con teclado real** sigue sin probarse por MCP (confirmado de nuevo en esta tarea): un
   teclado virtual del Input System no llega a tiempo de forma confiable a este sandbox. El sonido
   de "confirmar" se verificó con la misma llamada de audio que dispara `UiSonidos` en producción,
@@ -1425,7 +1467,11 @@ principal más "Saltear tutorial" en la pausa. 356 tests EditMode en verde (sin 
 esta última tarea). Verificación completa por CLI desde `Boot` forzando los 10 pasos, la horda
 perdonada en el paso final, la recarga en 0, y los cinco caminos del flujo (primera vez → nivel 1,
 segunda vez sin tutorial, "Tutorial" del menú → menú, "Saltear" desde ambos orígenes, "Reintentar"
-al paso 1) — ver sección 6, entrada 24/09. **Pendiente:** que José lo juegue de punta a punta con
+al paso 1) — ver sección 6, entrada 24/09. Después, la revisión final de la rama arregló que los
+pasos 6 (batería con la batería llena) y 9 (disparo, que pedía pegarle a un zombie de frente) no se
+podían cumplir jugando, que la horda tenida borraba los eventos de sonido y efectos, y que el
+motor quedaba mudo tras un alcance; ahora un test de punta a punta juega el tutorial entero con
+`PlayerIntent`, y en Play se jugó entero con un gamepad virtual (ver sección 6). **Pendiente:** que José lo juegue de punta a punta con
 teclado y con joystick (sección 7); el marco de resaltado de barra sigue siendo un placeholder sin
 arte (sección 6/7, tarea 4).
 

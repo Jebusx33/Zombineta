@@ -98,6 +98,12 @@ namespace Zombineta.Audio
             source.pitch = Mathf.SmoothDamp(source.pitch, pitchObjetivo, ref velocidadPitch,
                 m.suavizadoTono, Mathf.Infinity, Time.unscaledDeltaTime);
 
+            // El tutorial deshace un Lost (la horda nunca gana ahi): si la partida volvio a
+            // Running sin pasar por Restarted, el motor vuelve a sonar. En un nivel normal Lost
+            // no vuelve nunca a Running sin Restarted, asi que esto no cambia nada ahi.
+            if (DebeRecuperarse(apagandoAlPerder, state.Phase))
+                ReiniciarMotor();
+
             if (apagandoAlPerder)
                 return; // el fundido de Lost es dueno exclusivo de volumenPropio mientras dura.
 
@@ -105,6 +111,10 @@ namespace Zombineta.Audio
             fuente.volumenPropio = Mathf.MoveTowards(fuente.volumenPropio, volumenObjetivo,
                 Time.unscaledDeltaTime / m.fundidoSinNafta);
         }
+
+        /// <summary>Si el motor quedo apagado por un Lost y la partida ya volvio a correr.</summary>
+        public static bool DebeRecuperarse(bool apagandoAlPerder, RunPhase fase) =>
+            apagandoAlPerder && fase == RunPhase.Running;
 
         void OnStepped(RunEvent events)
         {

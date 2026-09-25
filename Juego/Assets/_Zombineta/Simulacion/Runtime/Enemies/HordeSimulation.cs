@@ -105,6 +105,24 @@ namespace Zombineta.Enemies
         }
 
         /// <summary>
+        /// Corre la horda entera para que su frente quede en "front", sin regenerarla: cada
+        /// zombie (vivo o cadaver) se mueve lo mismo y conserva su carril, su tipo, su
+        /// Generation y su estado. A diferencia de Reset, no limpia los eventos del tick ni
+        /// hace que las vistas vuelvan a elegir looks. Para teletransportes (el tutorial, que
+        /// mantiene la horda a una distancia fija o la aleja al perdonar un alcance).
+        /// </summary>
+        public void ShiftTo(float front)
+        {
+            float delta = front - frontX;
+            if (delta == 0f)
+                return;
+
+            for (int i = 0; i < Units.Length; i++)
+                Units[i].X += delta;
+            frontX = front;
+        }
+
+        /// <summary>
         /// Arranca un tick: limpia lo que paso en el anterior. Va antes que nada, porque el
         /// disparo se resuelve al principio del tick y sus eventos tienen que sobrevivir.
         /// </summary>

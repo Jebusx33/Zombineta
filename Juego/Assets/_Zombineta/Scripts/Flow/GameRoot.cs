@@ -19,7 +19,7 @@ namespace Zombineta.Juego.Flow
         [SerializeField] ScreenFader fader;
         [SerializeField] float fadeSeconds = 0.25f;
 
-        [Tooltip("El nivel del tutorial: no forma parte de Niveles.asset. Se cablea en la tarea 3.")]
+        [Tooltip("El nivel del tutorial (escena Tutorial y el audio del nivel 1): no forma parte de Niveles.asset.")]
         [SerializeField] LevelInfo tutorial;
 
         public static GameRoot Instance { get; private set; }
