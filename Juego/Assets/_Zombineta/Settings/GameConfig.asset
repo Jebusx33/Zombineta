@@ -48,11 +48,11 @@ MonoBehaviour:
   explosionScareSeconds: 1
   crashStunDuration: 0.2
   crashFuelPenalty: 2
-  rampLaunchSlope: 0.75
-  jumpGravity: 20
-  leanLift: 0.35
+  rampLaunchSlope: 0.5
+  jumpGravity: 32
+  leanLift: 0.2
   launchPitch: 20
-  launchSpinPerExcessSpeed: 2.6
+  launchSpinPerExcessSpeed: 1.5
   leanRate: 60
   maxPitch: 80
   perfectLandingAngle: 8
