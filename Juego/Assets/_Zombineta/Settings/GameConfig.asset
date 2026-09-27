@@ -48,11 +48,11 @@ MonoBehaviour:
   explosionScareSeconds: 1
   crashStunDuration: 0.2
   crashFuelPenalty: 2
-  rampLaunchSlope: 0.5
-  jumpGravity: 32
-  leanLift: 0.2
-  launchPitch: 20
-  launchSpinPerExcessSpeed: 1.5
+  rampLaunchSlope: 0.35
+  jumpGravity: 18
+  leanLift: 0
+  launchPitch: 15
+  launchSpinPerExcessSpeed: 1
   leanRate: 60
   maxPitch: 80
   perfectLandingAngle: 8
@@ -64,4 +64,4 @@ MonoBehaviour:
   aerialPickupTolerance: 1.5
   worldUnitsPerMeter: 0.75
   cameraTrailMeters: 18
-  jumpHeightToWorld: 2.1375
+  jumpHeightToWorld: 2.125
