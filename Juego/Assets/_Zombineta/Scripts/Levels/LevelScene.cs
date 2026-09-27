@@ -117,7 +117,7 @@ namespace Zombineta.Juego.Levels
 
         void EnsurePlayLook(LevelItem item)
         {
-            var look = palette != null ? palette.Get(item.kind) : null;
+            var look = palette != null ? palette.Get(item.kind, item.variant) : null;
             if (look == null || look.prefab == null)
                 return;
 
@@ -312,7 +312,7 @@ namespace Zombineta.Juego.Levels
 
             Snap(item);
 
-            var look = palette != null ? palette.Get(item.kind) : null;
+            var look = palette != null ? palette.Get(item.kind, item.variant) : null;
             var sr = item.GetComponent<SpriteRenderer>();
             if (sr == null)
                 sr = item.gameObject.AddComponent<SpriteRenderer>();

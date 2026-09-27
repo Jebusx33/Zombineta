@@ -371,7 +371,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 642.67554, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 715615531}
@@ -1257,7 +1257,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 418.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 759363830}
@@ -1337,7 +1337,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 0
-  variant: 0
+  variant: 1
   height: 0
   generated: 1
   pinned: 0
@@ -1374,7 +1374,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 637.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 201049215}
@@ -1705,7 +1705,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2853, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 488969285}
@@ -1929,7 +1929,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1396.1465, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 674616268}
@@ -2121,7 +2121,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1632.8975, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 932247505}
@@ -2238,7 +2238,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 937.5, y: 0, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 56223666}
@@ -2692,7 +2692,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 19.199911, y: -204.99994}
+  m_AnchoredPosition: {x: 19.19989, y: -204.99994}
   m_SizeDelta: {x: 382, y: 80}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &145982041
@@ -2761,7 +2761,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 981, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 548873293}
@@ -2878,7 +2878,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2316.53, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 279013846}
@@ -2995,7 +2995,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2293.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1771583495}
@@ -3075,7 +3075,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 0
-  variant: 0
+  variant: 1
   height: 0
   generated: 1
   pinned: 0
@@ -3336,7 +3336,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2403.73, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 296564271}
@@ -3416,7 +3416,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 1
-  variant: 0
+  variant: 2
   height: 0
   generated: 1
   pinned: 0
@@ -3453,7 +3453,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1237.5, y: 0.99, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1301798088}
@@ -4008,7 +4008,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2261.9087, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 195126970}
@@ -4316,7 +4316,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 258.5048, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 167969733}
@@ -4433,7 +4433,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2043.5, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 591781447}
@@ -5873,7 +5873,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2443.4915, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 552503198}
@@ -7605,7 +7605,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1728, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1690777338}
@@ -7722,7 +7722,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 978, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1101231720}
@@ -7946,7 +7946,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 231, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 376518438}
@@ -8026,7 +8026,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 0
-  variant: 0
+  variant: 2
   height: 0
   generated: 1
   pinned: 0
@@ -8521,7 +8521,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1987.5, y: 0.99, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 981314723}
@@ -8638,7 +8638,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 486.10373, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 810390899}
@@ -10025,7 +10025,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 556.14105, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 381566156}
@@ -10758,7 +10758,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2631.9585, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1879754753}
@@ -10982,7 +10982,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1540.5, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1044080403}
@@ -11062,7 +11062,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 2
-  variant: 0
+  variant: 2
   height: 0
   generated: 1
   pinned: 0
@@ -11430,7 +11430,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1462.2197, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2057553994}
@@ -11943,7 +11943,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1809.2034, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1898127610}
@@ -12498,7 +12498,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2905.154, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 467189489}
@@ -13563,7 +13563,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1318.046, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 597951672}
@@ -13904,7 +13904,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 964.05835, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2111959531}
@@ -13984,7 +13984,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 0
-  variant: 0
+  variant: 1
   height: 0
   generated: 1
   pinned: 0
@@ -14352,7 +14352,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 187.5, y: 0, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2073723253}
@@ -14576,7 +14576,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1387.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2136988949}
@@ -14693,7 +14693,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1168.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 119354227}
@@ -14773,7 +14773,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 0
-  variant: 0
+  variant: 2
   height: 0
   generated: 1
   pinned: 0
@@ -16499,7 +16499,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1543.5, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1779780527}
@@ -16579,7 +16579,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 2
-  variant: 0
+  variant: 2
   height: 0
   generated: 1
   pinned: 0
@@ -16616,7 +16616,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2137.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1572102208}
@@ -17033,7 +17033,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2541.9758, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 746272763}
@@ -17149,8 +17149,8 @@ Transform:
   m_GameObject: {fileID: 907308731}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2681.5964, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalPosition: {x: 2681.5964, y: 0.99, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1474530783}
@@ -17229,8 +17229,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
-  lane: 0
-  variant: 0
+  lane: 2
+  variant: 2
   height: 0
   generated: 1
   pinned: 0
@@ -18152,7 +18152,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2154.1301, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2080846320}
@@ -18269,7 +18269,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1731, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1135944728}
@@ -18824,7 +18824,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1680.8882, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1563706238}
@@ -19637,7 +19637,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1048.9241, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 728322975}
@@ -19978,7 +19978,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1353, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 402248800}
@@ -20058,7 +20058,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 0
-  variant: 0
+  variant: 2
   height: 0
   generated: 1
   pinned: 0
@@ -20095,7 +20095,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2481, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1119310857}
@@ -20651,7 +20651,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2103, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 799727401}
@@ -21109,7 +21109,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 721.82837, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 523753810}
@@ -21557,7 +21557,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1583.2822, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1510672713}
@@ -21637,7 +21637,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 2
-  variant: 0
+  variant: 2
   height: 0
   generated: 1
   pinned: 0
@@ -21935,7 +21935,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 808.6697, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1506369015}
@@ -22276,7 +22276,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 351.85022, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1807641351}
@@ -22607,7 +22607,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1837.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1972721202}
@@ -22938,7 +22938,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2592.853, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2008237095}
@@ -23628,7 +23628,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1935.4552, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1256087855}
@@ -23708,7 +23708,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 1
-  variant: 0
+  variant: 1
   height: 0
   generated: 1
   pinned: 0
@@ -23745,7 +23745,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2592.853, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1305851402}
@@ -24096,7 +24096,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 487.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2026745581}
@@ -24330,7 +24330,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1244.6826, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1310062607}
@@ -24447,7 +24447,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 793.5, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2051731362}
@@ -24671,7 +24671,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1680.8882, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 10079594}
@@ -24788,7 +24788,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2836.9016, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1624546389}
@@ -25119,7 +25119,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1809.2034, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 49632781}
@@ -25995,7 +25995,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 337.5, y: 0, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1456247318}
@@ -27491,7 +27491,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1918.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1717939497}
@@ -27571,7 +27571,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 0
-  variant: 0
+  variant: 1
   height: 0
   generated: 1
   pinned: 0
@@ -27608,7 +27608,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2731.2764, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1293828050}
@@ -27832,7 +27832,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2154.1301, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1659129827}
@@ -27949,7 +27949,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2316.53, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 992956771}
@@ -28173,7 +28173,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2361.5825, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 301419097}
@@ -29105,7 +29105,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 4
   m_SortingLayer: 4
-  m_SortingOrder: 1000
+  m_SortingOrder: 800
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 8c1bb8c15f5a47141b8d044f53482a77, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 0.45}
@@ -29146,7 +29146,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1915.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1559956027}
@@ -29263,7 +29263,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2737.5, y: 0, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1830036145}
@@ -29380,7 +29380,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2668.5, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1992440139}
@@ -29460,7 +29460,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 1
-  variant: 0
+  variant: 2
   height: 0
   generated: 1
   pinned: 0
@@ -29497,7 +29497,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 177.61716, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 936818875}
@@ -29935,7 +29935,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2290.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1254394563}
@@ -30015,7 +30015,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 0
-  variant: 0
+  variant: 1
   height: 0
   generated: 1
   pinned: 0
@@ -30052,7 +30052,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2856, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1129586145}
@@ -31101,7 +31101,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2197.9438, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1448674434}
@@ -31549,7 +31549,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 415.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1877687622}
@@ -31629,7 +31629,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 0
-  variant: 0
+  variant: 1
   height: 0
   generated: 1
   pinned: 0
@@ -31773,7 +31773,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 606, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1267456000}
@@ -32435,7 +32435,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2478, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1373125183}
@@ -32776,7 +32776,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 894.1039, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2125177208}
@@ -32893,7 +32893,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2361.5825, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 140387269}
@@ -33010,7 +33010,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1935.4552, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 961887773}
@@ -33090,7 +33090,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 2
-  variant: 0
+  variant: 1
   height: 0
   generated: 1
   pinned: 0
@@ -33127,7 +33127,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2731.2764, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1427091980}
@@ -33244,7 +33244,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2541.9758, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1283372419}
@@ -34008,7 +34008,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 603, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 503718597}
@@ -34358,7 +34358,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1874.1456, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 986267021}
@@ -34699,7 +34699,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1531.4324, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1204868050}
@@ -35426,7 +35426,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2887.5, y: 0, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 736691325}
@@ -36428,7 +36428,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1985.8378, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 419258553}
@@ -36652,7 +36652,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1115.6157, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1004815947}
@@ -37197,7 +37197,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2106.244, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 297414202}
@@ -37314,7 +37314,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1356, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1502635989}
@@ -37394,7 +37394,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 0
-  variant: 0
+  variant: 2
   height: 0
   generated: 1
   pinned: 0
@@ -37431,7 +37431,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1874.1456, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1055345329}
@@ -38285,7 +38285,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2836.9016, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2114726265}
@@ -38626,7 +38626,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 112.5, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1554786941}
@@ -38706,7 +38706,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 1
-  variant: 0
+  variant: 1
   height: 0
   generated: 1
   pinned: 0
@@ -38860,7 +38860,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2665.5, y: 0, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1666619891}
@@ -38977,7 +38977,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1087.5, y: 0, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1435268328}
@@ -39201,7 +39201,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2782.981, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 694562293}
@@ -39318,7 +39318,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2106, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1373759668}
@@ -39552,7 +39552,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2587.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1856554361}
@@ -40351,7 +40351,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 228, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1771414178}
@@ -40431,7 +40431,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 0
-  variant: 0
+  variant: 2
   height: 0
   generated: 1
   pinned: 0
@@ -40914,7 +40914,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2437.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 769477773}
@@ -41247,7 +41247,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2681.5964, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2136269508}
@@ -41327,7 +41327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 2
-  variant: 0
+  variant: 2
   height: 0
   generated: 1
   pinned: 0
@@ -41471,7 +41471,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 790.5, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1761451622}
@@ -44254,7 +44254,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2782.981, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 910067107}
@@ -44585,7 +44585,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1687.5, y: 0.99, z: 0}
-  m_LocalScale: {x: 1.3299999, y: 1.7099999, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1793513919}
@@ -44702,7 +44702,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2482.7517, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 636815726}
@@ -44819,7 +44819,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2631.9585, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 672167228}
@@ -45131,7 +45131,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2043.5, y: 0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 271413616}
@@ -45629,7 +45629,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1165.5, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1722379800}
@@ -45709,7 +45709,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 0
-  variant: 0
+  variant: 2
   height: 0
   generated: 1
   pinned: 0
@@ -46614,7 +46614,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2403.73, y: -0.99, z: 0}
-  m_LocalScale: {x: 2.09, y: 2.28, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1168868202}
@@ -46694,7 +46694,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Levels.LevelItem
   kind: 0
   lane: 0
-  variant: 0
+  variant: 2
   height: 0
   generated: 1
   pinned: 0
