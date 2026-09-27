@@ -1,16 +1,22 @@
 fileFormatVersion: 2
-guid: a3328432990279641b7bcfaf7e4be60d
+guid: 2b50adebfd8875342b0d90f9843a9e46
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8837609118603321609
-    second: smoke_03_0
+      213: 2285502765294083923
+    second: tile_rampa_v2_0
   - first:
-      213: -6224619888917457095
-    second: smoke_03_1
+      213: 6190106423090200957
+    second: tile_rampa_v2_1
   - first:
-      213: 4749335409002139054
-    second: smoke_03_2
+      213: -8650790891936349639
+    second: tile_rampa_v2_2
+  - first:
+      213: 5758076037796954831
+    second: tile_rampa_v2_3
+  - first:
+      213: 6796242465602253123
+    second: tile_rampa_v2_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -121,13 +127,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: smoke_03_0
+      name: tile_rampa_v2_0
       rect:
         serializedVersion: 2
-        x: 112
-        y: 119
-        width: 246
-        height: 271
+        x: 0
+        y: 78
+        width: 15
+        height: 15
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -136,20 +142,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 901aa127bae75aa70800000000000000
-      internalID: 8837609118603321609
+      spriteID: 35fd68ae7acb7bf10800000000000000
+      internalID: 2285502765294083923
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: smoke_03_1
+      name: tile_rampa_v2_1
       rect:
         serializedVersion: 2
-        x: 345
-        y: 356
-        width: 16
-        height: 17
+        x: 28
+        y: 62
+        width: 56
+        height: 43
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -158,20 +164,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9375e33c035bd99a0800000000000000
-      internalID: -6224619888917457095
+      spriteID: d71c726cefca7e550800000000000000
+      internalID: 6190106423090200957
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: smoke_03_2
+      name: tile_rampa_v2_2
       rect:
         serializedVersion: 2
-        x: 359
-        y: 247
-        width: 42
-        height: 80
+        x: 170
+        y: 17
+        width: 1640
+        height: 892
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -180,8 +186,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: eadc1c4346709e140800000000000000
-      internalID: 4749335409002139054
+      spriteID: 93203f3848732f780800000000000000
+      internalID: -8650790891936349639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_rampa_v2_3
+      rect:
+        serializedVersion: 2
+        x: 1729
+        y: 0
+        width: 255
+        height: 140
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc2839616abc8ef40800000000000000
+      internalID: 5758076037796954831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tile_rampa_v2_4
+      rect:
+        serializedVersion: 2
+        x: 1690
+        y: 0
+        width: 81
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 341b5a1b38a115e50800000000000000
+      internalID: 6796242465602253123
       vertices: []
       indices: 
       edges: []
@@ -200,9 +250,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      smoke_03_0: 8837609118603321609
-      smoke_03_1: -6224619888917457095
-      smoke_03_2: 4749335409002139054
+      tile_rampa_v2_0: 2285502765294083923
+      tile_rampa_v2_1: 6190106423090200957
+      tile_rampa_v2_2: -8650790891936349639
+      tile_rampa_v2_3: 5758076037796954831
+      tile_rampa_v2_4: 6796242465602253123
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
