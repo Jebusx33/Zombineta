@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9cee9c0d0d171e4f948c61233c56465, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: 
-  goalDistance: 2000
+  goalDistance: 4000
   startingGap: 40
   laneSpacing: 0.99
   laneChangeDuration: 0.15
@@ -48,11 +48,11 @@ MonoBehaviour:
   explosionScareSeconds: 1
   crashStunDuration: 0.2
   crashFuelPenalty: 2
-  rampLaunchSlope: 0.75
-  jumpGravity: 20
-  leanLift: 0.35
-  launchPitch: 20
-  launchSpinPerExcessSpeed: 2.6
+  rampLaunchSlope: 0.35
+  jumpGravity: 18
+  leanLift: 0
+  launchPitch: 15
+  launchSpinPerExcessSpeed: 1
   leanRate: 60
   maxPitch: 80
   perfectLandingAngle: 8
@@ -64,4 +64,4 @@ MonoBehaviour:
   aerialPickupTolerance: 1.5
   worldUnitsPerMeter: 0.75
   cameraTrailMeters: 18
-  jumpHeightToWorld: 2.1375
+  jumpHeightToWorld: 2.125

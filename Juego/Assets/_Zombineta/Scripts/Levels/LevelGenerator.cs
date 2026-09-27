@@ -97,7 +97,7 @@ namespace Zombineta.Juego.Levels
                     Add(new LevelEntry(d + 4f, lane, LevelEntryKind.Obstacle));
                     Add(new LevelEntry(d + 8f, lane, LevelEntryKind.Obstacle));
                     if (piece % 2 == 0)
-                        Add(new LevelEntry(d + 17f, lane, LevelEntryKind.Fuel, 6f));
+                        Add(new LevelEntry(d + 7f, lane, LevelEntryKind.Fuel, 6f));
                     piece++;
                 }
             }
