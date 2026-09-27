@@ -324,7 +324,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 44
     m_Alignment: 7
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -608,7 +608,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 44
     m_Alignment: 7
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -838,6 +838,114 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &181361292
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 181361293}
+  - component: {fileID: 181361294}
+  m_Layer: 0
+  m_Name: Spot Light 2D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &181361293
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181361292}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: 0.9999948, w: -0.0032114848}
+  m_LocalPosition: {x: 3.9, y: 2.19, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 975832035}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180.368}
+--- !u!114 &181361294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181361292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.Light2D
+  m_ComponentVersion: 4
+  m_LightType: 3
+  m_BlendStyleIndex: 0
+  m_Light2DProvider:
+    rid: -2
+  m_SelectionSources:
+    rid: 4797208324605477026
+  m_FalloffIntensity: 0.5
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 1
+  m_LightVolumeIntensity: 1
+  m_LightVolumeEnabled: 0
+  m_ApplyToSortingLayers: 000000000100000002000000030000000400000005000000i
+  m_LightCookieSprite: {fileID: 0}
+  m_DeprecatedPointLightCookieSprite: {fileID: 0}
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_OverlapOperation: 0
+  m_NormalMapDistance: 3
+  m_NormalMapQuality: 2
+  m_UseNormalMap: 0
+  m_ShadowsEnabled: 1
+  m_ShadowIntensity: 0.75
+  m_ShadowSoftness: 0.3
+  m_ShadowSoftnessFalloffIntensity: 0.5
+  m_ShadowVolumeIntensityEnabled: 0
+  m_ShadowVolumeIntensity: 0.75
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_LocalBounds:
+    m_Center: {x: 0, y: -0.00000011920929, z: 0}
+    m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
+  m_PointLightInnerAngle: 183.19
+  m_PointLightOuterAngle: 183.19
+  m_PointLightInnerRadius: 0
+  m_PointLightOuterRadius: 1
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: 0.5, z: 0}
+  - {x: -0.5, y: 0.5, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 4797208324605477026
+      type: {class: Light2DProviderSources, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_SelectedHashCode: 3
+        m_SelectedSource:
+          rid: -2
+        m_Provider2DCache:
+          rid: 4797208324605477027
+    - rid: 4797208324605477027
+      type: {class: 'Provider2DCache`1[[UnityEngine.Rendering.Universal.Light2DProvider, Unity.RenderPipelines.Universal.2D.Runtime]]', ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_Cache: []
 --- !u!1 &185924453
 GameObject:
   m_ObjectHideFlags: 0
@@ -1076,16 +1184,49 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 4431039008754079998, guid: a2970245a4d7f6c4f86b0cf724a773fb, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 69c196268475f7246ade3597fe42aa24, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 3674684995824049767, guid: a2970245a4d7f6c4f86b0cf724a773fb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 300310863}
+    - targetCorrespondingSourceObject: {fileID: 3674684995824049767, guid: a2970245a4d7f6c4f86b0cf724a773fb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 473335701}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3052133390208807794, guid: a2970245a4d7f6c4f86b0cf724a773fb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 215615906}
   m_SourcePrefab: {fileID: 100100000, guid: a2970245a4d7f6c4f86b0cf724a773fb, type: 3}
 --- !u!4 &215615904 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3674684995824049767, guid: a2970245a4d7f6c4f86b0cf724a773fb, type: 3}
   m_PrefabInstance: {fileID: 215615903}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &215615905 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3052133390208807794, guid: a2970245a4d7f6c4f86b0cf724a773fb, type: 3}
+  m_PrefabInstance: {fileID: 215615903}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &215615906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 215615905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1163ed9d52312ca48a259e329e6a72e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.BuildingColorModifier
+  grayAreaColor: {r: 1, g: 0.9333334, b: 0.5490196, a: 1}
+  whiteAreaColor: {r: 1, g: 1, b: 1, a: 1}
+  splitThreshold: 0.75
 --- !u!1 &217823409
 GameObject:
   m_ObjectHideFlags: 0
@@ -1149,7 +1290,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 44
     m_Alignment: 7
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -1509,7 +1650,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 44
     m_Alignment: 7
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -1586,6 +1727,11 @@ Canvas:
   m_SortingLayerID: 5
   m_SortingOrder: 1000
   m_TargetDisplay: 0
+--- !u!1 &275588969 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7647716502082669866, guid: 3c40cf7a9ce2b6547a479fa75184863c, type: 3}
+  m_PrefabInstance: {fileID: 1344957300}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &290975379
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1660,6 +1806,114 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 936266855171950988, guid: cea97ec9492186a4e9c531546bad6853, type: 3}
   m_PrefabInstance: {fileID: 290975379}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &300310862
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 300310863}
+  - component: {fileID: 300310864}
+  m_Layer: 0
+  m_Name: Freeform Light 2D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &300310863
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300310862}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.91, y: 4.21, z: 0.37}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 215615904}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &300310864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300310862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.Light2D
+  m_ComponentVersion: 4
+  m_LightType: 1
+  m_BlendStyleIndex: 0
+  m_Light2DProvider:
+    rid: -2
+  m_SelectionSources:
+    rid: 4797208324605477024
+  m_FalloffIntensity: 0.5
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 2
+  m_LightVolumeIntensity: 1
+  m_LightVolumeEnabled: 0
+  m_ApplyToSortingLayers: 000000000100000002000000030000000400000005000000i
+  m_LightCookieSprite: {fileID: 0}
+  m_DeprecatedPointLightCookieSprite: {fileID: 0}
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_OverlapOperation: 0
+  m_NormalMapDistance: 3
+  m_NormalMapQuality: 2
+  m_UseNormalMap: 0
+  m_ShadowsEnabled: 1
+  m_ShadowIntensity: 0.75
+  m_ShadowSoftness: 0.3
+  m_ShadowSoftnessFalloffIntensity: 0.5
+  m_ShadowVolumeIntensityEnabled: 0
+  m_ShadowVolumeIntensity: 0.75
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_LocalBounds:
+    m_Center: {x: 0.05860001, y: 0.44904995, z: 0}
+    m_Extent: {x: 1.4087, y: 1.56405, z: 0}
+  m_PointLightInnerAngle: 360
+  m_PointLightOuterAngle: 360
+  m_PointLightInnerRadius: 0
+  m_PointLightOuterRadius: 1
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.8504532, y: -0.50000006, z: 0}
+  - {x: 0.96727175, y: -0.6168181, z: 0}
+  - {x: 0.92832965, y: 1.5124221, z: 0}
+  - {x: -0.81151474, y: 1.4734832, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 4797208324605477024
+      type: {class: Light2DProviderSources, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_SelectedHashCode: 1
+        m_SelectedSource:
+          rid: -2
+        m_Provider2DCache:
+          rid: 4797208324605477025
+    - rid: 4797208324605477025
+      type: {class: 'Provider2DCache`1[[UnityEngine.Rendering.Universal.Light2DProvider, Unity.RenderPipelines.Universal.2D.Runtime]]', ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_Cache: []
 --- !u!1 &306672376
 GameObject:
   m_ObjectHideFlags: 0
@@ -1894,6 +2148,114 @@ Transform:
   - {fileID: 863315626}
   m_Father: {fileID: 549096356}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &349922375
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 349922376}
+  - component: {fileID: 349922377}
+  m_Layer: 0
+  m_Name: Freeform Light 2D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &349922376
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 349922375}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.54, y: 4.6, z: 0.03}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1939925660}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &349922377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 349922375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.Light2D
+  m_ComponentVersion: 4
+  m_LightType: 1
+  m_BlendStyleIndex: 0
+  m_Light2DProvider:
+    rid: -2
+  m_SelectionSources:
+    rid: 4797208324605476929
+  m_FalloffIntensity: 0.5
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 0.8
+  m_LightVolumeIntensity: 1
+  m_LightVolumeEnabled: 0
+  m_ApplyToSortingLayers: 000000000100000002000000030000000400000005000000i
+  m_LightCookieSprite: {fileID: 0}
+  m_DeprecatedPointLightCookieSprite: {fileID: 0}
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_OverlapOperation: 0
+  m_NormalMapDistance: 3
+  m_NormalMapQuality: 2
+  m_UseNormalMap: 0
+  m_ShadowsEnabled: 1
+  m_ShadowIntensity: 0.75
+  m_ShadowSoftness: 0.3
+  m_ShadowSoftnessFalloffIntensity: 0.5
+  m_ShadowVolumeIntensityEnabled: 0
+  m_ShadowVolumeIntensity: 0.75
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_LocalBounds:
+    m_Center: {x: -0.057199985, y: 0.2723, z: 0}
+    m_Extent: {x: 0.72720003, y: 1.4886, z: 0}
+  m_PointLightInnerAngle: 360
+  m_PointLightOuterAngle: 360
+  m_PointLightInnerRadius: 0
+  m_PointLightOuterRadius: 1
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.2846862, y: -0.35024533, z: 0}
+  - {x: 0.14334947, y: -0.7185382, z: 0}
+  - {x: 0.17108431, y: 1.2389201, z: 0}
+  - {x: -0.2783651, y: 1.2611382, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 4797208324605476929
+      type: {class: Light2DProviderSources, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_SelectedHashCode: 1
+        m_SelectedSource:
+          rid: -2
+        m_Provider2DCache:
+          rid: 4797208324605476930
+    - rid: 4797208324605476930
+      type: {class: 'Provider2DCache`1[[UnityEngine.Rendering.Universal.Light2DProvider, Unity.RenderPipelines.Universal.2D.Runtime]]', ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_Cache: []
 --- !u!1 &355192711
 GameObject:
   m_ObjectHideFlags: 0
@@ -2690,6 +3052,114 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1281248094806975799, guid: 3d3cdc0ae24209a44aa1071ec3ba9612, type: 3}
   m_PrefabInstance: {fileID: 463127121}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &473335700
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 473335701}
+  - component: {fileID: 473335702}
+  m_Layer: 0
+  m_Name: Freeform Light 2D (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &473335701
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 473335700}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.69, y: 4.21, z: 0.63}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 215615904}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &473335702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 473335700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.Light2D
+  m_ComponentVersion: 4
+  m_LightType: 1
+  m_BlendStyleIndex: 0
+  m_Light2DProvider:
+    rid: -2
+  m_SelectionSources:
+    rid: 4797208324605477024
+  m_FalloffIntensity: 0.5
+  m_Color: {r: 0.6981132, g: 0.6416273, b: 0.18770024, a: 1}
+  m_Intensity: 2
+  m_LightVolumeIntensity: 1
+  m_LightVolumeEnabled: 0
+  m_ApplyToSortingLayers: 000000000100000002000000030000000400000005000000i
+  m_LightCookieSprite: {fileID: 0}
+  m_DeprecatedPointLightCookieSprite: {fileID: 0}
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_OverlapOperation: 0
+  m_NormalMapDistance: 3
+  m_NormalMapQuality: 2
+  m_UseNormalMap: 0
+  m_ShadowsEnabled: 1
+  m_ShadowIntensity: 0.75
+  m_ShadowSoftness: 0.3
+  m_ShadowSoftnessFalloffIntensity: 0.5
+  m_ShadowVolumeIntensityEnabled: 0
+  m_ShadowVolumeIntensity: 0.75
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_LocalBounds:
+    m_Center: {x: 0.029599965, y: 0.44450003, z: 0}
+    m_Extent: {x: 1.4336, y: 1.6289, z: 0}
+  m_PointLightInnerAngle: 360
+  m_PointLightOuterAngle: 360
+  m_PointLightInnerRadius: 0
+  m_PointLightOuterRadius: 1
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.88107145, y: -0.68372035, z: 0}
+  - {x: 0.96727175, y: -0.6168181, z: 0}
+  - {x: 0.68337154, y: 1.5736618, z: 0}
+  - {x: -0.90337193, y: 1.4734832, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 4797208324605477024
+      type: {class: Light2DProviderSources, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_SelectedHashCode: 1
+        m_SelectedSource:
+          rid: -2
+        m_Provider2DCache:
+          rid: 4797208324605477025
+    - rid: 4797208324605477025
+      type: {class: 'Provider2DCache`1[[UnityEngine.Rendering.Universal.Light2DProvider, Unity.RenderPipelines.Universal.2D.Runtime]]', ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_Cache: []
 --- !u!1 &486529449
 GameObject:
   m_ObjectHideFlags: 0
@@ -5367,7 +5837,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 44
     m_Alignment: 7
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -5869,7 +6339,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 44
     m_Alignment: 7
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -6004,15 +6474,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4836504139791538527, guid: eacb0ea3ec4aeb34a9a4e6cf5bd8c8f1, type: 3}
       propertyPath: m_Color.b
-      value: 0.98
+      value: 0.9528302
       objectReference: {fileID: 0}
     - target: {fileID: 4836504139791538527, guid: eacb0ea3ec4aeb34a9a4e6cf5bd8c8f1, type: 3}
       propertyPath: m_Color.g
-      value: 0.75
+      value: 0.9528302
       objectReference: {fileID: 0}
     - target: {fileID: 4836504139791538527, guid: eacb0ea3ec4aeb34a9a4e6cf5bd8c8f1, type: 3}
       propertyPath: m_Color.r
-      value: 0.8
+      value: 0.9528302
       objectReference: {fileID: 0}
     - target: {fileID: 4836504139791538527, guid: eacb0ea3ec4aeb34a9a4e6cf5bd8c8f1, type: 3}
       propertyPath: m_SortingLayer
@@ -6026,20 +6496,53 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 4836504139791538527, guid: eacb0ea3ec4aeb34a9a4e6cf5bd8c8f1, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 69c196268475f7246ade3597fe42aa24, type: 2}
     - target: {fileID: 6710405339712923448, guid: eacb0ea3ec4aeb34a9a4e6cf5bd8c8f1, type: 3}
       propertyPath: m_Name
       value: tile_placeholder_edificio_1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 368603010220315621, guid: eacb0ea3ec4aeb34a9a4e6cf5bd8c8f1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1540020849}
+    - targetCorrespondingSourceObject: {fileID: 368603010220315621, guid: eacb0ea3ec4aeb34a9a4e6cf5bd8c8f1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1182800030}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6710405339712923448, guid: eacb0ea3ec4aeb34a9a4e6cf5bd8c8f1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 777655685}
   m_SourcePrefab: {fileID: 100100000, guid: eacb0ea3ec4aeb34a9a4e6cf5bd8c8f1, type: 3}
 --- !u!4 &777655683 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 368603010220315621, guid: eacb0ea3ec4aeb34a9a4e6cf5bd8c8f1, type: 3}
   m_PrefabInstance: {fileID: 777655682}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &777655684 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6710405339712923448, guid: eacb0ea3ec4aeb34a9a4e6cf5bd8c8f1, type: 3}
+  m_PrefabInstance: {fileID: 777655682}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &777655685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777655684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1163ed9d52312ca48a259e329e6a72e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.BuildingColorModifier
+  grayAreaColor: {r: 0, g: 0.7490196, b: 1, a: 1}
+  whiteAreaColor: {r: 1, g: 1, b: 1, a: 1}
+  splitThreshold: 0.75
 --- !u!1001 &810816863
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6434,6 +6937,18 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 9147148915261769571, guid: c1322193a78bb2d4ea67c97efb7d5462, type: 3}
+      propertyPath: m_LocalBounds.m_Center.y
+      value: -0.00000011920929
+      objectReference: {fileID: 0}
+    - target: {fileID: 9147148915261769571, guid: c1322193a78bb2d4ea67c97efb7d5462, type: 3}
+      propertyPath: m_LocalBounds.m_Extent.x
+      value: 0.9985302
+      objectReference: {fileID: 0}
+    - target: {fileID: 9147148915261769571, guid: c1322193a78bb2d4ea67c97efb7d5462, type: 3}
+      propertyPath: m_LocalBounds.m_Extent.y
+      value: 0.99853027
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6444,6 +6959,114 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5443744891504821853, guid: c1322193a78bb2d4ea67c97efb7d5462, type: 3}
   m_PrefabInstance: {fileID: 911383130}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &927709355
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 927709356}
+  - component: {fileID: 927709357}
+  m_Layer: 0
+  m_Name: Freeform Light 2D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &927709356
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 927709355}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.63, y: 4.83, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 975832035}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &927709357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 927709355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.Light2D
+  m_ComponentVersion: 4
+  m_LightType: 1
+  m_BlendStyleIndex: 0
+  m_Light2DProvider:
+    rid: -2
+  m_SelectionSources:
+    rid: 4797208324605477022
+  m_FalloffIntensity: 0.5
+  m_Color: {r: 0.8962264, g: 0.5876982, b: 0.31706125, a: 1}
+  m_Intensity: 1.5
+  m_LightVolumeIntensity: 1
+  m_LightVolumeEnabled: 0
+  m_ApplyToSortingLayers: 000000000100000002000000030000000400000005000000i
+  m_LightCookieSprite: {fileID: 0}
+  m_DeprecatedPointLightCookieSprite: {fileID: 0}
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_OverlapOperation: 0
+  m_NormalMapDistance: 3
+  m_NormalMapQuality: 2
+  m_UseNormalMap: 0
+  m_ShadowsEnabled: 1
+  m_ShadowIntensity: 0.75
+  m_ShadowSoftness: 0.3
+  m_ShadowSoftnessFalloffIntensity: 0.5
+  m_ShadowVolumeIntensityEnabled: 0
+  m_ShadowVolumeIntensity: 0.75
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_LocalBounds:
+    m_Center: {x: 0.32795, y: 0.03855002, z: 0}
+    m_Extent: {x: 2.53625, y: 1.61945, z: 0}
+  m_PointLightInnerAngle: 360
+  m_PointLightOuterAngle: 360
+  m_PointLightInnerRadius: 0
+  m_PointLightOuterRadius: 1
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -1.6902682, y: -1.0232233, z: 0}
+  - {x: 2.3399599, y: -1.0817509, z: 0}
+  - {x: 2.3652534, y: 1.1229243, z: 0}
+  - {x: -1.7076199, y: 1.157631, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 4797208324605477022
+      type: {class: Light2DProviderSources, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_SelectedHashCode: 1
+        m_SelectedSource:
+          rid: -2
+        m_Provider2DCache:
+          rid: 4797208324605477023
+    - rid: 4797208324605477023
+      type: {class: 'Provider2DCache`1[[UnityEngine.Rendering.Universal.Light2DProvider, Unity.RenderPipelines.Universal.2D.Runtime]]', ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_Cache: []
 --- !u!1001 &975832034
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6528,16 +7151,49 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 7256028618042617454, guid: f2be6170b1b96814e825e317e5da4a22, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 69c196268475f7246ade3597fe42aa24, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 3747982169978197971, guid: f2be6170b1b96814e825e317e5da4a22, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 927709356}
+    - targetCorrespondingSourceObject: {fileID: 3747982169978197971, guid: f2be6170b1b96814e825e317e5da4a22, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 181361293}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1106796538738022115, guid: f2be6170b1b96814e825e317e5da4a22, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 975832037}
   m_SourcePrefab: {fileID: 100100000, guid: f2be6170b1b96814e825e317e5da4a22, type: 3}
 --- !u!4 &975832035 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3747982169978197971, guid: f2be6170b1b96814e825e317e5da4a22, type: 3}
   m_PrefabInstance: {fileID: 975832034}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &975832036 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1106796538738022115, guid: f2be6170b1b96814e825e317e5da4a22, type: 3}
+  m_PrefabInstance: {fileID: 975832034}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &975832037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975832036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1163ed9d52312ca48a259e329e6a72e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.BuildingColorModifier
+  grayAreaColor: {r: 0.5960785, g: 0.9843138, b: 0.5960785, a: 1}
+  whiteAreaColor: {r: 1, g: 1, b: 1, a: 1}
+  splitThreshold: 0.75
 --- !u!1 &976225720
 GameObject:
   m_ObjectHideFlags: 0
@@ -6793,6 +7449,11 @@ Canvas:
   m_SortingLayerID: 5
   m_SortingOrder: 1000
   m_TargetDisplay: 0
+--- !u!1 &1020953586 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5129608159295903019, guid: d3bee24e467adf54fad90e8a083cd553, type: 3}
+  m_PrefabInstance: {fileID: 1716651802}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1022011693
 GameObject:
   m_ObjectHideFlags: 0
@@ -7216,7 +7877,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 44
     m_Alignment: 7
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -7472,6 +8133,114 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1281248094806975799, guid: 3d3cdc0ae24209a44aa1071ec3ba9612, type: 3}
   m_PrefabInstance: {fileID: 1158530710}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1182800029
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1182800030}
+  - component: {fileID: 1182800031}
+  m_Layer: 0
+  m_Name: Spot Light 2D (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1182800030
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1182800029}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.87, y: 3.7, z: -0.42}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 777655683}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1182800031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1182800029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.Light2D
+  m_ComponentVersion: 4
+  m_LightType: 3
+  m_BlendStyleIndex: 0
+  m_Light2DProvider:
+    rid: -2
+  m_SelectionSources:
+    rid: 4797208324605476898
+  m_FalloffIntensity: 0.5
+  m_Color: {r: 0.8207547, g: 0.61008596, b: 0.26713243, a: 1}
+  m_Intensity: 1
+  m_LightVolumeIntensity: 1
+  m_LightVolumeEnabled: 0
+  m_ApplyToSortingLayers: 000000000100000002000000030000000400000005000000i
+  m_LightCookieSprite: {fileID: 0}
+  m_DeprecatedPointLightCookieSprite: {fileID: 0}
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_OverlapOperation: 0
+  m_NormalMapDistance: 3
+  m_NormalMapQuality: 2
+  m_UseNormalMap: 0
+  m_ShadowsEnabled: 1
+  m_ShadowIntensity: 0.75
+  m_ShadowSoftness: 0.3
+  m_ShadowSoftnessFalloffIntensity: 0.5
+  m_ShadowVolumeIntensityEnabled: 0
+  m_ShadowVolumeIntensity: 0.75
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_LocalBounds:
+    m_Center: {x: 0, y: -0.00000011920929, z: 0}
+    m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
+  m_PointLightInnerAngle: 7.869995
+  m_PointLightOuterAngle: 179.37
+  m_PointLightInnerRadius: 1.2212741
+  m_PointLightOuterRadius: 1.2976043
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: 0.5, z: 0}
+  - {x: -0.5, y: 0.5, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 4797208324605476898
+      type: {class: Light2DProviderSources, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_SelectedHashCode: 3
+        m_SelectedSource:
+          rid: -2
+        m_Provider2DCache:
+          rid: 4797208324605476899
+    - rid: 4797208324605476899
+      type: {class: 'Provider2DCache`1[[UnityEngine.Rendering.Universal.Light2DProvider, Unity.RenderPipelines.Universal.2D.Runtime]]', ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_Cache: []
 --- !u!1 &1185614424
 GameObject:
   m_ObjectHideFlags: 0
@@ -7720,6 +8489,10 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 4878655960996465839, guid: d3bee24e467adf54fad90e8a083cd553, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 69c196268475f7246ade3597fe42aa24, type: 2}
     - target: {fileID: 5129608159295903019, guid: d3bee24e467adf54fad90e8a083cd553, type: 3}
       propertyPath: m_Name
       value: tile_placeholder_arbol_1
@@ -7775,13 +8548,36 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5129608159295903019, guid: d3bee24e467adf54fad90e8a083cd553, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1248826670}
   m_SourcePrefab: {fileID: 100100000, guid: d3bee24e467adf54fad90e8a083cd553, type: 3}
 --- !u!4 &1248826668 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6504344341249057758, guid: d3bee24e467adf54fad90e8a083cd553, type: 3}
   m_PrefabInstance: {fileID: 1248826667}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1248826669 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5129608159295903019, guid: d3bee24e467adf54fad90e8a083cd553, type: 3}
+  m_PrefabInstance: {fileID: 1248826667}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1248826670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1248826669}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1163ed9d52312ca48a259e329e6a72e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.BuildingColorModifier
+  grayAreaColor: {r: 0.5019608, g: 0.5019608, b: 0, a: 1}
+  whiteAreaColor: {r: 1, g: 1, b: 1, a: 1}
+  splitThreshold: 0.75
 --- !u!1 &1281038114
 GameObject:
   m_ObjectHideFlags: 0
@@ -8012,7 +8808,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 44
     m_Alignment: 7
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -8173,6 +8969,10 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 7506567546562527707, guid: 3c40cf7a9ce2b6547a479fa75184863c, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 69c196268475f7246ade3597fe42aa24, type: 2}
     - target: {fileID: 7647716502082669866, guid: 3c40cf7a9ce2b6547a479fa75184863c, type: 3}
       propertyPath: m_Name
       value: tile_placeholder_arbol_2
@@ -8180,13 +8980,31 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7647716502082669866, guid: 3c40cf7a9ce2b6547a479fa75184863c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1344957303}
   m_SourcePrefab: {fileID: 100100000, guid: 3c40cf7a9ce2b6547a479fa75184863c, type: 3}
 --- !u!4 &1344957301 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5327298944040476556, guid: 3c40cf7a9ce2b6547a479fa75184863c, type: 3}
   m_PrefabInstance: {fileID: 1344957300}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1344957303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 275588969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1163ed9d52312ca48a259e329e6a72e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.BuildingColorModifier
+  grayAreaColor: {r: 0.5450981, g: 0.2705882, b: 0.07450981, a: 1}
+  whiteAreaColor: {r: 1, g: 1, b: 1, a: 1}
+  splitThreshold: 0.75
 --- !u!1 &1364843912
 GameObject:
   m_ObjectHideFlags: 0
@@ -8841,6 +9659,10 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 7506567546562527707, guid: 3c40cf7a9ce2b6547a479fa75184863c, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 69c196268475f7246ade3597fe42aa24, type: 2}
     - target: {fileID: 7647716502082669866, guid: 3c40cf7a9ce2b6547a479fa75184863c, type: 3}
       propertyPath: m_Name
       value: tile_placeholder_arbol_2
@@ -8848,13 +9670,36 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7647716502082669866, guid: 3c40cf7a9ce2b6547a479fa75184863c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1447376907}
   m_SourcePrefab: {fileID: 100100000, guid: 3c40cf7a9ce2b6547a479fa75184863c, type: 3}
 --- !u!4 &1447376905 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5327298944040476556, guid: 3c40cf7a9ce2b6547a479fa75184863c, type: 3}
   m_PrefabInstance: {fileID: 1447376904}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1447376906 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7647716502082669866, guid: 3c40cf7a9ce2b6547a479fa75184863c, type: 3}
+  m_PrefabInstance: {fileID: 1447376904}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1447376907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1447376906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1163ed9d52312ca48a259e329e6a72e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.BuildingColorModifier
+  grayAreaColor: {r: 0.5019608, g: 0.5019608, b: 0, a: 1}
+  whiteAreaColor: {r: 1, g: 1, b: 1, a: 1}
+  splitThreshold: 0.75
 --- !u!1 &1449302766
 GameObject:
   m_ObjectHideFlags: 0
@@ -9464,6 +10309,114 @@ Canvas:
   m_SortingLayerID: 5
   m_SortingOrder: 1000
   m_TargetDisplay: 0
+--- !u!1 &1540020848
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1540020849}
+  - component: {fileID: 1540020850}
+  m_Layer: 0
+  m_Name: Spot Light 2D
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1540020849
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540020848}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.52, y: 3.77, z: -0.42}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 777655683}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1540020850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1540020848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.Light2D
+  m_ComponentVersion: 4
+  m_LightType: 3
+  m_BlendStyleIndex: 0
+  m_Light2DProvider:
+    rid: -2
+  m_SelectionSources:
+    rid: 4797208324605476898
+  m_FalloffIntensity: 0.5
+  m_Color: {r: 0.8207547, g: 0.61008596, b: 0.26713243, a: 1}
+  m_Intensity: 1
+  m_LightVolumeIntensity: 1
+  m_LightVolumeEnabled: 0
+  m_ApplyToSortingLayers: 000000000100000002000000030000000400000005000000i
+  m_LightCookieSprite: {fileID: 0}
+  m_DeprecatedPointLightCookieSprite: {fileID: 0}
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_OverlapOperation: 0
+  m_NormalMapDistance: 3
+  m_NormalMapQuality: 2
+  m_UseNormalMap: 0
+  m_ShadowsEnabled: 1
+  m_ShadowIntensity: 0.75
+  m_ShadowSoftness: 0.3
+  m_ShadowSoftnessFalloffIntensity: 0.5
+  m_ShadowVolumeIntensityEnabled: 0
+  m_ShadowVolumeIntensity: 0.75
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_LocalBounds:
+    m_Center: {x: 0, y: -0.00000011920929, z: 0}
+    m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
+  m_PointLightInnerAngle: 6.0200043
+  m_PointLightOuterAngle: 177.52
+  m_PointLightInnerRadius: 1.2212741
+  m_PointLightOuterRadius: 1.2976043
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: -0.5, z: 0}
+  - {x: 0.5, y: 0.5, z: 0}
+  - {x: -0.5, y: 0.5, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 4797208324605476898
+      type: {class: Light2DProviderSources, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_SelectedHashCode: 3
+        m_SelectedSource:
+          rid: -2
+        m_Provider2DCache:
+          rid: 4797208324605476899
+    - rid: 4797208324605476899
+      type: {class: 'Provider2DCache`1[[UnityEngine.Rendering.Universal.Light2DProvider, Unity.RenderPipelines.Universal.2D.Runtime]]', ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_Cache: []
 --- !u!1 &1543284220
 GameObject:
   m_ObjectHideFlags: 0
@@ -9962,6 +10915,10 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 3706559649326518457, guid: 7c8f208464bf0a0488ed07e6c20425ad, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 69c196268475f7246ade3597fe42aa24, type: 2}
     - target: {fileID: 7046992371874166357, guid: 7c8f208464bf0a0488ed07e6c20425ad, type: 3}
       propertyPath: m_Name
       value: tile_placeholder_tienda
@@ -10017,13 +10974,36 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7046992371874166357, guid: 7c8f208464bf0a0488ed07e6c20425ad, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1674507603}
   m_SourcePrefab: {fileID: 100100000, guid: 7c8f208464bf0a0488ed07e6c20425ad, type: 3}
 --- !u!4 &1674507601 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8992536077706476013, guid: 7c8f208464bf0a0488ed07e6c20425ad, type: 3}
   m_PrefabInstance: {fileID: 1674507600}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1674507602 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7046992371874166357, guid: 7c8f208464bf0a0488ed07e6c20425ad, type: 3}
+  m_PrefabInstance: {fileID: 1674507600}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1674507603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1674507602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1163ed9d52312ca48a259e329e6a72e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.BuildingColorModifier
+  grayAreaColor: {r: 0.1803922, g: 0.5450981, b: 0.3411765, a: 1}
+  whiteAreaColor: {r: 1, g: 1, b: 1, a: 1}
+  splitThreshold: 0.75
 --- !u!1 &1676528616
 GameObject:
   m_ObjectHideFlags: 0
@@ -10234,6 +11214,10 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 4878655960996465839, guid: d3bee24e467adf54fad90e8a083cd553, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 69c196268475f7246ade3597fe42aa24, type: 2}
     - target: {fileID: 5129608159295903019, guid: d3bee24e467adf54fad90e8a083cd553, type: 3}
       propertyPath: m_Name
       value: tile_placeholder_arbol_1
@@ -10289,13 +11273,31 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5129608159295903019, guid: d3bee24e467adf54fad90e8a083cd553, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1716651805}
   m_SourcePrefab: {fileID: 100100000, guid: d3bee24e467adf54fad90e8a083cd553, type: 3}
 --- !u!4 &1716651803 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6504344341249057758, guid: d3bee24e467adf54fad90e8a083cd553, type: 3}
   m_PrefabInstance: {fileID: 1716651802}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1716651805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1020953586}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1163ed9d52312ca48a259e329e6a72e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.BuildingColorModifier
+  grayAreaColor: {r: 0.5450981, g: 0.2705882, b: 0.07450981, a: 1}
+  whiteAreaColor: {r: 1, g: 1, b: 1, a: 1}
+  splitThreshold: 0.75
 --- !u!1 &1728238992
 GameObject:
   m_ObjectHideFlags: 0
@@ -10328,6 +11330,119 @@ Transform:
   - {fileID: 290975380}
   m_Father: {fileID: 549096356}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1768606634
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1768606635}
+  - component: {fileID: 1768606636}
+  m_Layer: 0
+  m_Name: Freeform Light 2D (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1768606635
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1768606634}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.03, y: 4.6, z: 0.12}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1939925660}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1768606636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1768606634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.Light2D
+  m_ComponentVersion: 4
+  m_LightType: 1
+  m_BlendStyleIndex: 0
+  m_Light2DProvider:
+    rid: -2
+  m_SelectionSources:
+    rid: 4797208324605476929
+  m_FalloffIntensity: 0.5
+  m_Color: {r: 0.8113208, g: 0.53531384, b: 0.12629052, a: 1}
+  m_Intensity: 0.5
+  m_LightVolumeIntensity: 1
+  m_LightVolumeEnabled: 0
+  m_ApplyToSortingLayers: 000000000100000002000000030000000400000005000000i
+  m_LightCookieSprite: {fileID: 0}
+  m_DeprecatedPointLightCookieSprite: {fileID: 0}
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_OverlapOperation: 0
+  m_NormalMapDistance: 3
+  m_NormalMapQuality: 2
+  m_UseNormalMap: 0
+  m_ShadowsEnabled: 1
+  m_ShadowIntensity: 0.75
+  m_ShadowSoftness: 0.3
+  m_ShadowSoftnessFalloffIntensity: 0.5
+  m_ShadowVolumeIntensityEnabled: 0
+  m_ShadowVolumeIntensity: 0.75
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_LocalBounds:
+    m_Center: {x: -0.018400013, y: 0.07035005, z: 0}
+    m_Extent: {x: 0.7174, y: 1.74895, z: 0}
+  m_PointLightInnerAngle: 360
+  m_PointLightOuterAngle: 360
+  m_PointLightInnerRadius: 0
+  m_PointLightOuterRadius: 1
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.5
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -0.20033258, y: -0.93580854, z: 0}
+  - {x: 0.1992802, y: -1.1799809, z: 0}
+  - {x: 0.09939725, y: 1.3189954, z: 0}
+  - {x: -0.2352642, y: 1.270757, z: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 4797208324605476929
+      type: {class: Light2DProviderSources, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_SelectedHashCode: 1
+        m_SelectedSource:
+          rid: -2
+        m_Provider2DCache:
+          rid: 4797208324605476930
+    - rid: 4797208324605476930
+      type: {class: 'Provider2DCache`1[[UnityEngine.Rendering.Universal.Light2DProvider, Unity.RenderPipelines.Universal.2D.Runtime]]', ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
+      data:
+        m_Cache: []
+--- !u!1 &1801285663 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4381694546646039009, guid: eb41bb547478ca64d9874a387b1b8b69, type: 3}
+  m_PrefabInstance: {fileID: 1939925659}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1810181957
 GameObject:
   m_ObjectHideFlags: 0
@@ -10472,7 +11587,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 44
     m_Alignment: 7
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -11065,7 +12180,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 44
     m_Alignment: 7
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -11253,15 +12368,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1892717702252199776, guid: eb41bb547478ca64d9874a387b1b8b69, type: 3}
       propertyPath: m_Color.b
-      value: 0.98
+      value: 0.7924528
       objectReference: {fileID: 0}
     - target: {fileID: 1892717702252199776, guid: eb41bb547478ca64d9874a387b1b8b69, type: 3}
       propertyPath: m_Color.g
-      value: 0.75
+      value: 0.78123885
       objectReference: {fileID: 0}
     - target: {fileID: 1892717702252199776, guid: eb41bb547478ca64d9874a387b1b8b69, type: 3}
       propertyPath: m_Color.r
-      value: 0.8
+      value: 0.7837097
       objectReference: {fileID: 0}
     - target: {fileID: 1892717702252199776, guid: eb41bb547478ca64d9874a387b1b8b69, type: 3}
       propertyPath: m_SortingLayer
@@ -11275,6 +12390,10 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1892717702252199776, guid: eb41bb547478ca64d9874a387b1b8b69, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 69c196268475f7246ade3597fe42aa24, type: 2}
     - target: {fileID: 4381694546646039009, guid: eb41bb547478ca64d9874a387b1b8b69, type: 3}
       propertyPath: m_Name
       value: tile_placeholder_bocacalle
@@ -11329,14 +12448,38 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6601317956691332177, guid: eb41bb547478ca64d9874a387b1b8b69, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 349922376}
+    - targetCorrespondingSourceObject: {fileID: 6601317956691332177, guid: eb41bb547478ca64d9874a387b1b8b69, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1768606635}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4381694546646039009, guid: eb41bb547478ca64d9874a387b1b8b69, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1939925662}
   m_SourcePrefab: {fileID: 100100000, guid: eb41bb547478ca64d9874a387b1b8b69, type: 3}
 --- !u!4 &1939925660 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6601317956691332177, guid: eb41bb547478ca64d9874a387b1b8b69, type: 3}
   m_PrefabInstance: {fileID: 1939925659}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1939925662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1801285663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1163ed9d52312ca48a259e329e6a72e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.BuildingColorModifier
+  grayAreaColor: {r: 0.7, g: 0.7, b: 0.7, a: 1}
+  whiteAreaColor: {r: 1, g: 1, b: 1, a: 1}
+  splitThreshold: 0.75
 --- !u!1 &1949133678
 GameObject:
   m_ObjectHideFlags: 0
@@ -12002,7 +13145,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 44
     m_Alignment: 7
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -12439,7 +13582,7 @@ MonoBehaviour:
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 40
+    m_MaxSize: 44
     m_Alignment: 7
     m_AlignByGeometry: 0
     m_RichText: 1
