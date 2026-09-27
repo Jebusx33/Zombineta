@@ -45,7 +45,17 @@ namespace Zombineta.Tutorial
         {
             if (pasoGroup != null) pasoGroup.alpha = 0f;
             if (avisoGroup != null) avisoGroup.alpha = 0f;
-            if (resaltadoFrame != null) resaltadoFrame.gameObject.SetActive(false);
+            if (resaltadoFrame != null)
+            {
+                // Pivot + anchors a punto fijo para que sizeDelta sea tamano absoluto y
+                // position sea el centro. sizeDelta=zero evita el flash de un frame al
+                // activar antes de que PosicionarResaltado lo corrija.
+                resaltadoFrame.pivot = new Vector2(0.5f, 0.5f);
+                resaltadoFrame.anchorMin = new Vector2(0.5f, 0.5f);
+                resaltadoFrame.anchorMax = new Vector2(0.5f, 0.5f);
+                resaltadoFrame.sizeDelta = Vector2.zero;
+                resaltadoFrame.gameObject.SetActive(false);
+            }
         }
 
         /// <summary>Cambia el cartel del paso con un fundido: se apaga, cambia el texto y se prende.</summary>
@@ -98,9 +108,35 @@ namespace Zombineta.Tutorial
         /// </summary>
         public void Resaltar(RectTransform[] objetivos)
         {
-            resaltadoObjetivos = objetivos != null && objetivos.Length > 0 ? objetivos : null;
-            if (resaltadoFrame != null)
-                resaltadoFrame.gameObject.SetActive(resaltadoObjetivos != null);
+            // Filtra nulls: un objetivo null (ej. ThreatBarRect cuando el campo no esta asignado)
+            // hace que huboAlguno quede false y el frame quede activo con su tamano de canvas.
+            resaltadoObjetivos = null;
+            if (objetivos != null)
+            {
+                int count = 0;
+                foreach (var o in objetivos) if (o != null) count++;
+                if (count > 0)
+                {
+                    resaltadoObjetivos = new RectTransform[count];
+                    int idx = 0;
+                    foreach (var o in objetivos) if (o != null) resaltadoObjetivos[idx++] = o;
+                }
+            }
+
+            if (resaltadoFrame == null)
+                return;
+
+            if (resaltadoObjetivos != null)
+            {
+                // Activar primero (SetSizeWithCurrentAnchors necesita que el parent este activo
+                // para leer su tamano real). sizeDelta=zero en Awake evita el flash de un frame.
+                resaltadoFrame.gameObject.SetActive(true);
+                PosicionarResaltado();
+            }
+            else
+            {
+                resaltadoFrame.gameObject.SetActive(false);
+            }
         }
 
         void LateUpdate()
@@ -124,13 +160,8 @@ namespace Zombineta.Tutorial
 
         void PosicionarResaltado()
         {
-            var parent = resaltadoFrame.parent as RectTransform;
-            if (parent == null)
-                return;
-
             bool huboAlguno = false;
-            Vector2 min = Vector2.zero;
-            Vector2 max = Vector2.zero;
+            float minX = 0f, maxX = 0f, minY = 0f, maxY = 0f;
             var corners = esquinas;
 
             foreach (var objetivo in resaltadoObjetivos)
@@ -141,41 +172,41 @@ namespace Zombineta.Tutorial
                 objetivo.GetWorldCorners(corners);
                 for (int i = 0; i < 4; i++)
                 {
-                    // Canvas Screen Space - Overlay: las esquinas ya estan en coordenadas de
-                    // pantalla, por eso la camara para convertir es null (igual que hace la UI
-                    // del propio Canvas).
-                    if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, corners[i], null, out var local))
-                        continue;
-
+                    float x = corners[i].x;
+                    float y = corners[i].y;
                     if (!huboAlguno)
                     {
-                        min = local;
-                        max = local;
+                        minX = maxX = x;
+                        minY = maxY = y;
                         huboAlguno = true;
                     }
                     else
                     {
-                        min = Vector2.Min(min, local);
-                        max = Vector2.Max(max, local);
+                        if (x < minX) minX = x;
+                        if (x > maxX) maxX = x;
+                        if (y < minY) minY = y;
+                        if (y > maxY) maxY = y;
                     }
                 }
             }
 
             if (!huboAlguno)
+            {
+                resaltadoFrame.gameObject.SetActive(false);
                 return;
+            }
 
-            min -= Vector2.one * resaltadoPadding;
-            max += Vector2.one * resaltadoPadding;
-
-            // sizeDelta con anchorMin == anchorMax da el ancho/alto real sin estirar; el punto de
-            // anclaje (en el espacio local de parent.rect) hay que restarselo a la posicion para
-            // que el pivote del marco caiga en el centro del area calculada, sea cual sea el
-            // pivote/ancla de parent.
-            Vector2 anchorRef = new Vector2(
-                Mathf.Lerp(parent.rect.xMin, parent.rect.xMax, resaltadoFrame.anchorMin.x),
-                Mathf.Lerp(parent.rect.yMin, parent.rect.yMax, resaltadoFrame.anchorMin.y));
-            resaltadoFrame.sizeDelta = max - min;
-            resaltadoFrame.anchoredPosition = (min + max) * 0.5f - anchorRef;
+            // Screen Space - Overlay: coordenadas de mundo == coordenadas de pantalla.
+            // SetSizeWithCurrentAnchors calcula el sizeDelta correcto para cualquier
+            // configuracion de anchors, evitando el bug donde anchors stretch producen
+            // un frame del tamano de la pantalla completa.
+            // position (no anchoredPosition) acepta coordenadas de mundo directamente,
+            // tambien independiente de anchors y pivot.
+             float pad = resaltadoPadding;
+            resaltadoFrame.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, maxX - minX + pad );
+            resaltadoFrame.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, maxY - minY + pad );
+             resaltadoFrame.position = new Vector3(0f, 0f, 0f);
+            resaltadoFrame.position = new Vector3((minX + maxX) * 0.5f, (minY + maxY) * 0.5f, 0f);
         }
 
         IEnumerator FundirYCambiar(CanvasGroup grupo, Text texto, float duracion)

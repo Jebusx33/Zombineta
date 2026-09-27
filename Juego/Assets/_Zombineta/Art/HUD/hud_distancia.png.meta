@@ -1,16 +1,16 @@
 fileFormatVersion: 2
-guid: a3328432990279641b7bcfaf7e4be60d
+guid: 69055e392d0868649bba861e5091ca12
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8837609118603321609
-    second: smoke_03_0
+      213: 3947557869465584531
+    second: hud_distancia_0
   - first:
-      213: -6224619888917457095
-    second: smoke_03_1
+      213: 5531464284049005006
+    second: hud_distancia_1
   - first:
-      213: 4749335409002139054
-    second: smoke_03_2
+      213: -4830240169471129383
+    second: hud_distancia_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -121,13 +121,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: smoke_03_0
+      name: hud_distancia_0
       rect:
         serializedVersion: 2
-        x: 112
-        y: 119
-        width: 246
-        height: 271
+        x: 12
+        y: 23
+        width: 693
+        height: 82
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -136,20 +136,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 901aa127bae75aa70800000000000000
-      internalID: 8837609118603321609
+      spriteID: 3934bcb97fa88c630800000000000000
+      internalID: 3947557869465584531
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: smoke_03_1
+      name: hud_distancia_1
       rect:
         serializedVersion: 2
-        x: 345
-        y: 356
-        width: 16
-        height: 17
+        x: 13
+        y: 1
+        width: 80
+        height: 22
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -158,20 +158,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9375e33c035bd99a0800000000000000
-      internalID: -6224619888917457095
+      spriteID: ec9508a9575b3cc40800000000000000
+      internalID: 5531464284049005006
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: smoke_03_2
+      name: hud_distancia_2
       rect:
         serializedVersion: 2
-        x: 359
-        y: 247
-        width: 42
-        height: 80
+        x: 608
+        y: 1
+        width: 77
+        height: 22
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -180,8 +180,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: eadc1c4346709e140800000000000000
-      internalID: 4749335409002139054
+      spriteID: 9d8c9d6582a87fcb0800000000000000
+      internalID: -4830240169471129383
       vertices: []
       indices: 
       edges: []
@@ -200,9 +200,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      smoke_03_0: 8837609118603321609
-      smoke_03_1: -6224619888917457095
-      smoke_03_2: 4749335409002139054
+      hud_distancia_0: 3947557869465584531
+      hud_distancia_1: 5531464284049005006
+      hud_distancia_2: -4830240169471129383
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

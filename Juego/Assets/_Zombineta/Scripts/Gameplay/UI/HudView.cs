@@ -45,15 +45,18 @@ namespace Zombineta.UI
 
         // --- Accesores de solo lectura: el TutorialDirector los usa para el marco que resalta
         // la barra del paso actual, sin duplicar referencias a las mismas Image en la escena. ---
+        // Nota: se devuelve el RectTransform del fill (no su padre) porque en este HUD las barras
+        // son hijos directos del contenedor raiz (1920x1080). Usar BackgroundOf (el padre) daba
+        // un rect de pantalla completa como objetivo del resaltado.
 
-        /// <summary>El fondo de la barra de nafta (el padre de fuelFill), o null si no esta asignada.</summary>
-        public RectTransform FuelBarRect => BackgroundOf(fuelFill);
+        /// <summary>El RectTransform de la barra de nafta, o null si no esta asignada.</summary>
+        public RectTransform FuelBarRect => fuelFill != null ? fuelFill.rectTransform : null;
 
-        /// <summary>El fondo de la barra de bateria, o null si no esta asignada.</summary>
-        public RectTransform BatteryBarRect => BackgroundOf(batteryFill);
+        /// <summary>El RectTransform de la barra de bateria, o null si no esta asignada.</summary>
+        public RectTransform BatteryBarRect => batteryFill != null ? batteryFill.rectTransform : null;
 
-        /// <summary>El fondo de la barra de amenaza (horda), o null si no esta asignada.</summary>
-        public RectTransform ThreatBarRect => BackgroundOf(threatFill);
+        /// <summary>El RectTransform de la barra de amenaza (horda), o null si no esta asignada.</summary>
+        public RectTransform ThreatBarRect => threatFill != null ? threatFill.rectTransform : null;
 
         /// <summary>Las balas (pips), para resaltarlas todas juntas. Nunca null; puede estar vacio.</summary>
         public RectTransform[] AmmoPipRects
@@ -70,9 +73,6 @@ namespace Zombineta.UI
                 return list.ToArray();
             }
         }
-
-        static RectTransform BackgroundOf(Image fill) =>
-            fill != null ? fill.rectTransform.parent as RectTransform : null;
 
         void LateUpdate()
         {
