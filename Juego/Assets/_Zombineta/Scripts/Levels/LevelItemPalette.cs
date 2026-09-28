@@ -13,6 +13,10 @@ namespace Zombineta.Juego.Levels
         public sealed class Look
         {
             public LevelEntryKind kind;
+
+            [Tooltip("Variante del tipo. 0 = default. Permite multiples prefabs para el mismo Kind (ej. 3 tipos de Obstacle).")]
+            public int variant;
+
             public Sprite sprite;
             public Color color = Color.white;
             public Vector2 scale = Vector2.one;
@@ -33,8 +37,12 @@ namespace Zombineta.Juego.Levels
 
         public List<Look> looks = new List<Look>();
 
-        public Look Get(LevelEntryKind kind)
+        public Look Get(LevelEntryKind kind, int variant = 0)
         {
+            foreach (var look in looks)
+                if (look.kind == kind && look.variant == variant)
+                    return look;
+            // Fallback: primer Look del kind (backwards compat con entradas sin variant asignado).
             foreach (var look in looks)
                 if (look.kind == kind)
                     return look;

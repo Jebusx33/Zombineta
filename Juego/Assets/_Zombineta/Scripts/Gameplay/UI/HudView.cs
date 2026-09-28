@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zombineta.Core;
@@ -23,6 +24,9 @@ namespace Zombineta.UI
         [Tooltip("Se llena a medida que la horda se acerca: lleno = encima tuyo.")]
         [SerializeField] Image threatFill;
 
+        [Tooltip("Texto que muestra la distancia de la horda al jugador en metros (ej. '99m'). Llega a 0 cuando la horda alcanza al jugador.")]
+        [SerializeField] TMP_Text threatDistance;
+
         [Header("Balas")]
         [Tooltip("Un objeto por bala. Se apagan a medida que se gastan.")]
         [SerializeField] Image[] ammoPips;
@@ -36,17 +40,23 @@ namespace Zombineta.UI
         [Tooltip("Distancia a la horda, en metros, a partir de la cual la barra grita.")]
         [SerializeField] float dangerGapMeters = 45f;
 
+        [Tooltip("Distancia en metros por debajo de la cual el texto de amenaza se pone rojo.")]
+        [SerializeField] float dangerTextMeters = 10f;
+
         // --- Accesores de solo lectura: el TutorialDirector los usa para el marco que resalta
         // la barra del paso actual, sin duplicar referencias a las mismas Image en la escena. ---
+        // Nota: se devuelve el RectTransform del fill (no su padre) porque en este HUD las barras
+        // son hijos directos del contenedor raiz (1920x1080). Usar BackgroundOf (el padre) daba
+        // un rect de pantalla completa como objetivo del resaltado.
 
-        /// <summary>El fondo de la barra de nafta (el padre de fuelFill), o null si no esta asignada.</summary>
-        public RectTransform FuelBarRect => BackgroundOf(fuelFill);
+        /// <summary>El RectTransform de la barra de nafta, o null si no esta asignada.</summary>
+        public RectTransform FuelBarRect => fuelFill != null ? fuelFill.rectTransform : null;
 
-        /// <summary>El fondo de la barra de bateria, o null si no esta asignada.</summary>
-        public RectTransform BatteryBarRect => BackgroundOf(batteryFill);
+        /// <summary>El RectTransform de la barra de bateria, o null si no esta asignada.</summary>
+        public RectTransform BatteryBarRect => batteryFill != null ? batteryFill.rectTransform : null;
 
-        /// <summary>El fondo de la barra de amenaza (horda), o null si no esta asignada.</summary>
-        public RectTransform ThreatBarRect => BackgroundOf(threatFill);
+        /// <summary>El RectTransform de la barra de amenaza (horda), o null si no esta asignada.</summary>
+        public RectTransform ThreatBarRect => threatFill != null ? threatFill.rectTransform : null;
 
         /// <summary>Las balas (pips), para resaltarlas todas juntas. Nunca null; puede estar vacio.</summary>
         public RectTransform[] AmmoPipRects
@@ -63,9 +73,6 @@ namespace Zombineta.UI
                 return list.ToArray();
             }
         }
-
-        static RectTransform BackgroundOf(Image fill) =>
-            fill != null ? fill.rectTransform.parent as RectTransform : null;
 
         void LateUpdate()
         {
@@ -95,6 +102,13 @@ namespace Zombineta.UI
                 float threat = 1f - Mathf.Clamp01(s.Gap / dangerGapMeters);
                 threatFill.fillAmount = threat;
                 threatFill.color = Color.Lerp(threatFar, threatNear, threat);
+            }
+
+            if (threatDistance != null)
+            {
+                float gap = Mathf.Max(0f, s.Gap);
+                threatDistance.text = Mathf.RoundToInt(gap) + "m";
+                threatDistance.color = gap < dangerTextMeters ? threatNear : threatFar;
             }
 
             if (ammoPips != null)

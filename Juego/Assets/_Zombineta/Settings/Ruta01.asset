@@ -22,7 +22,7 @@ MonoBehaviour:
     lane: 1
     kind: 0
     height: 0
-    variant: 0
+    variant: 1
   - distance: 200
     lane: 2
     kind: 6
@@ -52,7 +52,7 @@ MonoBehaviour:
     lane: 0
     kind: 0
     height: 0
-    variant: 0
+    variant: 1
   - distance: 308
     lane: 0
     kind: 0
@@ -62,7 +62,7 @@ MonoBehaviour:
     lane: 0
     kind: 1
     height: 6
-    variant: 0
+    variant: 2
   - distance: 344.67307
     lane: 2
     kind: 0
@@ -87,7 +87,7 @@ MonoBehaviour:
     lane: 0
     kind: 0
     height: 0
-    variant: 0
+    variant: 1
   - distance: 480
     lane: 1
     kind: 1
@@ -112,12 +112,12 @@ MonoBehaviour:
     lane: 0
     kind: 0
     height: 0
-    variant: 0
+    variant: 1
   - distance: 558
     lane: 0
     kind: 0
     height: 0
-    variant: 0
+    variant: 1
   - distance: 600
     lane: 2
     kind: 1
@@ -147,7 +147,7 @@ MonoBehaviour:
     lane: 1
     kind: 0
     height: 0
-    variant: 0
+    variant: 2
   - distance: 800
     lane: 0
     kind: 4
@@ -182,7 +182,7 @@ MonoBehaviour:
     lane: 1
     kind: 0
     height: 0
-    variant: 0
+    variant: 1
   - distance: 950
     lane: 0
     kind: 6
@@ -362,7 +362,7 @@ MonoBehaviour:
     lane: 0
     kind: 0
     height: 0
-    variant: 0
+    variant: 2
   - distance: 1800
     lane: 0
     kind: 4
@@ -437,7 +437,7 @@ MonoBehaviour:
     lane: 1
     kind: 0
     height: 0
-    variant: 0
+    variant: 1
   - distance: 2050
     lane: 2
     kind: 4
@@ -527,7 +527,7 @@ MonoBehaviour:
     lane: 1
     kind: 0
     height: 0
-    variant: 0
+    variant: 1
   - distance: 2412.2712
     lane: 0
     kind: 0
@@ -652,7 +652,7 @@ MonoBehaviour:
     lane: 2
     kind: 0
     height: 0
-    variant: 0
+    variant: 2
   - distance: 2817
     lane: 0
     kind: 1
@@ -687,7 +687,7 @@ MonoBehaviour:
     lane: 0
     kind: 0
     height: 0
-    variant: 0
+    variant: 2
   - distance: 3000
     lane: 1
     kind: 2
@@ -737,7 +737,7 @@ MonoBehaviour:
     lane: 0
     kind: 0
     height: 0
-    variant: 0
+    variant: 1
   - distance: 3148.7769
     lane: 1
     kind: 0
@@ -817,7 +817,7 @@ MonoBehaviour:
     lane: 0
     kind: 0
     height: 0
-    variant: 0
+    variant: 2
   - distance: 3450
     lane: 0
     kind: 5
@@ -832,7 +832,7 @@ MonoBehaviour:
     lane: 0
     kind: 0
     height: 0
-    variant: 0
+    variant: 2
   - distance: 3480
     lane: 2
     kind: 1
@@ -947,12 +947,12 @@ MonoBehaviour:
     lane: 0
     kind: 0
     height: 0
-    variant: 0
+    variant: 2
   - distance: 3808
     lane: 0
     kind: 0
     height: 0
-    variant: 0
+    variant: 1
   - distance: 3817
     lane: 0
     kind: 1

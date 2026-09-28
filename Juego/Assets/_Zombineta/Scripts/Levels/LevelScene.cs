@@ -117,8 +117,24 @@ namespace Zombineta.Juego.Levels
 
         void EnsurePlayLook(LevelItem item)
         {
-            var look = palette != null ? palette.Get(item.kind) : null;
-            if (look == null || look.prefab == null)
+            var look = palette != null ? palette.Get(item.kind, item.variant) : null;
+            if (look == null)
+                return;
+
+            // Siempre aplica la escala de la paleta al entrar en Play, incluso si no hay prefab
+            // o si el editor ya creo el hijo "Vista" en esta sesion (sin reload de escena).
+            // Sin esto, la escala guardada en el .unity (ej. 1.9 del asset original) persiste
+            // en Play aunque en el editor se vea bien porque ApplyVisual la pisa cada frame.
+            // ZombieFront excepcion: su escala combina palette * typeScale * lookScale (calculado
+            // en ApplyVisual); conserva la que guardo el editor en la escena.
+            if (item.kind != LevelEntryKind.ZombieFront)
+            {
+                var scale = new Vector3(look.scale.x, look.scale.y, 1f);
+                if (item.transform.localScale != scale)
+                    item.transform.localScale = scale;
+            }
+
+            if (look.prefab == null)
                 return;
 
             // El sprite propio del item no se pinta cuando hay prefab (ver ApplyVisual): puede
@@ -130,10 +146,6 @@ namespace Zombineta.Juego.Levels
 
             if (item.transform.Find(LookChildName) != null)
                 return; // Ya la armo el editor en esta misma sesion (sin reload de escena).
-
-            var scale = new Vector3(look.scale.x, look.scale.y, 1f);
-            if (item.transform.localScale != scale)
-                item.transform.localScale = scale;
 
             var go = Instantiate(look.prefab, item.transform);
             go.name = LookChildName;
@@ -312,7 +324,7 @@ namespace Zombineta.Juego.Levels
 
             Snap(item);
 
-            var look = palette != null ? palette.Get(item.kind) : null;
+            var look = palette != null ? palette.Get(item.kind, item.variant) : null;
             var sr = item.GetComponent<SpriteRenderer>();
             if (sr == null)
                 sr = item.gameObject.AddComponent<SpriteRenderer>();
