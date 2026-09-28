@@ -18,7 +18,7 @@ MonoBehaviour:
   suavizadoTono: 0.15
   fundidoSinNafta: 1
   fundidoAlPerder: 0.3
-  distanciaAmenaza: 45
+  distanciaAmenaza: 20
   suavizadoTension: 0.5
   musicaEnPausa: 0.4
   fundidoPausa: 0.2
