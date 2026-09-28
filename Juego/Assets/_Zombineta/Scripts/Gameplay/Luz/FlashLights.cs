@@ -42,6 +42,7 @@ namespace Zombineta.Luz
             luz.blendStyleIndex = 1; // Additive: se suma a lo que ya esta iluminado, no lo reemplaza.
             luz.targetSortingLayers = targetLayers;
             luz.pointLightInnerRadius = 0f;
+            luz.shadowsEnabled = false; // Brillo de adorno: si no, un obstaculo o zombie cercano lo recorta.
             luz.enabled = false;
             return luz;
         }
