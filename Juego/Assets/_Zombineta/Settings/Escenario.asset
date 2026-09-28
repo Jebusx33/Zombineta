@@ -46,7 +46,7 @@ MonoBehaviour:
     gapMax: 1.5
     noImmediateRepeat: 1
     seed: 11
-    tint: {r: 0.8, g: 0.75, b: 0.98, a: 1}
+    tint: {r: 1, g: 1, b: 1, a: 1}
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 2cd8205bf436ef44d900599a7877b795, type: 3}
