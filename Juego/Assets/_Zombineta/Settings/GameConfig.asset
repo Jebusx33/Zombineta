@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9cee9c0d0d171e4f948c61233c56465, type: 3}
   m_Name: GameConfig
   m_EditorClassIdentifier: 
-  goalDistance: 4000
+  goalDistance: 2000
   startingGap: 40
   laneSpacing: 0.99
   laneChangeDuration: 0.15
@@ -53,6 +53,7 @@ MonoBehaviour:
   leanLift: 0
   launchPitch: 15
   launchSpinPerExcessSpeed: 1
+  maxLaunchVerticalSpeed: 8
   leanRate: 60
   maxPitch: 80
   perfectLandingAngle: 8

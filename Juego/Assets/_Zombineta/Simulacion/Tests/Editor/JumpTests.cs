@@ -119,6 +119,23 @@ namespace Zombineta.Tests
         }
 
         [Test]
+        public void Launch_WithATopSpeed_NeverLeavesFasterThanIt()
+        {
+            var config = MakeConfig();
+            config.maxLaunchVerticalSpeed = 8f;
+
+            var normal = new RunSimulation(config);
+            normal.Tick(Drive(DriveMode.Normal), Dt);
+            normal.Launch();
+            Assert.AreEqual(8f, normal.State.VerticalSpeed, 1e-4f, "0,75 x 12 = 9, topeado a 8");
+
+            var turbo = new RunSimulation(config);
+            turbo.Tick(Drive(DriveMode.Turbo), Dt);
+            turbo.Launch();
+            Assert.AreEqual(8f, turbo.State.VerticalSpeed, 1e-4f);
+        }
+
+        [Test]
         public void Launch_InReverse_DoesNothing()
         {
             var sim = new RunSimulation(MakeConfig());

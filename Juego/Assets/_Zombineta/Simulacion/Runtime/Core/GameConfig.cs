@@ -103,6 +103,9 @@ namespace Zombineta.Core
         [Tooltip("Giro hacia atras al salir, en grados/s por cada m/s por encima de la " +
                  "velocidad normal. A velocidad normal no gira; en turbo hay que corregir.")]
         public float launchSpinPerExcessSpeed = 2.6f;
+        [Tooltip("Tope de la velocidad vertical al salir de la rampa, en m/s: por mas rapido " +
+                 "que se pise, no salta mas alto que esto. 0 = sin tope.")]
+        [Min(0f)] public float maxLaunchVerticalSpeed = 0f;
         [Tooltip("Grados por segundo que inclina la jugadora con A/D en el aire.")]
         public float leanRate = 60f;
         public float maxPitch = 80f;

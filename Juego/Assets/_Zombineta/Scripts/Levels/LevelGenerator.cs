@@ -61,6 +61,15 @@ namespace Zombineta.Juego.Levels
         const float RampZoneBefore = 5f;
         const float RampZoneAfter = 50f;
 
+        // La pieza de rampa, en metros desde la rampa. Con el salto de GameConfig.asset (unos 5,5 m
+        // de vuelo a velocidad normal, 0,5 m de alto) los dos obstaculos quedan dentro del vuelo y
+        // el bidon aereo cerca del punto mas alto. Si cambia el salto, revisar estos numeros y
+        // LevelValidator.LandingFrom.
+        const float RampObstacleNear = 2f;
+        const float RampObstacleFar = 4f;
+        const float RampFuelAt = 3f;
+        const float RampFuelHeight = 1f;
+
         public static List<LevelEntry> Generate(LevelGeneratorSettings s, float length, IReadOnlyList<LevelEntry> pinned = null)
         {
             var result = new List<LevelEntry>();
@@ -90,14 +99,14 @@ namespace Zombineta.Juego.Levels
                     int lane = rng.Next(Lanes);
                     if (AnyInLane(all, lane, d - RampZoneBefore, d + RampZoneAfter))
                         continue;
-                    if (WouldBlock(all, d + 4f, lane) || WouldBlock(all, d + 8f, lane))
+                    if (WouldBlock(all, d + RampObstacleNear, lane) || WouldBlock(all, d + RampObstacleFar, lane))
                         continue;
 
                     Add(new LevelEntry(d, lane, LevelEntryKind.Ramp));
-                    Add(new LevelEntry(d + 4f, lane, LevelEntryKind.Obstacle));
-                    Add(new LevelEntry(d + 8f, lane, LevelEntryKind.Obstacle));
+                    Add(new LevelEntry(d + RampObstacleNear, lane, LevelEntryKind.Obstacle));
+                    Add(new LevelEntry(d + RampObstacleFar, lane, LevelEntryKind.Obstacle));
                     if (piece % 2 == 0)
-                        Add(new LevelEntry(d + 7f, lane, LevelEntryKind.Fuel, 6f));
+                        Add(new LevelEntry(d + RampFuelAt, lane, LevelEntryKind.Fuel, RampFuelHeight));
                     piece++;
                 }
             }

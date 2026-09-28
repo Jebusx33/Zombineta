@@ -159,7 +159,14 @@ Pasos, sobre el prefab de tu asset (abrilo en modo prefab, doble click):
    carteles de calle normalmente van a **Calle** y **Juego** (las mismas dos que usa el faro de
    la moto y los destellos de disparo/choque).
 3. Ajustá color, intensidad y radio a ojo, mirándolo en el taller (sección 7) con el ambiente de
-   noche real puesto.
+   noche real puesto. Dejá el **Inner Radius** bastante más chico que el **Outer Radius** (por
+   ejemplo un cuarto): si son casi iguales, la luz se ve como un disco de borde duro.
+4. **Apagá "Shadows" en la `Light2D` de adorno.** Un brillo de adorno no necesita proyectar
+   sombras, y si el mismo prefab tiene un `ShadowCaster2D` (sección 5), la luz queda adentro de
+   esa silueta: la tapa en todas las direcciones y solo se ilumina el propio objeto (se ve
+   "recortada"). Además, con Shadows prendido, cada zombie que pasa cerca proyecta una sombra
+   dura que se mueve con él. Las sombras las proyecta el faro de la moto, que es el que las
+   necesita.
 
 **Cuándo usar un sprite "prendido" en vez de una luz real**: si lo que querés es una ventana con
 la persiana iluminada o un cartel que se ve "encendido" sin que en verdad ilumine nada alrededor,

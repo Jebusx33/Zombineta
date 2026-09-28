@@ -86,7 +86,7 @@ namespace Zombineta.Juego.Tests
                 if (r.kind != LevelEntryKind.Ramp) continue;
                 ramps++;
                 foreach (var e in entries)
-                    if (Blocker(e) && e.lane == r.lane && e.distance > r.distance + 8.5f && e.distance <= r.distance + 50f)
+                    if (Blocker(e) && e.lane == r.lane && e.distance > r.distance + LevelValidator.LandingFrom && e.distance <= r.distance + 50f)
                         Assert.Fail("algo en el aterrizaje de la rampa de " + r.distance + " m: " + e.kind + " a " + e.distance);
             }
             Assert.Greater(ramps, 5);

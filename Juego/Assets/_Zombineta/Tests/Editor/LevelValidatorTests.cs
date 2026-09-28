@@ -52,7 +52,7 @@ namespace Zombineta.Juego.Tests
             var entries = new List<LevelEntry>
             {
                 new LevelEntry(200f, 1, LevelEntryKind.Ramp),
-                Obstacle(204f, 1), Obstacle(208f, 1),     // se sobrevuelan: parte de la pieza
+                Obstacle(202f, 1), Obstacle(204f, 1),     // se sobrevuelan: parte de la pieza
                 Obstacle(230f, 1),                         // en el aterrizaje
                 Obstacle(230f, 0),                         // otro carril: no importa
             };

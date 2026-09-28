@@ -49,7 +49,7 @@ namespace Zombineta.Juego.Levels
         public const float BlockWindow = 2f;
 
         /// <summary>Tramo de aterrizaje de una rampa: despues de los obstaculos que se sobrevuelan.</summary>
-        public const float LandingFrom = 8.5f;
+        public const float LandingFrom = 4.5f;
         public const float LandingTo = 50f;
 
         /// <summary>Mas cerca que esto, dos objetos del mismo carril y altura se pisan.</summary>

@@ -171,7 +171,7 @@ de ruta en el medio (`Ruta01`/`Ruta02` quedaron solo como origen de los dos nive
   centro de la vista y la horda con la ventaja inicial detrás (solo en el editor).
 - **Guías** (gizmos): los tres carriles, regla cada 50 m, largada, refugio, un círculo amarillo
   sobre lo fijado o tocado, y **en rojo los problemas** que detecta `LevelValidator`: tres
-  carriles tapados a menos de 2 m, algo en el aterrizaje de una rampa (8,5 a 50 m después), dos
+  carriles tapados a menos de 2 m, algo en el aterrizaje de una rampa (4,5 a 50 m después), dos
   objetos encimados (mismo carril y altura, a menos de 1 m). El botón "N problemas" lleva al
   siguiente.
 
@@ -822,6 +822,18 @@ Las rutas tienen **15 rampas cada una**, cada 250 m desde los 300: rampa, dos ob
 para sobrevolar a +4 y +8 m y, una sí y otra no, un bidón aéreo a +17 m. Se verificaron con
 la simulación real: todas se saltan sin chocar en normal y en turbo estabilizando, y en
 ningún punto quedan los tres carriles bloqueados.
+
+**Salto del juego definitivo (desde el 28/09).** `Juego/` usa un salto más corto y bajo, definido
+por Jesús: en `GameConfig.asset` y `TutorialConfig.asset`, `rampLaunchSlope` 0,35,
+`jumpGravity` 18, `leanLift` 0 (inclinar ya no alarga ni acorta el salto, solo cambia el ángulo
+de aterrizaje), `launchPitch` 15, `launchSpinPerExcessSpeed` 1 y `maxLaunchVerticalSpeed` 8
+(campo nuevo; 0 = sin tope, que es lo que sigue usando el prototipo). Vuela unos 5,5 m y 0,5 m
+de alto a velocidad normal, y unos 18 m y 1,6 m en turbo. Por eso la pieza de rampa pasó a
+**rampa, obstáculos a +2 y +4 m y bidón aéreo a +3 m y 1 m de alto**, tanto en el generador
+(constantes `Ramp*` de `LevelGenerator`) como en las 23 rampas de `Level_01` y `Level_02`, y el
+aterrizaje que revisa `LevelValidator` empieza a +4,5 m. Los obstáculos de la pieza se pasan
+volando desde unos 10,7 m/s: un salto tomado muy lento (recién arrancando después de un choque)
+cae sobre el segundo.
 
 ---
 
