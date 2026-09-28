@@ -18,6 +18,7 @@ namespace Zombineta.Audio
 
         AudioSource source;
         FuenteConBus fuente;
+        float volumenBase = 1f;
 
         void Awake()
         {
@@ -35,6 +36,7 @@ namespace Zombineta.Audio
         void OnEnable()
         {
             ResolverClip();
+            fuente.volumenPropio = volumenBase;
             if (source.clip != null && !source.isPlaying)
                 source.Play();
         }
@@ -46,6 +48,7 @@ namespace Zombineta.Audio
             var clip = sonido != null && sonido.clips != null && sonido.clips.Length > 0 ? sonido.clips[0] : null;
             if (clip != null && source.clip != clip)
                 source.clip = clip;
+            volumenBase = SonidoVolumen.VolumenBase(sonido);
         }
 
         void Update()

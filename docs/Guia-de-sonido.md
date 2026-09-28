@@ -196,7 +196,11 @@ la tabla de la sección 4). Seleccionalo en el Project y vas a ver estos campos 
 - **`Volumen`** (mínimo y máximo): cada vez que suena, se elige un volumen al azar dentro de ese
   rango. Hoy casi todos están en 0,6–0,8 (moderado, porque son placeholders sintetizados y
   suenan más cansadores que un sonido real a ese volumen — cuando pongas el audio definitivo,
-  probablemente puedas subirlos). Los de UI están en 0,6–0,6 (fijo).
+  probablemente puedas subirlos). Los de UI están en 0,6–0,6 (fijo). En los loops (Motor, Horda
+  y los de ambiente) no se sortea de nuevo en cada cuadro, porque se notaría como parpadeo: se
+  usa el punto medio fijo del rango, elegido una vez al arrancar el loop. Se ajusta desde el
+  mismo asset que el resto, con la diferencia de que el cambio se nota recién la próxima vez que
+  el loop arranca (por ejemplo, al reiniciar el nivel), no en el que ya está sonando.
 - **`Tono`** (mínimo y máximo, 1 = normal): variación de tono al azar en cada reproducción, para
   que diez disparos seguidos no suenen todos clonados. El rango por defecto es 0,95–1,05 (una
   variación chica, casi no se nota como "pitch" pero rompe la monotonía).

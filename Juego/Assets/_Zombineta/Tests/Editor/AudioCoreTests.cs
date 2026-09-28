@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEngine;
 using Zombineta.Audio;
 
 namespace Zombineta.Juego.Tests
@@ -162,6 +163,20 @@ namespace Zombineta.Juego.Tests
             Assert.IsFalse(MotorSonido.DebeRecuperarse(true, Zombineta.Core.RunPhase.Won));
             // Sin apagado no hay nada que recuperar.
             Assert.IsFalse(MotorSonido.DebeRecuperarse(false, Zombineta.Core.RunPhase.Running));
+        }
+
+        // --- Volumen de sonido (loops) ---
+        [Test] public void VolumenBaseEsElPuntoMedioDelRango()
+        {
+            var s = ScriptableObject.CreateInstance<Sonido>();
+            s.volumen = new Vector2(0.6f, 0.8f);
+            Assert.AreEqual(0.7f, SonidoVolumen.VolumenBase(s), 1e-5f);
+            Object.DestroyImmediate(s);
+        }
+
+        [Test] public void VolumenBaseSinSonidoEsUno()
+        {
+            Assert.AreEqual(1f, SonidoVolumen.VolumenBase(null), 1e-5f);
         }
     }
 }

@@ -22,6 +22,7 @@ namespace Zombineta.Audio
         FuenteConBus fuente;
         float velocidadPitch;
         bool apagandoAlPerder;
+        float volumenBase = 1f;
 
         void Awake()
         {
@@ -69,7 +70,7 @@ namespace Zombineta.Audio
             StopAllCoroutines();
             ResolverClip();
             apagandoAlPerder = false;
-            fuente.volumenPropio = 1f;
+            fuente.volumenPropio = volumenBase;
             if (source.clip != null && !source.isPlaying)
                 source.Play();
         }
@@ -83,6 +84,7 @@ namespace Zombineta.Audio
             var clip = sonido != null && sonido.clips != null && sonido.clips.Length > 0 ? sonido.clips[0] : null;
             if (clip != null && source.clip != clip)
                 source.clip = clip;
+            volumenBase = SonidoVolumen.VolumenBase(sonido);
         }
 
         void Update()
@@ -107,7 +109,7 @@ namespace Zombineta.Audio
             if (apagandoAlPerder)
                 return; // el fundido de Lost es dueno exclusivo de volumenPropio mientras dura.
 
-            float volumenObjetivo = state.Fuel <= 0f ? 0f : 1f;
+            float volumenObjetivo = state.Fuel <= 0f ? 0f : volumenBase;
             fuente.volumenPropio = Mathf.MoveTowards(fuente.volumenPropio, volumenObjetivo,
                 Time.unscaledDeltaTime / m.fundidoSinNafta);
         }
