@@ -37152,6 +37152,59 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta::Zombineta.Player.ScooterView
   run: {fileID: 1170739137}
   body: {fileID: 824210341}
+  idleSprites:
+  - {fileID: -349162407, guid: d4dade498a87bb74e8b0888c652ea3ed, type: 3}
+  - {fileID: 545800365, guid: d4dade498a87bb74e8b0888c652ea3ed, type: 3}
+  - {fileID: -1177162042, guid: d4dade498a87bb74e8b0888c652ea3ed, type: 3}
+  - {fileID: 697722934, guid: d4dade498a87bb74e8b0888c652ea3ed, type: 3}
+  downSprites:
+  - {fileID: 1330604230, guid: ee176189e275310439280a379fb51ee0, type: 3}
+  - {fileID: -103487733, guid: ee176189e275310439280a379fb51ee0, type: 3}
+  - {fileID: 956021717, guid: ee176189e275310439280a379fb51ee0, type: 3}
+  - {fileID: 265725, guid: ee176189e275310439280a379fb51ee0, type: 3}
+  - {fileID: 432611908, guid: ee176189e275310439280a379fb51ee0, type: 3}
+  - {fileID: 375332156, guid: ee176189e275310439280a379fb51ee0, type: 3}
+  - {fileID: -389881649, guid: ee176189e275310439280a379fb51ee0, type: 3}
+  - {fileID: -771127021, guid: ee176189e275310439280a379fb51ee0, type: 3}
+  upSprites:
+  - {fileID: 1753030270, guid: 624ac505cc443b84fbb625be1b3d38a2, type: 3}
+  - {fileID: 440693756, guid: 624ac505cc443b84fbb625be1b3d38a2, type: 3}
+  - {fileID: -1646747662, guid: 624ac505cc443b84fbb625be1b3d38a2, type: 3}
+  - {fileID: -1944213187, guid: 624ac505cc443b84fbb625be1b3d38a2, type: 3}
+  - {fileID: 966928868, guid: 624ac505cc443b84fbb625be1b3d38a2, type: 3}
+  - {fileID: -1088130790, guid: 624ac505cc443b84fbb625be1b3d38a2, type: 3}
+  - {fileID: -1208952894, guid: 624ac505cc443b84fbb625be1b3d38a2, type: 3}
+  - {fileID: -1606570936, guid: 624ac505cc443b84fbb625be1b3d38a2, type: 3}
+  shootSprites:
+  - {fileID: 381921429, guid: b537cb051c6ad2a4fb685f77d0d9fb1c, type: 3}
+  - {fileID: 1916310146, guid: b537cb051c6ad2a4fb685f77d0d9fb1c, type: 3}
+  - {fileID: 972456198, guid: b537cb051c6ad2a4fb685f77d0d9fb1c, type: 3}
+  - {fileID: -1348763067, guid: b537cb051c6ad2a4fb685f77d0d9fb1c, type: 3}
+  - {fileID: 1645867696, guid: b537cb051c6ad2a4fb685f77d0d9fb1c, type: 3}
+  - {fileID: -1925768583, guid: b537cb051c6ad2a4fb685f77d0d9fb1c, type: 3}
+  - {fileID: -1850748139, guid: b537cb051c6ad2a4fb685f77d0d9fb1c, type: 3}
+  - {fileID: 1037297831, guid: b537cb051c6ad2a4fb685f77d0d9fb1c, type: 3}
+  - {fileID: 180680731, guid: b537cb051c6ad2a4fb685f77d0d9fb1c, type: 3}
+  - {fileID: -1775963437, guid: b537cb051c6ad2a4fb685f77d0d9fb1c, type: 3}
+  - {fileID: 877198516, guid: b537cb051c6ad2a4fb685f77d0d9fb1c, type: 3}
+  - {fileID: -1431437819, guid: b537cb051c6ad2a4fb685f77d0d9fb1c, type: 3}
+  crashSprites:
+  - {fileID: -1072265512, guid: 3bcb2f8c52951b94a811cba3f51fb30e, type: 3}
+  - {fileID: -986879383, guid: 3bcb2f8c52951b94a811cba3f51fb30e, type: 3}
+  - {fileID: -1471676990, guid: 3bcb2f8c52951b94a811cba3f51fb30e, type: 3}
+  - {fileID: -1536318550, guid: 3bcb2f8c52951b94a811cba3f51fb30e, type: 3}
+  - {fileID: 1871295370, guid: 3bcb2f8c52951b94a811cba3f51fb30e, type: 3}
+  - {fileID: -411075555, guid: 3bcb2f8c52951b94a811cba3f51fb30e, type: 3}
+  - {fileID: -1811721344, guid: 3bcb2f8c52951b94a811cba3f51fb30e, type: 3}
+  - {fileID: -1626503944, guid: 3bcb2f8c52951b94a811cba3f51fb30e, type: 3}
+  - {fileID: -637257793, guid: 3bcb2f8c52951b94a811cba3f51fb30e, type: 3}
+  - {fileID: -782707750, guid: 3bcb2f8c52951b94a811cba3f51fb30e, type: 3}
+  - {fileID: -1780656243, guid: 3bcb2f8c52951b94a811cba3f51fb30e, type: 3}
+  - {fileID: -1497763635, guid: 3bcb2f8c52951b94a811cba3f51fb30e, type: 3}
+  idleFps: 4
+  downFps: 16
+  upFps: 16
+  shootFps: 20
   characterColor: {r: 1, g: 1, b: 1, a: 1}
   turboTint: {r: 1, g: 0.9, b: 0.65, a: 1}
   reverseTint: {r: 0.75, g: 0.88, b: 1, a: 1}

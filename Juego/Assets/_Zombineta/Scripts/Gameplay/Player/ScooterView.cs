@@ -14,6 +14,27 @@ namespace Zombineta.Player
         [SerializeField] RunController run;
         [SerializeField] SpriteRenderer body;
 
+        [Header("Animacion")]
+        [Tooltip("Cuadros parada/andando, en loop.")]
+        [SerializeField] Sprite[] idleSprites;
+        [Tooltip("Cuadros al bajar un carril: un solo ciclo que vuelve solo a Idle.")]
+        [SerializeField] Sprite[] downSprites;
+        [Tooltip("Cuadros al subir un carril: un solo ciclo que vuelve solo a Idle.")]
+        [SerializeField] Sprite[] upSprites;
+        [Tooltip("Cuadros del disparo: un solo ciclo que vuelve solo a Idle.")]
+        [SerializeField] Sprite[] shootSprites;
+        [Tooltip("Cuadros de la caida (aterrizaje malo de rampa): un solo ciclo que se congela " +
+                 "en el ultimo cuadro mientras dure Fallen.")]
+        [SerializeField] Sprite[] crashSprites;
+
+        [SerializeField] float idleFps = 4f;
+        [SerializeField] float downFps = 16f;
+        [SerializeField] float upFps = 16f;
+        [SerializeField] float shootFps = 20f;
+
+        PlayerAnim anim;
+        int lastLane;
+
         [Header("Tintes")]
         [Tooltip("Color del personaje elegido. Blanco = el arte tal cual.")]
         [SerializeField] Color characterColor = Color.white;
@@ -46,6 +67,71 @@ namespace Zombineta.Player
         /// </summary>
         public void SetCharacterColor(Color color) => characterColor = color;
 
+        void Awake()
+        {
+            float crashFps = crashSprites != null && crashSprites.Length > 0 && run != null && run.Config != null
+                ? crashSprites.Length / Mathf.Max(0.01f, run.Config.fallStunDuration)
+                : 8f;
+            anim = new PlayerAnim(
+                Largo(idleSprites), Largo(downSprites), Largo(upSprites), Largo(shootSprites), Largo(crashSprites),
+                idleFps, downFps, upFps, shootFps, crashFps);
+        }
+
+        static int Largo(Sprite[] cuadros) => cuadros != null ? cuadros.Length : 0;
+
+        void OnEnable()
+        {
+            if (run != null)
+            {
+                run.Stepped += OnStepped;
+                run.Restarted += OnRestarted;
+            }
+            SincronizarCarril();
+        }
+
+        void OnDisable()
+        {
+            if (run != null)
+            {
+                run.Stepped -= OnStepped;
+                run.Restarted -= OnRestarted;
+            }
+        }
+
+        void OnRestarted() => SincronizarCarril();
+
+        // Evita un Down/Up fantasma en el primer cuadro tras entrar o reintentar: sin esto,
+        // lastLane seguiria en 0 y el primer carril real (normalmente 1) se leeria como un salto.
+        void SincronizarCarril()
+        {
+            if (run != null && run.Sim != null)
+                lastLane = run.Sim.State.Lane;
+        }
+
+        // Un solo ciclo por evento: Down/Up con el carril de origen, Shoot en cada disparo
+        // (pegue o no), Crash en un aterrizaje malo de rampa. Chocar contra un obstaculo solo
+        // atonta (tinte gris mas abajo); no tiene cuadros propios todavia.
+        void OnStepped(RunEvent events)
+        {
+            if (run == null || run.Sim == null)
+                return;
+
+            var state = run.Sim.State;
+
+            if ((events & RunEvent.LaneChanged) != 0)
+            {
+                if (state.Lane > lastLane) anim.Play(PlayerClip.Up);
+                else if (state.Lane < lastLane) anim.Play(PlayerClip.Down);
+            }
+            lastLane = state.Lane;
+
+            if ((events & RunEvent.Shot) != 0)
+                anim.Play(PlayerClip.Shoot);
+
+            if ((events & RunEvent.Fell) != 0)
+                anim.Play(PlayerClip.Crash);
+        }
+
         void LateUpdate()
         {
             if (run == null || run.Sim == null)
@@ -57,14 +143,23 @@ namespace Zombineta.Player
             else if (state.Phase == RunPhase.Running)
                 coast = 0f;
 
+            // El clip de Crash lo dispara el evento Fell; lo dejamos cuando el estado deja de
+            // estar caido (el struct solo sabe congelarse en el ultimo cuadro, no cuando volver).
+            if (!state.Fallen && anim.Clip == PlayerClip.Crash)
+                anim.Play(PlayerClip.Idle);
+            anim.Tick(Time.deltaTime);
+
             // El pivot del sprite esta en el contacto de las ruedas: la moto se apoya en la
             // linea del carril, igual que los pies de los zombies. En el aire, sube.
             float laneY = run.LaneToWorldY(state.LaneVisual);
             float lift = state.Airborne ? run.HeightToWorld(state.Height) : 0f;
             transform.position = new Vector3(run.ToWorldX(state.PlayerX + coast), laneY + lift, 0f);
 
-            // Rota sobre las ruedas: la inclinacion del salto, o tirada tras una caida.
-            float angle = state.Airborne ? state.Pitch : state.Fallen ? fallenAngle : 0f;
+            // Rota sobre las ruedas: la inclinacion del salto. La caida ya no se rota aca si hay
+            // arte de Crash (el dibujo ya muestra la moto tirada); sin arte, sigue el placeholder
+            // de rotar el sprite entero.
+            bool arteDeCaida = crashSprites != null && crashSprites.Length > 0;
+            float angle = state.Airborne ? state.Pitch : (state.Fallen && !arteDeCaida) ? fallenAngle : 0f;
             transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
             UpdateShadow(state, laneY);
@@ -74,6 +169,7 @@ namespace Zombineta.Player
 
             body.sortingOrder = LaneSorting.Order(state.LaneVisual, SortSlot.Player);
             body.sortingLayerID = LaneSorting.GameLayerId;
+            body.sprite = CuadroActual();
 
             Color tint = Color.white;
             if (state.StunRemaining > 0f || state.Fuel <= 0f)
@@ -84,6 +180,23 @@ namespace Zombineta.Player
                 tint = reverseTint;
 
             body.color = characterColor * tint;
+        }
+
+        // Sin cuadros asignados para el clip actual, deja el sprite que ya tenia el Renderer (el
+        // placeholder de siempre): reemplazo limpio, escena vieja no wireada no rompe.
+        Sprite CuadroActual()
+        {
+            Sprite[] cuadros = anim.Clip switch
+            {
+                PlayerClip.Down => downSprites,
+                PlayerClip.Up => upSprites,
+                PlayerClip.Shoot => shootSprites,
+                PlayerClip.Crash => crashSprites,
+                _ => idleSprites,
+            };
+            if (cuadros == null || cuadros.Length == 0)
+                return body.sprite;
+            return cuadros[Mathf.Clamp(anim.Frame, 0, cuadros.Length - 1)];
         }
 
         void UpdateShadow(RunState state, float laneY)
