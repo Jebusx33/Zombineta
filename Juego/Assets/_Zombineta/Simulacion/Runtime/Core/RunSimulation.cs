@@ -423,8 +423,9 @@ namespace Zombineta.Core
             State.Airborne = true;
             State.Height = 0f;
             State.AirSpeed = PlayerSpeed;
-            //State.VerticalSpeed = config.rampLaunchSlope * PlayerSpeed;
-			State.VerticalSpeed = Mathf.Min(8f, config.rampLaunchSlope * PlayerSpeed);
+            State.VerticalSpeed = config.rampLaunchSlope * PlayerSpeed;
+            if (config.maxLaunchVerticalSpeed > 0f)
+                State.VerticalSpeed = Mathf.Min(State.VerticalSpeed, config.maxLaunchVerticalSpeed);
             State.Pitch = config.launchPitch;
             State.LaunchSpin = config.launchSpinPerExcessSpeed *
                                Mathf.Max(0f, PlayerSpeed - config.normalSpeed);
