@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 493ba2bd38df1ce4d92f12f603a083e4, type: 3}
   m_Name: Musica
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.MusicaDelJuego
-  menu: {fileID: 8300000, guid: 2e03672015dcc6d49955ed310f75a153, type: 3}
-  opciones: {fileID: 8300000, guid: 2e03672015dcc6d49955ed310f75a153, type: 3}
-  personaje: {fileID: 8300000, guid: 2e03672015dcc6d49955ed310f75a153, type: 3}
+  menu: {fileID: 8300000, guid: 015cd52826e36524b91ce52e54f72a8d, type: 3}
+  opciones: {fileID: 8300000, guid: 015cd52826e36524b91ce52e54f72a8d, type: 3}
+  personaje: {fileID: 8300000, guid: 015cd52826e36524b91ce52e54f72a8d, type: 3}
   cinematica: {fileID: 8300000, guid: 0fc0d22199a1caa4c92eb9fb01275aad, type: 3}
   nivelCompleto: {fileID: 8300000, guid: 5125d50a529c3344fa991472f994012c, type: 3}
   gameOver: {fileID: 8300000, guid: 4ffdc35424cb403489dd3adf5a511b37, type: 3}
