@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: Creditos
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Screens.Creditos
   secciones:
-  - titulo: Zombineta
+  - titulo: DeadLivery
     lineas: []
-  - titulo: Equipo
+  - titulo: Equipo - UCHAR
     lineas:
-    - "Germ\xE1n"
-    - "Jes\xFAs"
-    - "Jos\xE9"
-    - Juana
-    - Seba
+    - "Germ\xE1n Heuer"
+    - "Jes\xFAs G. Arias"
+    - "Jos\xE9 L. Ressia"
+    - Juana Urzua
+    - Sebastian A. Capurro
   - titulo: Taller de Proyecto Integral 212
     lineas: []
   - titulo: Gracias por jugar
