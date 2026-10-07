@@ -31,6 +31,10 @@ namespace Zombineta.Juego.Levels
 
         [SerializeField] LevelGeneratorSettings generator = new LevelGeneratorSettings();
 
+        [Tooltip("El ritmo del nivel, de la largada al refugio: presion de la horda, luz y densidad " +
+                 "de cada pedazo. Vacio = todo parejo, como siempre.")]
+        [SerializeField] List<Tramo> tramos = new List<Tramo>();
+
         [Header("Looks")]
         [Tooltip("Aspectos por tipo de zombie, para la cara del ZombieFront. Sin asignar: tinte de Zombies.asset.")]
         [SerializeField] ZombieLookSet looks;
@@ -50,6 +54,7 @@ namespace Zombineta.Juego.Levels
         public float GoalDistance => goalDistance;
         public Transform ItemsRoot => itemsRoot != null ? itemsRoot : transform;
         public LevelGeneratorSettings Generator => generator;
+        public List<Tramo> Tramos => tramos;
         public PerfilDeLuz Perfil => perfil;
 
         // Sin config asignada: usar los valores actuales de Settings/GameConfig.asset (no los
@@ -83,6 +88,7 @@ namespace Zombineta.Juego.Levels
             var copy = Instantiate(source != null ? source : config);
             copy.name = (source != null ? source.name : "GameConfig") + " (" + gameObject.scene.name + ")";
             copy.goalDistance = goalDistance;
+            copy.tramos = tramos;
             return copy;
         }
 
@@ -144,13 +150,17 @@ namespace Zombineta.Juego.Levels
             if (sr != null && sr.enabled)
                 sr.enabled = false;
 
-            if (item.transform.Find(LookChildName) != null)
+            var existente = item.transform.Find(LookChildName);
+            if (existente != null)
+            {
+                SyncRotation(existente, look);
                 return; // Ya la armo el editor en esta misma sesion (sin reload de escena).
+            }
 
             var go = Instantiate(look.prefab, item.transform);
             go.name = LookChildName;
             go.transform.localPosition = Vector3.zero;
-            go.transform.localRotation = Quaternion.identity;
+            go.transform.localRotation = look.prefab.transform.localRotation; // la inclinacion del prefab (arte) se respeta
             go.transform.localScale = Vector3.one;
             go.hideFlags = HideFlags.None;
             ShadowCasterQuality.Apply(go);
@@ -490,10 +500,14 @@ namespace Zombineta.Juego.Levels
 #endif
                 go.name = LookChildName;
                 go.transform.localPosition = Vector3.zero;
-                go.transform.localRotation = Quaternion.identity;
+                go.transform.localRotation = look.prefab.transform.localRotation; // la inclinacion del prefab (arte) se respeta
                 go.transform.localScale = Vector3.one;
                 go.hideFlags = Application.isPlaying ? HideFlags.None : HideFlags.DontSave;
             }
+
+            // La raiz de una instancia de prefab no hereda su rotacion: se copia aca, asi ajustar
+            // la inclinacion en el prefab se ve en la escena sin reabrirla.
+            SyncRotation(go.transform, look);
 
             // Contrato del prefab: sprite y material en la raiz. Sombra/luz (si las tiene) son
             // hijas suyas y no necesitan capa ni orden propios.
@@ -503,6 +517,13 @@ namespace Zombineta.Juego.Levels
                 if (prefabSr.sortingLayerName != LaneSorting.GameLayer) prefabSr.sortingLayerName = LaneSorting.GameLayer;
                 if (prefabSr.sortingOrder != order) prefabSr.sortingOrder = order;
             }
+        }
+
+        static void SyncRotation(Transform vista, LevelItemPalette.Look look)
+        {
+            var rotation = look.prefab.transform.localRotation;
+            if (vista.localRotation != rotation)
+                vista.localRotation = rotation;
         }
 
         void RemoveLookPrefab(LevelItem item)
@@ -537,6 +558,7 @@ namespace Zombineta.Juego.Levels
         static readonly Color GoalColor = new Color(0.3f, 0.7f, 1f, 0.9f);
         static readonly Color IssueColor = new Color(1f, 0.2f, 0.2f, 0.9f);
         static readonly Color PinColor = new Color(1f, 0.85f, 0.2f, 0.9f);
+        static readonly Color TramoColor = new Color(1f, 0.55f, 0.9f, 0.9f);
 
         void OnDrawGizmos()
         {
@@ -580,6 +602,32 @@ namespace Zombineta.Juego.Levels
             Gizmos.color = GoalColor;
             Gizmos.DrawLine(new Vector3(goalX, bottom), new Vector3(goalX, top));
             UnityEditor.Handles.Label(new Vector3(goalX, top + 0.4f), "Refugio " + goalDistance.ToString("0") + " m", labelStyle);
+
+            // Tramos: donde termina cada uno, con su ritmo. Los apagones, sombreados.
+            float desde = 0f;
+            var tramoStyle = new GUIStyle(labelStyle) { normal = { textColor = TramoColor } };
+            foreach (var tramo in tramos)
+            {
+                if (tramo == null)
+                    continue;
+                float hasta = Mathf.Min(tramo.hasta, goalDistance);
+                float x0 = layout.ToWorldX(desde), x1 = layout.ToWorldX(hasta);
+                if (x1 >= minX && x0 <= maxX)
+                {
+                    if (tramo.oscuridad > 0f)
+                    {
+                        float a = Mathf.Max(x0, minX), b = Mathf.Min(x1, maxX);
+                        Gizmos.color = new Color(0f, 0f, 0f, 0.35f * tramo.oscuridad);
+                        Gizmos.DrawCube(new Vector3((a + b) * 0.5f, (top + bottom) * 0.5f), new Vector3(b - a, top - bottom, 0f));
+                    }
+                    Gizmos.color = TramoColor;
+                    Gizmos.DrawLine(new Vector3(x1, bottom), new Vector3(x1, top + 1.2f));
+                    UnityEditor.Handles.Label(new Vector3(Mathf.Max(x0, minX) + 0.2f, top + 1.4f),
+                        tramo.nombre + "  horda x" + tramo.presionHorda.ToString("0.##") +
+                        (tramo.oscuridad > 0f ? "  APAGON" : ""), tramoStyle);
+                }
+                desde = hasta;
+            }
 
             // Fijados.
             Gizmos.color = PinColor;

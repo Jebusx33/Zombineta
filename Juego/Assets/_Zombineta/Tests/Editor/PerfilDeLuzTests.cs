@@ -103,5 +103,17 @@ namespace Zombineta.Juego.Tests
             Assert.AreEqual(esperado.b, actual.b, tolerancia);
             Assert.AreEqual(esperado.a, actual.a, tolerancia);
         }
+
+        [Test]
+        public void ABlackout_DimsEachLayerToItsOwnFraction()
+        {
+            perfil.capas[1].enApagon = 0.1f; // Calle
+
+            Assert.AreEqual(1f, perfil.FactorDeApagon("Calle", 0f), 1e-4f, "sin apagon no cambia nada");
+            Assert.AreEqual(0.55f, perfil.FactorDeApagon("Calle", 0.5f), 1e-4f, "a medio fundido");
+            Assert.AreEqual(0.1f, perfil.FactorDeApagon("Calle", 1f), 1e-4f);
+            Assert.AreEqual(1f, perfil.FactorDeApagon("Fondo", 1f), 1e-4f, "por defecto el apagon no toca la capa");
+            Assert.AreEqual(1f, perfil.FactorDeApagon("Juego", 1f), 1e-4f, "una capa sin entrada no se oscurece");
+        }
     }
 }

@@ -85,7 +85,7 @@ namespace Zombineta.Juego.EditorTools.Levels
                 }
             }
 
-            foreach (var entry in LevelGenerator.Generate(scene.Generator, scene.GoalDistance, kept))
+            foreach (var entry in LevelGenerator.Generate(scene.Generator, scene.GoalDistance, kept, scene.Tramos))
             {
                 var item = CreateItem(scene, entry.kind, entry.distance, entry.lane, entry.height, entry.variant);
                 item.MarkGenerated(layout);

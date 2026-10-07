@@ -37,17 +37,21 @@ MonoBehaviour:
   corpseSeconds: 1.2
   hordeSeed: 2026
   hordeBaseSpeed: 14
-  rubberBandStartGap: 25
+  rubberBandStartGap: 45
   rubberBandRange: 35
-  rubberBandMaxBonus: 9
+  rubberBandMaxBonus: 7
+  mercyGap: 6
+  mercySlowFactor: 0.88
+  tramoPressureBlendMeters: 80
+  tramoDarknessFadeMeters: 30
   shotRangeMeters: 60
   deathScareRadius: 4
   deathScareSeconds: 0.5
   explosionRadius: 8
   explosionScareRadius: 16
   explosionScareSeconds: 1
-  crashStunDuration: 0.2
-  crashFuelPenalty: 2
+  crashStunDuration: 0.05
+  crashFuelPenalty: 1
   rampLaunchSlope: 0.35
   jumpGravity: 18
   leanLift: 0

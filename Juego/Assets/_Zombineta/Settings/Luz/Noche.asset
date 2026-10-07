@@ -16,17 +16,22 @@ MonoBehaviour:
   - capa: Cielo
     color: {r: 0.35, g: 0.35, b: 0.55, a: 1}
     intensidad: 0.8
+    enApagon: 0.7
   - capa: Fondo
     color: {r: 0.22, g: 0.24, b: 0.5, a: 1}
     intensidad: 0.35
+    enApagon: 0.45
   - capa: Calle
     color: {r: 0.28, g: 0.3, b: 0.5, a: 1}
     intensidad: 0.25
+    enApagon: 0.12
   - capa: Juego
     color: {r: 0.3, g: 0.32, b: 0.5, a: 1}
     intensidad: 0.3
+    enApagon: 0.18
   - capa: Frente
     color: {r: 0.1, g: 0.1, b: 0.2, a: 1}
     intensidad: 0.15
+    enApagon: 1
   colorGeneral: {r: 0, g: 0, b: 0, a: 1}
   intensidadGeneral: 0

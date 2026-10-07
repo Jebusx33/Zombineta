@@ -39,7 +39,7 @@ namespace Zombineta.UI
             var s = run.Sim.State;
 
             GUILayout.BeginArea(new Rect(16f, 16f, 460f, 320f));
-            GUI.Box(new Rect(0f, 0f, 440f, 240f), GUIContent.none);
+            GUI.Box(new Rect(0f, 0f, 440f, 270f), GUIContent.none);
             GUILayout.Space(8f);
 
             GUILayout.Label($"NAFTA     {s.Fuel,6:0.0}   ({run.Config.fuelMax:0})", style);
@@ -53,6 +53,12 @@ namespace Zombineta.UI
             GUILayout.Label(
                 $"MODO      {s.Mode}   carril {s.Lane}   " +
                 $"{run.Sim.PlayerSpeed:0.0} m/s  vs horda {run.Sim.HordeSpeed:0.0} m/s", style);
+
+            var tramo = Zombineta.Level.Tramos.At(run.Config.tramos, s.PlayerX);
+            if (tramo != null)
+                GUILayout.Label(
+                    $"TRAMO     {tramo.nombre}   presion x{run.Sim.Presion:0.00}   " +
+                    $"oscuridad {run.Sim.Oscuridad:0.00}", style);
 
             if (s.Phase == RunPhase.Lost)
             {

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using Zombineta.Core;
 using Zombineta.Juego.Levels;
 
 namespace Zombineta.Luz
@@ -31,6 +32,9 @@ namespace Zombineta.Luz
         }
 
         readonly List<GameObject> hijos = new List<GameObject>();
+        readonly List<(Light2D luz, Color color, string capa)> luces = new List<(Light2D, Color, string)>();
+        RunController run;
+        float oscuridadAplicada;
         LevelScene escena;
         bool escenaBuscada;
         PerfilDeLuz perfilConstruido;
@@ -58,6 +62,38 @@ namespace Zombineta.Luz
             SincronizarPerfilDeLevelScene();
             if (perfil != perfilConstruido || Version(perfil) != versionConstruida)
                 Rebuild();
+
+            AplicarApagon(OscuridadActual());
+        }
+
+        /// <summary>La oscuridad del tramo donde esta la moto. Fuera de juego, o sin tramos, 0.</summary>
+        float OscuridadActual()
+        {
+            if (!Application.isPlaying)
+                return 0f;
+            if (run == null)
+                run = FindAnyObjectByType<RunController>();
+            return run != null && run.Sim != null ? run.Sim.Oscuridad : 0f;
+        }
+
+        /// <summary>
+        /// Apagon: cada luz ambiente baja a la fraccion que su capa tenga en el perfil. No se
+        /// reconstruye nada: solo se atenua el color sobre el que ya dejo Rebuild.
+        /// </summary>
+        void AplicarApagon(float oscuridad)
+        {
+            if (perfil == null || Mathf.Approximately(oscuridad, oscuridadAplicada))
+                return;
+
+            oscuridadAplicada = oscuridad;
+            foreach (var (luz, color, capa) in luces)
+            {
+                if (luz == null)
+                    continue;
+                var atenuado = color * perfil.FactorDeApagon(capa, oscuridad);
+                atenuado.a = 1f;
+                luz.color = atenuado;
+            }
         }
 
         /// <summary>
@@ -83,6 +119,7 @@ namespace Zombineta.Luz
         public void Rebuild()
         {
             DestruirHijos();
+            oscuridadAplicada = 0f;
             perfilConstruido = perfil;
             versionConstruida = Version(perfil);
 
@@ -101,10 +138,10 @@ namespace Zombineta.Luz
             // Una luz por capa con su color ya combinado (propio + General, ver
             // PerfilDeLuz.Resolver): sin luz "General" aparte, que URP ignoraria de todos modos.
             foreach (var resuelta in perfil.Resolver(TodasLasCapas()))
-                CrearLuz(ChildPrefix + resuelta.capa, resuelta.color, new[] { resuelta.capa });
+                CrearLuz(ChildPrefix + resuelta.capa, resuelta.color, resuelta.capa);
         }
 
-        void CrearLuz(string nombre, Color color, string[] capas)
+        void CrearLuz(string nombre, Color color, string capa)
         {
             var go = new GameObject(nombre);
             go.transform.SetParent(transform, false);
@@ -116,8 +153,9 @@ namespace Zombineta.Luz
             luz.color = color;
             luz.intensity = 1f; // La intensidad ya esta en el color (PerfilDeLuz.Resolver la aplico).
 
-            AplicarCapas(luz, capas);
+            AplicarCapas(luz, new[] { capa });
             hijos.Add(go);
+            luces.Add((luz, color, capa));
         }
 
         static void AplicarCapas(Light2D luz, string[] nombresCapas)
@@ -166,6 +204,7 @@ namespace Zombineta.Luz
                         DestroyImmediate(hijo);
                 }
             hijos.Clear();
+            luces.Clear();
         }
 
         void OnDisable()

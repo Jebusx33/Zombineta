@@ -159,5 +159,79 @@ namespace Zombineta.Juego.Tests
                         Assert.Greater(Mathf.Abs(e.distance - p.distance), 2f,
                             "tapo el carril libre a " + e.distance + " m");
         }
+
+        // --- Tramos ------------------------------------------------------------------
+
+        static int Count(List<LevelEntry> entries, LevelEntryKind kind, float from, float to) =>
+            entries.FindAll(e => e.kind == kind && e.height <= 0f && e.distance >= from && e.distance < to).Count;
+
+        [Test]
+        public void WithoutTramos_TheLevelIsTheSameAsBefore()
+        {
+            var a = LevelGenerator.Generate(Settings(3), Length);
+            var b = LevelGenerator.Generate(Settings(3), Length, null, new List<Tramo>());
+
+            Assert.AreEqual(a.Count, b.Count);
+            for (int i = 0; i < a.Count; i++)
+                Assert.AreEqual(a[i], b[i]);
+        }
+
+        [Test]
+        public void AnEmptyTramo_HasNothingButWhatItAsksFor()
+        {
+            var tramos = new List<Tramo>
+            {
+                new Tramo { hasta = 1000f },
+                new Tramo { hasta = 2000f, obstaculos = 0f, piezas = 0f, recursos = 2f },
+                new Tramo { hasta = Length },
+            };
+
+            var entries = LevelGenerator.Generate(Settings(), Length, null, tramos);
+
+            // Margen de 60 m: una pieza de rampa del tramo anterior puede entrar un poco.
+            Assert.AreEqual(0, Count(entries, LevelEntryKind.Obstacle, 1060f, 2000f));
+            Assert.AreEqual(0, Count(entries, LevelEntryKind.Ramp, 1000f, 2000f));
+            Assert.AreEqual(0, Count(entries, LevelEntryKind.Barrel, 1000f, 2000f));
+            Assert.AreEqual(0, Count(entries, LevelEntryKind.ZombieFront, 1000f, 2000f));
+            Assert.Greater(Count(entries, LevelEntryKind.Fuel, 1000f, 2000f),
+                Count(entries, LevelEntryKind.Fuel, 2000f, 3000f), "el doble de recursos");
+        }
+
+        [Test]
+        public void ADenserTramo_HasMoreObstacles()
+        {
+            var tramos = new List<Tramo>
+            {
+                new Tramo { hasta = 2000f, obstaculos = 0.3f, piezas = 0f },
+                new Tramo { hasta = Length, obstaculos = 2f, piezas = 0f },
+            };
+
+            var entries = LevelGenerator.Generate(Settings(), Length, null, tramos);
+
+            int calm = Count(entries, LevelEntryKind.Obstacle, 0f, 2000f);
+            int dense = Count(entries, LevelEntryKind.Obstacle, 2000f, Length);
+            Assert.Greater(dense, calm * 3, calm + " en el tranquilo, " + dense + " en el denso");
+        }
+
+        [TestCase(1)] [TestCase(2)] [TestCase(99)]
+        public void WithTramos_ThreeLanesAreStillNeverBlocked(int seed)
+        {
+            var tramos = new List<Tramo>
+            {
+                new Tramo { hasta = 2000f, obstaculos = 3f, piezas = 2f },
+                new Tramo { hasta = Length, obstaculos = 0.5f },
+            };
+
+            var entries = LevelGenerator.Generate(Settings(seed), Length, null, tramos);
+            foreach (var b in entries)
+            {
+                if (!Blocker(b)) continue;
+                var lanes = new HashSet<int>();
+                foreach (var e in entries)
+                    if (Blocker(e) && Mathf.Abs(e.distance - b.distance) <= 2f)
+                        lanes.Add(e.lane);
+                Assert.Less(lanes.Count, 3, "tres carriles tapados cerca de " + b.distance + " m");
+            }
+        }
     }
 }
