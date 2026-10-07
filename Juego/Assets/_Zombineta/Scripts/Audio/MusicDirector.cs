@@ -88,8 +88,26 @@ namespace Zombineta.Audio
             // GameRoot.Start (orden -1000) ya corrio JumpTo a la pantalla inicial sin avisar por
             // Changed: hay que resolver esa pantalla a mano aca.
             var flow = GameRoot.Flow;
-            if (flow != null)
-                Aplicar(flow.Current);
+            if (flow == null)
+                return;
+
+            // Durante la intro del estudio no suena el tema del menu: arranca cuando termina.
+            var root = GameRoot.Instance;
+            if (root != null && root.IntroEnCurso)
+            {
+                root.IntroTerminada += AplicarPantallaActual;
+                return;
+            }
+
+            Aplicar(flow.Current);
+        }
+
+        void AplicarPantallaActual()
+        {
+            if (GameRoot.Instance != null)
+                GameRoot.Instance.IntroTerminada -= AplicarPantallaActual;
+            if (GameRoot.Flow != null)
+                Aplicar(GameRoot.Flow.Current);
         }
 
         void Update()
