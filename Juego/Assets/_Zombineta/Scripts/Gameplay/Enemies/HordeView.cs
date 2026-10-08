@@ -25,14 +25,6 @@ namespace Zombineta.Enemies
         [Tooltip("Semilla del sorteo de look por unidad: mismo seed, misma pinta.")]
         [SerializeField] int lookSeed = 12345;
 
-        [Header("Sombra")]
-        [SerializeField] Sprite shadowSprite;
-        [SerializeField] Color shadowColor = new Color(0f, 0f, 0f, 0.45f);
-
-        [Tooltip("Ancho de la sombra relativo a sombra.png, con la escala base y la del tipo pero sin la " +
-                 "del look (esa solo empareja la resolucion de cada hoja, no el tamano del cuerpo).")]
-        [SerializeField] float shadowWidth = 1f;
-
         [Tooltip("Metros que la horda sigue avanzando por encima de la moto al atraparla.")]
         [SerializeField] float overrunMeters = 12f;
 
@@ -46,7 +38,7 @@ namespace Zombineta.Enemies
         Transform[] bodies;
         SpriteRenderer[] sprites;
         Animator[] animators;
-        GroundShadow[] shadows;
+        SombraProyectada[] shadows;
         int[] generations;
         bool[] wasAlive;
         float[] lastStagger;
@@ -94,7 +86,7 @@ namespace Zombineta.Enemies
             bodies = new Transform[count];
             sprites = new SpriteRenderer[count];
             animators = new Animator[count];
-            shadows = new GroundShadow[count];
+            shadows = new SombraProyectada[count];
             generations = new int[count];
             wasAlive = new bool[count];
             lastStagger = new float[count];
@@ -111,7 +103,8 @@ namespace Zombineta.Enemies
                 generations[i] = -1;
                 wasAlive[i] = true;
                 lastLookIndex[i] = -1;
-                shadows[i] = CreateShadow(bodies[i]);
+                // La sombra sale sola de la silueta del zombie, segun las luces que tenga cerca.
+                shadows[i] = SombraProyectada.Poner(bodies[i].gameObject, sprites[i], "", 0, true);
             }
         }
 
@@ -134,18 +127,6 @@ namespace Zombineta.Enemies
                 return;
             t.position += Vector3.up * (bobY * t.localScale.y);
             t.rotation *= Quaternion.Euler(0f, 0f, bobDegrees);
-        }
-
-        GroundShadow CreateShadow(Transform parent)
-        {
-            var go = new GameObject("Sombra");
-            go.transform.SetParent(parent, false);
-            var renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sprite = shadowSprite;
-            renderer.color = shadowColor;
-            var shadow = go.AddComponent<GroundShadow>();
-            shadow.Init(renderer);
-            return shadow;
         }
 
         void LateUpdate()
@@ -272,12 +253,9 @@ namespace Zombineta.Enemies
 
                 if (shadows[i] != null)
                 {
-                    // La sombra es hija del cuerpo: descontar la escala del look para que no crezca con ella.
-                    float lookScale = hasLook && currentLook[i].scale > 0f ? currentLook[i].scale : 1f;
-                    shadows[i].Width = shadowWidth / lookScale;
+                    // Debajo de todo lo de su carril, y solo de pie: el caido ya esta en el piso.
                     shadows[i].Visible = u.Alive;
-                    if (u.Alive)
-                        shadows[i].Place(worldX, groundY, 0f, u.Lane);
+                    shadows[i].Orden = LaneSorting.Order(u.Lane, SortSlot.Shadow);
                 }
             }
         }

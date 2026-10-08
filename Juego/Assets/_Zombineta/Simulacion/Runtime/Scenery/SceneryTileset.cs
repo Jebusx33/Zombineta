@@ -73,6 +73,11 @@ namespace Zombineta.Scenery
         [Header("Look")]
         public Color tint = Color.white;
 
+        [Tooltip("Los tiles de esta capa tiran sombra sobre la calle cuando pasan cerca de una luz " +
+                 "del escenario (arboles, postes). No marcar en capas de fondo que tienen las luces " +
+                 "ni en las del frente.")]
+        public bool proyectaSombra;
+
         [Tooltip("Vacio = el material por defecto (iluminado por las luces 2D). " +
                  "Para el cielo conviene uno sin iluminacion.")]
         public Material material;

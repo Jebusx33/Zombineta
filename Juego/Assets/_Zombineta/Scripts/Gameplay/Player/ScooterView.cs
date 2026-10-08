@@ -1,6 +1,7 @@
 using UnityEngine;
 using Zombineta.Core;
 using Zombineta.Fx;
+using Zombineta.Luz;
 
 namespace Zombineta.Player
 {
@@ -50,7 +51,8 @@ namespace Zombineta.Player
         [SerializeField] float arrivalCoastMeters = 6f;
 
         [Header("Salto")]
-        [Tooltip("Sombra permanente en el piso del carril: marca donde esta parada o donde va a caer.")]
+        [Tooltip("Sombra de salto en el piso del carril: solo mientras vuela, marca donde va a caer. " +
+                 "En el piso la moto tira su sombra proyectada, como todo lo demas.")]
         [SerializeField] GroundShadow shadow;
         [SerializeField] Color shadowColor = new Color(0f, 0f, 0f, 0.45f);
         [Tooltip("La sombra toma este color si la inclinacion daria aterrizaje perfecto. Solo mientras vuela.")]
@@ -199,12 +201,23 @@ namespace Zombineta.Player
             return cuadros[Mathf.Clamp(anim.Frame, 0, cuadros.Length - 1)];
         }
 
+        SombraProyectada proyectada;
+
         void UpdateShadow(RunState state, float laneY)
         {
+            // En el piso, la sombra proyectada por las luces; en el aire, la de salto.
+            if (body != null)
+            {
+                if (proyectada == null)
+                    proyectada = SombraProyectada.Poner(body.gameObject, body, "", 0, true);
+                proyectada.Visible = !state.Airborne;
+                proyectada.Orden = LaneSorting.Order(state.LaneVisual, SortSlot.Shadow);
+            }
+
             if (shadow == null)
                 return;
 
-            // Permanente: marca donde esta parada y, si vuela, donde va a caer.
+            shadow.Visible = state.Airborne;
             bool perfect = state.Airborne && Mathf.Abs(state.Pitch) <= run.Config.perfectLandingAngle;
             shadow.SetColor(perfect ? shadowPerfectColor : shadowColor);
 

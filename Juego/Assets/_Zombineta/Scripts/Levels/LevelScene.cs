@@ -118,7 +118,54 @@ namespace Zombineta.Juego.Levels
                 return;
 
             foreach (var item in Items)
+            {
                 EnsurePlayLook(item);
+                EnsurePlayShadow(item);
+            }
+        }
+
+        /// <summary>
+        /// En juego, lo que esta en el piso tira su sombra proyectada; la sombra ovalada que
+        /// pueda venir guardada en la escena se va. Lo que flota la conserva: marca su carril.
+        /// </summary>
+        void EnsurePlayShadow(LevelItem item)
+        {
+            if (item.kind == LevelEntryKind.Ramp || item.height > 0f)
+                return;
+
+            var vieja = item.transform.Find(ShadowChildName);
+            if (vieja != null)
+            {
+                vieja.gameObject.SetActive(false);
+                Destroy(vieja.gameObject);
+            }
+
+            ApplyProjectedShadow(item);
+        }
+
+        /// <summary>Sombra proyectada del item, sobre el sprite que de verdad se ve (el del prefab
+        /// "Vista" si lo hay, o el propio). Debajo de todo lo de su carril.</summary>
+        void ApplyProjectedShadow(LevelItem item)
+        {
+            var vista = item.transform.Find(LookChildName);
+            var sr = vista != null ? vista.GetComponent<SpriteRenderer>() : null;
+            if (sr == null)
+                sr = item.GetComponent<SpriteRenderer>();
+            if (sr == null)
+                return;
+
+            SombraProyectada.Poner(sr.gameObject, sr, "", LaneSorting.Order(item.lane, SortSlot.Shadow), true);
+        }
+
+        static void RemoveProjectedShadow(LevelItem item)
+        {
+            foreach (var sombra in item.GetComponentsInChildren<SombraProyectada>(true))
+            {
+                if (Application.isPlaying)
+                    Destroy(sombra);
+                else
+                    DestroyImmediate(sombra);
+            }
         }
 
         void EnsurePlayLook(LevelItem item)
@@ -400,11 +447,23 @@ namespace Zombineta.Juego.Levels
                 if (sr.flipX != flip) sr.flipX = flip;
             }
 
-            // La rampa ya se pisa: no necesita su propia sombra en el piso.
+            // La rampa ya se pisa: no necesita sombra. Lo que flota lleva la ovalada, que marca
+            // su carril; lo que esta en el piso tira su sombra proyectada.
             if (isRamp)
+            {
                 RemoveShadow(item);
-            else
+                RemoveProjectedShadow(item);
+            }
+            else if (item.height > 0f)
+            {
+                RemoveProjectedShadow(item);
                 ApplyShadow(item, look, lookScale);
+            }
+            else
+            {
+                RemoveShadow(item);
+                ApplyProjectedShadow(item);
+            }
         }
 
         /// <summary>
