@@ -129,8 +129,18 @@ namespace Zombineta.Luz
 
             // Los pies de verdad (la fila mas baja con pixeles opacos), no el borde del sprite:
             // si la sombra nace mas abajo, el personaje parece flotar.
-            var apoyoLocal = SpriteApoyo.De(sr.sprite);
-            Vector2 pies = sr.transform.TransformPoint(apoyoLocal);
+            Vector2 apoyoLocal, pies;
+            if (Mathf.Abs(Mathf.DeltaAngle(sr.transform.eulerAngles.z, 0f)) < 0.5f)
+            {
+                apoyoLocal = SpriteApoyo.De(sr.sprite);
+                pies = sr.transform.TransformPoint(apoyoLocal);
+            }
+            else
+            {
+                // Girado (un auto inclinado, la moto caida): lo que toca el piso es otra parte.
+                pies = SpriteApoyo.PiesGirado(sr);
+                apoyoLocal = sr.transform.InverseTransformPoint(pies);
+            }
             pies.y += hundido;
 
             // Todas las luces que llegan tiran para su lado, cada una con su peso: la sombra es

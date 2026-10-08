@@ -146,10 +146,74 @@ namespace Zombineta.Luz
             return alfa;
         }
 
+        static readonly Dictionary<Sprite, Vector2[]> mallas = new Dictionary<Sprite, Vector2[]>();
+        static readonly Dictionary<(Sprite, int), float> bajos = new Dictionary<(Sprite, int), float>();
+
+        /// <summary>La malla del sprite, guardada: sprite.vertices arma un arreglo nuevo en cada llamada.</summary>
+        static Vector2[] Malla(Sprite sprite)
+        {
+            if (!mallas.TryGetValue(sprite, out var malla))
+            {
+                malla = sprite.vertices ?? new Vector2[0];
+                mallas[sprite] = malla;
+            }
+            return malla;
+        }
+
+        /// <summary>
+        /// La Y mas baja de lo dibujado con el sprite girado esos grados, en sus unidades locales
+        /// (respecto del pivot). Para apoyar en el piso algo que esta inclinado.
+        /// </summary>
+        public static float MasBajo(Sprite sprite, float grados)
+        {
+            var clave = (sprite, Mathf.RoundToInt(grados * 10f));
+            if (bajos.TryGetValue(clave, out float bajo))
+                return bajo;
+
+            var malla = Malla(sprite);
+            if (malla.Length == 0)
+            {
+                bajo = sprite.bounds.min.y;
+            }
+            else
+            {
+                float seno = Mathf.Sin(grados * Mathf.Deg2Rad), coseno = Mathf.Cos(grados * Mathf.Deg2Rad);
+                bajo = float.MaxValue;
+                for (int i = 0; i < malla.Length; i++)
+                    bajo = Mathf.Min(bajo, malla[i].x * seno + malla[i].y * coseno);
+            }
+
+            bajos[clave] = bajo;
+            return bajo;
+        }
+
+        /// <summary>
+        /// Donde toca el piso un sprite que esta girado, en el mundo: el punto mas bajo de su
+        /// malla ya girada, centrado en su ancho. Con el sprite derecho conviene De(), que mira
+        /// los pixeles; girado, la fila mas baja de la textura ya no es la de abajo.
+        /// </summary>
+        public static Vector2 PiesGirado(SpriteRenderer sr)
+        {
+            var malla = Malla(sr.sprite);
+            if (malla.Length == 0)
+                return sr.bounds.center - new Vector3(0f, sr.bounds.extents.y, 0f);
+
+            var t = sr.transform;
+            float minX = float.MaxValue, maxX = float.MinValue, minY = float.MaxValue;
+            for (int i = 0; i < malla.Length; i++)
+            {
+                var p = t.TransformPoint(malla[i]);
+                if (p.x < minX) minX = p.x;
+                if (p.x > maxX) maxX = p.x;
+                if (p.y < minY) minY = p.y;
+            }
+            return new Vector2((minX + maxX) * 0.5f, minY);
+        }
+
         /// <summary>Respaldo: el borde de abajo de la malla del sprite (o de su rectangulo).</summary>
         static Vector2 PorMalla(Sprite sprite)
         {
-            var vertices = sprite.vertices;
+            var vertices = Malla(sprite);
             if (vertices == null || vertices.Length == 0)
             {
                 var limites = sprite.bounds;

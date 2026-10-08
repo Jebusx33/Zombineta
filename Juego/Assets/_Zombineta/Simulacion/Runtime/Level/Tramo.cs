@@ -65,6 +65,35 @@ namespace Zombineta.Level
         /// <summary>Donde empieza el tramo i, en metros.</summary>
         public static float Desde(IReadOnlyList<Tramo> tramos, int i) => i <= 0 ? 0f : tramos[i - 1].hasta;
 
+        /// <summary>
+        /// Metros que faltan hasta que empieza el proximo apagon (un tramo con oscuridad) por
+        /// delante de esos metros, y cual es. Devuelve -1 (e indice -1) si no queda ninguno. El
+        /// apagon en el que ya se esta adentro no cuenta: de ese no hay nada que avisar.
+        /// </summary>
+        public static float MetrosHastaApagon(IReadOnlyList<Tramo> tramos, float meters, out int indice)
+        {
+            indice = -1;
+            if (tramos == null)
+                return -1f;
+
+            for (int i = 0; i < tramos.Count; i++)
+            {
+                if (tramos[i].oscuridad <= 0f)
+                    continue;
+                // Dos tramos oscuros pegados son un solo apagon: vale el comienzo del primero.
+                if (i > 0 && tramos[i - 1].oscuridad > 0f)
+                    continue;
+
+                float desde = Desde(tramos, i);
+                if (desde > meters)
+                {
+                    indice = i;
+                    return desde - meters;
+                }
+            }
+            return -1f;
+        }
+
         /// <summary>Presion de la horda a esos metros, con el cambio entre tramos repartido en
         /// "transicion" metros centrados en el limite (sin saltos de velocidad).</summary>
         public static float PresionAt(IReadOnlyList<Tramo> tramos, float meters, float transicion) =>

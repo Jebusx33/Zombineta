@@ -77,6 +77,51 @@ namespace Zombineta.Tests
             Assert.AreEqual(1.2f, Tramos.PresionAt(tramos, 540f, 80f), 0.0001f, "termina la mezcla");
         }
 
+        // --- Aviso de apagon ------------------------------------------------
+
+        [Test]
+        public void TheNextBlackout_IsTheOneAhead()
+        {
+            var tramos = new List<Tramo>
+            {
+                new Tramo { hasta = 500f },
+                new Tramo { hasta = 700f, oscuridad = 1f },
+                new Tramo { hasta = 900f },
+                new Tramo { hasta = 1200f, oscuridad = 1f },
+            };
+
+            Assert.AreEqual(400f, Tramos.MetrosHastaApagon(tramos, 100f, out int primero), 0.001f);
+            Assert.AreEqual(1, primero);
+
+            Assert.AreEqual(300f, Tramos.MetrosHastaApagon(tramos, 600f, out int segundo), 0.001f,
+                "adentro de un apagon, el que se avisa es el siguiente");
+            Assert.AreEqual(3, segundo);
+
+            Assert.AreEqual(-1f, Tramos.MetrosHastaApagon(tramos, 1000f, out int ninguno));
+            Assert.AreEqual(-1, ninguno);
+        }
+
+        [Test]
+        public void WithoutBlackouts_ThereIsNothingToWarnAbout()
+        {
+            Assert.AreEqual(-1f, Tramos.MetrosHastaApagon(null, 0f, out _));
+            Assert.AreEqual(-1f, Tramos.MetrosHastaApagon(DosTramos().GetRange(0, 1), 0f, out _));
+        }
+
+        [Test]
+        public void TwoDarkTramosInARow_AreOneBlackout()
+        {
+            var tramos = new List<Tramo>
+            {
+                new Tramo { hasta = 300f },
+                new Tramo { hasta = 500f, oscuridad = 1f },
+                new Tramo { hasta = 800f, oscuridad = 0.6f },
+            };
+
+            Assert.AreEqual(-1f, Tramos.MetrosHastaApagon(tramos, 400f, out _),
+                "el segundo tramo oscuro es el mismo apagon: no se avisa de nuevo");
+        }
+
         // --- En la simulacion -----------------------------------------------
 
         [Test]

@@ -201,6 +201,7 @@ namespace Zombineta.Juego.Levels
             if (existente != null)
             {
                 SyncRotation(existente, look);
+                ApoyarVista(item, look, existente);
                 return; // Ya la armo el editor en esta misma sesion (sin reload de escena).
             }
 
@@ -210,6 +211,7 @@ namespace Zombineta.Juego.Levels
             go.transform.localRotation = look.prefab.transform.localRotation; // la inclinacion del prefab (arte) se respeta
             go.transform.localScale = Vector3.one;
             go.hideFlags = HideFlags.None;
+            ApoyarVista(item, look, go.transform);
             ShadowCasterQuality.Apply(go);
 
             var prefabSr = go.GetComponent<SpriteRenderer>();
@@ -567,6 +569,7 @@ namespace Zombineta.Juego.Levels
             // La raiz de una instancia de prefab no hereda su rotacion: se copia aca, asi ajustar
             // la inclinacion en el prefab se ve en la escena sin reabrirla.
             SyncRotation(go.transform, look);
+            ApoyarVista(item, look, go.transform);
 
             // Contrato del prefab: sprite y material en la raiz. Sombra/luz (si las tiene) son
             // hijas suyas y no necesitan capa ni orden propios.
@@ -576,6 +579,33 @@ namespace Zombineta.Juego.Levels
                 if (prefabSr.sortingLayerName != LaneSorting.GameLayer) prefabSr.sortingLayerName = LaneSorting.GameLayer;
                 if (prefabSr.sortingOrder != order) prefabSr.sortingOrder = order;
             }
+        }
+
+        /// <summary>Cuanto queda la base del dibujo por debajo de la linea del carril, en unidades
+        /// de mundo: la huella de algo apoyado en el piso visto de tres cuartos.</summary>
+        const float HuellaBajoElCarril = 0.3f;
+
+        /// <summary>
+        /// Apoya la vista de un obstaculo (o barril) en su carril: sube o baja el dibujo hasta
+        /// que su punto mas bajo queda apenas por debajo de la linea, igual que los pies de un
+        /// personaje. Asi se lee en que carril esta sin importar donde tenga el pivot el sprite
+        /// ni cuanto este girado. Es solo visual: el choque sigue siendo la linea del carril.
+        /// </summary>
+        static void ApoyarVista(LevelItem item, LevelItemPalette.Look look, Transform vista)
+        {
+            float y = 0f;
+            bool seApoya = (item.kind == LevelEntryKind.Obstacle || item.kind == LevelEntryKind.Barrel) && item.height <= 0f;
+            var sr = seApoya ? vista.GetComponent<SpriteRenderer>() : null;
+            float escala = Mathf.Abs(item.transform.lossyScale.y);
+            if (sr != null && sr.sprite != null && escala > 0.0001f)
+            {
+                float masBajo = SpriteApoyo.MasBajo(sr.sprite, vista.localEulerAngles.z);
+                y = -masBajo + (look.ajusteY - HuellaBajoElCarril) / escala;
+            }
+
+            var posicion = new Vector3(0f, y, 0f);
+            if (vista.localPosition != posicion)
+                vista.localPosition = posicion;
         }
 
         static void SyncRotation(Transform vista, LevelItemPalette.Look look)
