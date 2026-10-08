@@ -49,6 +49,12 @@ namespace Zombineta.Juego.Flow
             // Por el bus de musica: respeta los volumenes de Opciones.
             audioGo.AddComponent<FuenteConBus>().bus = AudioBus.Musica;
 
+            // En Boot todavia no hay nadie escuchando (el AudioListener viene con la camara del
+            // menu, que carga despues): sin uno, el video se reproduce mudo. Este se va con la
+            // intro, antes de que llegue el del menu.
+            if (FindAnyObjectByType<AudioListener>() == null)
+                audioGo.AddComponent<AudioListener>();
+
             var player = canvasGroup.gameObject.AddComponent<VideoPlayer>();
             player.playOnAwake = false;
             player.isLooping = false;
