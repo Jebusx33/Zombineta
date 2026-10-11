@@ -316,33 +316,8 @@ namespace Zombineta.Juego.EditorTools
             Save(scene, SceneNames.MainMenu);
         }
 
-        static void BuildOptions()
-        {
-            var (scene, canvas) = NewScreen(false, 200, new Color(0.05f, 0.04f, 0.08f, 1f), "OPCIONES");
-            var screen = canvas.gameObject.AddComponent<OptionsScreen>();
-
-            var volume = AddSlider(canvas.transform, "Volumen", new Vector2(120f, 190f));
-            var fullscreen = AddToggle(canvas.transform, "Pantalla completa", new Vector2(0f, 100f));
-            var effects = AddToggle(canvas.transform, "Efectos de camara", new Vector2(0f, 20f));
-            var shake = AddToggle(canvas.transform, "Sacudidas", new Vector2(0f, -60f));
-            var gore = AddToggle(canvas.transform, "Sangre alta", new Vector2(0f, -140f));
-            var vibration = AddToggle(canvas.transform, "Vibracion", new Vector2(0f, -220f));
-            var lightQuality = AddDropdown(canvas.transform, "Iluminacion", new Vector2(120f, -300f), new[] { "Alta", "Baja" });
-            var back = AddButton(canvas.transform, "Volver", new Vector2(0f, -380f), screen.Back);
-
-            Chain(new Selectable[] { volume, fullscreen, effects, shake, gore, vibration, lightQuality, back });
-
-            Set(screen, "volume", volume);
-            Set(screen, "fullscreen", fullscreen);
-            Set(screen, "cameraEffects", effects);
-            Set(screen, "cameraShake", shake);
-            Set(screen, "gore", gore);
-            Set(screen, "vibration", vibration);
-            Set(screen, "lightQuality", lightQuality);
-            Set(screen, "cancelAction", FindAction("UI/Cancel"));
-            Set(screen, "firstSelected", volume);
-            Save(scene, SceneNames.Options);
-        }
+        // El menu de opciones tiene su propio builder, con el diseno de la referencia de arte.
+        static void BuildOptions() => OptionsMenuBuilder.Build();
 
         static void BuildCharacterSelect()
         {
@@ -437,49 +412,8 @@ namespace Zombineta.Juego.EditorTools
             Save(scene, SceneNames.Ending);
         }
 
-        // El boton Volver queda fijo en (0,-500) con alto 84: su borde de arriba esta a
-        // alto/2 - 500 del centro del canvas. El viewport recorta a este margen desde abajo
-        // (mismo pixel de referencia que anchoredPosition, sin depender de la resolucion real),
-        // que le deja mas de 40px de aire libre sobre el boton.
-        const float VolverY = -500f;
-        const float ViewportMargenInferior = 160f;
-
-        static void BuildCredits()
-        {
-            var (scene, canvas) = NewScreen(true, 0, new Color(0.05f, 0.05f, 0.08f), "");
-            Object.DestroyImmediate(canvas.transform.Find("Titulo").gameObject);
-            var screen = canvas.gameObject.AddComponent<CreditsScreen>();
-
-            // Viewport: recorta con RectMask2D desde arriba del canvas hasta el margen de abajo,
-            // que deja el boton Volver siempre libre y fuera del area con scroll.
-            var viewportGo = new GameObject("Viewport", typeof(RectTransform), typeof(RectMask2D));
-            viewportGo.transform.SetParent(canvas.transform, false);
-            var viewport = (RectTransform)viewportGo.transform;
-            viewport.anchorMin = Vector2.zero;
-            viewport.anchorMax = Vector2.one;
-            viewport.offsetMin = new Vector2(0f, ViewportMargenInferior);
-            viewport.offsetMax = Vector2.zero;
-
-            var contenedorGo = new GameObject("Contenedor", typeof(RectTransform));
-            contenedorGo.transform.SetParent(viewport, false);
-            var contenedor = (RectTransform)contenedorGo.transform;
-            contenedor.anchorMin = contenedor.anchorMax = new Vector2(0.5f, 0f);
-            contenedor.pivot = new Vector2(0.5f, 1f);
-            contenedor.sizeDelta = new Vector2(1600f, 0f);
-            contenedor.anchoredPosition = Vector2.zero;
-
-            var volver = AddButton(canvas.transform, "Volver", new Vector2(0f, VolverY), screen.Volver);
-
-            // Se recarga justo antes de asignarlo: la escena nueva descarga los assets sin uso.
-            var creditos = AssetDatabase.LoadAssetAtPath<Creditos>(CreditosPath);
-            Set(screen, "datos", creditos);
-            Set(screen, "viewport", viewport);
-            Set(screen, "contenedor", contenedor);
-            Set(screen, "submitAction", FindAction("UI/Submit"));
-            Set(screen, "cancelAction", FindAction("UI/Cancel"));
-            Set(screen, "firstSelected", volver);
-            Save(scene, SceneNames.Credits);
-        }
+        // Los creditos tienen su propio builder, con el fondo y el estilo del arte.
+        static void BuildCredits() => CreditsMenuBuilder.Build();
 
         static void BuildPause()
         {
@@ -607,79 +541,6 @@ namespace Zombineta.Juego.EditorTools
                 buttons.Add(AddButton(parent, items[i].label, new Vector2(0f, startY - i * 104f), items[i].action));
             Chain(buttons.ToArray());
             return buttons;
-        }
-
-        static Toggle AddToggle(Transform parent, string label, Vector2 position)
-        {
-            var go = DefaultControls.CreateToggle(new DefaultControls.Resources());
-            go.name = "Opcion " + label;
-            go.transform.SetParent(parent, false);
-            var rt = (RectTransform)go.transform;
-            rt.anchoredPosition = position;
-            rt.localScale = Vector3.one * 2.4f;
-
-            var text = go.GetComponentInChildren<Text>();
-            text.text = label;
-            text.font = UiFont;
-            text.fontSize = 14;
-            text.color = Color.white;
-            // El rect del texto es bajito: sin esto el Text oculta la linea que no entra.
-            text.horizontalOverflow = HorizontalWrapMode.Overflow;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
-
-            var toggle = go.GetComponent<Toggle>();
-            Paint(toggle);
-            if (toggle.graphic != null)
-                toggle.graphic.color = Accent;
-            return toggle;
-        }
-
-        static Slider AddSlider(Transform parent, string label, Vector2 position)
-        {
-            AddText(parent, "Etiqueta " + label, label, 38, position + new Vector2(-420f, 0f), new Vector2(300f, 60f));
-
-            var go = DefaultControls.CreateSlider(new DefaultControls.Resources());
-            go.name = "Opcion " + label;
-            go.transform.SetParent(parent, false);
-            var rt = (RectTransform)go.transform;
-            rt.anchoredPosition = position;
-            rt.localScale = Vector3.one * 2.6f;
-
-            var slider = go.GetComponent<Slider>();
-            slider.minValue = 0f;
-            slider.maxValue = 1f;
-            Paint(slider);
-            return slider;
-        }
-
-        /// <summary>Desplegable con etiqueta a la izquierda, mismo estilo que AddSlider.</summary>
-        static Dropdown AddDropdown(Transform parent, string label, Vector2 position, string[] options)
-        {
-            AddText(parent, "Etiqueta " + label, label, 38, position + new Vector2(-420f, 0f), new Vector2(300f, 60f));
-
-            var go = DefaultControls.CreateDropdown(new DefaultControls.Resources());
-            go.name = "Opcion " + label;
-            go.transform.SetParent(parent, false);
-            var rt = (RectTransform)go.transform;
-            rt.anchoredPosition = position;
-            rt.localScale = Vector3.one * 2.4f;
-
-            var dropdown = go.GetComponent<Dropdown>();
-            dropdown.ClearOptions();
-            dropdown.AddOptions(new List<string>(options));
-
-            // Solo la etiqueta visible (Template arranca inactivo: GetComponentInChildren sin
-            // includeInactive no lo trae, asi que la lista desplegada conserva la tipografia por
-            // defecto de Unity, mas legible sobre fondo claro que la fuente del resto del juego).
-            var text = go.GetComponentInChildren<Text>();
-            if (text != null)
-            {
-                text.font = UiFont;
-                text.color = Color.white;
-            }
-
-            Paint(dropdown);
-            return dropdown;
         }
 
         /// <summary>Colores legibles con teclado: la opcion seleccionada se ve naranja.</summary>

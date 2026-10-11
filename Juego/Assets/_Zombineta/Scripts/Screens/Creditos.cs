@@ -4,11 +4,16 @@ using UnityEngine;
 
 namespace Zombineta.Juego.Screens
 {
-    /// <summary>Una seccion de los creditos: un titulo y las lineas debajo (puede no tener).</summary>
+    /// <summary>
+    /// Una seccion de los creditos: un titulo y las lineas debajo (puede no tener). Una linea
+    /// "Nombre | Rol" se arma en dos columnas; una linea vacia deja un espacio.
+    /// </summary>
     [Serializable]
     public sealed class Seccion
     {
         public string titulo = "";
+        [Tooltip("Titulo grande, sin subrayado: el nombre del juego al principio, el saludo al final.")]
+        public bool portada;
         public string[] lineas = new string[0];
     }
 

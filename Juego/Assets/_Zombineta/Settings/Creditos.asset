@@ -13,18 +13,47 @@ MonoBehaviour:
   m_Name: Creditos
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Screens.Creditos
   secciones:
-  - titulo: DeadLivery
-    lineas: []
-  - titulo: Equipo - UCHAR
+  - titulo: "DeadLivery"
+    portada: 1
     lineas:
-    - "Germ\xE1n Heuer"
-    - "Jes\xFAs G. Arias"
-    - "Jos\xE9 L. Ressia"
-    - Juana Urzua
-    - Sebastian A. Capurro
-  - titulo: Taller de Proyecto Integral 212
-    lineas: []
-  - titulo: Gracias por jugar
-    lineas: []
-  velocidad: 60
-  pausaFinal: 2
+    - "Un juego de UCHAR"
+  - titulo: "Equipo"
+    portada: 0
+    lineas:
+    - "José Luis Ressia | Desarrollo · Sonido"
+    - "Jesús Gabriel Arias | Desarrollo · Testing"
+    - "Sebastian Ariel Capurro | Desarrollo · Producción"
+    - "Juana Urzua Montelpare | Ilustración · Level Design"
+    - "Germán Heuer | Ilustración · Level Design"
+  - titulo: "Game Design"
+    portada: 0
+    lineas:
+    - "Todo el equipo"
+  - titulo: "Herramientas"
+    portada: 0
+    lineas:
+    - "Motor | Unity 6 (URP 2D)"
+    - "Ilustración | Krita · PaintTool SAI"
+  - titulo: "Herramientas de IA"
+    portada: 0
+    lineas:
+    - "Programación | Claude Code"
+    - "Música y sonidos | Suno"
+  - titulo: "Recursos de terceros"
+    portada: 0
+    lineas:
+    - "Particle Pack | Kenney (kenney.nl) · CC0"
+  - titulo: "Agradecimientos"
+    portada: 0
+    lineas:
+    - "Universidad de la Ciudad de Buenos Aires"
+    - "Taller de Proyecto Integral · 212"
+    - ""
+    - "Doc. Producción | Martin Romero"
+    - "Doc. Taller de Proyecto Integral | Nicolas Matias Crescenzi"
+  - titulo: "¡Gracias por jugar!"
+    portada: 1
+    lineas:
+    - "Sin vos, la horda no tendría a quién perseguir."
+  velocidad: 70
+  pausaFinal: 3

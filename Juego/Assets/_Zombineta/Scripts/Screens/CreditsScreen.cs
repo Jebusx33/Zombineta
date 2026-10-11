@@ -27,12 +27,25 @@ namespace Zombineta.Juego.Screens
         [SerializeField] InputActionReference submitAction;
         [SerializeField] InputActionReference cancelAction;
 
-        [SerializeField] float espacioSeccion = 60f;
-        [SerializeField] float altoTitulo = 56f;
-        [SerializeField] float altoLinea = 40f;
-        [SerializeField] int tamanioTitulo = 44;
-        [SerializeField] int tamanioLinea = 32;
+        [Header("Medidas")]
+        [SerializeField] float espacioSeccion = 70f;
+        [SerializeField] float altoPortada = 110f;
+        [SerializeField] float altoTitulo = 64f;
+        [SerializeField] float altoLinea = 42f;
+        [SerializeField] int tamanioPortada = 84;
+        [SerializeField] int tamanioTitulo = 40;
+        [SerializeField] int tamanioLinea = 30;
         [SerializeField] float anchoLinea = 1400f;
+        [Tooltip("Separacion entre el nombre y el rol a cada lado del centro, en lineas \"Nombre | Rol\".")]
+        [SerializeField] float medianil = 24f;
+
+        [Header("Estilo")]
+        [SerializeField] Font fuente;
+        [SerializeField] Color colorTitulo = new Color32(255, 210, 26, 255);
+        [SerializeField] Color colorTexto = Color.white;
+        [SerializeField] Color colorRol = new Color32(250, 170, 235, 255);
+        [SerializeField] Color colorSubrayado = new Color32(242, 27, 214, 255);
+        [SerializeField] Color colorContorno = new Color(0.08f, 0.04f, 0.12f, 0.9f);
 
         float altoContenido;
         float espera;
@@ -55,7 +68,7 @@ namespace Zombineta.Juego.Screens
             for (int i = contenedor.childCount - 1; i >= 0; i--)
                 Destroy(contenedor.GetChild(i).gameObject);
 
-            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var font = fuente != null ? fuente : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             float y = 0f;
             foreach (var seccion in datos.secciones)
             {
@@ -63,11 +76,28 @@ namespace Zombineta.Juego.Screens
                     continue;
 
                 if (!string.IsNullOrEmpty(seccion.titulo))
-                    AgregarLinea(seccion.titulo, font, altoTitulo, tamanioTitulo, FontStyle.Bold, ref y);
+                {
+                    if (seccion.portada)
+                    {
+                        AgregarTexto(seccion.titulo, font, tamanioPortada, FontStyle.Bold, colorTitulo,
+                                     TextAnchor.MiddleCenter, 0f, anchoLinea, altoPortada, y);
+                        y -= altoPortada;
+                    }
+                    else
+                    {
+                        AgregarTexto(seccion.titulo.ToUpperInvariant(), font, tamanioTitulo, FontStyle.Bold, colorTitulo,
+                                     TextAnchor.MiddleCenter, 0f, anchoLinea, altoTitulo, y);
+                        AgregarSubrayado(y - altoTitulo + 6f);
+                        y -= altoTitulo + 14f;
+                    }
+                }
 
                 if (seccion.lineas != null)
                     foreach (var linea in seccion.lineas)
-                        AgregarLinea(linea, font, altoLinea, tamanioLinea, FontStyle.Normal, ref y);
+                    {
+                        AgregarLinea(linea ?? "", font, y);
+                        y -= altoLinea;
+                    }
 
                 y -= espacioSeccion;
             }
@@ -80,7 +110,28 @@ namespace Zombineta.Juego.Screens
             volviendo = false;
         }
 
-        void AgregarLinea(string texto, Font font, float alto, int tamanio, FontStyle estilo, ref float y)
+        /// <summary>"Nombre | Rol" en dos columnas pegadas al centro; si no, una linea centrada.</summary>
+        void AgregarLinea(string linea, Font font, float y)
+        {
+            int corte = linea.IndexOf('|');
+            if (corte < 0)
+            {
+                AgregarTexto(linea, font, tamanioLinea, FontStyle.Normal, colorTexto,
+                             TextAnchor.MiddleCenter, 0f, anchoLinea, altoLinea, y);
+                return;
+            }
+
+            float mitad = anchoLinea / 2f - medianil;
+            string nombre = linea.Substring(0, corte).Trim();
+            string rol = linea.Substring(corte + 1).Trim();
+            AgregarTexto(nombre, font, tamanioLinea, FontStyle.Bold, colorTexto,
+                         TextAnchor.MiddleRight, -(medianil + mitad / 2f), mitad, altoLinea, y);
+            AgregarTexto(rol, font, tamanioLinea, FontStyle.Normal, colorRol,
+                         TextAnchor.MiddleLeft, medianil + mitad / 2f, mitad, altoLinea, y);
+        }
+
+        void AgregarTexto(string texto, Font font, int tamanio, FontStyle estilo, Color color,
+                          TextAnchor alineacion, float x, float ancho, float alto, float y)
         {
             var go = new GameObject("Linea", typeof(RectTransform), typeof(Text));
             go.transform.SetParent(contenedor, false);
@@ -90,19 +141,37 @@ namespace Zombineta.Juego.Screens
             text.text = texto;
             text.fontSize = tamanio;
             text.fontStyle = estilo;
-            text.alignment = TextAnchor.MiddleCenter;
-            text.color = Color.white;
+            text.alignment = alineacion;
+            text.color = color;
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             text.raycastTarget = false;
 
+            // El fondo es claro en el cielo: el contorno mantiene el texto legible encima.
+            var contorno = go.AddComponent<Outline>();
+            contorno.effectColor = colorContorno;
+            contorno.effectDistance = new Vector2(2f, -2f);
+
             var rt = text.rectTransform;
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
             rt.pivot = new Vector2(0.5f, 1f);
-            rt.sizeDelta = new Vector2(anchoLinea, alto);
-            rt.anchoredPosition = new Vector2(0f, y);
+            rt.sizeDelta = new Vector2(ancho, alto);
+            rt.anchoredPosition = new Vector2(x, y);
+        }
 
-            y -= alto;
+        void AgregarSubrayado(float y)
+        {
+            var go = new GameObject("Subrayado", typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(contenedor, false);
+            var image = go.GetComponent<Image>();
+            image.color = colorSubrayado;
+            image.raycastTarget = false;
+
+            var rt = image.rectTransform;
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
+            rt.pivot = new Vector2(0.5f, 1f);
+            rt.sizeDelta = new Vector2(110f, 6f);
+            rt.anchoredPosition = new Vector2(0f, y);
         }
 
         protected override void Update()
