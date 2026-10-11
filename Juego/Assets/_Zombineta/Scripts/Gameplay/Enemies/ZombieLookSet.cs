@@ -15,7 +15,10 @@ namespace Zombineta.Enemies
         public Sprite[] walk;
         public Sprite[] hit;
         public Sprite[] death;
+        [Tooltip("Muerte por bala. Vacio: usa death para toda causa.")]
+        public Sprite[] deathBullet;
         public float walkFps = 8f;
+        public float deathFps = 10f;
 
         [Tooltip("Compensa la resolucion de la hoja de origen, no el tamano de juego: las hojas completas " +
                  "(Anciano, HombreRojo) van en 1 y las de Zombies_poses en 2,5 porque sus figuras salen " +
@@ -23,6 +26,10 @@ namespace Zombineta.Enemies
                  "La sombra del zombie descuenta este valor.")]
         public float scale = 1f;
         public bool poseBob;
+
+        /// <summary>Los cuadros de muerte segun la causa: la de bala si el look la tiene.</summary>
+        public Sprite[] DeathFor(DeathCause cause) =>
+            cause == DeathCause.Bullet && deathBullet != null && deathBullet.Length > 0 ? deathBullet : death;
     }
 
     /// <summary>Los looks disponibles para un tipo de zombie (Comun, Corredor, Pesado, ...).</summary>

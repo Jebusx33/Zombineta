@@ -193,7 +193,7 @@ namespace Zombineta.Enemies
                             look.walk != null ? look.walk.Length : 0,
                             look.hit != null ? look.hit.Length : 0,
                             look.death != null ? look.death.Length : 0,
-                            look.walkFps);
+                            look.walkFps, deathFps: look.deathFps);
                         if (animators[i] != null)
                             animators[i].enabled = false;
                     }
@@ -210,7 +210,17 @@ namespace Zombineta.Enemies
                 if (hasLook)
                 {
                     if (wasAlive[i] && !u.Alive)
+                    {
+                        // La causa recien se conoce al morir: rearmar el flipbook con los cuadros que tocan.
+                        var look = currentLook[i];
+                        var death = look.DeathFor(u.Cause);
+                        flipbooks[i] = new Flipbook(
+                            look.walk != null ? look.walk.Length : 0,
+                            look.hit != null ? look.hit.Length : 0,
+                            death != null ? death.Length : 0,
+                            look.walkFps, deathFps: look.deathFps);
                         flipbooks[i].Play(FlipbookClip.Death);
+                    }
                     else if (u.Alive && u.Stagger > lastStagger[i] + 0.01f)
                         flipbooks[i].Play(FlipbookClip.Hit);
 
@@ -242,7 +252,7 @@ namespace Zombineta.Enemies
                         var look = currentLook[i];
                         var frames = flipbooks[i].Clip == FlipbookClip.Walk ? look.walk
                                    : flipbooks[i].Clip == FlipbookClip.Hit ? look.hit
-                                   : look.death;
+                                   : look.DeathFor(u.Cause);
                         if (frames != null && frames.Length > 0)
                             sprites[i].sprite = frames[Mathf.Clamp(flipbooks[i].Frame, 0, frames.Length - 1)];
 

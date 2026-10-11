@@ -49,5 +49,18 @@ namespace Zombineta.Juego.Tests
             f.Tick(1f, 1f);
             Assert.AreEqual(0, f.Frame);
         }
+
+        [Test]
+        public void DeathFor_UsesBulletFramesOnlyForBullets()
+        {
+            var death = new UnityEngine.Sprite[1];
+            var bullet = new UnityEngine.Sprite[3];
+            var look = new ZombieLook { death = death, deathBullet = bullet };
+            Assert.AreSame(bullet, look.DeathFor(DeathCause.Bullet));
+            Assert.AreSame(death, look.DeathFor(DeathCause.Explosion));
+
+            look.deathBullet = new UnityEngine.Sprite[0];
+            Assert.AreSame(death, look.DeathFor(DeathCause.Bullet));
+        }
     }
 }
