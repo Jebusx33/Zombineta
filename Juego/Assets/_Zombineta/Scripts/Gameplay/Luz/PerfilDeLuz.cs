@@ -20,6 +20,10 @@ namespace Zombineta.Luz
             public Color color = Color.white;
 
             [Min(0f)] public float intensidad = 1f;
+
+            [Tooltip("Fraccion de esta luz que queda en un apagon (tramo con oscuridad 1). " +
+                     "1 = el apagon no toca esta capa; 0 = negro total, solo se ve lo que alumbra el faro.")]
+            [Range(0f, 1f)] public float enApagon = 1f;
         }
 
         public List<Ambiente> capas = new List<Ambiente>();
@@ -53,6 +57,16 @@ namespace Zombineta.Luz
             color = Color.black;
             intensidad = 0f;
             return false;
+        }
+
+        /// <summary>Cuanto queda de la luz de esa capa con esa oscuridad (0 normal, 1 apagon).
+        /// Funcion pura. Una capa sin entrada propia no se oscurece.</summary>
+        public float FactorDeApagon(string capa, float oscuridad)
+        {
+            foreach (var a in capas)
+                if (a != null && a.capa == capa)
+                    return Mathf.Lerp(1f, a.enApagon, Mathf.Clamp01(oscuridad));
+            return 1f;
         }
 
         /// <summary>Una capa del juego con su color final ya resuelto (propio + General), lista para

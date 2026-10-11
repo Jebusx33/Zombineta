@@ -25,6 +25,11 @@ namespace Zombineta.Scenery
         // que la camara llegue a ver (la largada), con cualquier factor de parallax.
         const float LayoutStartX = -80f;
 
+        // Donde se dibuja la sombra que tira una capa del escenario: sobre la calle, por encima
+        // de todos sus tiles.
+        const string CapaDeSombras = "Calle";
+        const int OrdenDeSombras = 60;
+
         readonly List<LayerRuntime> layers = new List<LayerRuntime>();
         int builtVersion = -1;
 
@@ -210,7 +215,17 @@ namespace Zombineta.Scenery
                     // que ya trae su prefab, para que reciba la luz de ambiente igual que el resto.
                     if (cfg.material != null)
                         sr.sharedMaterial = cfg.material;
+
+                    if (cfg.proyectaSombra)
+                    {
+                        // Fija, sin mirar las luces: esta capa se mueve a otra velocidad que la de
+                        // los edificios que las tienen, y una sombra que las siguiera se correria sola.
+                        SombraProyectada.Poner(go, sr, CapaDeSombras, OrdenDeSombras, true, false);
+                    }
                 }
+
+                // Cada luz que traiga el prefab pasa a proyectar sombras, sin cablear nada.
+                FuenteDeSombra.AsegurarEn(go);
 
                 return go.transform;
             }

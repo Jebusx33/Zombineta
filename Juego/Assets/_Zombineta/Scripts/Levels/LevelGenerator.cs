@@ -48,6 +48,9 @@ namespace Zombineta.Juego.Levels
     /// Reglas: piezas de rampa con zona de aterrizaje libre; barriles fuera de las rampas;
     /// zombies de frente lejos de obstaculos de su carril; nunca tres carriles tapados; nada a
     /// menos de la separacion minima en un mismo carril.
+    ///
+    /// Con tramos, cada uno multiplica las densidades en su pedazo del recorrido (0 = nada de
+    /// eso ahi). Sin tramos el nivel sale parejo, como siempre.
     /// </summary>
     public static class LevelGenerator
     {
@@ -70,7 +73,11 @@ namespace Zombineta.Juego.Levels
         const float RampFuelAt = 3f;
         const float RampFuelHeight = 1f;
 
-        public static List<LevelEntry> Generate(LevelGeneratorSettings s, float length, IReadOnlyList<LevelEntry> pinned = null)
+        // Cuando un tramo no quiere algo (densidad 0), se lo cruza de a pasos de estos metros.
+        const float SkipStep = 20f;
+
+        public static List<LevelEntry> Generate(LevelGeneratorSettings s, float length, IReadOnlyList<LevelEntry> pinned = null,
+            IReadOnlyList<Tramo> tramos = null)
         {
             var result = new List<LevelEntry>();
             var all = new List<LevelEntry>();
@@ -90,12 +97,25 @@ namespace Zombineta.Juego.Levels
                 all.Add(e);
             }
 
+            float Piezas(float d) { var t = Tramos.At(tramos, d); return t != null ? t.piezas : 1f; }
+            float Recursos(float d) { var t = Tramos.At(tramos, d); return t != null ? t.recursos : 1f; }
+
+            // Avanza hasta el proximo lugar de algo que va "cada tantos metros": mas seguido donde
+            // el tramo lo pide, y de largo donde no lo quiere.
+            float Next(float d, float every, System.Func<float, float> density)
+            {
+                float m = density(d);
+                return d + (m > 0f ? every / m : SkipStep);
+            }
+
             // 1) Piezas de rampa: rampa, dos obstaculos para sobrevolar y a veces un bidon aereo.
             int piece = 0;
             if (s.rampEvery > 0f)
             {
-                for (float d = start + s.rampEvery; d + RampZoneAfter <= end; d += s.rampEvery)
+                for (float d = start + s.rampEvery; d + RampZoneAfter <= end; d = Next(d, s.rampEvery, Piezas))
                 {
+                    if (Piezas(d) <= 0f)
+                        continue;
                     int lane = rng.Next(Lanes);
                     if (AnyInLane(all, lane, d - RampZoneBefore, d + RampZoneAfter))
                         continue;
@@ -114,8 +134,10 @@ namespace Zombineta.Juego.Levels
             // 2) Barriles: se pasan de largo y se les dispara despues. Fuera de las rampas.
             if (s.barrelEvery > 0f)
             {
-                for (float d = start + s.barrelEvery * 0.5f; d <= end; d += s.barrelEvery)
+                for (float d = start + s.barrelEvery * 0.5f; d <= end; d = Next(d, s.barrelEvery, Piezas))
                 {
+                    if (Piezas(d) <= 0f)
+                        continue;
                     float at = Mathf.Round(d);
                     int lane = rng.Next(Lanes);
                     if (InAnyRampZone(all, at) || Occupied(all, at, lane, s.minGapSameLane))
@@ -127,8 +149,10 @@ namespace Zombineta.Juego.Levels
             // 3) Zombies de frente: comun o pesado, lejos de obstaculos de su carril.
             if (s.frontZombieEvery > 0f)
             {
-                for (float d = start + s.frontZombieEvery; d <= end; d += s.frontZombieEvery)
+                for (float d = start + s.frontZombieEvery; d <= end; d = Next(d, s.frontZombieEvery, Piezas))
                 {
+                    if (Piezas(d) <= 0f)
+                        continue;
                     float at = Mathf.Round(d);
                     int lane = rng.Next(Lanes);
                     int variant = rng.NextDouble() < s.heavyFrontZombieChance ? 2 : 0;
@@ -139,17 +163,32 @@ namespace Zombineta.Juego.Levels
                 }
             }
 
-            // 4) Obstaculos sueltos.
-            int wanted = Mathf.RoundToInt((end - start) / 100f * s.obstaclesPer100m);
-            for (int attempt = 0, placed = 0; attempt < wanted * 8 && placed < wanted; attempt++)
+            // 4) Obstaculos sueltos: cada tramo recibe los suyos, segun su largo y su densidad.
+            int tramoCount = tramos != null && tramos.Count > 0 ? tramos.Count : 1;
+            for (int i = 0; i < tramoCount; i++)
             {
-                float at = Mathf.Round(start + (float)rng.NextDouble() * (end - start));
-                int lane = rng.Next(Lanes);
-                if (InRampZone(all, at, lane) || Occupied(all, at, lane, s.minGapSameLane) ||
-                    NearKind(all, at, lane, LevelEntryKind.ZombieFront, 10f) || WouldBlock(all, at, lane))
+                float from = start, to = end, density = 1f;
+                if (tramos != null && tramos.Count > 0)
+                {
+                    from = Mathf.Max(start, Tramos.Desde(tramos, i));
+                    // El ultimo tramo llega hasta el final aunque su "hasta" quede corto.
+                    to = i == tramos.Count - 1 ? end : Mathf.Min(end, tramos[i].hasta);
+                    density = tramos[i].obstaculos;
+                }
+                if (to <= from)
                     continue;
-                Add(new LevelEntry(at, lane, LevelEntryKind.Obstacle));
-                placed++;
+
+                int wanted = Mathf.RoundToInt((to - from) / 100f * s.obstaclesPer100m * density);
+                for (int attempt = 0, placed = 0; attempt < wanted * 8 && placed < wanted; attempt++)
+                {
+                    float at = Mathf.Round(from + (float)rng.NextDouble() * (to - from));
+                    int lane = rng.Next(Lanes);
+                    if (InRampZone(all, at, lane) || Occupied(all, at, lane, s.minGapSameLane) ||
+                        NearKind(all, at, lane, LevelEntryKind.ZombieFront, 10f) || WouldBlock(all, at, lane))
+                        continue;
+                    Add(new LevelEntry(at, lane, LevelEntryKind.Obstacle));
+                    placed++;
+                }
             }
 
             // 5) Recursos, repartidos con un poco de azar.
@@ -161,11 +200,13 @@ namespace Zombineta.Juego.Levels
             {
                 if (every <= 0f)
                     return;
-                for (float d = start + every * 0.5f; d <= end; d += every)
+                for (float d = start + every * 0.5f; d <= end; d = Next(d, every, Recursos))
                 {
+                    if (Recursos(d) <= 0f)
+                        continue;
                     for (int tries = 0; tries < 4; tries++)
                     {
-                        float jitter = ((float)rng.NextDouble() - 0.5f) * every * 0.5f;
+                        float jitter = ((float)rng.NextDouble() - 0.5f) * (every / Recursos(d)) * 0.5f;
                         float at = Mathf.Round(Mathf.Clamp(d + jitter, start, end));
                         int lane = rng.Next(Lanes);
                         // Debajo de un salto no se llega: fuera del tramo de la rampa hasta el aterrizaje corto.

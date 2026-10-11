@@ -31,6 +31,10 @@ namespace Zombineta.Juego.Levels
 
         [SerializeField] LevelGeneratorSettings generator = new LevelGeneratorSettings();
 
+        [Tooltip("El ritmo del nivel, de la largada al refugio: presion de la horda, luz y densidad " +
+                 "de cada pedazo. Vacio = todo parejo, como siempre.")]
+        [SerializeField] List<Tramo> tramos = new List<Tramo>();
+
         [Header("Looks")]
         [Tooltip("Aspectos por tipo de zombie, para la cara del ZombieFront. Sin asignar: tinte de Zombies.asset.")]
         [SerializeField] ZombieLookSet looks;
@@ -50,6 +54,7 @@ namespace Zombineta.Juego.Levels
         public float GoalDistance => goalDistance;
         public Transform ItemsRoot => itemsRoot != null ? itemsRoot : transform;
         public LevelGeneratorSettings Generator => generator;
+        public List<Tramo> Tramos => tramos;
         public PerfilDeLuz Perfil => perfil;
 
         // Sin config asignada: usar los valores actuales de Settings/GameConfig.asset (no los
@@ -83,6 +88,7 @@ namespace Zombineta.Juego.Levels
             var copy = Instantiate(source != null ? source : config);
             copy.name = (source != null ? source.name : "GameConfig") + " (" + gameObject.scene.name + ")";
             copy.goalDistance = goalDistance;
+            copy.tramos = tramos;
             return copy;
         }
 
@@ -112,7 +118,54 @@ namespace Zombineta.Juego.Levels
                 return;
 
             foreach (var item in Items)
+            {
                 EnsurePlayLook(item);
+                EnsurePlayShadow(item);
+            }
+        }
+
+        /// <summary>
+        /// En juego, lo que esta en el piso tira su sombra proyectada; la sombra ovalada que
+        /// pueda venir guardada en la escena se va. Lo que flota la conserva: marca su carril.
+        /// </summary>
+        void EnsurePlayShadow(LevelItem item)
+        {
+            if (item.kind == LevelEntryKind.Ramp || item.height > 0f)
+                return;
+
+            var vieja = item.transform.Find(ShadowChildName);
+            if (vieja != null)
+            {
+                vieja.gameObject.SetActive(false);
+                Destroy(vieja.gameObject);
+            }
+
+            ApplyProjectedShadow(item);
+        }
+
+        /// <summary>Sombra proyectada del item, sobre el sprite que de verdad se ve (el del prefab
+        /// "Vista" si lo hay, o el propio). Debajo de todo lo de su carril.</summary>
+        void ApplyProjectedShadow(LevelItem item)
+        {
+            var vista = item.transform.Find(LookChildName);
+            var sr = vista != null ? vista.GetComponent<SpriteRenderer>() : null;
+            if (sr == null)
+                sr = item.GetComponent<SpriteRenderer>();
+            if (sr == null)
+                return;
+
+            SombraProyectada.Poner(sr.gameObject, sr, "", LaneSorting.Order(item.lane, SortSlot.Shadow), true);
+        }
+
+        static void RemoveProjectedShadow(LevelItem item)
+        {
+            foreach (var sombra in item.GetComponentsInChildren<SombraProyectada>(true))
+            {
+                if (Application.isPlaying)
+                    Destroy(sombra);
+                else
+                    DestroyImmediate(sombra);
+            }
         }
 
         void EnsurePlayLook(LevelItem item)
@@ -144,15 +197,21 @@ namespace Zombineta.Juego.Levels
             if (sr != null && sr.enabled)
                 sr.enabled = false;
 
-            if (item.transform.Find(LookChildName) != null)
+            var existente = item.transform.Find(LookChildName);
+            if (existente != null)
+            {
+                SyncRotation(existente, look);
+                ApoyarVista(item, look, existente);
                 return; // Ya la armo el editor en esta misma sesion (sin reload de escena).
+            }
 
             var go = Instantiate(look.prefab, item.transform);
             go.name = LookChildName;
             go.transform.localPosition = Vector3.zero;
-            go.transform.localRotation = Quaternion.identity;
+            go.transform.localRotation = look.prefab.transform.localRotation; // la inclinacion del prefab (arte) se respeta
             go.transform.localScale = Vector3.one;
             go.hideFlags = HideFlags.None;
+            ApoyarVista(item, look, go.transform);
             ShadowCasterQuality.Apply(go);
 
             var prefabSr = go.GetComponent<SpriteRenderer>();
@@ -390,11 +449,23 @@ namespace Zombineta.Juego.Levels
                 if (sr.flipX != flip) sr.flipX = flip;
             }
 
-            // La rampa ya se pisa: no necesita su propia sombra en el piso.
+            // La rampa ya se pisa: no necesita sombra. Lo que flota lleva la ovalada, que marca
+            // su carril; lo que esta en el piso tira su sombra proyectada.
             if (isRamp)
+            {
                 RemoveShadow(item);
-            else
+                RemoveProjectedShadow(item);
+            }
+            else if (item.height > 0f)
+            {
+                RemoveProjectedShadow(item);
                 ApplyShadow(item, look, lookScale);
+            }
+            else
+            {
+                RemoveShadow(item);
+                ApplyProjectedShadow(item);
+            }
         }
 
         /// <summary>
@@ -490,10 +561,15 @@ namespace Zombineta.Juego.Levels
 #endif
                 go.name = LookChildName;
                 go.transform.localPosition = Vector3.zero;
-                go.transform.localRotation = Quaternion.identity;
+                go.transform.localRotation = look.prefab.transform.localRotation; // la inclinacion del prefab (arte) se respeta
                 go.transform.localScale = Vector3.one;
                 go.hideFlags = Application.isPlaying ? HideFlags.None : HideFlags.DontSave;
             }
+
+            // La raiz de una instancia de prefab no hereda su rotacion: se copia aca, asi ajustar
+            // la inclinacion en el prefab se ve en la escena sin reabrirla.
+            SyncRotation(go.transform, look);
+            ApoyarVista(item, look, go.transform);
 
             // Contrato del prefab: sprite y material en la raiz. Sombra/luz (si las tiene) son
             // hijas suyas y no necesitan capa ni orden propios.
@@ -503,6 +579,40 @@ namespace Zombineta.Juego.Levels
                 if (prefabSr.sortingLayerName != LaneSorting.GameLayer) prefabSr.sortingLayerName = LaneSorting.GameLayer;
                 if (prefabSr.sortingOrder != order) prefabSr.sortingOrder = order;
             }
+        }
+
+        /// <summary>Cuanto queda la base del dibujo por debajo de la linea del carril, en unidades
+        /// de mundo: la huella de algo apoyado en el piso visto de tres cuartos.</summary>
+        const float HuellaBajoElCarril = 0.3f;
+
+        /// <summary>
+        /// Apoya la vista de un obstaculo (o barril) en su carril: sube o baja el dibujo hasta
+        /// que su punto mas bajo queda apenas por debajo de la linea, igual que los pies de un
+        /// personaje. Asi se lee en que carril esta sin importar donde tenga el pivot el sprite
+        /// ni cuanto este girado. Es solo visual: el choque sigue siendo la linea del carril.
+        /// </summary>
+        static void ApoyarVista(LevelItem item, LevelItemPalette.Look look, Transform vista)
+        {
+            float y = 0f;
+            bool seApoya = (item.kind == LevelEntryKind.Obstacle || item.kind == LevelEntryKind.Barrel) && item.height <= 0f;
+            var sr = seApoya ? vista.GetComponent<SpriteRenderer>() : null;
+            float escala = Mathf.Abs(item.transform.lossyScale.y);
+            if (sr != null && sr.sprite != null && escala > 0.0001f)
+            {
+                float masBajo = SpriteApoyo.MasBajo(sr.sprite, vista.localEulerAngles.z);
+                y = -masBajo + (look.ajusteY - HuellaBajoElCarril) / escala;
+            }
+
+            var posicion = new Vector3(0f, y, 0f);
+            if (vista.localPosition != posicion)
+                vista.localPosition = posicion;
+        }
+
+        static void SyncRotation(Transform vista, LevelItemPalette.Look look)
+        {
+            var rotation = look.prefab.transform.localRotation;
+            if (vista.localRotation != rotation)
+                vista.localRotation = rotation;
         }
 
         void RemoveLookPrefab(LevelItem item)
@@ -537,6 +647,7 @@ namespace Zombineta.Juego.Levels
         static readonly Color GoalColor = new Color(0.3f, 0.7f, 1f, 0.9f);
         static readonly Color IssueColor = new Color(1f, 0.2f, 0.2f, 0.9f);
         static readonly Color PinColor = new Color(1f, 0.85f, 0.2f, 0.9f);
+        static readonly Color TramoColor = new Color(1f, 0.55f, 0.9f, 0.9f);
 
         void OnDrawGizmos()
         {
@@ -580,6 +691,32 @@ namespace Zombineta.Juego.Levels
             Gizmos.color = GoalColor;
             Gizmos.DrawLine(new Vector3(goalX, bottom), new Vector3(goalX, top));
             UnityEditor.Handles.Label(new Vector3(goalX, top + 0.4f), "Refugio " + goalDistance.ToString("0") + " m", labelStyle);
+
+            // Tramos: donde termina cada uno, con su ritmo. Los apagones, sombreados.
+            float desde = 0f;
+            var tramoStyle = new GUIStyle(labelStyle) { normal = { textColor = TramoColor } };
+            foreach (var tramo in tramos)
+            {
+                if (tramo == null)
+                    continue;
+                float hasta = Mathf.Min(tramo.hasta, goalDistance);
+                float x0 = layout.ToWorldX(desde), x1 = layout.ToWorldX(hasta);
+                if (x1 >= minX && x0 <= maxX)
+                {
+                    if (tramo.oscuridad > 0f)
+                    {
+                        float a = Mathf.Max(x0, minX), b = Mathf.Min(x1, maxX);
+                        Gizmos.color = new Color(0f, 0f, 0f, 0.35f * tramo.oscuridad);
+                        Gizmos.DrawCube(new Vector3((a + b) * 0.5f, (top + bottom) * 0.5f), new Vector3(b - a, top - bottom, 0f));
+                    }
+                    Gizmos.color = TramoColor;
+                    Gizmos.DrawLine(new Vector3(x1, bottom), new Vector3(x1, top + 1.2f));
+                    UnityEditor.Handles.Label(new Vector3(Mathf.Max(x0, minX) + 0.2f, top + 1.4f),
+                        tramo.nombre + "  horda x" + tramo.presionHorda.ToString("0.##") +
+                        (tramo.oscuridad > 0f ? "  APAGON" : ""), tramoStyle);
+                }
+                desde = hasta;
+            }
 
             // Fijados.
             Gizmos.color = PinColor;

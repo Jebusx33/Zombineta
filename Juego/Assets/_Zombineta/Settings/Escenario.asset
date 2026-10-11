@@ -26,6 +26,7 @@ MonoBehaviour:
     noImmediateRepeat: 0
     seed: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
+    proyectaSombra: 0
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 0a56c5594d5fa8f4893455e48812aa87, type: 3}
@@ -47,6 +48,7 @@ MonoBehaviour:
     noImmediateRepeat: 1
     seed: 11
     tint: {r: 1, g: 1, b: 1, a: 1}
+    proyectaSombra: 0
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 2cd8205bf436ef44d900599a7877b795, type: 3}
@@ -92,6 +94,7 @@ MonoBehaviour:
     noImmediateRepeat: 1
     seed: 41
     tint: {r: 0.55, g: 0.5, b: 0.7, a: 1}
+    proyectaSombra: 1
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 7b797a31302444a489662b27e037d601, type: 3}
@@ -119,6 +122,7 @@ MonoBehaviour:
     noImmediateRepeat: 0
     seed: 1
     tint: {r: 0.36, g: 0.34, b: 0.42, a: 1}
+    proyectaSombra: 0
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 34ecad7966b14874d8f90643e4f60aba, type: 3}
@@ -140,6 +144,7 @@ MonoBehaviour:
     noImmediateRepeat: 0
     seed: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
+    proyectaSombra: 0
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 76753e779300aa244ac484a6606f941f, type: 3}
@@ -161,6 +166,7 @@ MonoBehaviour:
     noImmediateRepeat: 0
     seed: 1
     tint: {r: 0.3, g: 0.29, b: 0.34, a: 1}
+    proyectaSombra: 0
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 34ecad7966b14874d8f90643e4f60aba, type: 3}
@@ -182,6 +188,7 @@ MonoBehaviour:
     noImmediateRepeat: 1
     seed: 23
     tint: {r: 1, g: 1, b: 1, a: 0.55}
+    proyectaSombra: 0
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 3ede235060f4b6f46a33e521b24a5b42, type: 3}
@@ -203,6 +210,7 @@ MonoBehaviour:
     noImmediateRepeat: 0
     seed: 21
     tint: {r: 0.12, g: 0.1, b: 0.18, a: 1}
+    proyectaSombra: 0
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: fad0fd806da039c48a4df3d3eae13c36, type: 3}
@@ -224,6 +232,7 @@ MonoBehaviour:
     noImmediateRepeat: 0
     seed: 31
     tint: {r: 0.16, g: 0.13, b: 0.22, a: 0.95}
+    proyectaSombra: 0
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: 9bed828f767365a4dba936fd66724daa, type: 3}
@@ -245,6 +254,7 @@ MonoBehaviour:
     noImmediateRepeat: 1
     seed: 51
     tint: {r: 0.16, g: 0.13, b: 0.2, a: 0.9}
+    proyectaSombra: 0
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: e3998443b205f23419ecc6d8d3c4ebc7, type: 3}
@@ -284,6 +294,7 @@ MonoBehaviour:
     noImmediateRepeat: 1
     seed: 5
     tint: {r: 0.18, g: 0.14, b: 0.26, a: 0.92}
+    proyectaSombra: 0
     material: {fileID: 0}
     variants:
     - sprite: {fileID: 21300000, guid: e3998443b205f23419ecc6d8d3c4ebc7, type: 3}

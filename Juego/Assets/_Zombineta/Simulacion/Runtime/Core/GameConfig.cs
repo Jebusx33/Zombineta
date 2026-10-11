@@ -72,6 +72,23 @@ namespace Zombineta.Core
         [Tooltip("Velocidad extra maxima que puede ganar la horda por goma elastica.")]
         public float rubberBandMaxBonus = 6f;
 
+        [Tooltip("Piedad de ultimo metro: con la horda a menos de estos metros, afloja un poco. " +
+                 "Da mas 'casi me agarran' y menos muertes secas. 0 = apagada.")]
+        [Min(0f)] public float mercyGap = 0f;
+        [Tooltip("Fraccion de su velocidad a la que queda la horda cuando esta encima (ventaja 0). " +
+                 "Entre eso y la ventaja de arriba se va recuperando. Mantenerla por encima de " +
+                 "normalSpeed / hordeBaseSpeed o la horda nunca alcanza a quien va en Normal.")]
+        [Range(0f, 1f)] public float mercySlowFactor = 0.88f;
+
+        [Tooltip("Metros sobre los que se reparte el cambio de presion de la horda entre dos tramos.")]
+        [Min(0f)] public float tramoPressureBlendMeters = 80f;
+        [Tooltip("Metros del fundido de luz al entrar y salir de un apagon.")]
+        [Min(0f)] public float tramoDarknessFadeMeters = 30f;
+
+        /// <summary>Los tramos del nivel en curso. No se guarda en el asset: los pone el nivel
+        /// (LevelScene.RuntimeConfig) en su copia. Sin tramos, todo se comporta como siempre.</summary>
+        [System.NonSerialized] public System.Collections.Generic.List<Zombineta.Level.Tramo> tramos;
+
         [Header("Disparo y explosiones")]
         [Tooltip("Alcance de la bala hacia atras, en metros.")]
         public float shotRangeMeters = 60f;

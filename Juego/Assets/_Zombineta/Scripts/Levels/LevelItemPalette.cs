@@ -28,6 +28,11 @@ namespace Zombineta.Juego.Levels
             [Tooltip("Ancho de la sombra en el piso, relativo al ancho de sombra.png (1 = igual).")]
             public float shadowWidth = 1f;
 
+            [Tooltip("Obstaculos y barriles se apoyan solos en su carril (la base del dibujo queda un " +
+                     "poco por debajo de la linea, como los pies de un personaje). Esto lo corre a ojo, " +
+                     "en unidades de mundo: positivo lo sube, negativo lo baja.")]
+            public float ajusteY;
+
             [Tooltip("Prefab con la vista de este tipo (sprite propio, material lit, y opcional " +
                      "ShadowCaster2D/Light2D). Si esta asignado, LevelScene lo instancia como hijo " +
                      "del item y no pinta sprite/color de aca: asi arte le da luz y sombra propias " +

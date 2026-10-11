@@ -57,6 +57,14 @@ namespace Zombineta.Core
         /// <summary>Velocidad efectiva de la horda en el ultimo tick (m/s).</summary>
         public float HordeSpeed { get; private set; }
 
+        /// <summary>Cuanto aprieta la horda en el tramo donde esta la moto (1 = lo de siempre).</summary>
+        public float Presion =>
+            Zombineta.Level.Tramos.PresionAt(config.tramos, State.PlayerX, config.tramoPressureBlendMeters);
+
+        /// <summary>Oscuridad del tramo donde esta la moto: 0 luz normal, 1 apagon.</summary>
+        public float Oscuridad =>
+            Zombineta.Level.Tramos.OscuridadAt(config.tramos, State.PlayerX, config.tramoDarknessFadeMeters);
+
         public float Progress01 =>
             config.goalDistance <= 0f ? 0f : Mathf.Clamp01(State.PlayerX / config.goalDistance);
 
@@ -293,7 +301,8 @@ namespace Zombineta.Core
         /// </summary>
         float ComputeHordeSpeedFactor()
         {
-            float speed = config.hordeBaseSpeed;
+            // El tramo del nivel marca el ritmo: respiro al principio, apreton en el giro.
+            float speed = config.hordeBaseSpeed * Presion;
 
             // Goma elastica: si te escapaste mucho, la horda aprieta.
             if (config.rubberBandRange > 0f)
@@ -306,6 +315,10 @@ namespace Zombineta.Core
             // El faro frena a la horda mientras este prendido: efecto sostenido.
             if (State.HeadlightOn)
                 speed *= config.headlightHordeSlowFactor;
+
+            // Piedad de ultimo metro: con la horda encima afloja un poco, sin dejar de alcanzar.
+            if (config.mercyGap > 0f && State.Gap < config.mercyGap)
+                speed *= Mathf.Lerp(config.mercySlowFactor, 1f, Mathf.Clamp01(State.Gap / config.mercyGap));
 
             return config.hordeBaseSpeed <= 0f ? 0f : speed / config.hordeBaseSpeed;
         }

@@ -22,6 +22,9 @@ namespace Zombineta.Juego.Flow
         [Tooltip("El nivel del tutorial (escena Tutorial y el audio del nivel 1): no forma parte de Niveles.asset.")]
         [SerializeField] LevelInfo tutorial;
 
+        [Tooltip("La intro del estudio. Se ve solo al arrancar desde Boot, antes del menu. Vacio = sin intro.")]
+        [SerializeField] StudioIntro intro;
+
         public static GameRoot Instance { get; private set; }
 
         /// <summary>El flujo de pantallas. Null hasta que Boot termina de cargar.</summary>
@@ -37,6 +40,12 @@ namespace Zombineta.Juego.Flow
 
         /// <summary>True mientras se cargan o descargan escenas.</summary>
         public bool Busy => busy;
+
+        /// <summary>True mientras se ve la intro del estudio: todavia no hay menu ni musica.</summary>
+        public bool IntroEnCurso { get; private set; }
+
+        /// <summary>Avisa cuando la intro del estudio termino (o se salteo).</summary>
+        public event System.Action IntroTerminada;
 
         GameFlow flow;
         readonly SceneRoutePlanner planner = new SceneRoutePlanner();
@@ -114,6 +123,23 @@ namespace Zombineta.Juego.Flow
                 planner.Start(null);
 
             fader?.SetOpacity(1f);
+
+            // La intro del estudio solo en el arranque de verdad: no al dar Play desde una capa.
+            if (intro != null && intro.HasVideo && entry == SceneNames.Boot)
+            {
+                IntroEnCurso = true;
+                StartCoroutine(IntroYMenu());
+                return;
+            }
+
+            Enqueue(planner.Go(GameScreen.MainMenu, null, false));
+        }
+
+        IEnumerator IntroYMenu()
+        {
+            yield return intro.Reproducir();
+            IntroEnCurso = false;
+            IntroTerminada?.Invoke();
             Enqueue(planner.Go(GameScreen.MainMenu, null, false));
         }
 

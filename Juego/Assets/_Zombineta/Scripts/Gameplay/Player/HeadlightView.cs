@@ -22,7 +22,18 @@ namespace Zombineta.Player
 
         [SerializeField] float flickerSpeed = 18f;
 
+        [Header("Apagon")]
+        [Tooltip("Unidades de mundo hacia adelante donde nace el haz delantero.")]
+        [SerializeField] float frontOffset = 2f;
+
+        [Tooltip("Intensidad del haz delantero en un apagon total, como fraccion de la del faro.")]
+        [SerializeField] float frontIntensity = 1f;
+
         Light2D light2d;
+
+        // El faro apunta hacia atras, a la horda. En un apagon tambien hace falta ver la calle:
+        // este segundo haz, igual al primero pero hacia adelante, solo se prende ahi.
+        Light2D front;
 
         void Awake()
         {
@@ -37,6 +48,30 @@ namespace Zombineta.Player
                 SortingLayer.NameToID("Calle"),
                 SortingLayer.NameToID("Juego"),
             };
+
+            front = CrearHazDelantero();
+        }
+
+        Light2D CrearHazDelantero()
+        {
+            var go = new GameObject("Haz delantero");
+            go.transform.SetParent(transform, false);
+            go.transform.localRotation = Quaternion.Euler(0f, 0f, 180f);
+
+            var haz = go.AddComponent<Light2D>();
+            haz.lightType = Light2D.LightType.Point;
+            haz.blendStyleIndex = light2d.blendStyleIndex;
+            haz.color = light2d.color;
+            haz.pointLightInnerRadius = light2d.pointLightInnerRadius;
+            haz.pointLightOuterRadius = light2d.pointLightOuterRadius;
+            haz.pointLightInnerAngle = light2d.pointLightInnerAngle;
+            haz.pointLightOuterAngle = light2d.pointLightOuterAngle;
+            haz.falloffIntensity = light2d.falloffIntensity;
+            haz.shadowsEnabled = light2d.shadowsEnabled;
+            haz.shadowIntensity = light2d.shadowIntensity;
+            haz.targetSortingLayers = light2d.targetSortingLayers;
+            haz.enabled = false;
+            return haz;
         }
 
         void LateUpdate()
@@ -48,6 +83,7 @@ namespace Zombineta.Player
             if (!state.HeadlightOn)
             {
                 light2d.enabled = false;
+                front.enabled = false;
                 return;
             }
 
@@ -67,6 +103,15 @@ namespace Zombineta.Player
             }
 
             light2d.intensity = intensity;
+
+            // Fuera de un apagon el haz delantero no existe: la luz del nivel queda como siempre.
+            float oscuridad = run.Sim.Oscuridad;
+            front.enabled = oscuridad > 0.01f;
+            if (front.enabled)
+            {
+                front.intensity = intensity * frontIntensity * oscuridad;
+                front.transform.position = transform.position + Vector3.right * frontOffset;
+            }
         }
     }
 }
