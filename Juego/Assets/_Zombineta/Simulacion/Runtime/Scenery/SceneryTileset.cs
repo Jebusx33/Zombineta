@@ -27,6 +27,30 @@ namespace Zombineta.Scenery
 
         [Tooltip("Corrimiento vertical propio, en unidades de mundo.")]
         public float yOffset;
+
+        [Header("Tiles en diagonal")]
+        [Tooltip("Cuanto avanza la capa hasta el tile siguiente, en pixeles del sprite. 0 = el ancho " +
+                 "del sprite. Para un tile en perspectiva (la calle) es el ancho de su borde de abajo: " +
+                 "los bordes inclinados de dos tiles seguidos se encastran.")]
+        [Min(0f)] public float avancePx;
+
+        [Tooltip("Se suma al orden de dibujo de la capa. Un tile que se monta sobre sus vecinos " +
+                 "(las lineas blancas del cruce peatonal) va con 1.")]
+        public int ordenExtra;
+
+        [Header("Acompanante")]
+        [Tooltip("Otro dibujo que va siempre pegado a este tile, en otra profundidad: la calle " +
+                 "lateral que sube desde un cruce. Las capas con 'Huecos Para' apuntando a esta le " +
+                 "dejan su lugar libre.")]
+        public GameObject acompanante;
+
+        [Tooltip("Donde va la esquina de abajo a la izquierda del acompanante, en pixeles del " +
+                 "sprite del tile, medidos desde su esquina de abajo a la izquierda.")]
+        public Vector2 acompananteOffsetPx;
+
+        [Tooltip("Sorting Layer y orden del acompanante.")]
+        public string acompananteCapa = "Fondo";
+        public int acompananteOrden = -50;
     }
 
     /// <summary>Una capa del escenario: que tiles usa, a que profundidad y como se reparten.</summary>
@@ -72,6 +96,10 @@ namespace Zombineta.Scenery
 
         [Header("Look")]
         public Color tint = Color.white;
+
+        [Tooltip("Nombre de otra capa (con el mismo parallax) cuyos acompanantes ocupan lugar en " +
+                 "esta: aca no se ponen tiles donde va, por ejemplo, la calle lateral de un cruce.")]
+        public string huecosPara = "";
 
         [Tooltip("Los tiles de esta capa tiran sombra sobre la calle cuando pasan cerca de una luz " +
                  "del escenario (arboles, postes). No marcar en capas de fondo que tienen las luces " +

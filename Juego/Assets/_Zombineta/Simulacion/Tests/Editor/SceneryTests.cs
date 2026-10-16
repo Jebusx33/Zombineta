@@ -172,6 +172,67 @@ namespace Zombineta.Tests
                 Assert.AreEqual(first[i].Variant, again[i].Variant);
             }
         }
+
+        // --- Reservas: la calle lateral de un cruce ---------------------------------
+
+        static SceneryLayout ConReservas(params Reserva[] tramos) =>
+            new SceneryLayout(new[] { 4f, 6f, 5f }, new[] { 1f, 1f, 1f }, 0f, 0f, 0f, false, 7, -10f,
+                x =>
+                {
+                    foreach (var r in tramos)
+                        if (r.Hasta > x)
+                            return r;
+                    return null;
+                });
+
+        [Test]
+        public void NoTileStarts_InsideAReservedStretch()
+        {
+            var layout = ConReservas(new Reserva(20f, 32f), new Reserva(80f, 85f));
+
+            foreach (var t in Snapshot(layout, 200f))
+            {
+                Assert.IsFalse(t.X >= 20f && t.X < 32f, "arranca en el primer tramo: " + t.X);
+                Assert.IsFalse(t.X >= 80f && t.X < 85f, "arranca en el segundo tramo: " + t.X);
+            }
+        }
+
+        [Test]
+        public void TheTileBeforeAReservation_CanSlipUnderIt_SoThereIsNoHole()
+        {
+            var layout = ConReservas(new Reserva(20f, 32f));
+
+            var tiles = Snapshot(layout, 200f);
+            var antes = tiles.FindLast(t => t.X < 20f);
+
+            Assert.GreaterOrEqual(antes.End, 20f, "el ultimo tile antes del tramo llega hasta el");
+        }
+
+        [Test]
+        public void AfterAReservedStretch_TheLayerGoesOn()
+        {
+            var layout = ConReservas(new Reserva(20f, 32f));
+
+            var tiles = Snapshot(layout, 200f);
+
+            Assert.IsTrue(tiles.Exists(t => t.X == 32f), "el primer tile despues del tramo arranca justo al final");
+            Assert.GreaterOrEqual(tiles[tiles.Count - 1].End, 200f);
+        }
+
+        [Test]
+        public void WithReservations_ItIsStillDeterministic()
+        {
+            var a = Snapshot(ConReservas(new Reserva(20f, 32f)), 300f);
+            var layout = ConReservas(new Reserva(20f, 32f));
+            for (float x = 0f; x <= 300f; x += 17f)
+                layout.EnsureCovered(x);
+            layout.EnsureCovered(300f);
+            var b = new List<TilePlacement>(layout.Placed);
+
+            Assert.AreEqual(a.Count, b.Count);
+            for (int i = 0; i < a.Count; i++)
+                Assert.AreEqual(a[i].X, b[i].X);
+        }
     }
 
     public class ParallaxMathTests

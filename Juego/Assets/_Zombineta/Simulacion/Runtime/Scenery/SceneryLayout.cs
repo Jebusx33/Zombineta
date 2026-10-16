@@ -13,6 +13,19 @@ namespace Zombineta.Scenery
         public float End => X + Width;
     }
 
+    /// <summary>Un tramo de una capa donde no va ningun tile.</summary>
+    public struct Reserva
+    {
+        public float Desde;
+        public float Hasta;
+
+        public Reserva(float desde, float hasta)
+        {
+            Desde = desde;
+            Hasta = hasta;
+        }
+    }
+
     /// <summary>
     /// Decide que tile va en cada lugar de una capa. C# plano: no conoce sprites ni
     /// escenas, solo anchos y pesos, asi que se prueba sin abrir Unity.
@@ -37,6 +50,7 @@ namespace Zombineta.Scenery
         readonly bool noImmediateRepeat;
         readonly Random rng;
         readonly List<TilePlacement> placed = new List<TilePlacement>();
+        readonly Func<float, Reserva?> reservas;
 
         float cursor;
         int lastVariant = -1;
@@ -49,9 +63,15 @@ namespace Zombineta.Scenery
         /// <param name="noImmediateRepeat">Evita poner la misma variante dos veces seguidas.</param>
         /// <param name="seed">Semilla: misma semilla, mismo escenario.</param>
         /// <param name="startX">Donde arranca la capa. Tiene que quedar a la izquierda de todo lo visible.</param>
+        /// <param name="reservas">Opcional: dado un X, el primer tramo reservado que termina despues
+        /// de ese X (o null si no hay mas). En un tramo reservado no arranca ningun tile: lo ocupa
+        /// algo de otra capa (la calle lateral de un cruce), que se dibuja encima. El tile que
+        /// viene de antes puede meterse por debajo: asi no queda un agujero al costado.</param>
         public SceneryLayout(float[] widths, float[] weights, float gapChance, float gapMin,
-                             float gapMax, bool noImmediateRepeat, int seed, float startX)
+                             float gapMax, bool noImmediateRepeat, int seed, float startX,
+                             Func<float, Reserva?> reservas = null)
         {
+            this.reservas = reservas;
             if (widths == null || weights == null || widths.Length != weights.Length)
                 throw new ArgumentException("widths y weights tienen que tener el mismo largo");
 
@@ -94,6 +114,18 @@ namespace Zombineta.Scenery
             for (int n = 0; cursor < maxX && n < MaxTilesPerCall; n++)
             {
                 int v = Pick();
+
+                // Adentro de un tramo reservado no arranca nada: la capa sigue despues del tramo.
+                if (reservas != null)
+                {
+                    var r = reservas(cursor);
+                    if (r.HasValue && cursor >= r.Value.Desde)
+                    {
+                        cursor = Math.Max(cursor, r.Value.Hasta);
+                        continue;
+                    }
+                }
+
                 placed.Add(new TilePlacement { X = cursor, Width = widths[v], Variant = v });
                 cursor += widths[v];
                 lastVariant = v;

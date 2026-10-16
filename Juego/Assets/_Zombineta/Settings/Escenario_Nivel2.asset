@@ -1,0 +1,367 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2d77c6dcf7c1ae4cbff49b93842217c, type: 3}
+  m_Name: Escenario_Nivel2
+  m_EditorClassIdentifier: Zombineta::Zombineta.Scenery.SceneryTileset
+  layers:
+  - name: Cielo
+    enabled: 1
+    parallax: 0
+    sortingOrder: -100
+    sortingLayer: Cielo
+    baselineY: 1.5
+    height: 11
+    gapChance: 0
+    gapMin: 2
+    gapMax: 6
+    noImmediateRepeat: 0
+    seed: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+    huecosPara: 
+    proyectaSombra: 0
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 21300000, guid: 0a56c5594d5fa8f4893455e48812aa87, type: 3}
+      prefab: {fileID: 2397860195985427030, guid: e2d331a1b836fd047a6ca3b3a7b06e5e, type: 3}
+      grupo: ciudad
+      weight: 1
+      heightScale: 1
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+  - name: Edificios
+    enabled: 1
+    parallax: 0.7
+    sortingOrder: -50
+    sortingLayer: Fondo
+    baselineY: 2.302422
+    height: 4
+    gapChance: 0.3
+    gapMin: 2
+    gapMax: 8
+    noImmediateRepeat: 1
+    seed: 11
+    tint: {r: 1, g: 1, b: 1, a: 1}
+    huecosPara: 
+    proyectaSombra: 0
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 0}
+      prefab: {fileID: 2050830000883981090, guid: 4c791cc48619d8d4da5cdce764f4bc9a, type: 3}
+      grupo: nivel2
+      weight: 1
+      heightScale: 1.0179925
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+    - sprite: {fileID: 0}
+      prefab: {fileID: 4700344437245454665, guid: e6844bc409b412d4c895ab6e0aa16b60, type: 3}
+      grupo: nivel2
+      weight: 1
+      heightScale: 0.9536098
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+  - name: Arboles
+    enabled: 1
+    parallax: 0.85
+    sortingOrder: -40
+    sortingLayer: Fondo
+    baselineY: 2.1024222
+    height: 3.5
+    gapChance: 0.2
+    gapMin: 3
+    gapMax: 10
+    noImmediateRepeat: 1
+    seed: 41
+    tint: {r: 0.55, g: 0.5, b: 0.7, a: 1}
+    huecosPara: 
+    proyectaSombra: 0
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 0}
+      prefab: {fileID: 7534070723109725583, guid: 3d8bad0b25a55194284c1fee060a4a3a, type: 3}
+      grupo: nivel2
+      weight: 1
+      heightScale: 0.83390874
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+    - sprite: {fileID: 0}
+      prefab: {fileID: 8108416730068071674, guid: f213889c3d653904b8f9338635f22d95, type: 3}
+      grupo: nivel2
+      weight: 1
+      heightScale: 1.1858139
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+    - sprite: {fileID: 0}
+      prefab: {fileID: 9003332400342631922, guid: 99aee7178e1524f4bbafcc09b32731b3, type: 3}
+      grupo: nivel2
+      weight: 1
+      heightScale: 1.2050087
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+    - sprite: {fileID: 0}
+      prefab: {fileID: 2888729494033052830, guid: ee330a8ff7c59404f872b5508baf7091, type: 3}
+      grupo: nivel2
+      weight: 1
+      heightScale: 1.3063148
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+  - name: Paredon
+    enabled: 1
+    parallax: 1
+    sortingOrder: -30
+    sortingLayer: Fondo
+    baselineY: 1.4024222
+    height: 1.694477
+    gapChance: 0
+    gapMin: 2
+    gapMax: 6
+    noImmediateRepeat: 1
+    seed: 4
+    tint: {r: 1, g: 1, b: 1, a: 1}
+    huecosPara: 
+    proyectaSombra: 0
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 0}
+      prefab: {fileID: 2493465040064940, guid: 33567637a29f3694c928b687a9aeff84, type: 3}
+      grupo: nivel2
+      weight: 1
+      heightScale: 1
+      yOffset: 0
+      avancePx: 2238
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+    - sprite: {fileID: 0}
+      prefab: {fileID: 7911450875039554700, guid: 4dd66630a0e155249ad3e08345268920, type: 3}
+      grupo: nivel2
+      weight: 1
+      heightScale: 1
+      yOffset: 0
+      avancePx: 2238
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+    - sprite: {fileID: 0}
+      prefab: {fileID: 8148137999095055546, guid: 609e2c670372754408b48f0d7438a24e, type: 3}
+      grupo: nivel2
+      weight: 1
+      heightScale: 1
+      yOffset: 0
+      avancePx: 2238
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+    - sprite: {fileID: 0}
+      prefab: {fileID: 2963505305772936735, guid: 1e86dfb2ade7c104f92ef13e4948d154, type: 3}
+      grupo: nivel2
+      weight: 1
+      heightScale: 1
+      yOffset: 0
+      avancePx: 2238
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+  - name: Calle
+    enabled: 1
+    parallax: 1
+    sortingOrder: -20
+    sortingLayer: Calle
+    baselineY: -2.7927144
+    height: 4.1951365
+    gapChance: 0
+    gapMin: 2
+    gapMax: 6
+    noImmediateRepeat: 0
+    seed: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+    huecosPara: 
+    proyectaSombra: 0
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 0}
+      prefab: {fileID: 4211396407673941089, guid: 3fb63a995de8f79459ffe18f1bd8e5eb, type: 3}
+      grupo: nivel1
+      weight: 5
+      heightScale: 1
+      yOffset: 0
+      avancePx: 2240
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+  - name: Vereda de abajo
+    enabled: 1
+    parallax: 1
+    sortingOrder: -21
+    sortingLayer: Calle
+    baselineY: -9
+    height: 6.207286
+    gapChance: 0
+    gapMin: 2
+    gapMax: 6
+    noImmediateRepeat: 0
+    seed: 1
+    tint: {r: 0.21, g: 0.21, b: 0.235, a: 1}
+    huecosPara: 
+    proyectaSombra: 0
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 21300000, guid: 34ecad7966b14874d8f90643e4f60aba, type: 3}
+      prefab: {fileID: 4967997145572580600, guid: 120fede6a9b6e114f8636eb367078ccd, type: 3}
+      grupo: ciudad
+      weight: 1
+      heightScale: 1
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+  - name: Primer plano
+    enabled: 1
+    parallax: 1.6
+    sortingOrder: 2010
+    sortingLayer: Frente
+    baselineY: -5.6
+    height: 8.5
+    gapChance: 0.6
+    gapMin: 6
+    gapMax: 18
+    noImmediateRepeat: 1
+    seed: 51
+    tint: {r: 0.16, g: 0.13, b: 0.2, a: 0.9}
+    huecosPara: 
+    proyectaSombra: 0
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 0}
+      prefab: {fileID: 1908644351267900565, guid: 1cf48ae70ecb7934ebf0bc20a61ba386, type: 3}
+      grupo: nivel1
+      weight: 2
+      heightScale: 1
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+  - name: Frontal
+    enabled: 0
+    parallax: 2.5
+    sortingOrder: 2000
+    sortingLayer: Frente
+    baselineY: -5.4
+    height: 5.8
+    gapChance: 1
+    gapMin: 10
+    gapMax: 22
+    noImmediateRepeat: 1
+    seed: 5
+    tint: {r: 0.18, g: 0.14, b: 0.26, a: 0.92}
+    huecosPara: 
+    proyectaSombra: 0
+    material: {fileID: 0}
+    variants:
+    - sprite: {fileID: 0}
+      prefab: {fileID: 1908644351267900565, guid: 1cf48ae70ecb7934ebf0bc20a61ba386, type: 3}
+      grupo: nivel1
+      weight: 0
+      heightScale: 1.05
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+    - sprite: {fileID: 0}
+      prefab: {fileID: 9170932494881069405, guid: 105cfedd22454834a8899c4a99ec5af2, type: 3}
+      grupo: nivel1
+      weight: 0
+      heightScale: 0.95
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+    - sprite: {fileID: 0}
+      prefab: {fileID: 2677678763402136093, guid: dddbce01c747ea44bbe037cd1ed6b5ac, type: 3}
+      grupo: nivel1
+      weight: 0
+      heightScale: 0.85
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+    - sprite: {fileID: 0}
+      prefab: {fileID: 565231834465978867, guid: 57384bae17c94aa41bf11b47bf8c3117, type: 3}
+      grupo: nivel1
+      weight: 1
+      heightScale: 1.1
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteCapa: Fondo
+      acompananteOrden: -50
