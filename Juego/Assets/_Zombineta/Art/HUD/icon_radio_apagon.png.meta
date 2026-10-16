@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e2aa4911563467746853aa1249e474b1
+guid: 4234bf88f8d705a4facbbbd79a4fe1da
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3000527261288307138
-    second: radio_apagon_0
+      213: -6939229484780444887
+    second: icon_radio_apagon_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -128,13 +128,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: radio_apagon_0
+      name: icon_radio_apagon_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 38
         y: 0
-        width: 686
-        height: 1142
+        width: 1607
+        height: 839
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -143,8 +143,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2c917fb85a304a920800000000000000
-      internalID: 3000527261288307138
+      spriteID: 923aeb89c87e2bf90800000000000000
+      internalID: -6939229484780444887
       vertices: []
       indices: 
       edges: []
@@ -163,7 +163,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      radio_apagon_0: 3000527261288307138
+      icon_radio_apagon_0: -6939229484780444887
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

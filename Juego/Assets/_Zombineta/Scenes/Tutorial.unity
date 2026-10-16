@@ -152,6 +152,7 @@ MonoBehaviour:
   fuelFill: {fileID: 1943450630}
   batteryFill: {fileID: 1200186254}
   progressFill: {fileID: 557668692}
+  progressMarker: {fileID: 1194059177}
   threatFill: {fileID: 0}
   threatDistance: {fileID: 1878941140}
   ammoPips:
@@ -194,6 +195,7 @@ RectTransform:
   - {fileID: 798278909}
   - {fileID: 2150000002}
   - {fileID: 1467348477}
+  - {fileID: 1194059177}
   m_Father: {fileID: 1317142484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -4922,6 +4924,81 @@ MonoBehaviour:
   generatedKind: 0
   generatedVariant: 0
   generatedHeight: 0
+--- !u!1 &1194059176
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1194059177}
+  - component: {fileID: 1194059179}
+  - component: {fileID: 1194059178}
+  m_Layer: 0
+  m_Name: Marcador de progreso
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1194059177
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1194059176}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 13559096}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 48, y: 48}
+  m_Pivot: {x: 0.5, y: 0}
+--- !u!114 &1194059178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1194059176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 3630680193565753345, guid: db12c56834c711a43bcfcb765e34ef1b, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1194059179
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1194059176}
+  m_CullTransparentMesh: 1
 --- !u!1 &1200186253
 GameObject:
   m_ObjectHideFlags: 0
@@ -5231,11 +5308,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.UI.AlertaDeApagon
   run: {fileID: 1170739137}
-  imagen: {fileID: 21300000, guid: e2aa4911563467746853aa1249e474b1, type: 3}
+  imagen: {fileID: 21300000, guid: 4234bf88f8d705a4facbbbd79a4fe1da, type: 3}
   sonido: {fileID: 0}
   segundosAntes: 7
   duracion: 5
-  alto: 0.5
+  alto: 0.22
   margen: {x: 24, y: 24}
   transicion: 0.35
 --- !u!1 &1327444641

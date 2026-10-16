@@ -8,7 +8,7 @@ namespace Zombineta.UI
 {
     /// <summary>
     /// La radio que avisa los apagones: unos segundos antes de entrar a un tramo oscuro aparece
-    /// abajo a la derecha, se queda un rato y se va. Sale de los tramos del nivel, asi que no hay
+    /// arriba a la derecha, se queda un rato y se va. Sale de los tramos del nivel, asi que no hay
     /// nada que cablear por apagon: alcanza con que el nivel tenga un tramo con oscuridad.
     /// Va en el Canvas del HUD y arma su propia imagen.
     /// </summary>
@@ -31,9 +31,9 @@ namespace Zombineta.UI
 
         [Header("Donde")]
         [Tooltip("Alto de la imagen, como fraccion del alto de la pantalla.")]
-        [Range(0.1f, 0.9f)] [SerializeField] float alto = 0.5f;
+        [Range(0.05f, 0.9f)] [SerializeField] float alto = 0.22f;
 
-        [Tooltip("Separacion del borde de abajo a la derecha, en unidades del Canvas.")]
+        [Tooltip("Separacion del borde de arriba a la derecha, en unidades del Canvas.")]
         [SerializeField] Vector2 margen = new Vector2(24f, 24f);
 
         [Tooltip("Segundos que tarda en entrar y en salir.")]
@@ -59,7 +59,7 @@ namespace Zombineta.UI
             go.transform.SetParent(transform, false);
 
             panel = (RectTransform)go.transform;
-            panel.anchorMin = panel.anchorMax = panel.pivot = new Vector2(1f, 0f);
+            panel.anchorMin = panel.anchorMax = panel.pivot = new Vector2(1f, 1f);
 
             vista = go.AddComponent<Image>();
             vista.sprite = imagen;
@@ -119,7 +119,7 @@ namespace Zombineta.UI
             // Entra desde afuera de la pantalla, por la derecha, frenando al llegar.
             float t = 1f - (1f - asomada) * (1f - asomada);
             float escondida = anchoPx + margen.x;
-            panel.anchoredPosition = new Vector2(-margen.x + escondida * (1f - t), margen.y);
+            panel.anchoredPosition = new Vector2(-margen.x + escondida * (1f - t), -margen.y);
         }
     }
 }

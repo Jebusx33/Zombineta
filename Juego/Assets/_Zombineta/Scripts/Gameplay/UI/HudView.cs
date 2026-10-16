@@ -21,6 +21,10 @@ namespace Zombineta.UI
         [SerializeField] Image batteryFill;
         [SerializeField] Image progressFill;
 
+        [Tooltip("La cara de la protagonista sobre la barra de progreso: avanza con ella de " +
+                 "Partida a Destino, apoyada sobre el borde de arriba de la barra.")]
+        [SerializeField] RectTransform progressMarker;
+
         [Tooltip("Se llena a medida que la horda se acerca: lleno = encima tuyo.")]
         [SerializeField] Image threatFill;
 
@@ -74,6 +78,8 @@ namespace Zombineta.UI
             }
         }
 
+        readonly Vector3[] corners = new Vector3[4];
+
         void LateUpdate()
         {
             if (run == null || run.Sim == null)
@@ -95,6 +101,16 @@ namespace Zombineta.UI
 
             if (progressFill != null)
                 progressFill.fillAmount = run.Sim.Progress01;
+
+            if (progressMarker != null && progressFill != null)
+            {
+                // De la punta izquierda a la derecha de la barra, apoyada sobre su borde de arriba
+                // (el pivot del marcador va abajo al centro). Todo en mundo: vale para cualquier
+                // anclaje del Canvas.
+                progressFill.rectTransform.GetWorldCorners(corners);
+                float x = Mathf.Lerp(corners[0].x, corners[3].x, run.Sim.Progress01);
+                progressMarker.position = new Vector3(x, corners[1].y, corners[1].z);
+            }
 
             if (threatFill != null)
             {
