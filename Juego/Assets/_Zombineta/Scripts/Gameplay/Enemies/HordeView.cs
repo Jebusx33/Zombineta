@@ -25,6 +25,9 @@ namespace Zombineta.Enemies
         [Tooltip("Semilla del sorteo de look por unidad: mismo seed, misma pinta.")]
         [SerializeField] int lookSeed = 12345;
 
+        [Tooltip("Color del zombie que se prepara para pegar en la pelea a pie.")]
+        [SerializeField] Color avisoDeAtaque = new Color(1f, 0.25f, 0.2f);
+
         [Tooltip("Metros que la horda sigue avanzando por encima de la moto al atraparla.")]
         [SerializeField] float overrunMeters = 12f;
 
@@ -146,7 +149,9 @@ namespace Zombineta.Enemies
             // En el overrun de Lost la simulacion ya no tickea (FrontSpeed queda congelado en lo
             // que valia al perder), pero la horda sigue avanzando visualmente: las piernas tienen
             // que acompanar ese avance, no quedar congeladas en la velocidad de antes de perder.
-            float speedRatio = state.Phase == RunPhase.Lost ? 1f
+            // A pie cada zombie camina a su ritmo, no al del frente de la horda.
+            bool pelea = state.Phase == RunPhase.Pelea;
+            float speedRatio = state.Phase == RunPhase.Lost || pelea ? 1f
                 : run.Config.hordeBaseSpeed > 0f ? horde.FrontSpeed / run.Config.hordeBaseSpeed : 0f;
 
             for (int i = 0; i < bodies.Length; i++)
@@ -255,6 +260,12 @@ namespace Zombineta.Enemies
                         sprites[i].color = lit ? type.tint * litTint : type.tint;
                         SetSpriteOffset(i, 0f, 0f);
                     }
+
+                    // En la pelea miran hacia la protagonista, y el que se prepara para pegar
+                    // se pone rojo: el aviso para esquivarlo o pegarle primero.
+                    sprites[i].flipX = pelea && u.Mira < 0;
+                    if (pelea && u.Alive && u.Preparando >= 0f)
+                        sprites[i].color = Color.Lerp(sprites[i].color, avisoDeAtaque, 0.6f);
 
                     // De pie tapa lo de arriba; caido queda como cualquier cosa tirada en el piso.
                     sprites[i].sortingOrder = LaneSorting.Order(u.Lane, u.Alive ? SortSlot.Zombie : SortSlot.Item);

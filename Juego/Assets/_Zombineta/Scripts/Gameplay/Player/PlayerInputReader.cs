@@ -16,7 +16,7 @@ namespace Zombineta.Player
         [SerializeField] InputActionAsset actions;
 
         InputActionMap map;
-        InputAction laneUp, laneDown, turbo, reverse, fire, headlight, quickRestart, debugWin, debugLose;
+        InputAction laneUp, laneDown, turbo, reverse, fire, headlight, quickRestart, debugWin, debugLose, golpe, debugSinNafta;
 
         void OnEnable()
         {
@@ -39,6 +39,9 @@ namespace Zombineta.Player
             quickRestart = moto.FindAction("QuickRestart", true);
             debugWin = moto.FindAction("DebugWin", true);
             debugLose = moto.FindAction("DebugLose", true);
+            // Opcionales: un asset de acciones viejo sin la pelea a pie sigue andando.
+            golpe = moto.FindAction("Golpe", false);
+            debugSinNafta = moto.FindAction("DebugSinNafta", false);
             moto.Enable();
         }
 
@@ -62,11 +65,16 @@ namespace Zombineta.Player
 
             intent.ToggleHeadlight = headlight.WasPressedThisFrame();
             intent.Fire = fire.WasPressedThisFrame();
+
+            // A pie, turbo y retroceso son derecha e izquierda.
+            intent.MoveX = Mathf.Clamp(turbo.ReadValue<float>() - reverse.ReadValue<float>(), -1f, 1f);
+            intent.Golpe = golpe != null && golpe.WasPressedThisFrame();
             return intent;
         }
 
         public bool RestartPressed => quickRestart != null && quickRestart.WasPressedThisFrame();
         public bool DebugWinPressed => debugWin != null && debugWin.WasPressedThisFrame();
         public bool DebugLosePressed => debugLose != null && debugLose.WasPressedThisFrame();
+        public bool DebugSinNaftaPressed => debugSinNafta != null && debugSinNafta.WasPressedThisFrame();
     }
 }

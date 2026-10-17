@@ -35,6 +35,10 @@ namespace Zombineta.Juego.Levels
                  "de cada pedazo. Vacio = todo parejo, como siempre.")]
         [SerializeField] List<Tramo> tramos = new List<Tramo>();
 
+        [Tooltip("Pedidos de auxilio en este nivel: con nafta en cero se pelea a pie hasta que llega " +
+                 "la furgoneta. 0 = sin auxilio (quedarse sin nafta es perder).")]
+        [Min(0)] [SerializeField] int ayudas;
+
         [Header("Looks")]
         [Tooltip("Aspectos por tipo de zombie, para la cara del ZombieFront. Sin asignar: tinte de Zombies.asset.")]
         [SerializeField] ZombieLookSet looks;
@@ -89,6 +93,7 @@ namespace Zombineta.Juego.Levels
             copy.name = (source != null ? source.name : "GameConfig") + " (" + gameObject.scene.name + ")";
             copy.goalDistance = goalDistance;
             copy.tramos = tramos;
+            copy.ayudas = ayudas;
             return copy;
         }
 

@@ -28,6 +28,9 @@ namespace Zombineta.Enemies
         [Tooltip("Nafta que cuesta arrollarlo de frente.")]
         public float ramFuelPenalty = 0f;
 
+        [Tooltip("Pinas que aguanta en la pelea a pie antes de morir.")]
+        [Min(1)] public int golpesParaMorir = 3;
+
         [Tooltip("Peso relativo con que aparece en la masa.")]
         public float spawnWeight = 60f;
 

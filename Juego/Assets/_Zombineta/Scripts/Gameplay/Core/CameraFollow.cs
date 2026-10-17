@@ -38,6 +38,9 @@ namespace Zombineta.Core
         bool needsSnap = true;
         bool inFinale;
         float hitstopLeft;
+        float lentaLeft;
+        float lentaEscala = 1f;
+        bool lentaDeFurgoneta;
 
         public CameraDirector Director => director;
 
@@ -90,7 +93,14 @@ namespace Zombineta.Core
             {
                 hitstopLeft -= dt;
                 if (hitstopLeft <= 0f && !inFinale)
-                    Time.timeScale = TimeHeld ? 0f : 1f;
+                    Time.timeScale = TimeHeld ? 0f : (lentaLeft > 0f ? lentaEscala : 1f);
+            }
+
+            if (lentaLeft > 0f)
+            {
+                lentaLeft -= dt;
+                if (hitstopLeft <= 0f && !inFinale)
+                    Time.timeScale = TimeHeld ? 0f : (lentaLeft > 0f ? lentaEscala : 1f);
             }
 
             var input = BuildInput();
@@ -135,6 +145,19 @@ namespace Zombineta.Core
         CameraInput BuildInput()
         {
             var s = run.Sim.State;
+            // A pie la camara se planta: la arena queda centrada en pantalla, con tension media.
+            if (s.Phase == RunPhase.Pelea)
+            {
+                float mitad = cam.orthographicSize * cam.aspect;
+                return new CameraInput
+                {
+                    PlayerX = run.ToWorldX(run.Sim.Pelea.Centro) - config.lookAhead + mitad,
+                    PlayerY = run.LaneToWorldY(1f),
+                    GapMeters = 15f,
+                    GoalX = run.ToWorldX(run.Config.goalDistance),
+                };
+            }
+
             return new CameraInput
             {
                 PlayerX = run.ToWorldX(s.PlayerX),
@@ -175,6 +198,41 @@ namespace Zombineta.Core
             if ((events & RunEvent.RanOver) != 0)
                 director.AddTrauma(config.ramTrauma);
 
+            // --- Pelea a pie ---
+            if ((events & RunEvent.PeleaEmpieza) != 0)
+            {
+                director.AddTrauma(0.3f);
+                CamaraLenta(0.6f, 0.3f);
+                lentaDeFurgoneta = false;
+            }
+            if ((events & RunEvent.Golpe) != 0)
+            {
+                director.AddTrauma(0.14f);
+                director.Punch(0.12f, 0f);
+                Hitstop(0.05f);
+            }
+            if ((events & RunEvent.Lastimada) != 0)
+            {
+                director.AddTrauma(0.4f);
+                director.Punch(0f, -0.2f);
+                Hitstop(0.08f);
+            }
+            if ((events & RunEvent.AuxilioLlega) != 0)
+                director.AddTrauma(0.2f);
+            // La furgoneta pega contra el primero: camara lenta una sola vez, para que se vea.
+            if ((events & RunEvent.RanOver) != 0 && run.Sim.State.Phase == RunPhase.Pelea && !lentaDeFurgoneta)
+            {
+                lentaDeFurgoneta = true;
+                director.AddTrauma(0.5f);
+                CamaraLenta(0.5f, 0.35f);
+            }
+            if ((events & RunEvent.AuxilioTermina) != 0)
+            {
+                director.AddTrauma(0.2f);
+                director.Punch(0.4f, 0f);
+                needsSnap = false;
+            }
+
             if ((events & RunEvent.Shot) != 0)
             {
                 director.AddTrauma(config.shotTrauma);
@@ -186,8 +244,20 @@ namespace Zombineta.Core
         {
             inFinale = false;
             hitstopLeft = 0f;
+            lentaLeft = 0f;
             Time.timeScale = 1f;
             needsSnap = true;
+        }
+
+        /// <summary>Camara lenta por unos segundos reales (el congelado de golpe la respeta).</summary>
+        void CamaraLenta(float seconds, float scale)
+        {
+            if (seconds <= 0f || inFinale)
+                return;
+            lentaLeft = seconds;
+            lentaEscala = Mathf.Clamp(scale, 0.05f, 1f);
+            if (hitstopLeft <= 0f && !TimeHeld)
+                Time.timeScale = lentaEscala;
         }
 
         void Hitstop(float seconds)

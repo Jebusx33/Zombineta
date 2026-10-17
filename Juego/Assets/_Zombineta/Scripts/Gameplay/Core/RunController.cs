@@ -73,7 +73,11 @@ namespace Zombineta.Core
             if (Sim == null)
                 return;
 
-            if (Sim.State.Phase != RunPhase.Running)
+            // Pruebas: F4 vacia el tanque (para llegar a la pelea sin esperar).
+            if (input != null && input.DebugSinNaftaPressed && Sim.State.Phase == RunPhase.Running)
+                Sim.State.Fuel = 0f;
+
+            if (Sim.State.Phase != RunPhase.Running && Sim.State.Phase != RunPhase.Pelea)
             {
                 if (QuickRestartEnabled && input != null && input.RestartPressed)
                     Restart();

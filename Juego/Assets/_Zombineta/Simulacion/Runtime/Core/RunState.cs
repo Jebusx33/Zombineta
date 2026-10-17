@@ -12,6 +12,8 @@ namespace Zombineta.Core
         Running,
         Won,
         Lost,
+        /// <summary>Sin nafta y esperando el auxilio: la protagonista pelea a pie.</summary>
+        Pelea,
     }
 
     /// <summary>Por que se perdio. Solo informativo, para la pantalla de Game Over.</summary>
@@ -20,6 +22,8 @@ namespace Zombineta.Core
         None,
         CaughtByHorde,
         OutOfFuel,
+        /// <summary>Se quedo sin vida peleando a pie mientras esperaba el auxilio.</summary>
+        Derribada,
     }
 
     public enum PickupKind
@@ -73,6 +77,27 @@ namespace Zombineta.Core
 
         public RunPhase Phase;
         public LossReason Loss;
+
+        // --- Auxilio y pelea a pie ---
+        /// <summary>Pedidos de auxilio que le quedan en el nivel.</summary>
+        public int Ayudas;
+        /// <summary>Golpes que aguanta en la pelea. Solo cuenta mientras pelea.</summary>
+        public int Vida;
+        /// <summary>Segundos que faltan para que llegue la furgoneta.</summary>
+        public float PeleaRestante;
+        /// <summary>Metros: donde esta la protagonista a pie. La moto queda en PlayerX.</summary>
+        public float PeatonX;
+        /// <summary>Hacia donde mira a pie: 1 derecha, -1 izquierda.</summary>
+        public int Mira = 1;
+        /// <summary>Segundos en que no la pueden lastimar (recien golpeada).</summary>
+        public float Invulnerable;
+        /// <summary>Segundos hasta poder volver a pegar.</summary>
+        public float GolpeEnfriamiento;
+        /// <summary>Segundos que dura el golpe en curso (para la vista).</summary>
+        public float Golpeando;
+        public bool FurgonetaEnCamino;
+        /// <summary>Metros: donde va la furgoneta mientras cruza.</summary>
+        public float FurgonetaX;
 
         public float Gap => PlayerX - HordeX;
     }
