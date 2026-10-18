@@ -28,6 +28,15 @@ namespace Zombineta.Core
         ShotMissed = 1 << 15,
         RanOver = 1 << 16,
         Explosion = 1 << 17,
+        /// <summary>Sin nafta, con ayudas: empieza la pelea a pie.</summary>
+        PeleaEmpieza = 1 << 18,
+        Golpe = 1 << 19,
+        GolpeAlAire = 1 << 20,
+        Lastimada = 1 << 21,
+        /// <summary>Se cumplio el tiempo: la furgoneta entra en pantalla.</summary>
+        AuxilioLlega = 1 << 22,
+        /// <summary>La furgoneta paso: tanque lleno y de vuelta a la moto.</summary>
+        AuxilioTermina = 1 << 23,
     }
 
     /// <summary>
@@ -45,6 +54,9 @@ namespace Zombineta.Core
 
         /// <summary>La horda como individuos. El frente sale de aca.</summary>
         public HordeSimulation Horde { get; }
+
+        /// <summary>La pelea a pie mientras llega el auxilio.</summary>
+        public Zombineta.Auxilio.PeleaSimulation Pelea { get; }
 
         public GameConfig Config => config;
 
@@ -74,6 +86,7 @@ namespace Zombineta.Core
                 ? config
                 : throw new ArgumentNullException(nameof(config));
             Horde = new HordeSimulation(this.config, this.config.zombies, this.config.hordeSeed);
+            Pelea = new Zombineta.Auxilio.PeleaSimulation(this.config, State, Horde, this.config.hordeSeed + 1);
             Reset();
         }
 
@@ -101,13 +114,38 @@ namespace Zombineta.Core
             State.LaunchSpin = 0f;
             State.BoostRemaining = 0f;
             State.Fallen = false;
+            State.Ayudas = config.ayudas;
+            State.Vida = 0;
+            State.PeleaRestante = 0f;
+            State.PeatonX = 0f;
+            State.Mira = 1;
+            State.Invulnerable = 0f;
+            State.GolpeEnfriamiento = 0f;
+            State.Golpeando = 0f;
+            State.FurgonetaEnCamino = false;
+            State.FurgonetaX = 0f;
             PlayerSpeed = 0f;
             HordeSpeed = 0f;
         }
 
         public RunEvent Tick(PlayerIntent intent, float dt)
         {
-            if (State.Phase != RunPhase.Running || dt <= 0f)
+            if (dt <= 0f)
+                return RunEvent.None;
+
+            // A pie, esperando el auxilio: la pelea tiene sus propias reglas.
+            if (State.Phase == RunPhase.Pelea)
+            {
+                Horde.BeginTick();
+                PlayerSpeed = 0f;
+                var pelea = Pelea.Step(intent, dt);
+                AdvanceLaneVisual(dt);
+                State.Elapsed += dt;
+                HordeSpeed = 0f;
+                return pelea;
+            }
+
+            if (State.Phase != RunPhase.Running)
                 return RunEvent.None;
 
             var events = RunEvent.None;
@@ -379,6 +417,10 @@ namespace Zombineta.Core
 
         RunEvent CheckEndConditions()
         {
+            // Sin nafta y con ayudas: no se pierde, se pide el auxilio y se pelea a pie.
+            if (State.Fuel <= 0f && !State.Airborne && Pelea.PuedeEmpezar)
+                return Pelea.Empezar();
+
             if (State.HordeX >= State.PlayerX)
             {
                 State.Phase = RunPhase.Lost;

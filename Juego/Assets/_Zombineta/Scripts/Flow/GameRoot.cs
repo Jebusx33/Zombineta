@@ -49,6 +49,10 @@ namespace Zombineta.Juego.Flow
 
         GameFlow flow;
         readonly SceneRoutePlanner planner = new SceneRoutePlanner();
+
+        // Play desde una copia de nivel que no esta en Niveles.asset (un nivel de prueba): se
+        // juega como si fuera el primero, pero reintentar vuelve a cargar la copia, no el original.
+        string nivelSuelto;
         readonly Queue<ScenePlan> pending = new Queue<ScenePlan>();
         int lastAttempt;
         bool busy;
@@ -101,6 +105,17 @@ namespace Zombineta.Juego.Flow
             if (level >= 0)
             {
                 flow.JumpTo(GameScreen.Playing, level);
+                lastAttempt = flow.Attempt;
+                planner.Start(entry);
+                fader?.SetOpacity(0f);
+                return;
+            }
+
+            // Play desde una copia de nivel de prueba: se juega como el primero, en esta escena.
+            if (EsNivelSuelto(entry))
+            {
+                nivelSuelto = entry;
+                flow.JumpTo(GameScreen.Playing, 0);
                 lastAttempt = flow.Attempt;
                 planner.Start(entry);
                 fader?.SetOpacity(0f);
@@ -235,6 +250,8 @@ namespace Zombineta.Juego.Flow
         {
             if (flow.EnTutorial)
                 return TutorialScene();
+            if (nivelSuelto != null && index == 0)
+                return nivelSuelto;
             if (levels != null && index >= 0 && index < levels.levels.Count &&
                 !string.IsNullOrEmpty(levels.levels[index].sceneName))
                 return levels.levels[index].sceneName;
@@ -244,6 +261,17 @@ namespace Zombineta.Juego.Flow
         /// <summary>La escena del tutorial: la del LevelInfo cableado, o "Tutorial" si esta vacio.</summary>
         string TutorialScene() =>
             tutorial != null && !string.IsNullOrEmpty(tutorial.sceneName) ? tutorial.sceneName : SceneNames.Tutorial;
+
+        /// <summary>Una escena con un nivel armado (LevelScene) que no esta en la secuencia de niveles.</summary>
+        static bool EsNivelSuelto(string scene)
+        {
+            if (string.IsNullOrEmpty(scene))
+                return false;
+            foreach (var ls in FindObjectsByType<Zombineta.Juego.Levels.LevelScene>(FindObjectsSortMode.None))
+                if (ls.gameObject.scene.name == scene)
+                    return true;
+            return false;
+        }
 
         int LevelIndexOf(string scene)
         {

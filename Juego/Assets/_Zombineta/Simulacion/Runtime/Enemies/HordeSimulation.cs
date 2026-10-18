@@ -4,7 +4,7 @@ using Zombineta.Core;
 
 namespace Zombineta.Enemies
 {
-    public enum DeathCause { None, Bullet, Explosion, RunOver }
+    public enum DeathCause { None, Bullet, Explosion, RunOver, Golpe }
 
     public enum HordeEventKind { Tracer, Impact, Death, Explosion, Miss }
 
@@ -38,6 +38,18 @@ namespace Zombineta.Enemies
 
         /// <summary>Cambia al reciclarse: la vista sabe que es otro zombie y reinicia su animacion.</summary>
         public int Generation;
+
+        // --- Pelea a pie (los usa PeleaSimulation; en el runner no cuentan) ---
+        /// <summary>Hacia donde mira: 1 derecha (como corre la horda), -1 izquierda.</summary>
+        public int Mira = 1;
+        /// <summary>Golpes que le quedan antes de morir.</summary>
+        public int Golpes;
+        /// <summary>Segundos que lleva preparando un ataque; negativo si no ataca.</summary>
+        public float Preparando = -1f;
+        /// <summary>Segundos hasta poder volver a atacar.</summary>
+        public float Enfriamiento;
+        /// <summary>Segundos hasta poder cambiar de carril.</summary>
+        public float CambioCarril;
     }
 
     /// <summary>
@@ -285,6 +297,33 @@ namespace Zombineta.Enemies
                 if (u.Alive && Mathf.Abs(u.X - x) <= radius)
                     u.Stagger = Mathf.Max(u.Stagger, seconds);
             }
+        }
+
+        /// <summary>
+        /// Una pina de la protagonista a pie: si no le quedan golpes muere; si aguanta, queda
+        /// frenado y empujado. Devuelve true si murio.
+        /// </summary>
+        public bool Golpear(ZombieUnit u, int direccion, float empuje, float freno)
+        {
+            u.Golpes--;
+            u.Preparando = -1f;
+            if (u.Golpes <= 0)
+            {
+                Kill(u, DeathCause.Golpe);
+                return true;
+            }
+
+            events.Add(new HordeEvent { Kind = HordeEventKind.Impact, X = u.X, Lane = u.Lane, Type = u.Type });
+            u.X += direccion * empuje;
+            u.Stagger = Mathf.Max(u.Stagger, freno);
+            return false;
+        }
+
+        /// <summary>Traza de un disparo que no encontro a nadie, hacia cualquier lado.</summary>
+        public void MissToward(float fromX, float toX, int lane)
+        {
+            events.Add(new HordeEvent { Kind = HordeEventKind.Tracer, FromX = fromX, X = toX, Lane = lane });
+            events.Add(new HordeEvent { Kind = HordeEventKind.Miss, X = toX, Lane = lane });
         }
 
         /// <summary>

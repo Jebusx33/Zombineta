@@ -19,6 +19,7 @@ MonoBehaviour:
     staggerOnHit: 0.6
     ramStun: 0.1
     ramFuelPenalty: 0
+    golpesParaMorir: 3
     spawnWeight: 60
     tint: {r: 1, g: 1, b: 1, a: 1}
     scale: 1
@@ -28,6 +29,7 @@ MonoBehaviour:
     staggerOnHit: 0
     ramStun: 0.1
     ramFuelPenalty: 0
+    golpesParaMorir: 2
     spawnWeight: 25
     tint: {r: 1, g: 0.95, b: 0.85, a: 1}
     scale: 0.85
@@ -37,6 +39,7 @@ MonoBehaviour:
     staggerOnHit: 0.4
     ramStun: 0.8
     ramFuelPenalty: 8
+    golpesParaMorir: 5
     spawnWeight: 15
     tint: {r: 0.72, g: 0.72, b: 0.8, a: 1}
     scale: 1.25

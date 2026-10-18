@@ -16,6 +16,12 @@ namespace Zombineta.Player
         public bool ToggleHeadlight;
         public bool Fire;
 
+        /// <summary>A pie (en la pelea): -1 izquierda, 1 derecha, 0 quieta.</summary>
+        public float MoveX;
+
+        /// <summary>A pie: pina hacia donde mira.</summary>
+        public bool Golpe;
+
         public static PlayerIntent Idle => new PlayerIntent { Mode = DriveMode.Normal };
     }
 }

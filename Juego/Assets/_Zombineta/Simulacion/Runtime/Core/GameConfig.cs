@@ -138,6 +138,46 @@ namespace Zombineta.Core
         [Tooltip("Metros de diferencia de altura con que se agarra un pickup en el aire.")]
         public float aerialPickupTolerance = 1.5f;
 
+        [Header("Auxilio y pelea a pie")]
+        [Tooltip("Pedidos de auxilio por nivel. 0 = sin auxilio: quedarse sin nafta es perder, como siempre.")]
+        [Min(0)] public int ayudas = 0;
+        [Tooltip("Segundos que tarda en llegar la furgoneta: lo que dura la pelea.")]
+        [Min(1f)] public float peleaSegundos = 25f;
+        [Tooltip("Golpes que aguanta la protagonista a pie.")]
+        [Min(1)] public int vidaPelea = 5;
+        [Tooltip("Metros de ventaja sobre la horda al volver a la moto.")]
+        public float gapTrasAuxilio = 45f;
+        [Tooltip("Metros a cada lado del centro por donde se puede mover a pie.")]
+        public float arenaMedioAncho = 12f;
+        [Tooltip("Metros por segundo caminando.")]
+        public float peatonVelocidad = 6f;
+        [Tooltip("Metros hacia donde mira que alcanza el golpe.")]
+        public float golpeAlcance = 1.6f;
+        [Tooltip("Segundos entre golpe y golpe.")]
+        public float golpeEnfriamiento = 0.35f;
+        [Tooltip("Segundos que dura el movimiento del golpe (para la vista).")]
+        public float golpeDuracion = 0.18f;
+        [Tooltip("Metros que empuja el golpe.")]
+        public float golpeEmpuje = 2.5f;
+        [Tooltip("Segundos que queda frenado el zombie golpeado.")]
+        public float golpeFreno = 0.5f;
+        [Tooltip("Zombies a la vez en la pelea.")]
+        [Min(1)] public int zombiesEnArena = 8;
+        [Tooltip("Metros por segundo de un zombie comun a pie (cada tipo lo multiplica).")]
+        public float zombieVelocidadPelea = 2.2f;
+        [Tooltip("Metros desde los que un zombie pega.")]
+        public float zombieAlcance = 1.1f;
+        [Tooltip("Segundos que se prepara antes de pegar: el aviso para esquivarlo o pegarle primero.")]
+        public float zombiePreparacion = 0.5f;
+        [Tooltip("Segundos entre ataque y ataque de un mismo zombie.")]
+        public float zombieEnfriamiento = 1f;
+        [Tooltip("Segundos sin recibir dano despues de un golpe.")]
+        public float invulnerableTrasGolpe = 0.8f;
+        [Tooltip("Metros por segundo de la furgoneta.")]
+        public float furgonetaVelocidad = 28f;
+        [Tooltip("Metros antes del centro de la arena desde donde entra la furgoneta.")]
+        public float furgonetaDesde = 24f;
+
         [Header("Presentacion")]
         [Tooltip("Unidades de mundo por metro simulado. La simulacion piensa en metros; " +
                  "la pantalla no puede mostrar 40 m de ventaja a escala 1:1, asi que se " +

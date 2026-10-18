@@ -16,7 +16,7 @@ MonoBehaviour:
   - displayName: 'Nivel 1: La salida'
     introLines: []
     route: {fileID: 0}
-    sceneName: Level_01
+    sceneName: Level_01_Auxilio
     comicPanels:
     - image: {fileID: 21300000, guid: c1c1b26a7dd39bd43a4f6a7d60a36540, type: 3}
       seconds: 2.5
