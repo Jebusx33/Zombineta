@@ -124,6 +124,11 @@ redondeo de la compresión ADPCM al importar — la diferencia es de a lo sumo ~
 | UiMover | `sfx_ui_move_01` (0,100 s) | bus UI | Mover la selección en un menú |
 | UiConfirmar | `sfx_ui_confirm_01` (0,321 s) | bus UI | Confirmar (Enter / botón Sur) |
 | UiVolver | `sfx_ui_back_01` (0,341 s) | bus UI | Cancelar / volver (Esc / botón Este) |
+| Golpe1 | **pendiente (sin clip)** | posicional | Pelea a pie: primer golpe de la cadena |
+| Golpe2 | **pendiente (sin clip)** | posicional | Pelea a pie: segundo golpe de la cadena |
+| Remate | **pendiente (sin clip)** | posicional | Pelea a pie: tercer golpe, derriba a los que la rodean (pisa a Golpe1/2) |
+| GolpeAlAire | **pendiente (sin clip)** | posicional | Pelea a pie: golpe que no le pega a nadie |
+| Lastimada | **pendiente (sin clip)** | posicional | Pelea a pie: un zombie le pega a la protagonista |
 | (aleatorio de pantalla) Game Over | `sfx_screen_groan_01` (1,401 s) / `_02` (1,501 s) | — | Cada tanto (6 a 14 s), un gemido lejano en Game Over |
 | (aleatorio de pantalla) Ending y Créditos | `sfx_screen_wind_01` (1,501 s) | — | Cada tanto (6 a 14 s), viento en el Final y en Créditos |
 

@@ -211,6 +211,13 @@ namespace Zombineta.Core
                 director.Punch(0.12f, 0f);
                 Hitstop(0.05f);
             }
+            if ((events & RunEvent.Remate) != 0)
+            {
+                // El remate pisa al golpe comun: mas sacudida, un empujon hacia donde pego y un corte mas largo.
+                director.AddTrauma(0.32f);
+                director.Punch(0.3f, -0.12f);
+                Hitstop(0.1f);
+            }
             if ((events & RunEvent.Lastimada) != 0)
             {
                 director.AddTrauma(0.4f);

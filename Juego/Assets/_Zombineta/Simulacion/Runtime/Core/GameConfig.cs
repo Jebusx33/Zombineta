@@ -158,8 +158,18 @@ namespace Zombineta.Core
         public float toleranciaCarril = 0.6f;
         [Tooltip("Metros hacia donde mira que alcanza el golpe.")]
         public float golpeAlcance = 1.6f;
-        [Tooltip("Segundos entre golpe y golpe.")]
-        public float golpeEnfriamiento = 0.35f;
+        [Tooltip("Segundos entre un golpe y el siguiente de la misma cadena (1.º y 2.º golpe).")]
+        public float golpeEnfriamiento = 0.2f;
+        [Tooltip("Segundos, una vez pasado el enfriamiento, que quedan para seguir la cadena. Si se pasa, vuelve al 1.º golpe.")]
+        public float comboVentana = 0.6f;
+        [Tooltip("Segundos de pausa despues del 3.º golpe (el remate), antes de poder empezar otra cadena.")]
+        public float rematePausa = 0.55f;
+        [Tooltip("Metros a la redonda (para los dos lados) que derriba el remate.")]
+        public float remateRadio = 2.4f;
+        [Tooltip("Metros que el remate empuja a los que derriba.")]
+        public float remateEmpuje = 3.5f;
+        [Tooltip("Segundos que quedan en el piso los derribados por el remate.")]
+        public float remateDerribo = 1.4f;
         [Tooltip("Segundos que dura el movimiento del golpe (para la vista).")]
         public float golpeDuracion = 0.18f;
         [Tooltip("Metros que empuja el golpe.")]
@@ -175,12 +185,14 @@ namespace Zombineta.Core
         [Tooltip("Metros minimos entre dos zombies vivos del mismo carril en la pelea: los demas hacen fila " +
                  "detras del que esta pegado a la protagonista, en vez de encimarse en el mismo lugar.")]
         public float zombieSeparacion = 1.1f;
+        [Tooltip("Zombies que pueden estar preparando un ataque a la vez: los demas esperan su turno. Evita que la rodeen y la golpeen todos juntos.")]
+        [Min(1)] public int maxAtacantes = 2;
         [Tooltip("Segundos que se prepara antes de pegar: el aviso para esquivarlo o pegarle primero.")]
-        public float zombiePreparacion = 0.5f;
+        public float zombiePreparacion = 0.6f;
         [Tooltip("Segundos entre ataque y ataque de un mismo zombie.")]
         public float zombieEnfriamiento = 1f;
         [Tooltip("Segundos sin recibir dano despues de un golpe.")]
-        public float invulnerableTrasGolpe = 0.8f;
+        public float invulnerableTrasGolpe = 1f;
         [Tooltip("Metros por segundo de la furgoneta.")]
         public float furgonetaVelocidad = 28f;
         [Tooltip("Metros antes del centro de la arena desde donde entra la furgoneta.")]

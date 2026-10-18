@@ -52,6 +52,12 @@ namespace Zombineta.Enemies
         public float Enfriamiento;
         /// <summary>Segundos hasta poder cambiar de carril.</summary>
         public float CambioCarril;
+        /// <summary>Segundos que le quedan tirado en el piso por el remate (0 = de pie).</summary>
+        public float Derribado;
+        /// <summary>Cuanto duro el derribo entero, para animar la caida y el levantarse.</summary>
+        public float DerribadoTotal;
+        /// <summary>Hacia donde cayo: 1 derecha, -1 izquierda.</summary>
+        public int DerribadoDir = 1;
     }
 
     /// <summary>
@@ -108,6 +114,7 @@ namespace Zombineta.Enemies
                 var u = Units[i];
                 u.Alive = true;
                 u.Stagger = 0f;
+                u.Derribado = 0f;
                 u.CorpseLeft = 0f;
                 u.Cause = DeathCause.None;
                 u.Type = Pick();
@@ -317,9 +324,26 @@ namespace Zombineta.Enemies
             }
 
             events.Add(new HordeEvent { Kind = HordeEventKind.Impact, X = u.X, Lane = u.Lane, Type = u.Type, Dir = direccion });
-            u.X += direccion * empuje;
+            u.X += direccion * empuje * (1f - Mathf.Clamp01(Type(u.Type).resisteEmpuje));
             u.Stagger = Mathf.Max(u.Stagger, freno);
             return false;
+        }
+
+        /// <summary>
+        /// El remate de la cadena de golpes: lo tira al piso y lo empuja, sin gastarle golpes (no
+        /// muere, solo queda un rato en el suelo). Un tipo que resiste el empuje (el pesado) vuela
+        /// menos y se levanta antes.
+        /// </summary>
+        public void Derribar(ZombieUnit u, int direccion, float empuje, float segundos)
+        {
+            float k = 1f - Mathf.Clamp01(Type(u.Type).resisteEmpuje);
+            u.Preparando = -1f;
+            u.X += direccion * empuje * k;
+            u.Stagger = Mathf.Max(u.Stagger, segundos * k);
+            u.Derribado = segundos * k;
+            u.DerribadoTotal = u.Derribado;
+            u.DerribadoDir = direccion;
+            events.Add(new HordeEvent { Kind = HordeEventKind.Impact, X = u.X, Lane = u.Lane, Type = u.Type, Dir = direccion });
         }
 
         /// <summary>Traza de un disparo que no encontro a nadie, hacia cualquier lado.</summary>

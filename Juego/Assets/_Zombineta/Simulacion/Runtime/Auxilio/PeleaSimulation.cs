@@ -60,6 +60,8 @@ namespace Zombineta.Auxilio
             s.Invulnerable = 0f;
             s.GolpeEnfriamiento = 0f;
             s.Golpeando = 0f;
+            s.ComboPaso = 0;
+            s.ComboVentana = 0f;
             s.FurgonetaEnCamino = false;
             s.HeadlightOn = false;
             s.StunRemaining = 0f;
@@ -112,6 +114,9 @@ namespace Zombineta.Auxilio
             s.Invulnerable = Mathf.Max(0f, s.Invulnerable - dt);
             s.GolpeEnfriamiento = Mathf.Max(0f, s.GolpeEnfriamiento - dt);
             s.Golpeando = Mathf.Max(0f, s.Golpeando - dt);
+            s.ComboVentana = Mathf.Max(0f, s.ComboVentana - dt);
+            if (s.ComboVentana <= 0f && s.GolpeEnfriamiento <= 0f)
+                s.ComboPaso = 0;
 
             ev |= MoverProtagonista(intent, dt);
             ev |= Pegar(intent);
@@ -167,20 +172,70 @@ namespace Zombineta.Auxilio
             return ev;
         }
 
+        /// <summary>
+        /// Cadena de 3 golpes: rapidos los dos primeros (enfriamiento corto) y el tercero, el
+        /// remate, derriba a los que la rodean y marca una pausa antes de poder empezar otra
+        /// cadena. Si pasa demasiado entre un golpe y el siguiente, la cadena vuelve al primero.
+        /// Los golpes al aire tambien cuentan: la cadena es de ritmo, no de aciertos.
+        /// </summary>
         RunEvent Pegar(PlayerIntent intent)
         {
             if (!intent.Golpe || s.GolpeEnfriamiento > 0f)
                 return RunEvent.None;
 
-            s.GolpeEnfriamiento = c.golpeEnfriamiento;
-            s.Golpeando = c.golpeDuracion;
+            int paso = s.ComboVentana > 0f ? s.ComboPaso + 1 : 1;
+            if (paso > 3)
+                paso = 1;
+            bool remate = paso == 3;
 
-            var u = MasCercano(s.PeatonX, s.Mira, c.golpeAlcance);
+            s.ComboPaso = paso;
+            s.GolpeEnfriamiento = remate ? c.rematePausa : c.golpeEnfriamiento;
+            s.Golpeando = c.golpeDuracion;
+            // La ventana corre desde ahora e incluye el enfriamiento. Despues del remate no hay
+            // ventana: lo que sigue es una cadena nueva (el paso se queda en 3 hasta la pausa).
+            s.ComboVentana = remate ? 0f : c.golpeEnfriamiento + c.comboVentana;
+
+            var u = MasCercano(s.PeatonX, s.Mira, remate ? c.golpeAlcance + 0.4f : c.golpeAlcance);
+            if (remate)
+                return Rematar(u);
+
             if (u == null)
                 return RunEvent.GolpeAlAire;
 
             h.Golpear(u, s.Mira, c.golpeEmpuje, c.golpeFreno);
             return RunEvent.Golpe;
+        }
+
+        /// <summary>
+        /// El tercer golpe: el de enfrente lo recibe como un golpe mas (puede morir) y todos los
+        /// que estan a menos de remateRadio, de los dos lados, caen al piso sin perder golpes.
+        /// </summary>
+        RunEvent Rematar(ZombieUnit principal)
+        {
+            bool conecto = false;
+            if (principal != null)
+            {
+                h.Golpear(principal, s.Mira, c.golpeEmpuje, c.golpeFreno);
+                conecto = true;
+            }
+
+            var units = h.Units;
+            for (int i = 0; i < units.Length; i++)
+            {
+                var u = units[i];
+                if (u == principal || !activo[i] || !u.Alive)
+                    continue;
+                // Un poco mas generoso con los carriles que un golpe comun: el remate es un barrido.
+                if (Mathf.Abs(u.Lane - s.PeatonY) > c.toleranciaCarril + 0.5f)
+                    continue;
+                float dx = u.X - s.PeatonX;
+                if (Mathf.Abs(dx) > c.remateRadio)
+                    continue;
+                h.Derribar(u, dx >= 0f ? 1 : -1, c.remateEmpuje, c.remateDerribo);
+                conecto = true;
+            }
+
+            return conecto ? RunEvent.Golpe | RunEvent.Remate : RunEvent.GolpeAlAire;
         }
 
         RunEvent Disparar(PlayerIntent intent)
@@ -234,6 +289,13 @@ namespace Zombineta.Auxilio
         {
             var ev = RunEvent.None;
             var units = h.Units;
+
+            // Cuantos estan preparando un ataque ahora: hay un tope, los demas esperan su turno.
+            int atacando = 0;
+            for (int i = 0; i < units.Length; i++)
+                if (activo[i] && units[i].Alive && units[i].Preparando >= 0f)
+                    atacando++;
+
             for (int i = 0; i < units.Length; i++)
             {
                 if (!activo[i])
@@ -255,6 +317,7 @@ namespace Zombineta.Auxilio
                     continue;
                 }
 
+                u.Derribado = Mathf.Max(0f, u.Derribado - dt);
                 if (u.Stagger > 0f)
                 {
                     u.Stagger = Mathf.Max(0f, u.Stagger - dt);
@@ -295,8 +358,12 @@ namespace Zombineta.Auxilio
                 if (enRango)
                 {
                     u.Enfriamiento -= dt;
-                    if (u.Enfriamiento <= 0f)
+                    // Listo para pegar, pero solo prepara el ataque si hay un lugar libre.
+                    if (u.Enfriamiento <= 0f && atacando < c.maxAtacantes)
+                    {
                         u.Preparando = 0f;
+                        atacando++;
+                    }
                     continue;
                 }
 
@@ -335,6 +402,7 @@ namespace Zombineta.Auxilio
             u.Cause = DeathCause.None;
             u.CorpseLeft = 0f;
             u.Stagger = 0f;
+            u.Derribado = 0f;
             u.X = x;
             u.Lane = carril;
             u.Golpes = h.Type(u.Type).golpesParaMorir;

@@ -40,6 +40,7 @@ MonoBehaviour:
     ramStun: 0.8
     ramFuelPenalty: 8
     golpesParaMorir: 5
+    resisteEmpuje: 0.7
     spawnWeight: 15
     tint: {r: 0.72, g: 0.72, b: 0.8, a: 1}
     scale: 1.25

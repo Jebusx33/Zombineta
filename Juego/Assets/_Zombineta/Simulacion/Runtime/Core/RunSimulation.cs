@@ -37,6 +37,8 @@ namespace Zombineta.Core
         AuxilioLlega = 1 << 22,
         /// <summary>La furgoneta paso: tanque lleno y de vuelta a la moto.</summary>
         AuxilioTermina = 1 << 23,
+        /// <summary>El tercer golpe de la cadena: derriba a los que la rodean.</summary>
+        Remate = 1 << 24,
     }
 
     /// <summary>

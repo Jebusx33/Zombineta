@@ -68,7 +68,7 @@ namespace Zombineta.Juego.Screens
         /// <summary>Ayuda de la pelea a pie, con los controles del esquema que se esta usando.</summary>
         public static string TextForPelea(ControlScheme scheme) =>
             "Mover: " + Accion("Mover", scheme) + "   ·   Golpe: " + Accion("Golpe", scheme) +
-            "   ·   Disparo: " + Accion("Fire", scheme);
+            " (3 seguidos = remate)   ·   Disparo: " + Accion("Fire", scheme);
 
         /// <summary>La tecla o el boton que hace esa accion en el esquema dado (o null si no existe).</summary>
         public static string Accion(string accion, ControlScheme scheme)

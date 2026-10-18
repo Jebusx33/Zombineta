@@ -336,6 +336,247 @@ namespace Zombineta.Tests
             Assert.AreEqual(0, sim.State.Ayudas);
         }
 
+        // --- Cadena de golpes y remate ---------------------------------------------
+
+        /// <summary>Deja solo los zombies pedidos (dx respecto de ella y carril) y saca a los demas de la arena.</summary>
+        static Zombineta.Enemies.ZombieUnit[] Poner(RunSimulation sim, params (float dx, int lane)[] lugares)
+        {
+            var puestos = new Zombineta.Enemies.ZombieUnit[lugares.Length];
+            var units = sim.Horde.Units;
+            int n = 0;
+            for (int i = 0; i < units.Length; i++)
+            {
+                if (!sim.Pelea.Activo(i))
+                    continue;
+                var u = units[i];
+                if (n < lugares.Length)
+                {
+                    u.Alive = true;
+                    u.X = sim.State.PeatonX + lugares[n].dx;
+                    u.Lane = lugares[n].lane;
+                    u.Stagger = 0f;
+                    u.Derribado = 0f;
+                    u.Preparando = -1f;
+                    u.Enfriamiento = 5f;
+                    u.Golpes = 3;
+                    puestos[n++] = u;
+                }
+                else
+                {
+                    u.Alive = false;
+                    u.CorpseLeft = 999f;
+                }
+            }
+            return puestos;
+        }
+
+        static RunEvent Golpe(RunSimulation sim, float esperaAntes)
+        {
+            Avanzar(sim, esperaAntes, Quieta);
+            return sim.Tick(new PlayerIntent { Golpe = true }, Dt);
+        }
+
+        static GameConfig Rapido()
+        {
+            var c = MakeConfig();
+            c.golpeEnfriamiento = 0.2f;
+            c.comboVentana = 0.6f;
+            c.rematePausa = 0.55f;
+            c.remateRadio = 2.4f;
+            c.remateEmpuje = 3.5f;
+            c.remateDerribo = 1.4f;
+            return c;
+        }
+
+        /// <summary>Quita lo que el paso del tiempo les haya cambiado a los zombies puestos, para probar el golpe solo.</summary>
+        static void Reponer(Zombineta.Enemies.ZombieUnit[] z, RunSimulation sim, params float[] dx)
+        {
+            for (int i = 0; i < z.Length; i++)
+            {
+                z[i].X = sim.State.PeatonX + dx[i];
+                z[i].Stagger = 0f;
+                z[i].Preparando = -1f;
+                z[i].Enfriamiento = 5f;
+            }
+        }
+
+        [Test]
+        public void ThreeQuickPunches_AreAChain_AndTheThirdIsTheFinisher()
+        {
+            var sim = SinNafta(Rapido());
+            var z = Poner(sim, (1f, 1));
+
+            var e1 = Golpe(sim, 0f);
+            Assert.AreEqual(1, sim.State.ComboPaso);
+            Assert.IsTrue((e1 & RunEvent.Remate) == 0);
+
+            var e2 = Golpe(sim, 0.25f);   // el enfriamiento corto: 0,2 s
+            Assert.AreEqual(2, sim.State.ComboPaso);
+            Assert.IsTrue((e2 & RunEvent.Remate) == 0);
+
+            Avanzar(sim, 0.25f, Quieta);
+            Reponer(z, sim, 1f);          // el primer golpe lo empujo: lo vuelvo a poner a tiro
+            var e3 = sim.Tick(new PlayerIntent { Golpe = true }, Dt);
+            Assert.AreEqual(3, sim.State.ComboPaso);
+            Assert.IsTrue((e3 & RunEvent.Remate) != 0, "el tercero es el remate");
+        }
+
+        [Test]
+        public void ThePunchesOfTheChain_AreQuickButNotInstant()
+        {
+            var sim = SinNafta(Rapido());
+            Poner(sim, (50f, 1));
+
+            sim.Tick(new PlayerIntent { Golpe = true }, Dt);
+            Avanzar(sim, 0.1f, Quieta);
+            sim.Tick(new PlayerIntent { Golpe = true }, Dt);
+            Assert.AreEqual(1, sim.State.ComboPaso, "a los 0,1 s todavia esta enfriando");
+
+            Avanzar(sim, 0.15f, Quieta);
+            sim.Tick(new PlayerIntent { Golpe = true }, Dt);
+            Assert.AreEqual(2, sim.State.ComboPaso, "a los 0,25 s ya pega el segundo");
+        }
+
+        [Test]
+        public void TheChain_StartsOverIfShePausesTooLong()
+        {
+            var sim = SinNafta(Rapido());
+            Poner(sim, (1f, 1));
+
+            Golpe(sim, 0f);
+            Golpe(sim, 1.2f);   // se paso de la ventana (0,2 + 0,6 s)
+
+            Assert.AreEqual(1, sim.State.ComboPaso, "vuelve al primer golpe");
+        }
+
+        [Test]
+        public void AfterTheFinisher_ThereIsAPause_AndTheNextPunchStartsANewChain()
+        {
+            var sim = SinNafta(Rapido());
+            Poner(sim, (50f, 1));
+            Golpe(sim, 0f);
+            Golpe(sim, 0.25f);
+            Golpe(sim, 0.25f);
+            Assert.AreEqual(3, sim.State.ComboPaso);
+
+            var pegado = sim.Tick(new PlayerIntent { Golpe = true }, Dt);
+            Assert.AreEqual(RunEvent.None, pegado & (RunEvent.Golpe | RunEvent.GolpeAlAire), "en la pausa no pega");
+
+            var nueva = Golpe(sim, 0.6f);
+            Assert.AreEqual(1, sim.State.ComboPaso, "otra cadena, desde el primero");
+            Assert.IsTrue((nueva & RunEvent.Remate) == 0);
+        }
+
+        [Test]
+        public void TheFinisher_KnocksDownEveryoneAround_WithoutCostingThemHits()
+        {
+            var sim = SinNafta(Rapido());
+            // Lejos mientras se dan los dos primeros golpes: asi ninguno los toca antes del remate.
+            var z = Poner(sim, (25f, 1), (26f, 1), (-25f, 1), (27f, 2), (28f, 1));
+            var delante = z[0]; var detras = z[1]; var espalda = z[2]; var otroCarril = z[3]; var lejos = z[4];
+
+            Golpe(sim, 0f);
+            Golpe(sim, 0.25f);
+            Avanzar(sim, 0.24f, Quieta);
+            // Los zombies de prueba no se mueven solos: se los deja donde el barrido los tiene que encontrar.
+            Reponer(z, sim, 1f, 2f, -1.5f, 1.2f, 7f);
+            float xDetras = detras.X, xEspalda = espalda.X, xLejos = lejos.X;
+
+            var ev = sim.Tick(new PlayerIntent { Golpe = true }, Dt);
+
+            Assert.IsTrue((ev & RunEvent.Remate) != 0);
+            Assert.IsTrue(detras.Alive && espalda.Alive, "el barrido no los mata");
+            Assert.Greater(detras.Derribado, 1f, "queda en el piso");
+            Assert.Greater(espalda.Derribado, 1f, "tambien los de atras");
+            Assert.Greater(detras.Golpes, 2, "no pierde golpes");
+            Assert.Greater(detras.X, xDetras + 3f, "sale empujado hacia donde pego");
+            Assert.Less(espalda.X, xEspalda - 3f, "y los de atras, hacia el otro lado");
+            Assert.Greater(otroCarril.Derribado, 0f, "un carril de diferencia tambien entra en el barrido");
+            Assert.AreEqual(0f, lejos.Derribado, 0.0001f, "fuera del radio no pasa nada");
+            Assert.AreEqual(xLejos, lejos.X, 0.5f);
+            Assert.AreEqual(2, delante.Golpes, "el de enfrente si recibe un golpe de verdad");
+        }
+
+        [Test]
+        public void TheKnockedDown_StayDownForAWhile_ThenGetUp()
+        {
+            var sim = SinNafta(Rapido());
+            var z = Poner(sim, (25f, 1), (26f, 1));
+            Golpe(sim, 0f);
+            Golpe(sim, 0.25f);
+            Avanzar(sim, 0.24f, Quieta);
+            Reponer(z, sim, 1f, 2f);
+            Golpe(sim, 0f);
+            Assert.Greater(z[1].Derribado, 1f);
+
+            Avanzar(sim, 1.0f, Quieta);
+            Assert.Greater(z[1].Derribado, 0f, "todavia en el piso");
+            Avanzar(sim, 0.6f, Quieta);
+            Assert.AreEqual(0f, z[1].Derribado, 0.0001f, "se levanto");
+        }
+
+        [Test]
+        public void AHeavyZombie_BarelyMoves_AndGetsUpSooner()
+        {
+            var c = Rapido();
+            var roster = ScriptableObject.CreateInstance<Zombineta.Enemies.ZombieRoster>();
+            roster.types.Add(new Zombineta.Enemies.ZombieType { name = "Comun", speedMultiplier = 1f, deathChance = 1f, golpesParaMorir = 3 });
+            roster.types.Add(new Zombineta.Enemies.ZombieType { name = "Pesado", speedMultiplier = 0.75f, deathChance = 1f, golpesParaMorir = 5, resisteEmpuje = 0.7f });
+            c.zombies = roster;
+
+            var sim = SinNafta(c);
+            var z = Poner(sim, (25f, 1), (26f, 1), (-25f, 1));
+            z[1].Type = 1;   // pesado
+            z[2].Type = 0;   // comun
+            Golpe(sim, 0f);
+            Golpe(sim, 0.25f);
+            Avanzar(sim, 0.24f, Quieta);
+            Reponer(z, sim, 1f, 2f, -2f);
+            float pesado0 = z[1].X, comun0 = z[2].X;
+
+            Golpe(sim, 0f);
+
+            Assert.Less(Mathf.Abs(z[1].X - pesado0), 1.2f, "el pesado casi no se mueve");
+            Assert.Greater(Mathf.Abs(z[2].X - comun0), 3f, "el comun si sale volando");
+            Assert.Less(z[1].Derribado, z[2].Derribado, "el pesado se levanta antes");
+        }
+
+        [Test]
+        public void OnlyTwoZombies_PrepareAnAttackAtOnce_TheRestWaitTheirTurn()
+        {
+            var c = Rapido();
+            c.zombieSeparacion = 0f;   // los junto a proposito para que todos esten en rango
+            c.maxAtacantes = 2;
+            var sim = SinNafta(c);
+            var z = Poner(sim, (0.8f, 1), (0.9f, 1), (-0.8f, 1), (-0.9f, 1));
+            foreach (var u in z) u.Enfriamiento = 0f;
+
+            sim.Tick(Quieta, Dt);
+
+            int preparando = 0;
+            foreach (var u in z) if (u.Preparando >= 0f) preparando++;
+            Assert.AreEqual(2, preparando, "dos preparan el ataque, los otros dos esperan");
+        }
+
+        [Test]
+        public void WhenOneAttackerIsDone_AWaitingOneTakesTheTurn()
+        {
+            var c = Rapido();
+            c.zombieSeparacion = 0f;
+            c.maxAtacantes = 1;
+            var sim = SinNafta(c);
+            var z = Poner(sim, (0.8f, 1), (-0.8f, 1));
+            foreach (var u in z) u.Enfriamiento = 0f;
+
+            sim.Tick(Quieta, Dt);
+            int primero = z[0].Preparando >= 0f ? 0 : 1;
+            Assert.IsTrue(z[1 - primero].Preparando < 0f, "el otro espera");
+
+            Avanzar(sim, 0.7f, Quieta);   // el primero ya pego (0,6 s de preparacion)
+
+            Assert.IsTrue(z[1 - primero].Preparando >= 0f || sim.State.Vida < 5, "le toca al que esperaba");
+        }
+
         // --- Movimiento libre ---------------------------------------------------
 
         [Test]

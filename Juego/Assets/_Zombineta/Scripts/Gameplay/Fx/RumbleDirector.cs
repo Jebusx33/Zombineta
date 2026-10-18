@@ -34,6 +34,11 @@ namespace Zombineta.Fx
             if ((events & RunEvent.Fell) != 0) Trigger(RumbleKind.Fall);
             if ((events & RunEvent.RanOver) != 0) Trigger(RumbleKind.RanOver);
             if ((events & RunEvent.Explosion) != 0) Trigger(RumbleKind.Explosion);
+
+            // Pelea a pie: el remate pisa al golpe comun de ese mismo paso.
+            if ((events & RunEvent.Remate) != 0) Trigger(RumbleKind.Remate);
+            else if ((events & RunEvent.Golpe) != 0) Trigger(RumbleKind.Golpe);
+            if ((events & RunEvent.Lastimada) != 0) Trigger(RumbleKind.Lastimada);
         }
 
         public void Tick(float dt)

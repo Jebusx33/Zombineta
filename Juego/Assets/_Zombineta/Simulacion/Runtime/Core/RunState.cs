@@ -100,6 +100,10 @@ namespace Zombineta.Core
         public float GolpeEnfriamiento;
         /// <summary>Segundos que dura el golpe en curso (para la vista).</summary>
         public float Golpeando;
+        /// <summary>Paso de la cadena de golpes en curso: 1, 2 o 3 (el remate). 0 si no hay cadena.</summary>
+        public int ComboPaso;
+        /// <summary>Segundos que quedan para seguir la cadena con otro golpe; si llega a 0 vuelve a empezar.</summary>
+        public float ComboVentana;
         public bool FurgonetaEnCamino;
         /// <summary>Metros: donde va la furgoneta mientras cruza.</summary>
         public float FurgonetaX;

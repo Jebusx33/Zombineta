@@ -18,14 +18,21 @@ namespace Zombineta.Auxilio
         [Tooltip("Con esta vida o menos, los bordes de la pantalla se ponen rojos.")]
         [SerializeField] int vidaCritica = 2;
         [SerializeField] float segundosCartel = 1.4f;
+        [Tooltip("Segundos que queda en pantalla el contador de la cadena de golpes.")]
+        [SerializeField] float segundosCombo = 0.9f;
+        [Tooltip("Segundos que dura el destello al recibir un golpe.")]
+        [SerializeField] float segundosGolpeRecibido = 0.35f;
         [Tooltip("Segundos que la ayuda de controles queda grande al empezar la pelea; despues queda chica.")]
         [SerializeField] float segundosAyuda = 7f;
 
-        Text auxilio, vida, ayudas, cartel, controles;
+        Text auxilio, vida, ayudas, cartel, controles, combo;
         Image barra, fondoBarra, rojo;
         GameObject panel;
         float cartelRestante;
         float ayudaDesde = -1f;
+        float comboRestante;
+        float golpeRecibido;     // 1 al recibir un golpe, baja a 0
+        Vector2 vidaPosicion;
 
         void Awake()
         {
@@ -54,6 +61,15 @@ namespace Zombineta.Auxilio
             barra.rectTransform.anchoredPosition = Vector2.zero;
             vida = NuevoTexto("Vida", panel.transform, font, 40, TextAnchor.UpperCenter, new Vector2(0f, -72f), new Vector2(620f, 50f));
             vida.color = new Color(1f, 0.3f, 0.35f);
+            vidaPosicion = vida.rectTransform.anchoredPosition;
+
+            // El contador de la cadena de golpes, debajo de la vida.
+            combo = NuevoTexto("Combo", panel.transform, font, 46, TextAnchor.UpperCenter, new Vector2(0f, -122f), new Vector2(620f, 60f));
+            combo.fontStyle = FontStyle.Bold;
+            var comboSombra = combo.gameObject.AddComponent<Outline>();
+            comboSombra.effectColor = Color.black;
+            comboSombra.effectDistance = new Vector2(3f, -3f);
+            combo.enabled = false;
 
             ayudas = NuevoTexto("Ayudas", transform, font, 26, TextAnchor.UpperRight, Vector2.zero, new Vector2(400f, 40f));
             var ar = ayudas.rectTransform;
@@ -102,6 +118,28 @@ namespace Zombineta.Auxilio
             }
             if ((ev & RunEvent.AuxilioLlega) != 0)
                 Mostrar("¡AUXILIO!", new Color(0.55f, 1f, 0.55f));
+
+            // La cadena de golpes: el paso lo da el estado. Los golpes al aire tambien cuentan.
+            if (run != null && run.Sim != null && (ev & (RunEvent.Golpe | RunEvent.GolpeAlAire)) != 0)
+            {
+                int paso = run.Sim.State.ComboPaso;
+                if ((ev & RunEvent.Remate) != 0)
+                    MostrarCombo("¡REMATE!", new Color(1f, 0.45f, 0.15f), 56);
+                else if (paso >= 2)
+                    MostrarCombo("COMBO x" + paso, new Color(1f, 0.9f, 0.3f), 46);
+                else
+                    MostrarCombo("GOLPE", Color.white, 40);
+            }
+            if ((ev & RunEvent.Lastimada) != 0)
+                golpeRecibido = 1f;
+        }
+
+        void MostrarCombo(string texto, Color color, int tamano)
+        {
+            combo.text = texto;
+            combo.color = color;
+            combo.fontSize = tamano;
+            comboRestante = segundosCombo;
         }
 
         void Mostrar(string texto, Color color)
@@ -135,10 +173,31 @@ namespace Zombineta.Auxilio
 
             ActualizarControles(pelea);
 
+            // Recibir un golpe: los corazones se sacuden y se agrandan, y los bordes se ponen rojos un instante.
+            golpeRecibido = Mathf.MoveTowards(golpeRecibido, 0f, Time.unscaledDeltaTime / Mathf.Max(0.05f, segundosGolpeRecibido));
+            vida.rectTransform.anchoredPosition = vidaPosicion + new Vector2(Mathf.Sin(Time.unscaledTime * 60f) * 10f * golpeRecibido, 0f);
+            vida.rectTransform.localScale = Vector3.one * (1f + 0.35f * golpeRecibido);
+
             float rojoObjetivo = pelea && s.Vida <= vidaCritica ? 0.28f + 0.1f * Mathf.Sin(Time.unscaledTime * 6f) : 0f;
             var rc = rojo.color;
             rc.a = Mathf.MoveTowards(rc.a, rojoObjetivo, Time.unscaledDeltaTime * 2f);
+            // El destello del golpe pisa al aviso de poca vida mientras dura.
+            rc.a = Mathf.Max(rc.a, 0.55f * golpeRecibido);
             rojo.color = rc;
+
+            if (comboRestante > 0f)
+            {
+                comboRestante -= Time.unscaledDeltaTime;
+                float k = Mathf.Clamp01(comboRestante / segundosCombo);
+                combo.enabled = pelea;
+                // Entra grande y se asienta; en el ultimo tercio se desvanece.
+                combo.rectTransform.localScale = Vector3.one * (1f + 0.3f * Mathf.Clamp01((k - 0.8f) / 0.2f));
+                var cc = combo.color;
+                cc.a = Mathf.Clamp01(k * 3f);
+                combo.color = cc;
+            }
+            else if (combo.enabled)
+                combo.enabled = false;
 
             if (cartelRestante > 0f)
             {

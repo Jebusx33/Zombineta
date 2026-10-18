@@ -23,6 +23,9 @@ namespace Zombineta.Auxilio
         [Tooltip("Cuanto se adelanta el cuerpo al pegar, en unidades.")]
         [SerializeField] float estocada = 0.35f;
         [SerializeField] Color colorLastimada = new Color(1f, 0.35f, 0.35f);
+        [Tooltip("Metros por segundo con que la vista alcanza a la posicion de la simulacion: mas que lo que camina, " +
+                 "asi el empujon de un golpe recibido se desliza en vez de teletransportarla.")]
+        [SerializeField] float velocidadVisual = 9f;
         [Tooltip("Cuanto se echa hacia atras al disparar, en unidades. Sin pose de disparo, es lo que marca el tiro.")]
         [SerializeField] float retrocesoDisparo = 0.22f;
 
@@ -37,6 +40,9 @@ namespace Zombineta.Auxilio
         Renderer[] moto;
         bool motoEscondida;
         float caminata;
+        Vector3 golpeEscalaBase = Vector3.one;
+        float xVisual;
+        bool xListo;
         float disparoRestante;
         const float DuracionDisparo = 0.12f;
 
@@ -67,6 +73,7 @@ namespace Zombineta.Auxilio
             SombraProyectada.Poner(cuerpo.gameObject, cuerpo, "", 0, true);
             golpe = Crear("Golpe", swoosh, 1.1f, out _);
             golpe.transform.SetParent(cuerpo.transform, true);
+            golpeEscalaBase = golpe.transform.localScale;
             van = Crear("Furgoneta del auxilio", furgoneta, altoFurgoneta, out _);
 
             var faroGo = new GameObject("Faros");
@@ -131,7 +138,10 @@ namespace Zombineta.Auxilio
             cuerpo.enabled = aPie;
             golpe.enabled = aPie && s.Golpeando > 0f;
             if (!aPie)
+            {
+                xListo = false;
                 return;
+            }
 
             var c = run.Config;
             float t = c.golpeDuracion > 0f ? s.Golpeando / c.golpeDuracion : 0f;
@@ -146,7 +156,10 @@ namespace Zombineta.Auxilio
             caminata = camina ? caminata + Time.deltaTime * 11f : 0f;
             float paso = camina ? Mathf.Abs(Mathf.Sin(caminata)) * 0.08f : 0f;
 
-            float x = run.ToWorldX(s.PeatonX) + adelanto;
+            float xMundo = run.ToWorldX(s.PeatonX);
+            xVisual = xListo ? Mathf.MoveTowards(xVisual, xMundo, velocidadVisual * Time.deltaTime) : xMundo;
+            xListo = true;
+            float x = xVisual + adelanto;
             float y = run.LaneToWorldY(s.LaneVisual) + paso;
             cuerpo.transform.position = new Vector3(x, y - cuerpo.sprite.bounds.min.y * cuerpo.transform.localScale.y, 0f);
             cuerpo.flipX = s.Mira < 0;
@@ -164,8 +177,11 @@ namespace Zombineta.Auxilio
             {
                 golpe.flipX = s.Mira < 0;
                 golpe.sortingOrder = cuerpo.sortingOrder + 1;
-                golpe.transform.position = new Vector3(x + s.Mira * 1.1f, y + altoPeaton * 0.62f, 0f);
-                var col = golpe.color;
+                // El tercer golpe de la cadena (el remate) es un barrido mas grande y anaranjado.
+                bool remate = s.ComboPaso == 3;
+                golpe.transform.localScale = golpeEscalaBase * (remate ? 1.9f : 1f);
+                golpe.transform.position = new Vector3(x + s.Mira * (remate ? 1.7f : 1.1f), y + altoPeaton * 0.62f, 0f);
+                var col = remate ? new Color(1f, 0.6f, 0.25f) : Color.white;
                 col.a = t;
                 golpe.color = col;
             }
