@@ -16,6 +16,7 @@ namespace Zombineta.Juego.Tests
     public class SonidoDeNivelSceneTests
     {
         [TestCase("Assets/_Zombineta/Scenes/Level_01.unity")]
+        [TestCase("Assets/_Zombineta/Scenes/Level_01_Auxilio.unity")]
         [TestCase("Assets/_Zombineta/Scenes/Level_02.unity")]
         [TestCase("Assets/_Zombineta/Scenes/Templates/NivelBase.unity")]
         public void ElSonidoDeNivelNoCuelgaDeNivel(string path)
