@@ -187,6 +187,66 @@ namespace Zombineta.Tests
             Assert.IsTrue(!z.Alive || z.Stagger > 0f, "le pego al de adelante");
         }
 
+        [TestCase(1)]
+        [TestCase(-1)]
+        public void TheShot_GoesWhereSheLooks_AndTheEventsKnowTheDirection(int mira)
+        {
+            var sim = SinNafta(MakeConfig());
+            var z = UnoSolo(sim, 8f * mira);
+            sim.State.Mira = mira;
+
+            sim.Tick(new PlayerIntent { Fire = true }, Dt);
+
+            bool traza = false, conDireccion = false;
+            foreach (var e in sim.Horde.Events)
+            {
+                if (e.Kind == Zombineta.Enemies.HordeEventKind.Tracer)
+                {
+                    traza = true;
+                    Assert.AreEqual(mira, Mathf.Sign(e.X - e.FromX), "la traza va hacia donde mira");
+                }
+                if (e.Kind == Zombineta.Enemies.HordeEventKind.Death || e.Kind == Zombineta.Enemies.HordeEventKind.Impact)
+                {
+                    conDireccion = true;
+                    Assert.AreEqual(mira, e.Dir, "el impacto sabe hacia donde iba la bala");
+                }
+            }
+            Assert.IsTrue(traza, "hubo disparo");
+            Assert.IsTrue(conDireccion, "le pego");
+        }
+
+        [Test]
+        public void ATiltedShotThatMisses_AlsoGoesWhereSheLooks()
+        {
+            var sim = SinNafta(MakeConfig());
+            UnoSolo(sim, 50f);       // fuera del alcance
+            sim.State.Mira = -1;
+
+            sim.Tick(new PlayerIntent { Fire = true }, Dt);
+
+            foreach (var e in sim.Horde.Events)
+                if (e.Kind == Zombineta.Enemies.HordeEventKind.Tracer)
+                    Assert.Less(e.X, e.FromX, "la bala perdida sigue hacia la izquierda");
+        }
+
+        [Test]
+        public void APunch_TellsWhichWayItPushed()
+        {
+            var sim = SinNafta(MakeConfig());
+            UnoSolo(sim, 1f);
+
+            sim.Tick(new PlayerIntent { Golpe = true }, Dt);
+
+            bool visto = false;
+            foreach (var e in sim.Horde.Events)
+                if (e.Kind == Zombineta.Enemies.HordeEventKind.Impact)
+                {
+                    visto = true;
+                    Assert.AreEqual(1, e.Dir);
+                }
+            Assert.IsTrue(visto);
+        }
+
         // --- Los zombies ------------------------------------------------------
 
         [Test]

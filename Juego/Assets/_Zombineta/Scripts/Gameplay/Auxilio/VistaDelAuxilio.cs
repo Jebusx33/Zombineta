@@ -23,6 +23,8 @@ namespace Zombineta.Auxilio
         [Tooltip("Cuanto se adelanta el cuerpo al pegar, en unidades.")]
         [SerializeField] float estocada = 0.35f;
         [SerializeField] Color colorLastimada = new Color(1f, 0.35f, 0.35f);
+        [Tooltip("Cuanto se echa hacia atras al disparar, en unidades. Sin pose de disparo, es lo que marca el tiro.")]
+        [SerializeField] float retrocesoDisparo = 0.22f;
 
         [Header("Furgoneta")]
         [SerializeField] Sprite furgoneta;
@@ -35,6 +37,26 @@ namespace Zombineta.Auxilio
         Renderer[] moto;
         bool motoEscondida;
         float caminata;
+        float disparoRestante;
+        const float DuracionDisparo = 0.12f;
+
+        void OnEnable()
+        {
+            if (run != null)
+                run.Stepped += AlPasar;
+        }
+
+        void OnDisable()
+        {
+            if (run != null)
+                run.Stepped -= AlPasar;
+        }
+
+        void AlPasar(RunEvent ev)
+        {
+            if ((ev & RunEvent.Shot) != 0 && run.Sim != null && run.Sim.State.Phase == RunPhase.Pelea)
+                disparoRestante = DuracionDisparo;
+        }
 
         void Awake()
         {
@@ -115,6 +137,10 @@ namespace Zombineta.Auxilio
             float t = c.golpeDuracion > 0f ? s.Golpeando / c.golpeDuracion : 0f;
             // La pina: el cuerpo se adelanta y vuelve.
             float adelanto = Mathf.Sin(t * Mathf.PI) * estocada * s.Mira;
+
+            // El tiro la echa un poco hacia atras: la direccion en que dispara se nota en el cuerpo.
+            disparoRestante = Mathf.Max(0f, disparoRestante - Time.deltaTime);
+            adelanto -= (disparoRestante / DuracionDisparo) * retrocesoDisparo * s.Mira;
 
             bool camina = run.Sim.State.Phase == RunPhase.Pelea && Mathf.Abs(VelocidadAPie()) > 0.1f;
             caminata = camina ? caminata + Time.deltaTime * 11f : 0f;

@@ -17,6 +17,8 @@ namespace Zombineta.Enemies
         public int Lane;
         public int Type;
         public DeathCause Cause;
+        /// <summary>Hacia donde iba el golpe o la bala: 1 derecha, -1 izquierda, 0 sin direccion conocida.</summary>
+        public int Dir;
     }
 
     /// <summary>Un zombie de la masa. Se recicla: nunca se crea ni se destruye en partida.</summary>
@@ -214,20 +216,21 @@ namespace Zombineta.Enemies
         public bool HitZombie(ZombieUnit u, float fromX)
         {
             var t = Type(u.Type);
+            int dir = u.X >= fromX ? 1 : -1;
             events.Add(new HordeEvent
             {
-                Kind = HordeEventKind.Tracer, FromX = fromX, X = u.X, Lane = u.Lane, Type = u.Type,
+                Kind = HordeEventKind.Tracer, FromX = fromX, X = u.X, Lane = u.Lane, Type = u.Type, Dir = dir,
             });
 
             if ((float)rng.NextDouble() <= t.deathChance)
             {
-                Kill(u, DeathCause.Bullet);
+                Kill(u, DeathCause.Bullet, dir);
                 return true;
             }
 
             events.Add(new HordeEvent
             {
-                Kind = HordeEventKind.Impact, X = u.X, Lane = u.Lane, Type = u.Type,
+                Kind = HordeEventKind.Impact, X = u.X, Lane = u.Lane, Type = u.Type, Dir = dir,
             });
             u.Stagger = Mathf.Max(u.Stagger, t.staggerOnHit);
             return false;
@@ -247,7 +250,7 @@ namespace Zombineta.Enemies
             events.Add(new HordeEvent { Kind = HordeEventKind.Tracer, FromX = fromX, X = toX, Lane = lane });
         }
 
-        public void Kill(ZombieUnit u, DeathCause cause)
+        public void Kill(ZombieUnit u, DeathCause cause, int dir = 0)
         {
             if (!u.Alive)
                 return;
@@ -258,7 +261,7 @@ namespace Zombineta.Enemies
             u.Stagger = 0f;
             events.Add(new HordeEvent
             {
-                Kind = HordeEventKind.Death, X = u.X, Lane = u.Lane, Type = u.Type, Cause = cause,
+                Kind = HordeEventKind.Death, X = u.X, Lane = u.Lane, Type = u.Type, Cause = cause, Dir = dir,
             });
 
             // Los de al lado se asustan: un buen tiro se siente aunque el frente se mueva poco.
@@ -309,11 +312,11 @@ namespace Zombineta.Enemies
             u.Preparando = -1f;
             if (u.Golpes <= 0)
             {
-                Kill(u, DeathCause.Golpe);
+                Kill(u, DeathCause.Golpe, direccion);
                 return true;
             }
 
-            events.Add(new HordeEvent { Kind = HordeEventKind.Impact, X = u.X, Lane = u.Lane, Type = u.Type });
+            events.Add(new HordeEvent { Kind = HordeEventKind.Impact, X = u.X, Lane = u.Lane, Type = u.Type, Dir = direccion });
             u.X += direccion * empuje;
             u.Stagger = Mathf.Max(u.Stagger, freno);
             return false;
