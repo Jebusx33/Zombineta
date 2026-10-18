@@ -142,7 +142,7 @@ namespace Zombineta.Core
         [Tooltip("Pedidos de auxilio por nivel. 0 = sin auxilio: quedarse sin nafta es perder, como siempre.")]
         [Min(0)] public int ayudas = 0;
         [Tooltip("Segundos que tarda en llegar la furgoneta: lo que dura la pelea.")]
-        [Min(1f)] public float peleaSegundos = 25f;
+        [Min(1f)] public float peleaSegundos = 30f;
         [Tooltip("Golpes que aguanta la protagonista a pie.")]
         [Min(1)] public int vidaPelea = 5;
         [Tooltip("Metros de ventaja sobre la horda al volver a la moto.")]
@@ -151,6 +151,11 @@ namespace Zombineta.Core
         public float arenaMedioAncho = 12f;
         [Tooltip("Metros por segundo caminando.")]
         public float peatonVelocidad = 6f;
+        [Tooltip("Carriles por segundo al caminar de arriba a abajo (0,99 m cada uno). Con el stick a fondo.")]
+        public float peatonVelocidadCarril = 3f;
+        [Tooltip("Cuantos carriles de diferencia puede haber entre ella y un zombie para que se peguen. " +
+                 "Ella camina entre carriles; los zombies estan en uno entero.")]
+        public float toleranciaCarril = 0.6f;
         [Tooltip("Metros hacia donde mira que alcanza el golpe.")]
         public float golpeAlcance = 1.6f;
         [Tooltip("Segundos entre golpe y golpe.")]
@@ -167,6 +172,9 @@ namespace Zombineta.Core
         public float zombieVelocidadPelea = 2.2f;
         [Tooltip("Metros desde los que un zombie pega.")]
         public float zombieAlcance = 1.1f;
+        [Tooltip("Metros minimos entre dos zombies vivos del mismo carril en la pelea: los demas hacen fila " +
+                 "detras del que esta pegado a la protagonista, en vez de encimarse en el mismo lugar.")]
+        public float zombieSeparacion = 1.1f;
         [Tooltip("Segundos que se prepara antes de pegar: el aviso para esquivarlo o pegarle primero.")]
         public float zombiePreparacion = 0.5f;
         [Tooltip("Segundos entre ataque y ataque de un mismo zombie.")]

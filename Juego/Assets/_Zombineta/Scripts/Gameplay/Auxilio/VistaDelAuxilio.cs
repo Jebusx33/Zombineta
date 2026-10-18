@@ -145,13 +145,18 @@ namespace Zombineta.Auxilio
             }
         }
 
-        float ultimaX;
+        float ultimaX, ultimaY;
+
+        /// <summary>Metros por segundo que camina, sumando lo que avanza de lado y lo que sube o baja de carril.</summary>
         float VelocidadAPie()
         {
-            float x = run.Sim.State.PeatonX;
-            float v = Time.deltaTime > 0f ? (x - ultimaX) / Time.deltaTime : 0f;
-            ultimaX = x;
-            return v;
+            var s = run.Sim.State;
+            float dt = Time.deltaTime;
+            float vx = dt > 0f ? (s.PeatonX - ultimaX) / dt : 0f;
+            float vy = dt > 0f ? (s.PeatonY - ultimaY) / dt * run.Config.laneSpacing : 0f;
+            ultimaX = s.PeatonX;
+            ultimaY = s.PeatonY;
+            return Mathf.Sqrt(vx * vx + vy * vy);
         }
 
         void DibujarFurgoneta(RunState s)

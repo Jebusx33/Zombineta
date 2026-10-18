@@ -87,6 +87,11 @@ namespace Zombineta.Core
         public float PeleaRestante;
         /// <summary>Metros: donde esta la protagonista a pie. La moto queda en PlayerX.</summary>
         public float PeatonX;
+        /// <summary>
+        /// A pie, en carriles y continuo (0 = abajo, 2 = arriba): camina libre entre los tres.
+        /// Lane es el mas cercano y LaneVisual lo sigue de cerca para las vistas.
+        /// </summary>
+        public float PeatonY;
         /// <summary>Hacia donde mira a pie: 1 derecha, -1 izquierda.</summary>
         public int Mira = 1;
         /// <summary>Segundos en que no la pueden lastimar (recien golpeada).</summary>

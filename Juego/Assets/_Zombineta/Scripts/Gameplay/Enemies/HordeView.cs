@@ -28,6 +28,9 @@ namespace Zombineta.Enemies
         [Tooltip("Color del zombie que se prepara para pegar en la pelea a pie.")]
         [SerializeField] Color avisoDeAtaque = new Color(1f, 0.25f, 0.2f);
 
+        [Tooltip("Carriles por segundo con los que un zombie cambia de carril: se desliza en vez de saltar.")]
+        [SerializeField] float laneChangeSpeed = 4f;
+
         [Tooltip("Metros que la horda sigue avanzando por encima de la moto al atraparla.")]
         [SerializeField] float overrunMeters = 12f;
 
@@ -43,6 +46,8 @@ namespace Zombineta.Enemies
         Animator[] animators;
         SombraProyectada[] shadows;
         int[] generations;
+        float[] laneVisual;
+        RunPhase lastPhase = RunPhase.Running;
         bool[] wasAlive;
         float[] lastStagger;
 
@@ -91,6 +96,7 @@ namespace Zombineta.Enemies
             animators = new Animator[count];
             shadows = new SombraProyectada[count];
             generations = new int[count];
+            laneVisual = new float[count];
             wasAlive = new bool[count];
             lastStagger = new float[count];
             currentLook = new ZombieLook[count];
@@ -163,6 +169,7 @@ namespace Zombineta.Enemies
                 if (generations[i] != u.Generation)
                 {
                     generations[i] = u.Generation;
+                    laneVisual[i] = u.Lane;
                     wasAlive[i] = true;
                     lastStagger[i] = 0f;
 
@@ -223,8 +230,14 @@ namespace Zombineta.Enemies
                 wasAlive[i] = u.Alive;
                 lastStagger[i] = u.Stagger;
 
+                // El carril visual se desliza hasta el de la simulacion (que es entero). Al cambiar de
+                // fase (empieza o termina la pelea) los zombies se reubican de golpe: ahi no se desliza.
+                laneVisual[i] = state.Phase != lastPhase
+                    ? u.Lane
+                    : Mathf.MoveTowards(laneVisual[i], u.Lane, laneChangeSpeed * Time.deltaTime);
+
                 float worldX = run.ToWorldX(u.X + overrun);
-                float groundY = run.LaneToWorldY(u.Lane);
+                float groundY = run.LaneToWorldY(laneVisual[i]);
                 bodies[i].position = new Vector3(worldX, groundY, 0f);
                 bodies[i].localScale = Vector3.one * bodyScale * type.scale * (hasLook ? currentLook[i].scale : 1f);
 
@@ -268,7 +281,7 @@ namespace Zombineta.Enemies
                         sprites[i].color = Color.Lerp(sprites[i].color, avisoDeAtaque, 0.6f);
 
                     // De pie tapa lo de arriba; caido queda como cualquier cosa tirada en el piso.
-                    sprites[i].sortingOrder = LaneSorting.Order(u.Lane, u.Alive ? SortSlot.Zombie : SortSlot.Item);
+                    sprites[i].sortingOrder = LaneSorting.Order(laneVisual[i], u.Alive ? SortSlot.Zombie : SortSlot.Item, i);
                     sprites[i].sortingLayerID = LaneSorting.GameLayerId;
                 }
 
@@ -276,9 +289,11 @@ namespace Zombineta.Enemies
                 {
                     // Debajo de todo lo de su carril, y solo de pie: el caido ya esta en el piso.
                     shadows[i].Visible = u.Alive;
-                    shadows[i].Orden = LaneSorting.Order(u.Lane, SortSlot.Shadow);
+                    shadows[i].Orden = LaneSorting.Order(laneVisual[i], SortSlot.Shadow);
                 }
             }
+
+            lastPhase = state.Phase;
         }
     }
 }

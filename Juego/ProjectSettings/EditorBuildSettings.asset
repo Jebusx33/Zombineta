@@ -30,6 +30,9 @@ EditorBuildSettings:
     path: Assets/_Zombineta/Scenes/Level_01_Auxilio.unity
     guid: 4b2bb262deded444c9b6070a9616ca09
   - enabled: 1
+    path: Assets/_Zombineta/Scenes/Level_01_Auxilio_v2.unity
+    guid: 8ffce7228bd045ef89c4199d8051f27d
+  - enabled: 1
     path: Assets/_Zombineta/Scenes/Level_02.unity
     guid: b3b743411889ac840bbbf9cc33f2825d
   - enabled: 1

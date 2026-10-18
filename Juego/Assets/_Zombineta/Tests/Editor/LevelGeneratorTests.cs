@@ -122,6 +122,70 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
+        public void ObstaclesInALane_DoNotOverlapEachOther()
+        {
+            // Un coche mide casi 4 m de ancho: con 2 m de distancia se encimaban.
+            var entries = LevelGenerator.Generate(Settings(), Length);
+            float min = 2f * LevelFootprint.Obstacle + LevelFootprint.Margin;
+            for (int lane = 0; lane < 3; lane++)
+            {
+                var obstacles = entries.FindAll(e => e.lane == lane && e.kind == LevelEntryKind.Obstacle);
+                obstacles.Sort((a, b) => a.distance.CompareTo(b.distance));
+                for (int i = 1; i < obstacles.Count; i++)
+                    Assert.GreaterOrEqual(obstacles[i].distance - obstacles[i - 1].distance, min - 0.001f,
+                        "obstaculos encimados en el carril " + lane + " a " + obstacles[i].distance + " m");
+            }
+        }
+
+        [TestCase(7)]
+        [TestCase(21)]
+        [TestCase(2026)]
+        public void NothingGroundLevelIsHiddenBehindAnObstacle(int seed)
+        {
+            var entries = LevelGenerator.Generate(Settings(seed), Length);
+            foreach (var hider in entries)
+                foreach (var e in entries)
+                    Assert.IsFalse(LevelFootprint.Hides(hider, e),
+                        e.kind + " a " + e.distance + " m (carril " + e.lane + ") queda detras del obstaculo de " + hider.distance + " m");
+        }
+
+        [Test]
+        public void ARampPiece_HasASingleObstacle()
+        {
+            var entries = LevelGenerator.Generate(Settings(), Length);
+            int ramps = 0;
+            foreach (var r in entries)
+            {
+                if (r.kind != LevelEntryKind.Ramp) continue;
+                ramps++;
+                int obstacles = entries.FindAll(e => e.kind == LevelEntryKind.Obstacle && e.lane == r.lane &&
+                                                     e.distance > r.distance && e.distance <= r.distance + LevelValidator.LandingFrom).Count;
+                Assert.AreEqual(1, obstacles, "rampa de " + r.distance + " m");
+            }
+            Assert.Greater(ramps, 5);
+        }
+
+        [Test]
+        public void Footprints_AreSymmetricAndRespectTheFloor()
+        {
+            Assert.AreEqual(LevelFootprint.MinDistance(LevelEntryKind.Obstacle, LevelEntryKind.Fuel, 2f),
+                LevelFootprint.MinDistance(LevelEntryKind.Fuel, LevelEntryKind.Obstacle, 2f), 0.0001f);
+            Assert.GreaterOrEqual(LevelFootprint.MinDistance(LevelEntryKind.Fuel, LevelEntryKind.Battery, 2f), 2f);
+        }
+
+        [Test]
+        public void AnObstacle_HidesWhatIsInTheLanesAboveButNotInTheAir()
+        {
+            var car = new LevelEntry(100f, 0, LevelEntryKind.Obstacle);
+            Assert.IsTrue(LevelFootprint.Hides(car, new LevelEntry(100f, 1, LevelEntryKind.Fuel)));
+            Assert.IsFalse(LevelFootprint.Hides(car, new LevelEntry(100f, 1, LevelEntryKind.Fuel, 1f)), "en el aire");
+            Assert.IsFalse(LevelFootprint.Hides(car, new LevelEntry(100f, 0, LevelEntryKind.Fuel)), "mismo carril");
+            Assert.IsTrue(LevelFootprint.Hides(car, new LevelEntry(100f, 2, LevelEntryKind.Fuel)), "el coche tapa dos carriles");
+            Assert.IsFalse(LevelFootprint.Hides(new LevelEntry(100f, 2, LevelEntryKind.Obstacle), new LevelEntry(100f, 2, LevelEntryKind.Fuel)), "nada arriba del ultimo carril");
+            Assert.IsFalse(LevelFootprint.Hides(car, new LevelEntry(110f, 1, LevelEntryKind.Fuel)), "lejos");
+        }
+
+        [Test]
         public void NothingIsPlacedOnTopOfAPinnedItem()
         {
             var s = Settings();

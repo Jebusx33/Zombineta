@@ -138,8 +138,8 @@ namespace Zombineta.Core
             {
                 Horde.BeginTick();
                 PlayerSpeed = 0f;
+                // LaneVisual la maneja la pelea: a pie camina libre entre los carriles.
                 var pelea = Pelea.Step(intent, dt);
-                AdvanceLaneVisual(dt);
                 State.Elapsed += dt;
                 HordeSpeed = 0f;
                 return pelea;

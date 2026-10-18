@@ -28,6 +28,7 @@ namespace Zombineta.Auxilio
         readonly HordeSimulation h;
         readonly System.Random rng;
 
+        readonly System.Collections.Generic.List<int> fila = new System.Collections.Generic.List<int>();
         bool[] activo;
         float centro;
         int lado = 1;
@@ -64,7 +65,10 @@ namespace Zombineta.Auxilio
             s.StunRemaining = 0f;
             s.Mode = DriveMode.Normal;
             s.Mira = 1;
-            s.Lane = Mathf.Clamp(s.Lane, 0, RunSimulation.LaneCount - 1);
+            // Se baja en el carril (aunque sea a medio cambio) y de ahi camina libre.
+            s.PeatonY = Mathf.Clamp(s.LaneVisual, 0f, RunSimulation.LaneCount - 1);
+            s.Lane = Mathf.Clamp(Mathf.RoundToInt(s.PeatonY), 0, RunSimulation.LaneCount - 1);
+            s.LaneVisual = s.PeatonY;
 
             centro = s.PlayerX;
             s.PeatonX = centro;
@@ -84,7 +88,7 @@ namespace Zombineta.Auxilio
                     float x = desde < 0
                         ? centro - 5f - (float)rng.NextDouble() * 9f
                         : centro + c.arenaMedioAncho + 1f + (float)rng.NextDouble() * 4f;
-                    Preparar(u, x, rng.Next(RunSimulation.LaneCount), nuevo: !u.Alive);
+                    Preparar(i, x, rng.Next(RunSimulation.LaneCount), nuevo: !u.Alive);
                 }
                 else
                 {
@@ -115,6 +119,7 @@ namespace Zombineta.Auxilio
             ev |= MoverZombies(dt);
             if (s.Phase != RunPhase.Pelea)
                 return ev; // la derribaron
+            Separar();
 
             if (s.PeleaRestante <= 0f)
             {
@@ -138,15 +143,27 @@ namespace Zombineta.Auxilio
                     centro - c.arenaMedioAncho, centro + c.arenaMedioAncho);
             }
 
-            if (intent.LaneDelta != 0)
+            float maxCarril = RunSimulation.LaneCount - 1;
+            if (Mathf.Abs(intent.MoveY) > 0.01f)
             {
-                int destino = Mathf.Clamp(s.Lane + System.Math.Sign(intent.LaneDelta), 0, RunSimulation.LaneCount - 1);
-                if (destino != s.Lane)
+                // Libre entre los carriles: el stick a medias camina a medias.
+                s.PeatonY = Mathf.Clamp(s.PeatonY + Mathf.Clamp(intent.MoveY, -1f, 1f) * c.peatonVelocidadCarril * dt, 0f, maxCarril);
+            }
+            else if (intent.LaneDelta != 0 && !intent.MovimientoLibre)
+            {
+                // Sin accion de movimiento libre (asset de entrada viejo): salta de a un carril.
+                int destino = Mathf.Clamp(Mathf.RoundToInt(s.PeatonY) + System.Math.Sign(intent.LaneDelta), 0, RunSimulation.LaneCount - 1);
+                if (destino != Mathf.RoundToInt(s.PeatonY))
                 {
-                    s.Lane = destino;
+                    s.PeatonY = destino;
                     ev |= RunEvent.LaneChanged;
                 }
             }
+
+            // Lane es el mas cercano (lo usan los disparos y los zombies para perseguirla) y
+            // LaneVisual es ella misma: la vista y el orden de dibujo la siguen sin escalones.
+            s.Lane = Mathf.Clamp(Mathf.RoundToInt(s.PeatonY), 0, RunSimulation.LaneCount - 1);
+            s.LaneVisual = s.PeatonY;
             return ev;
         }
 
@@ -158,7 +175,7 @@ namespace Zombineta.Auxilio
             s.GolpeEnfriamiento = c.golpeEnfriamiento;
             s.Golpeando = c.golpeDuracion;
 
-            var u = MasCercano(s.PeatonX, s.Lane, s.Mira, c.golpeAlcance);
+            var u = MasCercano(s.PeatonX, s.Mira, c.golpeAlcance);
             if (u == null)
                 return RunEvent.GolpeAlAire;
 
@@ -174,7 +191,7 @@ namespace Zombineta.Auxilio
                 return RunEvent.ShotDenied;
 
             s.Ammo--;
-            var u = MasCercano(s.PeatonX, s.Lane, s.Mira, c.shotRangeMeters);
+            var u = MasCercano(s.PeatonX, s.Mira, c.shotRangeMeters);
             if (u != null)
             {
                 h.HitZombie(u, s.PeatonX);
@@ -184,8 +201,11 @@ namespace Zombineta.Auxilio
             return RunEvent.Shot | RunEvent.ShotMissed;
         }
 
-        /// <summary>El zombie vivo y peleando mas cercano en ese carril, hacia donde mira, dentro del alcance.</summary>
-        ZombieUnit MasCercano(float desde, int carril, int mira, float alcance)
+        /// <summary>
+        /// El zombie vivo y peleando mas cercano hacia donde mira, dentro del alcance y alineado
+        /// con ella (a lo sumo toleranciaCarril carriles de diferencia: ella camina entre carriles).
+        /// </summary>
+        ZombieUnit MasCercano(float desde, int mira, float alcance)
         {
             ZombieUnit mejor = null;
             float mejorDist = float.MaxValue;
@@ -193,7 +213,7 @@ namespace Zombineta.Auxilio
             for (int i = 0; i < units.Length; i++)
             {
                 var u = units[i];
-                if (!activo[i] || !u.Alive || u.Lane != carril)
+                if (!activo[i] || !u.Alive || !Alineado(u))
                     continue;
                 float d = (u.X - desde) * mira;
                 // Un poco hacia atras tambien cuenta: pegado a ella, aunque este apenas detras.
@@ -206,6 +226,9 @@ namespace Zombineta.Auxilio
         }
 
         // --- Los zombies -------------------------------------------------------
+
+        /// <summary>Si el zombie esta en un carril lo bastante cerca del de ella para pegarse.</summary>
+        bool Alineado(ZombieUnit u) => Mathf.Abs(u.Lane - s.PeatonY) <= c.toleranciaCarril;
 
         RunEvent MoverZombies(float dt)
         {
@@ -227,7 +250,7 @@ namespace Zombineta.Auxilio
                         float x = lado < 0
                             ? centro - c.arenaMedioAncho - 2f - (float)rng.NextDouble() * 3f
                             : centro + c.arenaMedioAncho + 2f + (float)rng.NextDouble() * 3f;
-                        Preparar(u, x, rng.Next(RunSimulation.LaneCount), nuevo: true);
+                        Preparar(i, x, rng.Next(RunSimulation.LaneCount), nuevo: true);
                     }
                     continue;
                 }
@@ -241,7 +264,8 @@ namespace Zombineta.Auxilio
                 float dx = s.PeatonX - u.X;
                 u.Mira = dx >= 0f ? 1 : -1;
 
-                if (u.Lane != s.Lane)
+                bool alineado = Alineado(u);
+                if (!alineado)
                 {
                     u.CambioCarril -= dt;
                     if (Mathf.Abs(dx) < DistanciaParaCambiarCarril && u.CambioCarril <= 0f)
@@ -251,7 +275,7 @@ namespace Zombineta.Auxilio
                     }
                 }
 
-                bool enRango = u.Lane == s.Lane && Mathf.Abs(dx) <= c.zombieAlcance;
+                bool enRango = alineado && Mathf.Abs(dx) <= c.zombieAlcance;
 
                 if (u.Preparando >= 0f)
                 {
@@ -277,7 +301,7 @@ namespace Zombineta.Auxilio
                 }
 
                 // Se acerca: en su carril hasta quedar a tiro; en otro, hasta ponerse a la par.
-                float objetivo = u.Lane == s.Lane ? c.zombieAlcance * 0.8f : 0.4f;
+                float objetivo = alineado ? c.zombieAlcance * 0.8f : 0.4f;
                 if (Mathf.Abs(dx) > objetivo)
                 {
                     float v = c.zombieVelocidadPelea * h.Type(u.Type).speedMultiplier;
@@ -301,10 +325,12 @@ namespace Zombineta.Auxilio
             return RunEvent.Lastimada | RunEvent.Lost;
         }
 
-        void Preparar(ZombieUnit u, float x, int carril, bool nuevo)
+        void Preparar(int indice, float x, int carril, bool nuevo)
         {
+            var u = h.Units[indice];
             if (nuevo)
                 u.Generation++;
+            x = Despejar(indice, x, carril);
             u.Alive = true;
             u.Cause = DeathCause.None;
             u.CorpseLeft = 0f;
@@ -316,6 +342,91 @@ namespace Zombineta.Auxilio
             u.Enfriamiento = 0.3f + (float)rng.NextDouble() * 0.5f;
             u.CambioCarril = (float)rng.NextDouble() * 0.8f;
             u.Mira = x < s.PeatonX ? 1 : -1;
+        }
+
+        // --- Que no se encimen -------------------------------------------------
+
+        /// <summary>
+        /// Un lugar libre donde aparecer: si hay otro zombie vivo del mismo carril a menos de la
+        /// separacion, se corre hacia afuera de la arena hasta quedar a la distancia justa.
+        /// </summary>
+        float Despejar(int indice, float x, int carril)
+        {
+            float sep = c.zombieSeparacion;
+            if (sep <= 0f)
+                return x;
+            float afuera = x < centro ? -1f : 1f;
+            var units = h.Units;
+            for (int vuelta = 0; vuelta < units.Length; vuelta++)
+            {
+                bool libre = true;
+                for (int j = 0; j < units.Length; j++)
+                {
+                    if (j == indice || !activo[j] || !units[j].Alive || units[j].Lane != carril)
+                        continue;
+                    if (Mathf.Abs(units[j].X - x) < sep)
+                    {
+                        x = units[j].X + afuera * sep;
+                        libre = false;
+                    }
+                }
+                if (libre)
+                    break;
+            }
+            return x;
+        }
+
+        /// <summary>
+        /// Dos zombies vivos del mismo carril no pueden estar a menos de la separacion. Cuando se
+        /// encimarian, el que esta mas lejos de la protagonista se queda atras del otro: asi hacen
+        /// fila, y el golpe que empuja a uno contra otro tampoco los superpone. Solo se mueve al
+        /// de atras, para que el que esta pegado a ella no sea empujado hacia adentro.
+        /// </summary>
+        void Separar()
+        {
+            float sep = c.zombieSeparacion;
+            if (sep <= 0f)
+                return;
+
+            var units = h.Units;
+            for (int carril = 0; carril < RunSimulation.LaneCount; carril++)
+            {
+                fila.Clear();
+                for (int i = 0; i < units.Length; i++)
+                    if (activo[i] && units[i].Alive && units[i].Lane == carril)
+                        fila.Add(i);
+                if (fila.Count < 2)
+                    continue;
+
+                // De los mas cercanos a ella a los mas lejanos: cada uno se acomoda contra los de adelante.
+                float px = s.PeatonX;
+                fila.Sort((a, b) =>
+                {
+                    int cmp = Mathf.Abs(units[a].X - px).CompareTo(Mathf.Abs(units[b].X - px));
+                    return cmp != 0 ? cmp : a.CompareTo(b);
+                });
+
+                for (int k = 1; k < fila.Count; k++)
+                {
+                    var u = units[fila[k]];
+                    float afuera = u.X < px ? -1f : 1f;
+                    for (int vuelta = 0; vuelta < fila.Count; vuelta++)
+                    {
+                        bool movido = false;
+                        for (int m = 0; m < k; m++)
+                        {
+                            float x = units[fila[m]].X;
+                            if (Mathf.Abs(u.X - x) < sep)
+                            {
+                                u.X = x + afuera * sep;
+                                movido = true;
+                            }
+                        }
+                        if (!movido)
+                            break;
+                    }
+                }
+            }
         }
 
         // --- La furgoneta ------------------------------------------------------

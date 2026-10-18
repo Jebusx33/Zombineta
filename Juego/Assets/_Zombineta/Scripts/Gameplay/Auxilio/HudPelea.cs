@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Zombineta.Core;
+using Zombineta.Juego.Screens;
+using Zombineta.Player;
 
 namespace Zombineta.Auxilio
 {
@@ -16,11 +18,14 @@ namespace Zombineta.Auxilio
         [Tooltip("Con esta vida o menos, los bordes de la pantalla se ponen rojos.")]
         [SerializeField] int vidaCritica = 2;
         [SerializeField] float segundosCartel = 1.4f;
+        [Tooltip("Segundos que la ayuda de controles queda grande al empezar la pelea; despues queda chica.")]
+        [SerializeField] float segundosAyuda = 7f;
 
-        Text auxilio, vida, ayudas, cartel;
+        Text auxilio, vida, ayudas, cartel, controles;
         Image barra, fondoBarra, rojo;
         GameObject panel;
         float cartelRestante;
+        float ayudaDesde = -1f;
 
         void Awake()
         {
@@ -64,6 +69,16 @@ namespace Zombineta.Auxilio
             sombra.effectColor = Color.black;
             sombra.effectDistance = new Vector2(5f, -5f);
             cartel.enabled = false;
+
+            // Ayuda de controles abajo, con las teclas o botones del dispositivo que se esta usando.
+            controles = NuevoTexto("Controles", transform, font, 30, TextAnchor.LowerCenter, Vector2.zero, new Vector2(1700f, 60f));
+            var kr = controles.rectTransform;
+            kr.anchorMin = kr.anchorMax = kr.pivot = new Vector2(0.5f, 0f);
+            kr.anchoredPosition = new Vector2(0f, 36f);
+            var ks = controles.gameObject.AddComponent<Outline>();
+            ks.effectColor = Color.black;
+            ks.effectDistance = new Vector2(2f, -2f);
+            controles.enabled = false;
         }
 
         void OnEnable()
@@ -81,7 +96,10 @@ namespace Zombineta.Auxilio
         void AlPasar(RunEvent ev)
         {
             if ((ev & RunEvent.PeleaEmpieza) != 0)
+            {
                 Mostrar("¡SIN NAFTA!", new Color(1f, 0.85f, 0.2f));
+                ayudaDesde = Time.unscaledTime;
+            }
             if ((ev & RunEvent.AuxilioLlega) != 0)
                 Mostrar("¡AUXILIO!", new Color(0.55f, 1f, 0.55f));
         }
@@ -115,6 +133,8 @@ namespace Zombineta.Auxilio
             if (ayudas.enabled)
                 ayudas.text = "AUXILIOS: " + s.Ayudas;
 
+            ActualizarControles(pelea);
+
             float rojoObjetivo = pelea && s.Vida <= vidaCritica ? 0.28f + 0.1f * Mathf.Sin(Time.unscaledTime * 6f) : 0f;
             var rc = rojo.color;
             rc.a = Mathf.MoveTowards(rc.a, rojoObjetivo, Time.unscaledDeltaTime * 2f);
@@ -133,6 +153,27 @@ namespace Zombineta.Auxilio
             }
             else if (cartel.enabled)
                 cartel.enabled = false;
+        }
+
+        /// <summary>
+        /// Los primeros segundos de la pelea, la ayuda de controles se ve grande y entera; despues
+        /// queda como una linea chica y translucida, para quien se olvide.
+        /// </summary>
+        void ActualizarControles(bool pelea)
+        {
+            controles.enabled = pelea && !run.Sim.State.FurgonetaEnCamino;
+            if (!controles.enabled)
+                return;
+
+            var scheme = InputDeviceTracker.Shared != null ? InputDeviceTracker.Shared.Current : ControlScheme.KeyboardMouse;
+            controles.text = ControlHints.TextForPelea(scheme);
+
+            float desde = ayudaDesde >= 0f ? Time.unscaledTime - ayudaDesde : float.MaxValue;
+            float k = Mathf.Clamp01((segundosAyuda - desde) / 1.5f); // 1 al principio, baja en el ultimo segundo y medio
+            controles.fontSize = Mathf.RoundToInt(Mathf.Lerp(24f, 40f, k));
+            var col = controles.color;
+            col.a = Mathf.Lerp(0.55f, 1f, k);
+            controles.color = col;
         }
 
         static Text NuevoTexto(string nombre, Transform padre, Font font, int tam, TextAnchor anclaje, Vector2 pos, Vector2 tamano)

@@ -28,6 +28,7 @@ namespace Zombineta.Juego.EditorTools
         {
             "Assets/_Zombineta/Scenes/Level_01.unity",
             "Assets/_Zombineta/Scenes/Level_01_Auxilio.unity",
+            "Assets/_Zombineta/Scenes/Level_01_Auxilio_v2.unity",
             "Assets/_Zombineta/Scenes/Level_02.unity",
             "Assets/_Zombineta/Scenes/Tutorial.unity",
             "Assets/_Zombineta/Scenes/Templates/NivelBase.unity",

@@ -139,6 +139,73 @@ namespace Zombineta.Juego.Tests
             Assert.IsTrue(reader.DebugLosePressed);
         }
 
+        // --- Movimiento libre a pie -----------------------------------------------------
+
+        [Test]
+        public void TheLeftStick_MovesFreelyInBothAxes()
+        {
+            Set(pad.leftStick, new Vector2(0.9f, -0.9f));
+            var intent = reader.Read();
+
+            Assert.IsTrue(intent.MovimientoLibre);
+            Assert.Greater(intent.MoveX, 0.5f);
+            Assert.Less(intent.MoveY, -0.5f);
+        }
+
+        [Test]
+        public void TheDpad_MovesLeftAndRight_WithoutTheTriggers()
+        {
+            Press(pad.dpad.left);
+            Assert.AreEqual(-1f, reader.Read().MoveX, 0.01f);
+        }
+
+        [Test]
+        public void TheTriggers_NoLongerWalk()
+        {
+            Set(pad.rightTrigger, 1f);
+            var intent = reader.Read();
+            Assert.AreEqual(0f, intent.MoveX, 0.001f);
+            Assert.AreEqual(DriveMode.Turbo, intent.Mode, "siguen siendo turbo en la moto");
+        }
+
+        [Test]
+        public void ASmallStickDrift_IsIgnored()
+        {
+            Set(pad.leftStick, new Vector2(0.1f, 0.12f));
+            var intent = reader.Read();
+            Assert.AreEqual(0f, intent.MoveX, 0.001f);
+            Assert.AreEqual(0f, intent.MoveY, 0.001f);
+        }
+
+        [Test]
+        public void WasdAndArrows_Walk()
+        {
+            Press(kb.dKey);
+            Press(kb.wKey);
+            var intent = reader.Read();
+            Assert.Greater(intent.MoveX, 0.5f);
+            Assert.Greater(intent.MoveY, 0.5f);
+            Assert.LessOrEqual(new Vector2(intent.MoveX, intent.MoveY).magnitude, 1.001f, "la diagonal no corre mas");
+            Release(kb.dKey);
+            Release(kb.wKey);
+
+            Press(kb.leftArrowKey);
+            Press(kb.downArrowKey);
+            intent = reader.Read();
+            Assert.Less(intent.MoveX, -0.5f);
+            Assert.Less(intent.MoveY, -0.5f);
+        }
+
+        [Test]
+        public void TheDeadzone_StartsFromZeroAndReachesOne()
+        {
+            Assert.AreEqual(Vector2.zero, PlayerInputReader.ApplyDeadzone(new Vector2(0.2f, 0f)));
+            var apenas = PlayerInputReader.ApplyDeadzone(new Vector2(PlayerInputReader.MoverDeadzone + 0.01f, 0f));
+            Assert.Less(apenas.x, 0.05f, "pasada la zona muerta arranca suave");
+            Assert.AreEqual(1f, PlayerInputReader.ApplyDeadzone(new Vector2(1f, 0f)).magnitude, 0.001f);
+            Assert.AreEqual(1f, PlayerInputReader.ApplyDeadzone(new Vector2(1f, 1f)).magnitude, 0.001f, "la diagonal del stick no pasa de 1");
+        }
+
         // --- Teclado y mouse (lo de siempre sigue andando) --------------------------
 
         [Test]

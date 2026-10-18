@@ -275,5 +275,210 @@ namespace Zombineta.Tests
             Assert.AreEqual(RunPhase.Running, sim.State.Phase, "sin ayudas no hay pelea");
             Assert.AreEqual(0, sim.State.Ayudas);
         }
+
+        // --- Movimiento libre ---------------------------------------------------
+
+        [Test]
+        public void SheWalksFreelyBetweenLanes_AndNotOutOfThem()
+        {
+            var sim = SinNafta(MakeConfig());
+            UnoSolo(sim, 50f);
+            Assert.AreEqual(1f, sim.State.PeatonY, 0.001f, "se baja en el carril de la moto");
+
+            Avanzar(sim, 0.2f, new PlayerIntent { MoveY = 1f });
+            Assert.AreEqual(1.6f, sim.State.PeatonY, 0.02f, "3 carriles por segundo");
+            Assert.AreEqual(sim.State.PeatonY, sim.State.LaneVisual, 0.0001f, "la vista la sigue sin escalones");
+            Assert.AreEqual(2, sim.State.Lane, "Lane es el carril mas cercano");
+
+            Avanzar(sim, 5f, new PlayerIntent { MoveY = 1f });
+            Assert.AreEqual(2f, sim.State.PeatonY, 0.001f, "el carril de arriba es el borde");
+            Avanzar(sim, 5f, new PlayerIntent { MoveY = -1f });
+            Assert.AreEqual(0f, sim.State.PeatonY, 0.001f, "el de abajo es el otro borde");
+        }
+
+        [Test]
+        public void TheStickIsAnalog_AndADiagonalMovesBothAxes()
+        {
+            var sim = SinNafta(MakeConfig());
+            UnoSolo(sim, 50f);
+            float x0 = sim.State.PeatonX;
+
+            Avanzar(sim, 0.4f, new PlayerIntent { MoveX = 0.5f, MoveY = -0.5f });
+
+            Assert.AreEqual(x0 + 1.2f, sim.State.PeatonX, 0.1f, "la mitad de 6 m/s");
+            Assert.AreEqual(1f - 0.6f, sim.State.PeatonY, 0.03f, "la mitad de 3 carriles/s");
+        }
+
+        [Test]
+        public void WithFreeMovement_TheLaneButtonsDoNotJumpALane()
+        {
+            var sim = SinNafta(MakeConfig());
+            UnoSolo(sim, 50f);
+
+            // Los mismos botones de arriba/abajo cuentan como carril en la moto: a pie no deben saltar.
+            sim.Tick(new PlayerIntent { LaneDelta = 1, MovimientoLibre = true }, Dt);
+
+            Assert.AreEqual(1f, sim.State.PeatonY, 0.001f);
+        }
+
+        [Test]
+        public void WithoutFreeMovement_TheLaneButtonsStillJumpALane()
+        {
+            var sim = SinNafta(MakeConfig());
+            UnoSolo(sim, 50f);
+
+            sim.Tick(new PlayerIntent { LaneDelta = 1 }, Dt);
+
+            Assert.AreEqual(2f, sim.State.PeatonY, 0.001f);
+            Assert.AreEqual(2, sim.State.Lane);
+        }
+
+        [Test]
+        public void APunch_ReachesAZombieInTheNextLane_WhenSheIsBetweenThem()
+        {
+            var sim = SinNafta(MakeConfig());
+            var z = UnoSolo(sim, 1f);
+            z.Lane = 0;
+
+            sim.State.PeatonY = 1f;      // carril entero de diferencia: no llega
+            var ev = sim.Tick(new PlayerIntent { Golpe = true }, Dt);
+            Assert.IsTrue((ev & RunEvent.GolpeAlAire) != 0, "un carril entero de diferencia");
+
+            sim.State.PeatonY = 0.5f;    // entre los dos carriles: llega
+            Avanzar(sim, 1f, Quieta);    // se enfria el golpe
+            z.Lane = 0; z.X = sim.State.PeatonX + 1f; z.Stagger = 0f; z.Alive = true; z.Preparando = -1f; z.Enfriamiento = 5f;
+            ev = sim.Tick(new PlayerIntent { Golpe = true }, Dt);
+            Assert.IsTrue((ev & RunEvent.Golpe) != 0, "a medio carril");
+        }
+
+        [Test]
+        public void AZombieLine_ClosesInOnHerLane_ButStopsWhenAlignedBetweenLanes()
+        {
+            var sim = SinNafta(MakeConfig());
+            var z = UnoSolo(sim, 3f);
+            z.Lane = 2;
+            z.CambioCarril = 0f;
+            sim.State.PeatonY = 0.5f;
+
+            Avanzar(sim, 4f, Quieta);
+
+            Assert.LessOrEqual(Mathf.Abs(z.Lane - 0.5f), 0.6f, "se alineo con ella en vez de ir a un carril entero distinto");
+        }
+
+        // --- Que no se encimen ---------------------------------------------------
+
+        static void AssertSeparados(RunSimulation sim, float sep, string cuando)
+        {
+            var units = sim.Horde.Units;
+            for (int i = 0; i < units.Length; i++)
+                for (int j = i + 1; j < units.Length; j++)
+                {
+                    if (!sim.Pelea.Activo(i) || !sim.Pelea.Activo(j) || !units[i].Alive || !units[j].Alive ||
+                        units[i].Lane != units[j].Lane)
+                        continue;
+                    Assert.GreaterOrEqual(Mathf.Abs(units[i].X - units[j].X), sep - 0.001f,
+                        cuando + ": los zombies " + i + " y " + j + " estan encimados en el carril " + units[i].Lane);
+                }
+        }
+
+        [TestCase(1)]
+        [TestCase(5)]
+        [TestCase(11)]
+        [TestCase(42)]
+        [TestCase(2026)]
+        public void TheZombiesThatStartTheFight_DoNotLandOnEachOther(int seed)
+        {
+            var c = MakeConfig();
+            c.hordeSeed = seed;
+            c.zombiesEnArena = 8;
+            var sim = SinNafta(c);
+
+            AssertSeparados(sim, c.zombieSeparacion, "al empezar");
+        }
+
+        [Test]
+        public void ZombiesPiledOnTheSameSpot_AreSeparatedIntoALine()
+        {
+            var c = MakeConfig();
+            var sim = SinNafta(c);
+            var units = sim.Horde.Units;
+            float px = sim.State.PeatonX;
+            int n = 0;
+            for (int i = 0; i < units.Length; i++)
+            {
+                if (!sim.Pelea.Activo(i))
+                    continue;
+                units[i].Alive = true;
+                units[i].Lane = 1;
+                units[i].X = px + 6f + 0.05f * n++;
+                units[i].Stagger = 0f;
+                units[i].Preparando = -1f;
+            }
+
+            sim.Tick(Quieta, Dt);
+            AssertSeparados(sim, c.zombieSeparacion, "apenas amontonados");
+
+            for (int t = 0; t < 120 && sim.State.Phase == RunPhase.Pelea; t++)
+            {
+                sim.Tick(Quieta, Dt);
+                AssertSeparados(sim, c.zombieSeparacion, "caminando hacia ella");
+            }
+        }
+
+        [Test]
+        public void ThePunchThatPushesOneZombieOverAnother_DoesNotStackThem()
+        {
+            var c = MakeConfig();
+            var sim = SinNafta(c);
+            var units = sim.Horde.Units;
+            float px = sim.State.PeatonX;
+            Zombineta.Enemies.ZombieUnit golpeado = null, detras = null;
+            for (int i = 0; i < units.Length; i++)
+            {
+                if (!sim.Pelea.Activo(i))
+                    continue;
+                var u = units[i];
+                if (golpeado == null)
+                {
+                    golpeado = u;
+                    u.Alive = true; u.Lane = sim.State.Lane; u.X = px + 0.8f; u.Golpes = 3;
+                    u.Stagger = 0f; u.Preparando = -1f; u.Enfriamiento = 5f;
+                }
+                else if (detras == null)
+                {
+                    detras = u;
+                    u.Alive = true; u.Lane = sim.State.Lane; u.X = px + 3f; u.Golpes = 3;
+                    u.Stagger = 0f; u.Preparando = -1f; u.Enfriamiento = 5f;
+                }
+                else
+                {
+                    u.Alive = false;
+                    u.CorpseLeft = 999f;
+                }
+            }
+
+            sim.Tick(new PlayerIntent { Golpe = true }, Dt);
+
+            Assert.GreaterOrEqual(Mathf.Abs(golpeado.X - detras.X), c.zombieSeparacion - 0.001f);
+            Assert.Greater(golpeado.X, detras.X, "el golpeado queda detras del otro, no adentro");
+        }
+
+        [Test]
+        public void ATurnedOffSeparation_LeavesThemAlone()
+        {
+            var c = MakeConfig();
+            c.zombieSeparacion = 0f;
+            var sim = SinNafta(c);
+            var units = sim.Horde.Units;
+            for (int i = 0; i < units.Length; i++)
+                if (sim.Pelea.Activo(i))
+                {
+                    units[i].Alive = true;
+                    units[i].Lane = 0;
+                    units[i].X = sim.State.PeatonX + 6f;
+                }
+            sim.Tick(Quieta, Dt);
+            Assert.AreEqual(units[0].X, units[1].X, 0.2f);
+        }
     }
 }
