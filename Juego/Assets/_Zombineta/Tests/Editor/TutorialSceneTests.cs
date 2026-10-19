@@ -112,7 +112,7 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
-        public void ElRecorridoEntraEn600Y700Metros()
+        public void ElRecorridoEntraEn300Y350Metros()
         {
             var levelScene = FindInScene<LevelScene>(escena);
             Assert.IsNotNull(levelScene);
@@ -120,12 +120,12 @@ namespace Zombineta.Juego.Tests
             float goalDistance = (float)typeof(LevelScene)
                 .GetField("goalDistance", BindingFlags.NonPublic | BindingFlags.Instance)
                 .GetValue(levelScene);
-            Assert.GreaterOrEqual(goalDistance, 600f, "LevelScene.goalDistance");
-            Assert.LessOrEqual(goalDistance, 700f, "LevelScene.goalDistance");
+            Assert.GreaterOrEqual(goalDistance, 300f, "LevelScene.goalDistance");
+            Assert.LessOrEqual(goalDistance, 350f, "LevelScene.goalDistance");
 
             var config = LoadTutorialConfig();
-            Assert.GreaterOrEqual(config.goalDistance, 600f, "TutorialConfig.goalDistance");
-            Assert.LessOrEqual(config.goalDistance, 700f, "TutorialConfig.goalDistance");
+            Assert.GreaterOrEqual(config.goalDistance, 300f, "TutorialConfig.goalDistance");
+            Assert.LessOrEqual(config.goalDistance, 350f, "TutorialConfig.goalDistance");
 
             var layout = levelScene.Layout;
             foreach (var item in levelScene.Items)

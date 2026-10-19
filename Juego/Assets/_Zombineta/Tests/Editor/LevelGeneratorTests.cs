@@ -297,6 +297,25 @@ namespace Zombineta.Juego.Tests
                 Assert.Less(lanes.Count, 3, "tres carriles tapados cerca de " + b.distance + " m");
             }
         }
+        [TestCase(1)] [TestCase(5)] [TestCase(42)]
+        public void LooseObstacles_AreNeverSideBySideInNeighbourLanes(int seed)
+        {
+            var s = Settings(seed);
+            var entries = LevelGenerator.Generate(s, Length);
+            var sueltos = entries.FindAll(e => e.kind == LevelEntryKind.Obstacle);
+            foreach (var a in sueltos)
+                foreach (var b in sueltos)
+                    if (Mathf.Abs(a.lane - b.lane) == 1)
+                    {
+                        // Los de una pieza de rampa van en su carril; los sueltos respetan la distancia.
+                        bool deRampa = entries.Exists(r => r.kind == LevelEntryKind.Ramp &&
+                            (r.lane == a.lane || r.lane == b.lane) &&
+                            (Mathf.Abs(r.distance - a.distance) < 6f || Mathf.Abs(r.distance - b.distance) < 6f));
+                        if (!deRampa)
+                            Assert.GreaterOrEqual(Mathf.Abs(a.distance - b.distance), s.separacionEntreCarriles,
+                                "obstaculos pegados en carriles vecinos a " + a.distance + " y " + b.distance);
+                    }
+        }
 
         [Test]
         public void ADroughtTramo_HasNoFuel_ButStillHasTheOtherResources()

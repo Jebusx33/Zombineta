@@ -66,6 +66,10 @@ namespace Zombineta.Tutorial
         public const string AlcanzadoTexto = "¡Te alcanzaron! Dispará o usá el faro";
         public const string FinalTexto = "¡Listo! Ya sabés jugar";
         public const string RebobinadoTexto = "Volvamos a intentarlo.";
+        public const string RepuestoTexto = "Te dejamos otro más adelante.";
+
+        /// <summary>Metros por delante de la moto donde se repone lo que se paso de largo.</summary>
+        public const float AdelanteRepuesto = 28f;
 
         readonly RunSimulation sim;
         readonly LevelRuntime level;
@@ -93,8 +97,8 @@ namespace Zombineta.Tutorial
         /// <summary>Se cumplio el ultimo paso: el tutorial termino.</summary>
         public event Action Terminado;
 
-        /// <summary>El jugador se movio de golpe (rebobinado): la camara tiene que saltar.</summary>
-        public event Action Rebobinado;
+        /// <summary>Un item del recorrido cambio de lugar (indice en LevelRuntime.Items, metros nuevos).</summary>
+        public event Action<int, float> ItemMovido;
 
         public TutorialSesion(RunSimulation sim, LevelRuntime level, IReadOnlyList<Paso> pasos, AjustesTutorial ajustes)
         {
@@ -123,8 +127,11 @@ namespace Zombineta.Tutorial
         /// </summary>
         public bool PermiteGanar => progreso.Terminado || EsUltimoPaso;
 
-        /// <summary>Cuantas veces rebobino (para tests y depuracion).</summary>
+        /// <summary>Cuantas veces rebobino (para tests y depuracion). El tutorial ya no rebobina: queda en 0.</summary>
         public int Rebobinados { get; private set; }
+
+        /// <summary>Cuantas veces repuso por delante lo que el jugador se paso de largo.</summary>
+        public int Repuestos { get; private set; }
 
         /// <summary>Cuantas veces perdono un alcance de la horda.</summary>
         public int Perdones { get; private set; }
@@ -276,12 +283,9 @@ namespace Zombineta.Tutorial
             if (s.Phase == RunPhase.Won && !PermiteGanar)
             {
                 // Llego al refugio sin estar en el ultimo paso (F2, o un salto de tiempo que se
-                // comio el guardia de la meta): no cuenta. Se deshace y se vuelve como el guardia.
-                s.Phase = RunPhase.Running;
-                Rebobinar(s, Mathf.Max(0f, s.PlayerX - TutorialRewind.RetrocesoMeta), null);
-                ContarPickups(out _, out _, out _);
-                prevLane = s.Lane;
-                return;
+                // comio el guardia de la meta): nunca se vuelve atras. Los pasos que faltaban se
+                // dejan y la llegada cuenta como la del ultimo.
+                SaltarAlUltimo();
             }
 
             if (s.Phase != RunPhase.Running && s.Phase != RunPhase.Won)
@@ -343,7 +347,7 @@ namespace Zombineta.Tutorial
             }
         }
 
-        // --- Rebobinado: nunca dejar que la moto (que avanza sola) se saltee un tramo entero --
+        // --- Reposicion: nunca dejar que la moto (que avanza sola) se saltee un tramo entero --
 
         void RebobinarSiHaceFalta(RunState s)
         {
@@ -361,33 +365,71 @@ namespace Zombineta.Tutorial
 
             var decision = TutorialRewind.Decidir(
                 actual.condicion, EsUltimoPaso, distancias, otras, s.PlayerX, sim.Config.goalDistance, s.Airborne);
+            if (!decision.Rebobinar)
+                return;
 
-            if (decision.Rebobinar)
-                Rebobinar(s, decision.PlayerX, decision.LimpiarItems ? kind : null);
+            // Nunca hacia atras: lo que se paso de largo vuelve a aparecer por delante. Y si ya
+            // no hay lugar antes del refugio (o es la guardia de la meta), se pasa al ultimo paso.
+            if (!(decision.LimpiarItems && kind.HasValue && Reponer(s, kind.Value)))
+                SaltarAlUltimo();
         }
 
-        /// <summary>Las mismas escrituras que "Probar desde aca": PlayerX, y la horda detras suyo.</summary>
-        void Rebobinar(RunState s, float playerX, LevelEntryKind? limpiar)
+        void SaltarAlUltimo()
         {
-            s.PlayerX = playerX;
-            MoverHorda(s.PlayerX - DistanciaTenida());
+            if (progreso.SaltarAlUltimo())
+                PasoCambiado?.Invoke();
+        }
 
-            if (limpiar.HasValue && level != null)
+        /// <summary>
+        /// Lleva la primera tanda de items del tipo (los de la misma distancia, uno por carril) a
+        /// unos metros por delante de la moto, en un lugar sin otros items cerca. Devuelve false si
+        /// no entra antes del refugio.
+        /// </summary>
+        bool Reponer(RunState s, LevelEntryKind kind)
+        {
+            if (level == null)
+                return false;
+            var items = level.Items;
+
+            float tanda = float.MaxValue;
+            for (int i = 0; i < items.Length; i++)
+                if (items[i].Entry.kind == kind && items[i].Entry.height <= 0f)
+                    tanda = Mathf.Min(tanda, items[i].Entry.distance);
+            if (tanda == float.MaxValue)
+                return false;
+
+            otrasPorTipo.TryGetValue(kind, out var otras);
+            float tope = sim.Config.goalDistance - TutorialRewind.MargenMeta;
+            float destino = s.PlayerX + AdelanteRepuesto;
+            while (destino < tope && !Libre(destino, otras))
+                destino += 2f;
+            if (destino >= tope)
+                return false;
+
+            for (int i = 0; i < items.Length; i++)
             {
-                var items = level.Items;
-                for (int i = 0; i < items.Length; i++)
-                {
-                    if (items[i].Entry.kind != limpiar.Value)
-                        continue;
-                    items[i].Consumed = false;
-                    if (i < consumidoPrevio.Length)
-                        consumidoPrevio[i] = false;
-                }
+                if (items[i].Entry.kind != kind || Mathf.Abs(items[i].Entry.distance - tanda) > 0.01f)
+                    continue;
+                level.Mover(i, destino);
+                if (i < consumidoPrevio.Length)
+                    consumidoPrevio[i] = false;
+                ItemMovido?.Invoke(i, destino);
             }
 
-            Rebobinados++;
-            Rebobinado?.Invoke();
-            Aviso?.Invoke(RebobinadoTexto);
+            PrepararDistancias(items);
+            Repuestos++;
+            Aviso?.Invoke(RepuestoTexto);
+            return true;
+        }
+
+        static bool Libre(float x, List<float> otras)
+        {
+            if (otras == null)
+                return true;
+            foreach (var o in otras)
+                if (Mathf.Abs(o - x) < TutorialRewind.DistanciaLibre)
+                    return false;
+            return true;
         }
 
         void PrepararDistancias(LevelRuntime.Item[] items)

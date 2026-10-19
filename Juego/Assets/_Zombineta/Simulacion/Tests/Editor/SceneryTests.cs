@@ -175,7 +175,9 @@ namespace Zombineta.Tests
 
         // --- Reservas: la calle lateral de un cruce ---------------------------------
 
-        static SceneryLayout ConReservas(params Reserva[] tramos) =>
+        static SceneryLayout ConReservas(params Reserva[] tramos) => ConReservas(false, tramos);
+
+        static SceneryLayout ConReservas(bool huecoLimpio, params Reserva[] tramos) =>
             new SceneryLayout(new[] { 4f, 6f, 5f }, new[] { 1f, 1f, 1f }, 0f, 0f, 0f, false, 7, -10f,
                 x =>
                 {
@@ -183,7 +185,21 @@ namespace Zombineta.Tests
                         if (r.Hasta > x)
                             return r;
                     return null;
-                });
+                }, huecoLimpio);
+
+        [Test]
+        public void WithACleanHole_NoTileOverlapsTheReservedStretch()
+        {
+            var layout = ConReservas(true, new Reserva(20f, 32f), new Reserva(80f, 85f));
+
+            var tiles = Snapshot(layout, 200f);
+            foreach (var t in tiles)
+            {
+                Assert.IsFalse(t.X < 32f && t.End > 20f, "pisa el primer tramo: " + t.X + ".." + t.End);
+                Assert.IsFalse(t.X < 85f && t.End > 80f, "pisa el segundo tramo: " + t.X + ".." + t.End);
+            }
+            Assert.IsTrue(tiles.Exists(t => t.X == 32f), "la capa sigue justo despues del tramo");
+        }
 
         [Test]
         public void NoTileStarts_InsideAReservedStretch()

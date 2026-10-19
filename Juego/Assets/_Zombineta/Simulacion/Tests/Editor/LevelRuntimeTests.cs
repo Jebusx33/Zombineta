@@ -336,6 +336,74 @@ namespace Zombineta.Tests
 
             Assert.IsFalse(level.Items[0].Consumed);
         }
+        // --- Contacto por largo: la punta de la moto contra el borde de las cosas ------------
+
+        [Test]
+        public void AnObstacle_IsHitWhenTheNoseTouchesItsNearEdge_NotItsCenter()
+        {
+            var c = MakeConfig();
+            c.motoNariz = 1.4f;
+            var sim = new RunSimulation(c);
+            var auto = new LevelEntry(100f, 1, LevelEntryKind.Obstacle) { medioLargo = 3f };
+            var level = new LevelRuntime(MakeLevel(auto));
+
+            sim.State.PlayerX = 95f; // la punta en 96,4: todavia no toca el borde (97)
+            Advance(sim, level, Dt, Driving(DriveMode.Normal));
+            Assert.IsFalse(level.Items[0].Consumed);
+
+            Advance(sim, level, 0.1f, Driving(DriveMode.Normal));
+            Assert.IsTrue(level.Items[0].Consumed, "la punta llego al borde del auto");
+            Assert.Less(sim.State.PlayerX, 97f, "choco bastante antes del centro del auto");
+        }
+
+        [Test]
+        public void APickup_IsCollectedWhenTheNoseReachesIt()
+        {
+            var c = MakeConfig();
+            c.motoNariz = 1.4f;
+            var sim = new RunSimulation(c);
+            var bidon = new LevelEntry(100f, 1, LevelEntryKind.Fuel) { medioLargo = 0.5f };
+            var level = new LevelRuntime(MakeLevel(bidon));
+
+            sim.State.PlayerX = 98f; // la punta llega a 99,57: ya toca el borde del bidon (99,5)
+            Advance(sim, level, Dt, Driving(DriveMode.Normal));
+
+            Assert.IsTrue(level.Items[0].Consumed, "se agarra apenas lo toca la punta");
+        }
+
+        [Test]
+        public void ChangingLane_IntoALongObstacleAlongside_Crashes()
+        {
+            var c = MakeConfig();
+            c.motoNariz = 1.4f;
+            c.motoCola = 1.4f;
+            var sim = new RunSimulation(c);
+            var auto = new LevelEntry(100f, 2, LevelEntryKind.Obstacle) { medioLargo = 3f };
+            var level = new LevelRuntime(MakeLevel(auto));
+
+            sim.State.PlayerX = 100f; // a la par del auto, en el carril de al lado
+            Advance(sim, level, 0.2f, Driving(DriveMode.Normal));
+            Assert.IsFalse(level.Items[0].Consumed, "en otro carril no lo toca");
+
+            sim.State.PlayerX = 99f;
+            Advance(sim, level, Dt, new PlayerIntent { Mode = DriveMode.Normal, LaneDelta = 1 });
+            Advance(sim, level, 0.2f, Driving(DriveMode.Normal));
+            Assert.IsTrue(level.Items[0].Consumed, "meterse en su carril estando a la par es chocarlo");
+        }
+
+        [Test]
+        public void WithoutLengths_ItIsTheOldPointContact()
+        {
+            var sim = new RunSimulation(MakeConfig());
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(100f, 1, LevelEntryKind.Fuel)));
+
+            sim.State.PlayerX = 99.5f;
+            Advance(sim, level, Dt, Driving(DriveMode.Normal));
+            Assert.IsFalse(level.Items[0].Consumed);
+
+            Advance(sim, level, 0.1f, Driving(DriveMode.Normal));
+            Assert.IsTrue(level.Items[0].Consumed);
+        }
 
         // --- Fase 4: bidones bloqueados y arena despejada ---------------------------
 

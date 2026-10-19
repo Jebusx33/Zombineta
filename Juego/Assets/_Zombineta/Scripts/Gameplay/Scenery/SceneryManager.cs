@@ -176,7 +176,7 @@ namespace Zombineta.Scenery
 
                 layout = new SceneryLayout(widths, weights, cfg.gapChance, cfg.gapMin,
                                            cfg.gapMax, cfg.noImmediateRepeat, cfg.seed,
-                                           LayoutStartX, reservas);
+                                           LayoutStartX, reservas, cfg.huecoLimpio);
             }
 
             static SpriteRenderer Acompanante(SceneryVariant v)

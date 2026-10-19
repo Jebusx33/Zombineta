@@ -26,6 +26,10 @@ namespace Zombineta.Juego.Levels
                  "Ademas se respeta el ancho del dibujo de cada una (ver LevelFootprint).")]
         public float minGapSameLane = 2f;
 
+        [Tooltip("Metros minimos entre obstaculos de carriles vecinos: los dibujos son mas altos " +
+                 "que un carril y, pegados, no se sabe cual esta en cual.")]
+        public float separacionEntreCarriles = 8f;
+
         [Header("Recursos (cada cuantos metros)")]
         public float fuelEvery = 120f;
         public float batteryEvery = 450f;
@@ -190,7 +194,8 @@ namespace Zombineta.Juego.Levels
                     int lane = rng.Next(Lanes);
                     if (InRampZone(all, at, lane) || Occupied(all, at, lane, LevelEntryKind.Obstacle, s.minGapSameLane) ||
                         NearKind(all, at, lane, LevelEntryKind.ZombieFront, 10f) || WouldBlock(all, at, lane) ||
-                        WouldHide(all, at, lane) || HiddenByObstacle(all, at, lane, LevelEntryKind.Obstacle))
+                        WouldHide(all, at, lane) || HiddenByObstacle(all, at, lane, LevelEntryKind.Obstacle) ||
+                        ObstaculoEnCarrilVecino(all, at, lane, s.separacionEntreCarriles))
                         continue;
                     Add(new LevelEntry(at, lane, LevelEntryKind.Obstacle));
                     placed++;
@@ -250,6 +255,15 @@ namespace Zombineta.Juego.Levels
                 else l2 = true;
             }
             return l0 && l1 && l2;
+        }
+
+        static bool ObstaculoEnCarrilVecino(List<LevelEntry> all, float at, int lane, float separacion)
+        {
+            foreach (var e in all)
+                if (e.kind == LevelEntryKind.Obstacle && e.height <= 0f && Mathf.Abs(e.lane - lane) == 1 &&
+                    Mathf.Abs(e.distance - at) < separacion)
+                    return true;
+            return false;
         }
 
         /// <summary>Si algo del mismo carril, en el piso, tocaria a esta cosa segun el ancho de los dos dibujos.</summary>

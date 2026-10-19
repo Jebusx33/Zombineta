@@ -51,6 +51,7 @@ namespace Zombineta.Scenery
         readonly Random rng;
         readonly List<TilePlacement> placed = new List<TilePlacement>();
         readonly Func<float, Reserva?> reservas;
+        readonly bool huecoLimpio;
 
         float cursor;
         int lastVariant = -1;
@@ -67,11 +68,14 @@ namespace Zombineta.Scenery
         /// de ese X (o null si no hay mas). En un tramo reservado no arranca ningun tile: lo ocupa
         /// algo de otra capa (la calle lateral de un cruce), que se dibuja encima. El tile que
         /// viene de antes puede meterse por debajo: asi no queda un agujero al costado.</param>
+        /// <param name="huecoLimpio">Ningun tile pisa un tramo reservado, ni el que viene de antes:
+        /// si no entra entero antes del tramo, la capa sigue despues (arboles sobre la bocacalle).</param>
         public SceneryLayout(float[] widths, float[] weights, float gapChance, float gapMin,
                              float gapMax, bool noImmediateRepeat, int seed, float startX,
-                             Func<float, Reserva?> reservas = null)
+                             Func<float, Reserva?> reservas = null, bool huecoLimpio = false)
         {
             this.reservas = reservas;
+            this.huecoLimpio = huecoLimpio;
             if (widths == null || weights == null || widths.Length != weights.Length)
                 throw new ArgumentException("widths y weights tienen que tener el mismo largo");
 
@@ -119,7 +123,8 @@ namespace Zombineta.Scenery
                 if (reservas != null)
                 {
                     var r = reservas(cursor);
-                    if (r.HasValue && cursor >= r.Value.Desde)
+                    if (r.HasValue && (cursor >= r.Value.Desde ||
+                                       (huecoLimpio && cursor + widths[v] > r.Value.Desde)))
                     {
                         cursor = Math.Max(cursor, r.Value.Hasta);
                         continue;

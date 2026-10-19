@@ -49,6 +49,13 @@ namespace Zombineta.Player
                 SortingLayer.NameToID("Juego"),
             };
 
+            // La moto no le hace sombra a su propio faro: la luz nace adentro de su silueta y el
+            // caster cortaba el haz en seco (quedaba un parche quemado pegado a la cola y el resto
+            // oscurecido). castsShadows y no enabled: ShadowCasterQuality maneja enabled.
+            if (transform.parent != null)
+                foreach (var caster in transform.parent.GetComponentsInChildren<ShadowCaster2D>(true))
+                    caster.castsShadows = false;
+
             front = CrearHazDelantero();
         }
 

@@ -125,6 +125,19 @@ namespace Zombineta.Core
         public float explosionScareRadius = 16f;
         public float explosionScareSeconds = 1f;
 
+        [Header("Contacto con el recorrido")]
+        [Tooltip("Metros del centro de la moto a su punta delantera. Se agarra y se choca cuando " +
+                 "la punta toca el borde de algo, no cuando el centro pasa por el centro. 0 = puntual.")]
+        [Min(0f)] public float motoNariz = 0f;
+        [Tooltip("Metros del centro de la moto a su parte de atras.")]
+        [Min(0f)] public float motoCola = 0f;
+        [Tooltip("Medio largo de los pickups cuando el nivel no lo dice, en metros.")]
+        [Min(0f)] public float medioLargoRecurso = 0f;
+        [Tooltip("Medio largo de los obstaculos cuando el nivel no lo dice, en metros.")]
+        [Min(0f)] public float medioLargoObstaculo = 0f;
+        [Tooltip("Medio largo de los zombies de frente cuando el nivel no lo dice, en metros.")]
+        [Min(0f)] public float medioLargoZombie = 0f;
+
         [Header("Choque contra obstaculo")]
         public float crashStunDuration = 0.8f;
         public float crashFuelPenalty = 8f;

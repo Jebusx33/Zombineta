@@ -114,7 +114,9 @@ namespace Zombineta.Tutorial
             sesion.Aviso += MostrarAviso;
             sesion.PasoCambiado += MostrarPasoActual;
             sesion.Terminado += MostrarFinal;
-            sesion.Rebobinado += SaltarCamara;
+            var nivel = FindAnyObjectByType<Zombineta.Juego.Levels.LevelScene>();
+            if (nivel != null)
+                sesion.ItemMovido += nivel.MoverItem;
 
             MostrarPasoActual();
         }
@@ -172,13 +174,6 @@ namespace Zombineta.Tutorial
         {
             if (cartel != null)
                 cartel.MostrarAviso(texto, duracionAviso);
-        }
-
-        void SaltarCamara()
-        {
-            // Sin esto la camara cruzaria en un cuadro todo el tramo rebobinado.
-            if (camaraFollow != null)
-                camaraFollow.SnapNextFrame();
         }
 
         void ArmarRects()

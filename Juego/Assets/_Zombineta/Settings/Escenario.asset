@@ -27,6 +27,7 @@ MonoBehaviour:
     seed: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
     huecosPara: 
+    huecoLimpio: 0
     proyectaSombra: 0
     material: {fileID: 0}
     variants:
@@ -56,6 +57,7 @@ MonoBehaviour:
     seed: 11
     tint: {r: 1, g: 1, b: 1, a: 1}
     huecosPara: Calle
+    huecoLimpio: 0
     proyectaSombra: 0
     material: {fileID: 0}
     variants:
@@ -109,6 +111,7 @@ MonoBehaviour:
     seed: 41
     tint: {r: 0.55, g: 0.5, b: 0.7, a: 1}
     huecosPara: Calle
+    huecoLimpio: 1
     proyectaSombra: 1
     material: {fileID: 0}
     variants:
@@ -138,6 +141,7 @@ MonoBehaviour:
     seed: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
     huecosPara: 
+    huecoLimpio: 0
     proyectaSombra: 0
     material: {fileID: 0}
     variants:
@@ -179,6 +183,7 @@ MonoBehaviour:
     seed: 1
     tint: {r: 0.21, g: 0.21, b: 0.235, a: 1}
     huecosPara: 
+    huecoLimpio: 0
     proyectaSombra: 0
     material: {fileID: 0}
     variants:
@@ -200,14 +205,15 @@ MonoBehaviour:
     sortingOrder: 2010
     sortingLayer: Frente
     baselineY: -5.6
-    height: 8.5
-    gapChance: 0.6
-    gapMin: 6
-    gapMax: 18
+    height: 5.95
+    gapChance: 1
+    gapMin: 80
+    gapMax: 150
     noImmediateRepeat: 1
     seed: 51
-    tint: {r: 0.16, g: 0.13, b: 0.2, a: 0.9}
+    tint: {r: 0.16, g: 0.13, b: 0.2, a: 0.55}
     huecosPara: 
+    huecoLimpio: 0
     proyectaSombra: 0
     material: {fileID: 0}
     variants:
@@ -253,14 +259,15 @@ MonoBehaviour:
     sortingOrder: 2000
     sortingLayer: Frente
     baselineY: -5.4
-    height: 5.8
+    height: 4.06
     gapChance: 1
-    gapMin: 10
-    gapMax: 22
+    gapMin: 160
+    gapMax: 260
     noImmediateRepeat: 1
     seed: 5
-    tint: {r: 0.18, g: 0.14, b: 0.26, a: 0.92}
+    tint: {r: 0.18, g: 0.14, b: 0.26, a: 0.55}
     huecosPara: 
+    huecoLimpio: 0
     proyectaSombra: 0
     material: {fileID: 0}
     variants:

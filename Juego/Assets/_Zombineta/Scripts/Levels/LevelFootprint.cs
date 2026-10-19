@@ -12,12 +12,15 @@ namespace Zombineta.Juego.Levels
     /// </summary>
     public static class LevelFootprint
     {
-        /// <summary>Coche a su escala actual (616 px a 100 px/u = 6,2 m) con un poco de aire.</summary>
-        public const float Obstacle = 3.3f;
+        /// <summary>
+        /// Coche a su escala actual en LevelItemPalette (75 % de 616 px a 100 px/u: 4,65 m) con un
+        /// poco de aire.
+        /// </summary>
+        public const float Obstacle = 2.5f;
 
         /// <summary>
-        /// Carriles de arriba que tapa un obstaculo: el coche mide 3,1 m y los carriles estan a
-        /// 0,99 m. Los dos numeros de obstaculo (ancho y carriles) dependen del tamano del dibujo:
+        /// Carriles de arriba que tapa un obstaculo: el coche mide 2,3 m de alto (al 75 %) y los
+        /// carriles estan a 0,99 m. Los dos numeros de obstaculo (ancho y carriles) dependen del tamano del dibujo:
         /// si arte lo cambia, se ajustan juntos.
         /// </summary>
         public const int ObstacleCoversLanes = 2;

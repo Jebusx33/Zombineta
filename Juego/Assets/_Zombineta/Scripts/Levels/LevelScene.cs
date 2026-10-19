@@ -59,6 +59,12 @@ namespace Zombineta.Juego.Levels
         [SerializeField] Sprite shadowSprite;
         [SerializeField] Color shadowColor = new Color(0f, 0f, 0f, 0.45f);
 
+        [Header("Carril")]
+        [Tooltip("En juego, una marca suave en el piso bajo cada obstaculo: deja claro en que " +
+                 "carril esta, aunque el dibujo pise los carriles de al lado.")]
+        [SerializeField] bool marcarCarril = true;
+        [SerializeField] Color colorMarca = new Color(1f, 0.25f, 0.2f, 0.22f);
+
         [Header("Luz")]
         [Tooltip("Ambiente de este nivel: cuanta luz recibe cada capa de dibujo. Lo usa LightingDirector.")]
         [SerializeField] PerfilDeLuz perfil;
@@ -118,8 +124,37 @@ namespace Zombineta.Juego.Levels
             definition.name = gameObject.scene.name;
             foreach (var item in Items)
                 if (item.gameObject.activeInHierarchy)
-                    definition.entries.Add(item.ToEntry(layout));
+                {
+                    var entry = item.ToEntry(layout);
+                    entry.medioLargo = MedioLargoDe(item, layout);
+                    definition.entries.Add(entry);
+                }
             return definition;
+        }
+
+        /// <summary>
+        /// Cuanto ocupa a lo largo el item, en metros desde su centro, segun lo que se ve: el
+        /// dibujo de su vista. Un poco menos que el dibujo (sus bordes suelen ser aire, ruedas o
+        /// brazos): chocar con el aire se siente injusto. 0 si no tiene dibujo (vale el de GameConfig).
+        /// </summary>
+        float MedioLargoDe(LevelItem item, LevelLayout layout)
+        {
+            float factor;
+            switch (item.kind)
+            {
+                case LevelEntryKind.Obstacle: factor = 0.8f; break;
+                case LevelEntryKind.ZombieFront: factor = 0.5f; break;
+                case LevelEntryKind.Fuel:
+                case LevelEntryKind.Battery:
+                case LevelEntryKind.Ammo: factor = 1f; break;
+                default: return 0f;
+            }
+
+            var vista = item.transform.Find(LookChildName);
+            var sr = vista != null ? vista.GetComponent<SpriteRenderer>() : item.GetComponent<SpriteRenderer>();
+            if (sr == null || sr.sprite == null || layout.WorldUnitsPerMeter <= 0f)
+                return 0f;
+            return sr.bounds.extents.x / layout.WorldUnitsPerMeter * factor;
         }
 
         /// <summary>
@@ -220,6 +255,8 @@ namespace Zombineta.Juego.Levels
             {
                 SyncRotation(existente, look);
                 ApoyarVista(item, look, existente);
+                if (marcarCarril && item.kind == LevelEntryKind.Obstacle && item.height <= 0f)
+                    MarcarCarril(item, existente.gameObject);
                 return; // Ya la armo el editor en esta misma sesion (sin reload de escena).
             }
 
@@ -231,6 +268,8 @@ namespace Zombineta.Juego.Levels
             go.hideFlags = HideFlags.None;
             ApoyarVista(item, look, go.transform);
             ShadowCasterQuality.Apply(go);
+            if (marcarCarril && item.kind == LevelEntryKind.Obstacle && item.height <= 0f)
+                MarcarCarril(item, go);
 
             var prefabSr = go.GetComponent<SpriteRenderer>();
             if (prefabSr != null)
@@ -286,6 +325,22 @@ namespace Zombineta.Juego.Levels
                         break;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Lleva la vista del item a otros metros, en su mismo carril (el tutorial repone por
+        /// delante lo que el jugador se paso de largo). indice es el de LevelRuntime.Items.
+        /// </summary>
+        public void MoverItem(int indice, float metros)
+        {
+            foreach (var (item, i, _, _) in bound)
+            {
+                if (i != indice || item == null)
+                    continue;
+                var p = item.transform.position;
+                item.transform.position = new Vector3(Layout.ToWorldX(metros), p.y, p.z);
+                return;
             }
         }
 
@@ -626,6 +681,65 @@ namespace Zombineta.Juego.Levels
             var posicion = new Vector3(0f, y, 0f);
             if (vista.localPosition != posicion)
                 vista.localPosition = posicion;
+        }
+
+        const string MarcaChildName = "Marca de carril";
+        static Sprite marcaSprite;
+
+        /// <summary>
+        /// Una franja suave sobre el piso del carril del obstaculo, del largo del dibujo. Es hija
+        /// de la vista: se apaga con ella cuando el obstaculo se consume.
+        /// </summary>
+        void MarcarCarril(LevelItem item, GameObject vista)
+        {
+            var sr = vista.GetComponent<SpriteRenderer>();
+            if (sr == null || sr.sprite == null || vista.transform.Find(MarcaChildName) != null)
+                return;
+
+            var go = new GameObject(MarcaChildName);
+            go.transform.SetParent(vista.transform, false);
+            var marca = go.AddComponent<SpriteRenderer>();
+            marca.sprite = MarcaSprite();
+            marca.color = colorMarca;
+            marca.sortingLayerName = LaneSorting.GameLayer;
+            marca.sortingOrder = LaneSorting.Order(item.lane, SortSlot.Shadow) - 2;
+
+            // En mundo: centrada en la linea de su carril, del largo del obstaculo y del alto de
+            // medio carril. Sin girar con la vista (el auto va inclinado; la marca, no).
+            var layout = Layout;
+            float ancho = sr.bounds.size.x * 0.8f;
+            float alto = layout.LaneSpacing * 0.55f;
+            go.transform.rotation = Quaternion.identity;
+            go.transform.position = new Vector3(sr.bounds.center.x, layout.LaneY(item.lane), 0f);
+            var padre = vista.transform.lossyScale;
+            var tam = marca.sprite.bounds.size;
+            go.transform.localScale = new Vector3(
+                ancho / Mathf.Max(0.0001f, tam.x * Mathf.Abs(padre.x)),
+                alto / Mathf.Max(0.0001f, tam.y * Mathf.Abs(padre.y)), 1f);
+        }
+
+        /// <summary>Una capsula blanca de bordes suaves, armada una sola vez.</summary>
+        static Sprite MarcaSprite()
+        {
+            if (marcaSprite != null)
+                return marcaSprite;
+            const int w = 128, h = 32;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp };
+            var px = new Color32[w * h];
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    float dx = Mathf.Max(0f, Mathf.Abs(x - (w - 1) * 0.5f) - (w - h) * 0.5f) / (h * 0.5f);
+                    float dy = Mathf.Abs(y - (h - 1) * 0.5f) / (h * 0.5f);
+                    float d = Mathf.Sqrt(dx * dx + dy * dy);
+                    byte a = (byte)(Mathf.Clamp01((1f - d) * 2.5f) * 255f);
+                    px[y * w + x] = new Color32(255, 255, 255, a);
+                }
+            tex.SetPixels32(px);
+            tex.Apply(false, true);
+            marcaSprite = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f);
+            marcaSprite.name = "MarcaDeCarril";
+            return marcaSprite;
         }
 
         static void SyncRotation(Transform vista, LevelItemPalette.Look look)

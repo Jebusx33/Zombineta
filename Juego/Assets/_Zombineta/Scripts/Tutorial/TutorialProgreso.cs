@@ -60,6 +60,15 @@ namespace Zombineta.Tutorial
         public Paso Actual => Terminado ? null : pasos[indice];
         public bool Terminado => pasos == null || indice >= pasos.Count;
 
+        /// <summary>Deja los pasos que faltan y pasa al ultimo. Devuelve si cambio de paso.</summary>
+        public bool SaltarAlUltimo()
+        {
+            if (Terminado || indice >= pasos.Count - 1)
+                return false;
+            indice = pasos.Count - 1;
+            return true;
+        }
+
         /// <summary>Consume un cuadro. Devuelve true si el paso actual se cumplio y se avanzo.</summary>
         public bool Avanzar(in EntradaPaso e)
         {
