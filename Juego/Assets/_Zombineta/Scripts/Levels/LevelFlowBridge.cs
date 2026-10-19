@@ -103,7 +103,7 @@ namespace Zombineta.Juego.Levels
 
             var state = run.Sim.State;
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
+#if UNITY_EDITOR || DEBUG
             if (input != null && state.Phase == RunPhase.Running)
             {
                 if (input.DebugWinPressed)

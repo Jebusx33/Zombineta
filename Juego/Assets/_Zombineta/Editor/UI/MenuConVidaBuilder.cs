@@ -31,7 +31,7 @@ namespace Zombineta.Juego.EditorTools
         public static void Aplicar()
         {
             var escena = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
-            var screen = Object.FindFirstObjectByType<MainMenuScreen>(FindObjectsInactive.Include);
+            var screen = Object.FindAnyObjectByType<MainMenuScreen>(FindObjectsInactive.Include);
             var canvas = screen.GetComponent<Canvas>();
             var root = canvas.transform;
             var cam = Camera.main;

@@ -691,7 +691,7 @@ namespace Zombineta.Juego.EditorTools
         {
             var scene = EditorSceneManager.OpenScene(escenaPath, OpenSceneMode.Single);
 
-            var fx = Object.FindFirstObjectByType<FxManager>();
+            var fx = Object.FindAnyObjectByType<FxManager>();
             if (fx != null)
             {
                 var so = new SerializedObject(fx);
@@ -710,7 +710,7 @@ namespace Zombineta.Juego.EditorTools
                 Debug.LogWarning("Sin FxManager en " + escenaPath);
             }
 
-            var rueda = Object.FindFirstObjectByType<WheelDustView>();
+            var rueda = Object.FindAnyObjectByType<WheelDustView>();
             if (rueda != null)
                 CambiarHumo(rueda, humo);
 

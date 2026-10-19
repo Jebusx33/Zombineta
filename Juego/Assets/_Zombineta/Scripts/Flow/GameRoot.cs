@@ -283,7 +283,7 @@ namespace Zombineta.Juego.Flow
         {
             if (string.IsNullOrEmpty(scene))
                 return false;
-            foreach (var ls in FindObjectsByType<Zombineta.Juego.Levels.LevelScene>(FindObjectsSortMode.None))
+            foreach (var ls in FindObjectsByType<Zombineta.Juego.Levels.LevelScene>())
                 if (ls.gameObject.scene.name == scene)
                     return true;
             return false;

@@ -16,7 +16,7 @@ namespace Zombineta.Juego.EditorTools.Levels
     {
         public const float GridMeters = LevelScene.GridMeters;
 
-        public static LevelScene FindScene() => Object.FindFirstObjectByType<LevelScene>();
+        public static LevelScene FindScene() => Object.FindAnyObjectByType<LevelScene>();
 
         // --- Colocar -----------------------------------------------------------------
 

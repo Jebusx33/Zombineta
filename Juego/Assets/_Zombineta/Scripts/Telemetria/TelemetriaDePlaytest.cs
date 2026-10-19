@@ -5,12 +5,12 @@ using Zombineta.Core;
 
 namespace Zombineta.Telemetria
 {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
+#if UNITY_EDITOR || DEBUG
     /// <summary>
     /// Anota cada partida de prueba en un CSV (ver SesionTelemetria): un evento por fila y un
     /// resumen al final. Se crea sola al darle Play (no hay que ponerla en ninguna escena), sigue
     /// a cualquier RunController que aparezca (nivel nuevo, reintento) y solo existe en el editor y
-    /// en builds de desarrollo.
+    /// en builds de desarrollo (símbolo DEBUG).
     ///
     /// Los archivos quedan en Juego/Playtests/ (editor) o en la carpeta de datos del juego
     /// (build). Cada fila se escribe en el momento: si el editor se cuelga, el archivo conserva
