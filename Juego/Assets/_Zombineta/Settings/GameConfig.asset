@@ -18,7 +18,7 @@ MonoBehaviour:
   laneChangeDuration: 0.15
   normalSpeed: 12
   turboSpeedMultiplier: 1.8
-  reverseSpeedMultiplier: -0.5
+  reverseSpeedMultiplier: 0.35
   fuelMax: 100
   fuelBurnPerSecond: 2.6
   turboBurnMultiplier: 3
@@ -50,6 +50,11 @@ MonoBehaviour:
   explosionRadius: 8
   explosionScareRadius: 16
   explosionScareSeconds: 1
+  motoNariz: 1.4
+  motoCola: 1.4
+  medioLargoRecurso: 0.5
+  medioLargoObstaculo: 2
+  medioLargoZombie: 0.4
   crashStunDuration: 0.05
   crashFuelPenalty: 1
   rampLaunchSlope: 0.35
@@ -67,6 +72,25 @@ MonoBehaviour:
   fallStunDuration: 1.6
   fallFuelPenalty: 10
   aerialPickupTolerance: 1.5
+  ayudas: 0
+  peleaSegundos: 25
+  vidaPelea: 5
+  gapTrasAuxilio: 45
+  arenaMedioAncho: 12
+  peatonVelocidad: 6
+  golpeAlcance: 1.6
+  golpeEnfriamiento: 0.35
+  golpeDuracion: 0.18
+  golpeEmpuje: 2.5
+  golpeFreno: 0.5
+  zombiesEnArena: 8
+  zombieVelocidadPelea: 2.2
+  zombieAlcance: 1.1
+  zombiePreparacion: 0.5
+  zombieEnfriamiento: 1
+  invulnerableTrasGolpe: 0.8
+  furgonetaVelocidad: 28
+  furgonetaDesde: 24
   worldUnitsPerMeter: 0.75
   cameraTrailMeters: 18
   jumpHeightToWorld: 2.125

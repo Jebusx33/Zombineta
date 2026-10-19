@@ -38,6 +38,16 @@ namespace Zombineta.Level
                 Items[i] = new Item { Entry = definition.entries[i], Consumed = false };
         }
 
+        /// <summary>Lleva un item a otros metros y lo deja sin agarrar (el tutorial repone por delante).</summary>
+        public void Mover(int indice, float metros)
+        {
+            var item = Items[indice];
+            var entry = item.Entry;
+            entry.distance = metros;
+            item.Entry = entry;
+            item.Consumed = false;
+        }
+
         public void Reset()
         {
             for (int i = 0; i < Items.Length; i++)
@@ -56,6 +66,11 @@ namespace Zombineta.Level
 
             float min = Mathf.Min(fromX, toX);
             float max = Mathf.Max(fromX, toX);
+            var cfg = sim.Config;
+            // Lo que ocupo la moto en este cuadro, de la cola en el punto de partida a la punta
+            // en el de llegada: lo que toque eso se encontro.
+            float ocupaDesde = min - cfg.motoCola;
+            float ocupaHasta = max + cfg.motoNariz;
             float lane = sim.State.LaneVisual;
             bool forward = toX > fromX;
             var events = RunEvent.None;
@@ -65,11 +80,24 @@ namespace Zombineta.Level
                 var item = Items[i];
                 float d = item.Entry.distance;
 
-                // Ordenadas por distancia: pasado el tramo, no hay mas candidatas.
-                if (d > max)
-                    break;
-                if (d < min || item.Consumed)
+                if (item.Consumed)
                     continue;
+
+                // La rampa sigue siendo un punto bajo las ruedas (el salto esta calibrado asi);
+                // lo demas se toca cuando la moto y su largo se pisan.
+                // Sin cortar al primer item pasado el tramo: el tutorial mueve items hacia
+                // adelante y el orden por distancia deja de valer. Son pocos: recorrerlos todos sale gratis.
+                if (item.Entry.kind == LevelEntryKind.Ramp)
+                {
+                    if (d > max || d < min)
+                        continue;
+                }
+                else
+                {
+                    float h = MedioLargo(item.Entry, cfg);
+                    if (d - h > ocupaHasta || d + h < ocupaDesde)
+                        continue;
+                }
                 if (Mathf.Abs(lane - item.Entry.lane) > LaneTolerance)
                     continue;
 
@@ -107,6 +135,22 @@ namespace Zombineta.Level
             }
 
             return events;
+        }
+
+        /// <summary>Lo que ocupa a lo largo un item, desde su centro: el suyo o el de su tipo.</summary>
+        public static float MedioLargo(LevelEntry e, GameConfig cfg)
+        {
+            if (e.medioLargo > 0f)
+                return e.medioLargo;
+            switch (e.kind)
+            {
+                case LevelEntryKind.Obstacle: return cfg.medioLargoObstaculo;
+                case LevelEntryKind.ZombieFront: return cfg.medioLargoZombie;
+                case LevelEntryKind.Fuel:
+                case LevelEntryKind.Battery:
+                case LevelEntryKind.Ammo: return cfg.medioLargoRecurso;
+                default: return 0f;
+            }
         }
 
         static RunEvent Apply(RunSimulation sim, LevelEntryKind kind)

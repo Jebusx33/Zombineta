@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9cee9c0d0d171e4f948c61233c56465, type: 3}
   m_Name: TutorialConfig
   m_EditorClassIdentifier: 
-  goalDistance: 650
+  goalDistance: 325
   startingGap: 150
   laneSpacing: 0.99
   laneChangeDuration: 0.15
   normalSpeed: 12
   turboSpeedMultiplier: 1.8
-  reverseSpeedMultiplier: -0.5
+  reverseSpeedMultiplier: 0.35
   fuelMax: 100
   fuelBurnPerSecond: 2.6
   turboBurnMultiplier: 3
@@ -40,12 +40,21 @@ MonoBehaviour:
   rubberBandStartGap: 25
   rubberBandRange: 35
   rubberBandMaxBonus: 9
+  mercyGap: 0
+  mercySlowFactor: 0.88
+  tramoPressureBlendMeters: 80
+  tramoDarknessFadeMeters: 30
   shotRangeMeters: 60
   deathScareRadius: 4
   deathScareSeconds: 0.5
   explosionRadius: 8
   explosionScareRadius: 16
   explosionScareSeconds: 1
+  motoNariz: 1.4
+  motoCola: 1.4
+  medioLargoRecurso: 0.5
+  medioLargoObstaculo: 2
+  medioLargoZombie: 0.4
   crashStunDuration: 0.2
   crashFuelPenalty: 2
   rampLaunchSlope: 0.35
@@ -63,6 +72,25 @@ MonoBehaviour:
   fallStunDuration: 1.6
   fallFuelPenalty: 10
   aerialPickupTolerance: 1.5
+  ayudas: 0
+  peleaSegundos: 25
+  vidaPelea: 5
+  gapTrasAuxilio: 45
+  arenaMedioAncho: 12
+  peatonVelocidad: 6
+  golpeAlcance: 1.6
+  golpeEnfriamiento: 0.35
+  golpeDuracion: 0.18
+  golpeEmpuje: 2.5
+  golpeFreno: 0.5
+  zombiesEnArena: 8
+  zombieVelocidadPelea: 2.2
+  zombieAlcance: 1.1
+  zombiePreparacion: 0.5
+  zombieEnfriamiento: 1
+  invulnerableTrasGolpe: 0.8
+  furgonetaVelocidad: 28
+  furgonetaDesde: 24
   worldUnitsPerMeter: 0.75
   cameraTrailMeters: 18
   jumpHeightToWorld: 2.125

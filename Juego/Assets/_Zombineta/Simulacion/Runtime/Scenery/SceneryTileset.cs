@@ -101,6 +101,11 @@ namespace Zombineta.Scenery
                  "esta: aca no se ponen tiles donde va, por ejemplo, la calle lateral de un cruce.")]
         public string huecosPara = "";
 
+        [Tooltip("Con 'Huecos Para': ningun tile pisa el hueco, ni el que viene de antes (sobre la " +
+                 "bocacalle no va ningun arbol). Sin marcar, el de antes se mete por debajo para no " +
+                 "dejar un agujero entre edificios.")]
+        public bool huecoLimpio;
+
         [Tooltip("Los tiles de esta capa tiran sombra sobre la calle cuando pasan cerca de una luz " +
                  "del escenario (arboles, postes). No marcar en capas de fondo que tienen las luces " +
                  "ni en las del frente.")]

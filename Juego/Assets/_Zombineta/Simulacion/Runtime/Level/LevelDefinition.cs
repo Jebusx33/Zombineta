@@ -34,6 +34,10 @@ namespace Zombineta.Level
         [Tooltip("Variante. En un zombie de frente, el indice de su tipo en Zombies.asset.")]
         public int variant;
 
+        [Tooltip("Metros desde el centro hasta cada punta: lo que ocupa a lo largo. 0 = el de su " +
+                 "tipo en GameConfig. Lo completa el nivel con el tamano de su dibujo.")]
+        public float medioLargo;
+
         public LevelEntry(float distance, int lane, LevelEntryKind kind, float height = 0f, int variant = 0)
         {
             this.distance = distance;
@@ -41,6 +45,7 @@ namespace Zombineta.Level
             this.kind = kind;
             this.height = height;
             this.variant = variant;
+            medioLargo = 0f;
         }
     }
 

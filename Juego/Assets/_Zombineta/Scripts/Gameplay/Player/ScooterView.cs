@@ -43,7 +43,6 @@ namespace Zombineta.Player
         // Se multiplican sobre el color del personaje: con arte real, reemplazar el color
         // pintaria todo el dibujo de un tono plano. Un tinte leve alcanza para leer el modo.
         [SerializeField] Color turboTint = new Color(1f, 0.9f, 0.65f);
-        [SerializeField] Color reverseTint = new Color(0.75f, 0.88f, 1f);
         [SerializeField] Color stunnedTint = new Color(0.5f, 0.5f, 0.5f);
 
         [Header("Llegada")]
@@ -178,8 +177,7 @@ namespace Zombineta.Player
                 tint = stunnedTint;
             else if (state.Mode == DriveMode.Turbo)
                 tint = turboTint;
-            else if (state.Mode == DriveMode.Reverse)
-                tint = reverseTint;
+            // Frenando no se tine: el azul se leia como un error del sprite (playtest).
 
             body.color = characterColor * tint;
         }

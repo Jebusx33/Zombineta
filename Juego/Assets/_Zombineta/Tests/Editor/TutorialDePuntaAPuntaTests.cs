@@ -82,6 +82,8 @@ namespace Zombineta.Juego.Tests
             public int cuadrosSeguidosSinNafta, maxSinNafta;
             public int cuadrosSeguidosSinBateria, maxSinBateria;
             public int cuadrosSeguidosSinBalas, maxSinBalas;
+            /// <summary>Lo mas que retrocedio la moto de un cuadro al siguiente, en metros.</summary>
+            public float retrocesoMaximo;
         }
 
         Corrida Armar()
@@ -225,6 +227,7 @@ namespace Zombineta.Juego.Tests
             for (c.cuadros = 0; c.cuadros < MaxCuadros && !c.terminado; c.cuadros++)
             {
                 var intent = jugador.Decidir(c.sesion, s);
+                float antes = s.PlayerX;
 
                 // El orden del juego: TutorialDirector.Update (-150), RunController.Update
                 // (-100), TutorialDirector.LateUpdate.
@@ -235,6 +238,7 @@ namespace Zombineta.Juego.Tests
                 if ((eventos & RunEvent.Lost) != 0)
                     c.lostEmitidos++;
                 c.sesion.DespuesDelTick(eventos, Dt);
+                c.retrocesoMaximo = Mathf.Max(c.retrocesoMaximo, antes - s.PlayerX);
 
                 var actual = c.sesion.Actual;
                 Assert.AreNotEqual(RunPhase.Lost, s.Phase, "cuadro " + c.cuadros + ": en el tutorial nunca se pierde");
@@ -287,17 +291,34 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
-        public void UnJugadorLentoRebobinaYIgualCompleta()
+        public void UnJugadorLentoNuncaVuelveAtrasYIgualTermina()
         {
             var c = Armar();
-            // 52 s sin tocar nada con el primer cartel: la moto anda sola, pasa por todos los
-            // tramos (se come rampas, bidones, baterias y balas) y llega al guardia de la meta.
-            Jugar(c, new Jugador { demora = 52f });
+            // 12 s sin tocar nada con el primer cartel: la moto anda sola y se pasa de largo las
+            // rampas, los bidones y las baterias. Nada la hace volver: lo que necesita aparece
+            // adelante, y lo que ya no entra antes del refugio se deja.
+            Jugar(c, new Jugador { demora = 12f });
 
-            VerificarCompleto(c);
-            Assert.GreaterOrEqual(c.sesion.Rebobinados, 2, "rebobino por la meta y por los tramos que se paso");
-            CollectionAssert.Contains(c.avisos, TutorialSesion.RebobinadoTexto);
-            CollectionAssert.Contains(c.avisos, TutorialSesion.RecargaNaftaTexto, "se quedo sin nafta esperando");
+            Assert.IsTrue(c.terminado, "el tutorial termino");
+            Assert.AreEqual(RunPhase.Won, c.sim.State.Phase);
+            Assert.AreEqual(0, c.lostEmitidos);
+            Assert.AreEqual(0, c.sesion.Rebobinados, "nunca rebobina");
+            Assert.GreaterOrEqual(c.sesion.Repuestos, 1, "repuso adelante lo que se paso de largo");
+            CollectionAssert.Contains(c.avisos, TutorialSesion.RepuestoTexto);
+            CollectionAssert.DoesNotContain(c.avisos, TutorialSesion.RebobinadoTexto);
+            Assert.LessOrEqual(c.retrocesoMaximo, 1f, "la moto nunca salta hacia atras");
+        }
+
+        [Test]
+        public void UnJugadorQueNoHaceNada_LlegaIgualAlRefugio()
+        {
+            var c = Armar();
+            Jugar(c, new Jugador { demora = 60f });
+
+            Assert.IsTrue(c.terminado);
+            Assert.AreEqual(RunPhase.Won, c.sim.State.Phase);
+            Assert.AreEqual(0, c.sesion.Rebobinados);
+            Assert.LessOrEqual(c.retrocesoMaximo, 1f);
         }
 
         [Test]

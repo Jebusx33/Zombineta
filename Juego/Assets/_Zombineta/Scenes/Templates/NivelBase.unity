@@ -1700,7 +1700,7 @@ Transform:
   m_GameObject: {fileID: 1049661737}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -0.62, y: 0.45, z: 0}
+  m_LocalPosition: {x: -0.45, y: 0.42, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1719,7 +1719,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta::Zombineta.Player.HeadlightView
   run: {fileID: 1170739137}
-  fullIntensity: 1.6
+  fullIntensity: 1.1
   flickerBelow: 0.25
   flickerSpeed: 18
   frontOffset: 2
@@ -1743,7 +1743,7 @@ MonoBehaviour:
     rid: -2
   m_SelectionSources:
     rid: 2255679022845133034
-  m_FalloffIntensity: 0.5
+  m_FalloffIntensity: 0.7
   m_Color: {r: 1, g: 0.96, b: 0.82, a: 1}
   m_Intensity: 1.6
   m_LightVolumeIntensity: 1
@@ -1771,7 +1771,7 @@ MonoBehaviour:
     m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
   m_PointLightInnerAngle: 45
   m_PointLightOuterAngle: 70
-  m_PointLightInnerRadius: 1.9
+  m_PointLightInnerRadius: 0
   m_PointLightOuterRadius: 26.6
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
@@ -1971,6 +1971,7 @@ MonoBehaviour:
     endClear: 150
     obstaclesPer100m: 1.6
     minGapSameLane: 2
+    separacionEntreCarriles: 8
     fuelEvery: 120
     batteryEvery: 450
     ammoEvery: 380
@@ -1979,10 +1980,13 @@ MonoBehaviour:
     frontZombieEvery: 150
     heavyFrontZombieChance: 0.3
   tramos: []
+  ayudas: 0
   looks: {fileID: 11400000, guid: 526ce8163bc04b242a6e808590ae5fbe, type: 2}
   lookSeed: 12345
   shadowSprite: {fileID: 21300000, guid: 8c1bb8c15f5a47141b8d044f53482a77, type: 3}
   shadowColor: {r: 0, g: 0, b: 0, a: 0.45}
+  marcarCarril: 1
+  colorMarca: {r: 1, g: 0.25, b: 0.2, a: 0.22}
   perfil: {fileID: 11400000, guid: 4d1ab6a5e1baa0a4488968a8390a2194, type: 2}
 --- !u!4 &1171654547
 Transform:
@@ -2439,7 +2443,6 @@ MonoBehaviour:
   shootFps: 20
   characterColor: {r: 1, g: 1, b: 1, a: 1}
   turboTint: {r: 1, g: 0.9, b: 0.65, a: 1}
-  reverseTint: {r: 0.75, g: 0.88, b: 1, a: 1}
   stunnedTint: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   arrivalCoastMeters: 6
   shadow: {fileID: 510499157}
@@ -3240,6 +3243,7 @@ MonoBehaviour:
   bodyScale: 1.9
   looks: {fileID: 11400000, guid: 526ce8163bc04b242a6e808590ae5fbe, type: 2}
   lookSeed: 12345
+  avisoDeAtaque: {r: 1, g: 0.25, b: 0.2, a: 1}
   overrunMeters: 12
   litTint: {r: 1.25, g: 1.2, b: 1.1, a: 1}
   litLeanDegrees: -12

@@ -18,7 +18,7 @@ MonoBehaviour:
     cantidad: 1.5
     resaltar: 0
     hordaSuelta: 0
-  - texto: "Manten\xE9 {Reverse} para frenar y retroceder."
+  - texto: "Manten\xE9 {Reverse} para frenar."
     condicion: 1
     cantidad: 1
     resaltar: 0

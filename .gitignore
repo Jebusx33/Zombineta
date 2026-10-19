@@ -151,3 +151,6 @@ desktop.ini
 
 # Material de referencia (no es parte del juego)
 *.pdf
+
+# Builds comprimidos para compartir: no van al repo
+*.zip

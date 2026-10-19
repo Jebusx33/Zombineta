@@ -27,6 +27,24 @@ namespace Zombineta.UI
         [Tooltip("Velocidad de parpadeo en Hz.")]
         [SerializeField] float blinkHz = 3f;
 
+        [Tooltip("Cada icono sigue la altura en pantalla de su carril (la camara hace zoom: un " +
+                 "icono fijo se despega de su carril y parece avisar en otro).")]
+        [SerializeField] bool anclarAlCarril = true;
+        [Tooltip("Unidades de mundo sobre la linea del carril donde va el icono.")]
+        [SerializeField] float alturaSobreCarril = 0.7f;
+
+        /// <summary>Lleva el icono a la altura en pantalla de su carril (Canvas Screen Space - Overlay).</summary>
+        void Anclar(RectTransform icono, int carril)
+        {
+            var cam = Camera.main;
+            if (!anclarAlCarril || cam == null)
+                return;
+            var mundo = new Vector3(cam.transform.position.x, run.LaneToWorldY(carril) + alturaSobreCarril, 0f);
+            float y = cam.WorldToScreenPoint(mundo).y;
+            var p = icono.position;
+            icono.position = new Vector3(p.x, y, p.z);
+        }
+
         void LateUpdate()
         {
             if (run == null || run.Level == null || run.Sim == null)
@@ -71,6 +89,7 @@ namespace Zombineta.UI
                     var c = icon.color;
                     c.a = alpha;
                     icon.color = c;
+                    Anclar(icon.rectTransform, i);
                 }
             }
         }

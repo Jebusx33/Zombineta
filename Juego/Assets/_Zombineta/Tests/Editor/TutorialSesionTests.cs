@@ -199,7 +199,7 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
-        public void UnWonEnUnPasoQueNoEsElUltimo_NoTerminaElTutorialYRebobina()
+        public void UnWonEnUnPasoQueNoEsElUltimo_DejaLosPasosQueFaltanYTerminaSinVolverAtras()
         {
             var cfg = Config();
             var sim = new RunSimulation(cfg);
@@ -214,11 +214,10 @@ namespace Zombineta.Juego.Tests
             sim.State.Phase = RunPhase.Won;
             sesion.DespuesDelTick(RunEvent.None, Dt);
 
-            Assert.IsFalse(sesion.EstaTerminado);
-            Assert.AreEqual(0, sesion.Progreso.Indice);
-            Assert.AreEqual(RunPhase.Running, sim.State.Phase);
-            Assert.AreEqual(cfg.goalDistance - TutorialRewind.RetrocesoMeta, sim.State.PlayerX, 1e-3f);
-            Assert.AreEqual(1, sesion.Rebobinados);
+            Assert.IsTrue(sesion.EstaTerminado, "la llegada cuenta como la del ultimo paso");
+            Assert.AreEqual(RunPhase.Won, sim.State.Phase);
+            Assert.AreEqual(cfg.goalDistance, sim.State.PlayerX, 1e-3f, "nunca vuelve atras");
+            Assert.AreEqual(0, sesion.Rebobinados);
         }
 
         [Test]
@@ -293,7 +292,7 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
-        public void NuncaRebobinaEnElAire()
+        public void LoQueSePasoDeLargo_ApareceAdelante_YNuncaEnElAire()
         {
             var cfg = Config();
             var sim = new RunSimulation(cfg);
@@ -307,13 +306,19 @@ namespace Zombineta.Juego.Tests
             sim.State.Airborne = true;
             sim.State.Height = 2f;
             sesion.DespuesDelTick(RunEvent.None, Dt);
-            Assert.AreEqual(0, sesion.Rebobinados);
+            Assert.AreEqual(0, sesion.Repuestos);
 
             sim.State.Airborne = false;
             sim.State.Height = 0f;
+            float x = sim.State.PlayerX;
             sesion.DespuesDelTick(RunEvent.None, Dt);
-            Assert.AreEqual(1, sesion.Rebobinados);
-            Assert.AreEqual(60f, sim.State.PlayerX, 1e-3f);
+            Assert.AreEqual(1, sesion.Repuestos);
+            Assert.AreEqual(0, sesion.Rebobinados);
+            Assert.AreEqual(x, sim.State.PlayerX, 1e-3f, "la moto no se mueve: la rampa viene a ella");
+
+            var rampa = System.Array.Find(nivel.Items, i => i.Entry.kind == LevelEntryKind.Ramp);
+            Assert.AreEqual(x + TutorialSesion.AdelanteRepuesto, rampa.Entry.distance, 1e-3f);
+            Assert.IsFalse(rampa.Consumed);
         }
     }
 }
