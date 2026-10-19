@@ -38,7 +38,19 @@ namespace Zombineta.Auxilio
         [SerializeField] float altoFurgoneta = 3.6f;
         [SerializeField] Color colorFaros = new Color(1f, 0.92f, 0.7f);
 
+        [Header("Lo que sueltan los zombies")]
+        [Tooltip("Dibujo del botiquin. Vacio: se usa uno de prueba (cruz verde).")]
+        [SerializeField] Sprite botiquin;
+        [Tooltip("Dibujo de las balas. Vacio: se usa uno de prueba (tres balas).")]
+        [SerializeField] Sprite balas;
+        [Tooltip("Alto de lo que queda en el piso, en unidades de mundo.")]
+        [SerializeField] float altoDrop = 0.7f;
+        [Tooltip("Segundos antes de irse en que empieza a titilar.")]
+        [SerializeField] float segundosTitileo = 3f;
+        [SerializeField] float rebote = 0.08f;
+
         SpriteRenderer cuerpo, golpe, van;
+        readonly System.Collections.Generic.List<SpriteRenderer> drops = new System.Collections.Generic.List<SpriteRenderer>();
         Light2D faros;
         Renderer[] moto;
         bool motoEscondida;
@@ -117,6 +129,84 @@ namespace Zombineta.Auxilio
             EsconderMoto(aPie);
             DibujarProtagonista(s, aPie);
             DibujarFurgoneta(s);
+            DibujarDrops(s);
+        }
+
+        /// <summary>Botiquines y balas en el piso: titilan cuando estan por irse.</summary>
+        void DibujarDrops(RunState s)
+        {
+            var lista = run.Sim.Pelea.Drops;
+            int n = s.Phase == RunPhase.Pelea ? lista.Count : 0;
+
+            for (int i = 0; i < n; i++)
+            {
+                while (drops.Count <= i)
+                    drops.Add(NuevoDrop(drops.Count));
+                var d = lista[i];
+                var sr = drops[i];
+                sr.sprite = d.Kind == DropKind.Botiquin ? SpriteBotiquin() : SpriteBalas();
+                sr.enabled = Mathf.Repeat(Time.time * 10f, 1f) < 0.5f || d.Left > segundosTitileo;
+                float escala = altoDrop / Mathf.Max(0.01f, sr.sprite.bounds.size.y);
+                sr.transform.localScale = Vector3.one * escala;
+                float salto = Mathf.Abs(Mathf.Sin(Time.time * 4f + i)) * rebote;
+                float y = run.LaneToWorldY(d.Lane) + salto - sr.sprite.bounds.min.y * escala;
+                sr.transform.position = new Vector3(run.ToWorldX(d.X), y, 0f);
+                sr.sortingOrder = LaneSorting.Order(d.Lane, SortSlot.Item);
+            }
+            for (int i = n; i < drops.Count; i++)
+                drops[i].enabled = false;
+        }
+
+        SpriteRenderer NuevoDrop(int indice)
+        {
+            var go = new GameObject("Drop " + indice);
+            go.transform.SetParent(transform, false);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sortingLayerID = LaneSorting.GameLayerId;
+            sr.enabled = false;
+            return sr;
+        }
+
+        Sprite SpriteBotiquin()
+        {
+            if (botiquin == null)
+                botiquin = Dibujar(24, (x, y) =>
+                {
+                    bool borde = x < 2 || y < 2 || x >= 22 || y >= 22;
+                    bool cruz = (x >= 9 && x < 15 && y >= 4 && y < 20) || (y >= 9 && y < 15 && x >= 4 && x < 20);
+                    if (cruz) return new Color(0.2f, 0.85f, 0.35f, 1f);
+                    return borde ? new Color(0.15f, 0.15f, 0.15f, 1f) : new Color(0.96f, 0.96f, 0.96f, 1f);
+                });
+            return botiquin;
+        }
+
+        Sprite SpriteBalas()
+        {
+            if (balas == null)
+                balas = Dibujar(24, (x, y) =>
+                {
+                    // Tres balas paradas: cuerpo dorado y punta mas clara.
+                    for (int k = 0; k < 3; k++)
+                    {
+                        int x0 = 3 + k * 7;
+                        if (x < x0 || x >= x0 + 5 || y < 3 || y >= 21)
+                            continue;
+                        return y >= 15 ? new Color(0.85f, 0.55f, 0.3f, 1f) : new Color(1f, 0.82f, 0.25f, 1f);
+                    }
+                    return Color.clear;
+                });
+            return balas;
+        }
+
+        /// <summary>Un sprite de prueba dibujado pixel a pixel (hasta que haya arte).</summary>
+        static Sprite Dibujar(int lado, System.Func<int, int, Color> pixel)
+        {
+            var tex = new Texture2D(lado, lado, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point };
+            for (int y = 0; y < lado; y++)
+                for (int x = 0; x < lado; x++)
+                    tex.SetPixel(x, y, pixel(x, y));
+            tex.Apply();
+            return Sprite.Create(tex, new Rect(0f, 0f, lado, lado), new Vector2(0.5f, 0f), lado);
         }
 
         void EsconderMoto(bool esconder)

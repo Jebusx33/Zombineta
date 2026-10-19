@@ -24,13 +24,20 @@ namespace Zombineta.Auxilio
         [SerializeField] float segundosGolpeRecibido = 0.35f;
         [Tooltip("Segundos que la ayuda de controles queda grande al empezar la pelea; despues queda chica.")]
         [SerializeField] float segundosAyuda = 7f;
+        [Tooltip("Segundos que queda en pantalla la nota de la pelea con sus premios.")]
+        [SerializeField] float segundosNota = 3f;
+        [Tooltip("Segundos que queda el aviso de lo recogido del suelo (botiquin, balas).")]
+        [SerializeField] float segundosRecogida = 1.1f;
 
-        Text auxilio, vida, ayudas, cartel, controles, combo, pocaNafta;
+        Text auxilio, vida, ayudas, cartel, controles, combo, pocaNafta, nota, premios, recogida;
         Image barra, fondoBarra, rojo;
         GameObject panel;
         float cartelRestante;
         float ayudaDesde = -1f;
         float comboRestante;
+        float notaRestante;
+        float notaOpacidadPremios = 1f;
+        float recogidaRestante;
         float golpeRecibido;     // 1 al recibir un golpe, baja a 0
         Vector2 vidaPosicion;
 
@@ -85,6 +92,38 @@ namespace Zombineta.Auxilio
             sombra.effectColor = Color.black;
             sombra.effectDistance = new Vector2(5f, -5f);
             cartel.enabled = false;
+
+            // La nota de la pelea (letra grande) y debajo lo que dejo el auxilio.
+            nota = NuevoTexto("Nota", transform, font, 150, TextAnchor.MiddleCenter, Vector2.zero, new Vector2(900f, 220f));
+            var nr = nota.rectTransform;
+            nr.anchorMin = nr.anchorMax = nr.pivot = new Vector2(0.5f, 0.5f);
+            nr.anchoredPosition = new Vector2(0f, -40f);
+            nota.fontStyle = FontStyle.Bold;
+            var notaSombra = nota.gameObject.AddComponent<Outline>();
+            notaSombra.effectColor = Color.black;
+            notaSombra.effectDistance = new Vector2(6f, -6f);
+            nota.enabled = false;
+
+            premios = NuevoTexto("Premios", transform, font, 44, TextAnchor.MiddleCenter, Vector2.zero, new Vector2(1200f, 70f));
+            var mr = premios.rectTransform;
+            mr.anchorMin = mr.anchorMax = mr.pivot = new Vector2(0.5f, 0.5f);
+            mr.anchoredPosition = new Vector2(0f, -170f);
+            premios.fontStyle = FontStyle.Bold;
+            var premiosSombra = premios.gameObject.AddComponent<Outline>();
+            premiosSombra.effectColor = Color.black;
+            premiosSombra.effectDistance = new Vector2(3f, -3f);
+            premios.enabled = false;
+
+            // Lo que se levanta del suelo: aparece bajo la vida.
+            recogida = NuevoTexto("Recogida", transform, font, 44, TextAnchor.MiddleCenter, Vector2.zero, new Vector2(800f, 70f));
+            var rr = recogida.rectTransform;
+            rr.anchorMin = rr.anchorMax = rr.pivot = new Vector2(0.5f, 1f);
+            rr.anchoredPosition = new Vector2(0f, -190f);
+            recogida.fontStyle = FontStyle.Bold;
+            var recogidaSombra = recogida.gameObject.AddComponent<Outline>();
+            recogidaSombra.effectColor = Color.black;
+            recogidaSombra.effectDistance = new Vector2(3f, -3f);
+            recogida.enabled = false;
 
             // Aviso de poca nafta (solo en niveles con auxilio): debajo del marco del combustible.
             pocaNafta = NuevoTexto("Poca nafta", transform, font, 30, TextAnchor.UpperLeft, Vector2.zero, new Vector2(420f, 44f));
@@ -143,7 +182,14 @@ namespace Zombineta.Auxilio
                 ayudaDesde = Time.unscaledTime;
             }
             if ((ev & RunEvent.AuxilioTermina) != 0)
+            {
                 Mostrar("¡A CORRER!", new Color(0.55f, 1f, 0.55f));
+                MostrarNota();
+            }
+            if ((ev & RunEvent.BotiquinRecogido) != 0)
+                MostrarRecogida("+1 ♥", new Color(0.4f, 1f, 0.5f));
+            if ((ev & RunEvent.BalasRecogidas) != 0 && run != null)
+                MostrarRecogida("+" + run.Config.dropBalasCantidad + " BALAS", new Color(1f, 0.85f, 0.3f));
             if ((ev & RunEvent.AuxilioLlega) != 0)
                 Mostrar("¡AUXILIO!", new Color(0.55f, 1f, 0.55f));
 
@@ -160,6 +206,43 @@ namespace Zombineta.Auxilio
             }
             if ((ev & RunEvent.Lastimada) != 0)
                 golpeRecibido = 1f;
+        }
+
+        void MostrarRecogida(string texto, Color color)
+        {
+            recogida.text = texto;
+            recogida.color = color;
+            recogidaRestante = segundosRecogida;
+        }
+
+        /// <summary>La nota de la pelea y lo que dejo: balas y bateria (o nada, con la peor nota).</summary>
+        void MostrarNota()
+        {
+            if (run == null || run.Sim == null)
+                return;
+            var s = run.Sim.State;
+            nota.text = s.Nota.ToString();
+            nota.color = ColorDeNota(s.Nota);
+
+            var partes = new System.Collections.Generic.List<string>();
+            if (s.PremioBalas > 0)
+                partes.Add("+" + s.PremioBalas + (s.PremioBalas == 1 ? " BALA" : " BALAS"));
+            if (s.PremioBateria > 0.5f && run.Config.batteryMax > 0f)
+                partes.Add("+" + Mathf.RoundToInt(s.PremioBateria / run.Config.batteryMax * 100f) + "% BATERÍA");
+            premios.text = partes.Count > 0 ? string.Join("   ", partes) : "SIN PREMIO";
+            notaOpacidadPremios = partes.Count > 0 ? 1f : 0.6f;
+            notaRestante = segundosNota;
+        }
+
+        static Color ColorDeNota(NotaPelea n)
+        {
+            switch (n)
+            {
+                case NotaPelea.S: return new Color(1f, 0.85f, 0.2f);
+                case NotaPelea.A: return new Color(0.5f, 1f, 0.55f);
+                case NotaPelea.B: return new Color(0.6f, 0.85f, 1f);
+                default: return new Color(0.75f, 0.75f, 0.75f);
+            }
         }
 
         void MostrarCombo(string texto, Color color, int tamano)
@@ -238,6 +321,38 @@ namespace Zombineta.Auxilio
             }
             else if (combo.enabled)
                 combo.enabled = false;
+
+            if (notaRestante > 0f)
+            {
+                notaRestante -= Time.unscaledDeltaTime;
+                float k = Mathf.Clamp01(notaRestante / segundosNota);
+                // Entra grande y se asienta; en el ultimo tramo se desvanece.
+                float entrada = Mathf.Clamp01((k - 0.9f) / 0.1f);
+                float alfa = Mathf.Clamp01(k * 4f);
+                nota.enabled = premios.enabled = true;
+                nota.rectTransform.localScale = Vector3.one * (1f + 0.5f * entrada);
+                var nc = nota.color;
+                nc.a = alfa;
+                nota.color = nc;
+                var pc = premios.color;
+                pc.a = alfa * notaOpacidadPremios;
+                premios.color = pc;
+            }
+            else if (nota.enabled)
+                nota.enabled = premios.enabled = false;
+
+            if (recogidaRestante > 0f)
+            {
+                recogidaRestante -= Time.unscaledDeltaTime;
+                float k = Mathf.Clamp01(recogidaRestante / segundosRecogida);
+                recogida.enabled = pelea;
+                recogida.rectTransform.localScale = Vector3.one * (1f + 0.3f * Mathf.Clamp01((k - 0.7f) / 0.3f));
+                var rec = recogida.color;
+                rec.a = Mathf.Clamp01(k * 3f);
+                recogida.color = rec;
+            }
+            else if (recogida.enabled)
+                recogida.enabled = false;
 
             if (cartelRestante > 0f)
             {

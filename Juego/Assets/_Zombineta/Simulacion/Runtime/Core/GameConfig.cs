@@ -181,6 +181,22 @@ namespace Zombineta.Core
             new OleadaPelea { desdeSegundo = 10f, zombies = 5, pesos = new[] { 0.7f, 0.3f, 0f },  velocidad = 1f },
             new OleadaPelea { desdeSegundo = 20f, zombies = 6, pesos = new[] { 0.5f, 0.3f, 0.2f }, velocidad = 1f },
         };
+        [Header("Premios y botiquines de la pelea")]
+        [Tooltip("Probabilidad de que un zombie que muere (a golpes o a tiros) deje un botiquin: un corazon.")]
+        [Range(0f, 1f)] public float dropBotiquin = 0.15f;
+        [Tooltip("Probabilidad de que deje balas (se suma a la del botiquin: nunca sueltan las dos).")]
+        [Range(0f, 1f)] public float dropBalas = 0.10f;
+        [Tooltip("Balas que da cada drop de balas.")]
+        [Min(1)] public int dropBalasCantidad = 2;
+        [Tooltip("Segundos que queda en el piso un drop antes de desaparecer.")]
+        public float dropSegundos = 10f;
+        [Tooltip("Metros a los que lo recoge al caminar sobre el.")]
+        public float dropAlcance = 0.9f;
+        [Tooltip("Balas que deja la furgoneta segun la nota de la pelea, de peor a mejor (C, B, A, S).")]
+        public int[] premioBalas = { 0, 1, 2, 3 };
+        [Tooltip("Bateria que deja la furgoneta segun la nota (en puntos de bateria), de peor a mejor (C, B, A, S).")]
+        public float[] premioBateria = { 0f, 0f, 25f, 40f };
+
         [Tooltip("Segundos que tarda en llegar la furgoneta: lo que dura la pelea.")]
         [Min(1f)] public float peleaSegundos = 30f;
         [Tooltip("Golpes que aguanta la protagonista a pie.")]

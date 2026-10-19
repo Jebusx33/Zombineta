@@ -151,3 +151,6 @@ desktop.ini
 
 # Material de referencia (no es parte del juego)
 *.pdf
+
+# Archivos que deja la telemetria de los playtests (uno por sesion)
+/Juego/Playtests/

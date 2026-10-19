@@ -55,6 +55,10 @@ namespace Zombineta.Tests
             c.vidaExtraPrimeraPelea = 0;
             c.reintentosPelea = 0;
             c.oleadas = new List<OleadaPelea>();
+            c.dropBotiquin = 0f;
+            c.dropBalas = 0f;
+            c.premioBalas = new[] { 0, 0, 0, 0 };
+            c.premioBateria = new[] { 0f, 0f, 0f, 0f };
             return c;
         }
 
@@ -896,6 +900,242 @@ namespace Zombineta.Tests
             var sim = SinNafta(c);
             Assert.AreEqual(6, Activos(sim));
             Assert.AreEqual(0, sim.State.ReintentosPelea);
+        }
+
+        // --- Fase 5: bajas, drops, nota y premios -----------------------------------
+
+        /// <summary>Un tiro al zombie de enfrente: con el roster por defecto siempre muere.</summary>
+        static void MatarDeUnTiro(RunSimulation sim, Zombineta.Enemies.ZombieUnit z)
+        {
+            z.Alive = true;
+            z.X = sim.State.PeatonX + 5f;
+            z.Lane = sim.State.Lane;
+            z.Stagger = 0f;
+            z.Preparando = -1f;
+            z.Enfriamiento = 5f;
+            sim.State.Mira = 1;
+            sim.Tick(new PlayerIntent { Fire = true }, Dt);
+        }
+
+        [Test]
+        public void EveryZombieSheKills_CountsAsAKill_ButNotTheOnesTheVanRunsOver()
+        {
+            var sim = SinNafta(Rapido());
+            var z = Poner(sim, (5f, 1));
+
+            MatarDeUnTiro(sim, z[0]);
+            Assert.IsFalse(z[0].Alive);
+            Assert.AreEqual(1, sim.State.PeleaBajas);
+
+            // La furgoneta arrolla a los demas: no son bajas de ella.
+            var otro = Poner(sim, (3f, 1));
+            sim.State.PeleaRestante = 0f;
+            Avanzar(sim, 5f, Quieta);
+            Assert.AreEqual(1, sim.State.PeleaBajas);
+        }
+
+        [Test]
+        public void ADrop_AppearsWhereTheZombieDied_AndFadesAwayIfNobodyTakesIt()
+        {
+            var c = Rapido();
+            c.dropBotiquin = 1f;   // siempre
+            c.dropSegundos = 3f;
+            var sim = SinNafta(c);
+            var z = Poner(sim, (5f, 1));
+
+            MatarDeUnTiro(sim, z[0]);
+
+            Assert.AreEqual(1, sim.Pelea.Drops.Count);
+            Assert.AreEqual(DropKindBotiquin, sim.Pelea.Drops[0].Kind);
+            Assert.AreEqual(sim.State.PeatonX + 5f, sim.Pelea.Drops[0].X, 0.5f);
+
+            Avanzar(sim, 3.5f, Quieta);
+            Assert.AreEqual(0, sim.Pelea.Drops.Count, "se fue solo");
+        }
+
+        const Zombineta.Auxilio.DropKind DropKindBotiquin = Zombineta.Auxilio.DropKind.Botiquin;
+
+        [Test]
+        public void AMedkit_GivesAHeartBack_ButOnlyIfSheNeedsIt()
+        {
+            var c = Rapido();
+            c.dropBotiquin = 1f;
+            var sim = SinNafta(c);
+            var z = Poner(sim, (5f, 1));
+            MatarDeUnTiro(sim, z[0]);
+            var drop = sim.Pelea.Drops[0];
+            Assert.AreEqual(5, sim.State.Vida);
+
+            // Con la vida llena camina encima y lo deja.
+            sim.State.PeatonX = drop.X;
+            sim.State.PeatonY = drop.Lane;
+            sim.Tick(Quieta, Dt);
+            Assert.AreEqual(1, sim.Pelea.Drops.Count, "con la vida llena no lo gasta");
+            Assert.AreEqual(5, sim.State.Vida);
+
+            sim.State.Vida = 3;
+            var ev = sim.Tick(Quieta, Dt);
+            Assert.IsTrue((ev & RunEvent.BotiquinRecogido) != 0);
+            Assert.AreEqual(4, sim.State.Vida);
+            Assert.AreEqual(0, sim.Pelea.Drops.Count);
+            Assert.AreEqual(1, sim.State.PeleaBotiquines);
+        }
+
+        [Test]
+        public void TheAmmoDrop_GivesBullets_UpToTheMaximum()
+        {
+            var c = Rapido();
+            c.dropBotiquin = 0f;
+            c.dropBalas = 1f;
+            c.dropBalasCantidad = 4;
+            var sim = SinNafta(c);
+            var z = Poner(sim, (5f, 1));
+            MatarDeUnTiro(sim, z[0]);
+            int balas = sim.State.Ammo;
+            var drop = sim.Pelea.Drops[0];
+            Assert.AreEqual(Zombineta.Auxilio.DropKind.Balas, drop.Kind);
+
+            sim.State.PeatonX = drop.X;
+            sim.State.PeatonY = drop.Lane;
+            var ev = sim.Tick(Quieta, Dt);
+
+            Assert.IsTrue((ev & RunEvent.BalasRecogidas) != 0);
+            Assert.AreEqual(Mathf.Min(c.ammoMax, balas + 4), sim.State.Ammo);
+        }
+
+        [Test]
+        public void ThereAreNeverMoreThanFourDropsOnTheFloor()
+        {
+            var c = Rapido();
+            c.dropBotiquin = 1f;
+            c.dropSegundos = 60f;
+            c.ammoAtStart = 6;
+            var sim = SinNafta(c);
+            var z = Poner(sim, (5f, 1));
+            for (int i = 0; i < 6; i++)
+            {
+                MatarDeUnTiro(sim, z[0]);
+                Avanzar(sim, 0.1f, Quieta);
+                z[0].Alive = true;
+            }
+
+            Assert.LessOrEqual(sim.Pelea.Drops.Count, 4);
+        }
+
+        [Test]
+        public void WithoutDrops_NothingIsLeftOnTheFloor()
+        {
+            var sim = SinNafta(Rapido());   // MakeConfig apaga los drops
+            var z = Poner(sim, (5f, 1));
+            MatarDeUnTiro(sim, z[0]);
+            Assert.AreEqual(0, sim.Pelea.Drops.Count);
+        }
+
+        [TestCase(0, NotaPelea.S)]
+        [TestCase(1, NotaPelea.A)]
+        [TestCase(2, NotaPelea.B)]
+        [TestCase(3, NotaPelea.B)]
+        [TestCase(4, NotaPelea.C)]
+        [TestCase(9, NotaPelea.C)]
+        public void TheGrade_DependsOnTheHitsSheTook(int golpes, NotaPelea esperada)
+        {
+            var sim = SinNafta(Rapido());
+            sim.State.PeleaGolpesRecibidos = golpes;
+            Assert.AreEqual(esperada, sim.Pelea.CalcularNota());
+        }
+
+        [Test]
+        public void HavingToRetry_CapsTheGradeAtB()
+        {
+            var c = Rapido();
+            c.reintentosPelea = 1;
+            var sim = SinNafta(c);
+            sim.State.PeleaGolpesRecibidos = 0;
+            sim.State.ReintentosPelea = 0;    // gasto el reintento
+
+            Assert.AreEqual(NotaPelea.B, sim.Pelea.CalcularNota());
+        }
+
+        [Test]
+        public void TheVan_LeavesBulletsAndBatteryAccordingToTheGrade()
+        {
+            var c = Rapido();
+            c.premioBalas = new[] { 0, 1, 2, 3 };
+            c.premioBateria = new[] { 0f, 0f, 25f, 40f };
+            c.ammoMax = 6;
+            c.ammoAtStart = 1;
+            var sim = SinNafta(c);
+            sim.State.Ammo = 1;
+            sim.State.Battery = 10f;
+            sim.State.PeleaGolpesRecibidos = 0;   // S
+
+            sim.State.PeleaRestante = 0f;
+            Avanzar(sim, 5f, Quieta);
+
+            Assert.AreEqual(RunPhase.Running, sim.State.Phase);
+            Assert.AreEqual(NotaPelea.S, sim.State.Nota);
+            Assert.AreEqual(3, sim.State.PremioBalas);
+            Assert.AreEqual(4, sim.State.Ammo);
+            Assert.AreEqual(40f, sim.State.PremioBateria, 0.01f);
+            Assert.AreEqual(50f, sim.State.Battery, 0.01f);
+        }
+
+        [Test]
+        public void TheReward_NeverPassesTheMaximums()
+        {
+            var c = Rapido();
+            c.premioBalas = new[] { 0, 1, 2, 3 };
+            c.premioBateria = new[] { 0f, 0f, 25f, 40f };
+            c.ammoMax = 6;
+            var sim = SinNafta(c);
+            sim.State.Ammo = 5;
+            sim.State.Battery = c.batteryMax - 5f;
+
+            sim.State.PeleaRestante = 0f;
+            Avanzar(sim, 5f, Quieta);
+
+            Assert.AreEqual(6, sim.State.Ammo);
+            Assert.AreEqual(1, sim.State.PremioBalas, "solo lo que entra");
+            Assert.AreEqual(c.batteryMax, sim.State.Battery, 0.01f);
+            Assert.AreEqual(5f, sim.State.PremioBateria, 0.01f);
+        }
+
+        [Test]
+        public void ACGrade_LeavesNothing()
+        {
+            var c = Rapido();
+            c.premioBalas = new[] { 0, 1, 2, 3 };
+            c.premioBateria = new[] { 0f, 0f, 25f, 40f };
+            var sim = SinNafta(c);
+            int balas = sim.State.Ammo;
+            sim.State.PeleaGolpesRecibidos = 6;   // C
+
+            sim.State.PeleaRestante = 0f;
+            Avanzar(sim, 5f, Quieta);
+
+            Assert.AreEqual(NotaPelea.C, sim.State.Nota);
+            Assert.AreEqual(balas, sim.State.Ammo);
+            Assert.AreEqual(0, sim.State.PremioBalas);
+        }
+
+        [Test]
+        public void TheHitsSheTakes_AndTheFinishers_AreCounted()
+        {
+            var sim = SinNafta(Rapido());
+            var z = Poner(sim, (0.8f, 1));
+            z[0].Enfriamiento = 0f;
+            for (int t = 0; t < 120 && sim.State.PeleaGolpesRecibidos == 0 && sim.State.Phase == RunPhase.Pelea; t++)
+                sim.Tick(Quieta, Dt);
+            Assert.AreEqual(1, sim.State.PeleaGolpesRecibidos);
+
+            var z2 = Poner(sim, (25f, 1), (26f, 1));
+            Golpe(sim, 0f);
+            Golpe(sim, 0.25f);
+            Avanzar(sim, 0.24f, Quieta);
+            Reponer(z2, sim, 1f, 2f);
+            sim.State.PeleaRemates = 0;
+            Golpe(sim, 0f);
+            Assert.AreEqual(1, sim.State.PeleaRemates);
         }
 
         // --- Movimiento libre ---------------------------------------------------

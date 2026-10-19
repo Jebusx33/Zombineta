@@ -14,6 +14,18 @@ namespace Zombineta.Auxilio
     /// lado llega la horda, del otro algunos que vienen de frente. Solo pelean unos pocos a la
     /// vez; el resto de la horda queda estacionada fuera de cuadro.
     /// </summary>
+    public enum DropKind { Botiquin, Balas }
+
+    /// <summary>Algo que solto un zombie al morir: se recoge caminando encima y se va solo si nadie lo agarra.</summary>
+    public sealed class Drop
+    {
+        public DropKind Kind;
+        public float X;
+        public int Lane;
+        public float Left;
+        public float Total;
+    }
+
     public sealed class PeleaSimulation
     {
         // Distancia a la que un zombie de otro carril se decide a cambiarse al de ella.
@@ -29,6 +41,14 @@ namespace Zombineta.Auxilio
         readonly RunState s;
         readonly HordeSimulation h;
         readonly System.Random rng;
+        // Aparte del azar de la pelea: soltar o no un drop no corre las demas tiradas (y las pruebas siguen siendo las mismas).
+        readonly System.Random dropRng;
+        readonly System.Collections.Generic.List<Drop> drops = new System.Collections.Generic.List<Drop>();
+
+        const int MaxDrops = 4;
+
+        /// <summary>Lo que hay en el piso ahora: la vista lo dibuja.</summary>
+        public System.Collections.Generic.IReadOnlyList<Drop> Drops => drops;
 
         readonly System.Collections.Generic.List<int> fila = new System.Collections.Generic.List<int>();
         bool[] activo;
@@ -42,6 +62,7 @@ namespace Zombineta.Auxilio
             s = state;
             h = horde;
             rng = new System.Random(seed);
+            dropRng = new System.Random(seed + 7919);
         }
 
         /// <summary>Metros: el centro de la arena (donde quedo la moto).</summary>
@@ -62,6 +83,14 @@ namespace Zombineta.Auxilio
             s.Vida = c.vidaPelea + (s.AyudasUsadas == 1 ? c.vidaExtraPrimeraPelea : 0);
             s.Oleada = 0;
             s.ReintentosPelea = c.reintentosPelea;
+            s.VidaMax = s.Vida;
+            s.PeleaBajas = 0;
+            s.PeleaGolpesRecibidos = 0;
+            s.PeleaRemates = 0;
+            s.PeleaBotiquines = 0;
+            s.PremioBalas = 0;
+            s.PremioBateria = 0f;
+            drops.Clear();
             s.PeleaRestante = c.peleaSegundos;
             s.Invulnerable = 0f;
             s.GolpeEnfriamiento = 0f;
@@ -218,6 +247,7 @@ namespace Zombineta.Auxilio
             ev |= Disparar(intent);
             ev |= AvanzarOleadas();
             ev |= MoverZombies(dt);
+            ev |= AtenderDrops(dt);
             if (s.Phase != RunPhase.Pelea)
                 return ev; // la derribaron
             Separar();
@@ -298,7 +328,8 @@ namespace Zombineta.Auxilio
             if (u == null)
                 return RunEvent.GolpeAlAire;
 
-            h.Golpear(u, s.Mira, c.golpeEmpuje, c.golpeFreno);
+            if (h.Golpear(u, s.Mira, c.golpeEmpuje, c.golpeFreno))
+                Baja(u);
             return RunEvent.Golpe;
         }
 
@@ -312,7 +343,8 @@ namespace Zombineta.Auxilio
             bool conecto = false;
             if (principal != null)
             {
-                h.Golpear(principal, s.Mira, c.golpeEmpuje, c.golpeFreno);
+                if (h.Golpear(principal, s.Mira, c.golpeEmpuje, c.golpeFreno))
+                    Baja(principal);
                 conecto = true;
             }
 
@@ -333,7 +365,102 @@ namespace Zombineta.Auxilio
                 conecto = true;
             }
 
+            if (conecto)
+                s.PeleaRemates++;
             return conecto ? RunEvent.Golpe | RunEvent.Remate : RunEvent.GolpeAlAire;
+        }
+
+        // --- Bajas y drops -------------------------------------------------------
+
+        /// <summary>Un zombie murio por obra de ella: cuenta para la nota y puede soltar algo.</summary>
+        void Baja(ZombieUnit u)
+        {
+            s.PeleaBajas++;
+
+            double r = dropRng.NextDouble();
+            DropKind? kind = null;
+            if (r < c.dropBotiquin)
+                kind = DropKind.Botiquin;
+            else if (r < c.dropBotiquin + c.dropBalas)
+                kind = DropKind.Balas;
+            if (kind == null)
+                return;
+
+            if (drops.Count >= MaxDrops)
+                drops.RemoveAt(0);   // el mas viejo se va para que entre el nuevo
+            drops.Add(new Drop { Kind = kind.Value, X = u.X, Lane = u.Lane, Left = c.dropSegundos, Total = c.dropSegundos });
+        }
+
+        /// <summary>Cuenta regresiva de los drops y recogida: ella pasa por encima, en un carril cercano.</summary>
+        RunEvent AtenderDrops(float dt)
+        {
+            var ev = RunEvent.None;
+            for (int i = drops.Count - 1; i >= 0; i--)
+            {
+                var d = drops[i];
+                d.Left -= dt;
+                if (d.Left <= 0f)
+                {
+                    drops.RemoveAt(i);
+                    continue;
+                }
+
+                if (Mathf.Abs(d.X - s.PeatonX) > c.dropAlcance || Mathf.Abs(d.Lane - s.PeatonY) > c.toleranciaCarril + 0.3f)
+                    continue;
+
+                if (d.Kind == DropKind.Botiquin)
+                {
+                    if (s.Vida >= s.VidaMax)
+                        continue;   // con la vida llena lo deja ahi, por si lo necesita despues
+                    s.Vida++;
+                    s.PeleaBotiquines++;
+                    ev |= RunEvent.BotiquinRecogido;
+                }
+                else
+                {
+                    if (s.Ammo >= c.ammoMax)
+                        continue;
+                    s.Ammo = Mathf.Min(c.ammoMax, s.Ammo + c.dropBalasCantidad);
+                    ev |= RunEvent.BalasRecogidas;
+                }
+                drops.RemoveAt(i);
+            }
+            return ev;
+        }
+
+        // --- La nota -------------------------------------------------------------
+
+        /// <summary>
+        /// La nota de la pelea: segun los golpes que se llevo. Ninguno es S; uno, A; dos o tres, B;
+        /// mas, C. Si la derribaron y tuvo que reintentar, no pasa de B.
+        /// </summary>
+        public NotaPelea CalcularNota()
+        {
+            int golpes = s.PeleaGolpesRecibidos;
+            var nota = golpes <= 0 ? NotaPelea.S : golpes == 1 ? NotaPelea.A : golpes <= 3 ? NotaPelea.B : NotaPelea.C;
+            bool reintento = c.reintentosPelea - s.ReintentosPelea > 0;
+            if (reintento && nota > NotaPelea.B)
+                nota = NotaPelea.B;
+            return nota;
+        }
+
+        /// <summary>La furgoneta deja balas y bateria segun la nota. Devuelve si dejo algo.</summary>
+        void Premiar()
+        {
+            var nota = CalcularNota();
+            s.Nota = nota;
+
+            int i = (int)nota;
+            int balas = c.premioBalas != null && i < c.premioBalas.Length ? c.premioBalas[i] : 0;
+            float bateria = c.premioBateria != null && i < c.premioBateria.Length ? c.premioBateria[i] : 0f;
+
+            int antes = s.Ammo;
+            s.Ammo = Mathf.Min(c.ammoMax, s.Ammo + Mathf.Max(0, balas));
+            s.PremioBalas = s.Ammo - antes;
+
+            float bateriaAntes = s.Battery;
+            s.Battery = Mathf.Min(c.batteryMax, s.Battery + Mathf.Max(0f, bateria));
+            s.PremioBateria = s.Battery - bateriaAntes;
         }
 
         RunEvent Disparar(PlayerIntent intent)
@@ -347,7 +474,8 @@ namespace Zombineta.Auxilio
             var u = MasCercano(s.PeatonX, s.Mira, c.shotRangeMeters);
             if (u != null)
             {
-                h.HitZombie(u, s.PeatonX);
+                if (h.HitZombie(u, s.PeatonX))
+                    Baja(u);
                 return RunEvent.Shot;
             }
             h.MissToward(s.PeatonX, s.PeatonX + s.Mira * c.shotRangeMeters, s.Lane);
@@ -487,6 +615,7 @@ namespace Zombineta.Auxilio
         RunEvent Lastimar(int desde)
         {
             s.Vida--;
+            s.PeleaGolpesRecibidos++;
             s.Invulnerable = c.invulnerableTrasGolpe;
             // El golpe la corre un poco, alejandola del que pego.
             s.PeatonX = Mathf.Clamp(s.PeatonX + desde * 0.8f, centro - c.arenaMedioAncho, centro + c.arenaMedioAncho);
@@ -661,6 +790,7 @@ namespace Zombineta.Auxilio
             {
                 cargo = true;
                 s.Fuel = c.fuelMax;
+                Premiar();
                 ev |= RunEvent.PickedUp;
             }
 
@@ -678,6 +808,7 @@ namespace Zombineta.Auxilio
             s.Fuel = c.fuelMax;
             s.Vida = 0;
             s.ArranqueRestante = c.arranqueSegundos;
+            drops.Clear();
             h.Reset(s.PlayerX - c.gapTrasAuxilio);
             s.HordeX = h.FrontX;
             activo = null;

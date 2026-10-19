@@ -16,6 +16,9 @@ namespace Zombineta.Core
         Pelea,
     }
 
+    /// <summary>La nota de una pelea, de peor a mejor: segun los golpes que se llevo la protagonista.</summary>
+    public enum NotaPelea { C, B, A, S }
+
     /// <summary>Por que se perdio. Solo informativo, para la pantalla de Game Over.</summary>
     public enum LossReason
     {
@@ -96,6 +99,19 @@ namespace Zombineta.Core
         public int Oleada;
         /// <summary>Veces que todavia puede reintentar esta pelea si la derriban.</summary>
         public int ReintentosPelea;
+        /// <summary>Corazones con los que empezo la pelea: el tope al que llegan los botiquines.</summary>
+        public int VidaMax;
+
+        // --- Numeros de la pelea (para la nota, el premio y la telemetria) ---
+        /// <summary>Zombies que mato a golpes o a tiros en la pelea (los que arrolla la furgoneta no cuentan).</summary>
+        public int PeleaBajas;
+        public int PeleaGolpesRecibidos;
+        public int PeleaRemates;
+        public int PeleaBotiquines;
+        /// <summary>Nota de la ultima pelea terminada, y lo que dejo la furgoneta por ella.</summary>
+        public NotaPelea Nota;
+        public int PremioBalas;
+        public float PremioBateria;
         /// <summary>Golpes que aguanta en la pelea. Solo cuenta mientras pelea.</summary>
         public int Vida;
         /// <summary>Segundos que faltan para que llegue la furgoneta.</summary>

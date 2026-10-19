@@ -45,6 +45,10 @@ namespace Zombineta.Core
         PeleaReintenta = 1 << 26,
         /// <summary>Sin nafta y con ayuda: la moto empieza a frenar antes de que la protagonista se baje.</summary>
         Frenando = 1 << 27,
+        /// <summary>Recogio un botiquin que solto un zombie: un corazon mas.</summary>
+        BotiquinRecogido = 1 << 28,
+        /// <summary>Recogio las balas que solto un zombie.</summary>
+        BalasRecogidas = 1 << 29,
     }
 
     /// <summary>
@@ -129,6 +133,14 @@ namespace Zombineta.Core
             State.ArranqueRestante = 0f;
             State.Oleada = 0;
             State.ReintentosPelea = 0;
+            State.VidaMax = 0;
+            State.PeleaBajas = 0;
+            State.PeleaGolpesRecibidos = 0;
+            State.PeleaRemates = 0;
+            State.PeleaBotiquines = 0;
+            State.Nota = NotaPelea.C;
+            State.PremioBalas = 0;
+            State.PremioBateria = 0f;
             State.Vida = 0;
             State.PeleaRestante = 0f;
             State.PeatonX = 0f;
