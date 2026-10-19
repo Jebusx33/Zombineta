@@ -24,6 +24,8 @@ namespace Zombineta.Juego.Screens
             { "LaneDown", "S/↓" },
             { "Fire", "X o click" },
             { "Headlight", "Espacio" },
+            { "Mover", "WASD o flechas" },
+            { "Golpe", "Z, J o clic derecho" },
         };
 
         static readonly Dictionary<string, string> EtiquetasGamepad = new Dictionary<string, string>
@@ -34,6 +36,8 @@ namespace Zombineta.Juego.Screens
             { "LaneDown", "Stick o cruceta ↓" },
             { "Fire", "X o RB" },
             { "Headlight", "Y" },
+            { "Mover", "Stick o cruceta" },
+            { "Golpe", "A" },
         };
 
         static readonly Regex Marcador = new Regex("\\{(\\w+)\\}", RegexOptions.Compiled);
@@ -60,6 +64,11 @@ namespace Zombineta.Juego.Screens
             });
             return firstLine + "\n" + SecondLine;
         }
+
+        /// <summary>Ayuda de la pelea a pie, con los controles del esquema que se esta usando.</summary>
+        public static string TextForPelea(ControlScheme scheme) =>
+            "Mover: " + Accion("Mover", scheme) + "   ·   Golpe: " + Accion("Golpe", scheme) +
+            " (3 seguidos = remate)   ·   Disparo: " + Accion("Fire", scheme);
 
         /// <summary>La tecla o el boton que hace esa accion en el esquema dado (o null si no existe).</summary>
         public static string Accion(string accion, ControlScheme scheme)

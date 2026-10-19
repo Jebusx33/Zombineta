@@ -154,3 +154,6 @@ desktop.ini
 
 # Builds comprimidos para compartir: no van al repo
 *.zip
+
+# Archivos que deja la telemetria de los playtests (uno por sesion)
+/Juego/Playtests/

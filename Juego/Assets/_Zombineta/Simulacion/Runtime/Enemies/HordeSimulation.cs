@@ -17,6 +17,8 @@ namespace Zombineta.Enemies
         public int Lane;
         public int Type;
         public DeathCause Cause;
+        /// <summary>Hacia donde iba el golpe o la bala: 1 derecha, -1 izquierda, 0 sin direccion conocida.</summary>
+        public int Dir;
     }
 
     /// <summary>Un zombie de la masa. Se recicla: nunca se crea ni se destruye en partida.</summary>
@@ -50,6 +52,12 @@ namespace Zombineta.Enemies
         public float Enfriamiento;
         /// <summary>Segundos hasta poder cambiar de carril.</summary>
         public float CambioCarril;
+        /// <summary>Segundos que le quedan tirado en el piso por el remate (0 = de pie).</summary>
+        public float Derribado;
+        /// <summary>Cuanto duro el derribo entero, para animar la caida y el levantarse.</summary>
+        public float DerribadoTotal;
+        /// <summary>Hacia donde cayo: 1 derecha, -1 izquierda.</summary>
+        public int DerribadoDir = 1;
     }
 
     /// <summary>
@@ -106,6 +114,7 @@ namespace Zombineta.Enemies
                 var u = Units[i];
                 u.Alive = true;
                 u.Stagger = 0f;
+                u.Derribado = 0f;
                 u.CorpseLeft = 0f;
                 u.Cause = DeathCause.None;
                 u.Type = Pick();
@@ -214,20 +223,21 @@ namespace Zombineta.Enemies
         public bool HitZombie(ZombieUnit u, float fromX)
         {
             var t = Type(u.Type);
+            int dir = u.X >= fromX ? 1 : -1;
             events.Add(new HordeEvent
             {
-                Kind = HordeEventKind.Tracer, FromX = fromX, X = u.X, Lane = u.Lane, Type = u.Type,
+                Kind = HordeEventKind.Tracer, FromX = fromX, X = u.X, Lane = u.Lane, Type = u.Type, Dir = dir,
             });
 
             if ((float)rng.NextDouble() <= t.deathChance)
             {
-                Kill(u, DeathCause.Bullet);
+                Kill(u, DeathCause.Bullet, dir);
                 return true;
             }
 
             events.Add(new HordeEvent
             {
-                Kind = HordeEventKind.Impact, X = u.X, Lane = u.Lane, Type = u.Type,
+                Kind = HordeEventKind.Impact, X = u.X, Lane = u.Lane, Type = u.Type, Dir = dir,
             });
             u.Stagger = Mathf.Max(u.Stagger, t.staggerOnHit);
             return false;
@@ -247,7 +257,7 @@ namespace Zombineta.Enemies
             events.Add(new HordeEvent { Kind = HordeEventKind.Tracer, FromX = fromX, X = toX, Lane = lane });
         }
 
-        public void Kill(ZombieUnit u, DeathCause cause)
+        public void Kill(ZombieUnit u, DeathCause cause, int dir = 0)
         {
             if (!u.Alive)
                 return;
@@ -258,7 +268,7 @@ namespace Zombineta.Enemies
             u.Stagger = 0f;
             events.Add(new HordeEvent
             {
-                Kind = HordeEventKind.Death, X = u.X, Lane = u.Lane, Type = u.Type, Cause = cause,
+                Kind = HordeEventKind.Death, X = u.X, Lane = u.Lane, Type = u.Type, Cause = cause, Dir = dir,
             });
 
             // Los de al lado se asustan: un buen tiro se siente aunque el frente se mueva poco.
@@ -309,14 +319,31 @@ namespace Zombineta.Enemies
             u.Preparando = -1f;
             if (u.Golpes <= 0)
             {
-                Kill(u, DeathCause.Golpe);
+                Kill(u, DeathCause.Golpe, direccion);
                 return true;
             }
 
-            events.Add(new HordeEvent { Kind = HordeEventKind.Impact, X = u.X, Lane = u.Lane, Type = u.Type });
-            u.X += direccion * empuje;
+            events.Add(new HordeEvent { Kind = HordeEventKind.Impact, X = u.X, Lane = u.Lane, Type = u.Type, Dir = direccion });
+            u.X += direccion * empuje * (1f - Mathf.Clamp01(Type(u.Type).resisteEmpuje));
             u.Stagger = Mathf.Max(u.Stagger, freno);
             return false;
+        }
+
+        /// <summary>
+        /// El remate de la cadena de golpes: lo tira al piso y lo empuja, sin gastarle golpes (no
+        /// muere, solo queda un rato en el suelo). Un tipo que resiste el empuje (el pesado) vuela
+        /// menos y se levanta antes.
+        /// </summary>
+        public void Derribar(ZombieUnit u, int direccion, float empuje, float segundos)
+        {
+            float k = 1f - Mathf.Clamp01(Type(u.Type).resisteEmpuje);
+            u.Preparando = -1f;
+            u.X += direccion * empuje * k;
+            u.Stagger = Mathf.Max(u.Stagger, segundos * k);
+            u.Derribado = segundos * k;
+            u.DerribadoTotal = u.Derribado;
+            u.DerribadoDir = direccion;
+            events.Add(new HordeEvent { Kind = HordeEventKind.Impact, X = u.X, Lane = u.Lane, Type = u.Type, Dir = direccion });
         }
 
         /// <summary>Traza de un disparo que no encontro a nadie, hacia cualquier lado.</summary>

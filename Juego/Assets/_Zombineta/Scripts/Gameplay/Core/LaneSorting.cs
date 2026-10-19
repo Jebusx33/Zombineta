@@ -39,5 +39,16 @@ namespace Zombineta.Core
 
         public static int Order(float visualLane, SortSlot slot) =>
             Base - Mathf.RoundToInt(visualLane * PerLane) + (int)slot;
+
+        /// <summary>Lugares que hay dentro de un slot antes de pisar el siguiente.</summary>
+        public const int SlotWidth = 10;
+
+        /// <summary>
+        /// Como Order, pero con un desempate estable dentro del slot: dos zombies del mismo carril
+        /// tendrian exactamente el mismo orden y Unity los alterna de un cuadro al otro (titilan).
+        /// Cada uno, con su numero, se queda siempre delante o detras del mismo vecino.
+        /// </summary>
+        public static int Order(float visualLane, SortSlot slot, int tieBreak) =>
+            Order(visualLane, slot) + ((tieBreak % SlotWidth) + SlotWidth) % SlotWidth;
     }
 }

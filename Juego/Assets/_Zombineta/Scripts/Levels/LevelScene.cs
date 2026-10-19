@@ -39,6 +39,16 @@ namespace Zombineta.Juego.Levels
                  "la furgoneta. 0 = sin auxilio (quedarse sin nafta es perder).")]
         [Min(0)] [SerializeField] int ayudas;
 
+        [Tooltip("Nafta con la que arranca el nivel (0 = el tanque lleno). Un tanque corto hace que el primer auxilio llegue pronto.")]
+        [SerializeField] float combustibleInicial;
+
+        [Tooltip("Los bidones de este nivel no se ven ni se agarran hasta haber usado tantos auxilios (0 = siempre). " +
+                 "Con 1: no hay nafta hasta el primer auxilio.")]
+        [Min(0)] [SerializeField] int bidonesDesdeAuxilio;
+
+        [Tooltip("Veces que la pelea a pie se reinicia si derriban a la protagonista, en vez de perder.")]
+        [Min(0)] [SerializeField] int reintentosPelea;
+
         [Header("Looks")]
         [Tooltip("Aspectos por tipo de zombie, para la cara del ZombieFront. Sin asignar: tinte de Zombies.asset.")]
         [SerializeField] ZombieLookSet looks;
@@ -100,6 +110,9 @@ namespace Zombineta.Juego.Levels
             copy.goalDistance = goalDistance;
             copy.tramos = tramos;
             copy.ayudas = ayudas;
+            copy.fuelInicial = combustibleInicial;
+            copy.bidonesDesdeAuxilio = bidonesDesdeAuxilio;
+            copy.reintentosPelea = reintentosPelea;
             return copy;
         }
 
@@ -359,11 +372,12 @@ namespace Zombineta.Juego.Levels
                 if (run == null || run.Level == null)
                     return;
                 var runtime = run.Level.Items;
+                bool sinBidones = LevelRuntime.BidonesBloqueados(run.Config, run.Sim.State);
                 foreach (var (item, index, shadow, look) in bound)
                 {
                     if (item == null)
                         continue;
-                    bool visible = !runtime[index].Consumed;
+                    bool visible = !runtime[index].Consumed && !(sinBidones && item.kind == LevelEntryKind.Fuel);
                     // Con prefab, la vista vive en "Vista" (hijo): apagar ese GameObject entero
                     // (sprite, luz y sombra propia del prefab juntos). Sin prefab, el sprite sigue
                     // en el propio item, como antes.
@@ -473,7 +487,8 @@ namespace Zombineta.Juego.Levels
                 if (zombieLook != null && zombieLook.walk != null && zombieLook.walk.Length > 0)
                 {
                     sprite = zombieLook.walk[0];
-                    color = Color.white;
+                    // Mismo tinte por tipo que en la horda.
+                    color = config != null && config.zombies != null ? config.zombies.Get(item.variant).tint : Color.white;
                     if (zombieLook.scale > 0f)
                         lookScale = zombieLook.scale;
                 }

@@ -16,8 +16,18 @@ namespace Zombineta.Player
         public bool ToggleHeadlight;
         public bool Fire;
 
-        /// <summary>A pie (en la pelea): -1 izquierda, 1 derecha, 0 quieta.</summary>
+        /// <summary>A pie (en la pelea): -1 izquierda, 1 derecha, 0 quieta. Analogico con el stick.</summary>
         public float MoveX;
+
+        /// <summary>A pie: -1 hacia el carril de abajo, 1 hacia el de arriba. Analogico con el stick.</summary>
+        public float MoveY;
+
+        /// <summary>
+        /// A pie: el movimiento viene de MoveX/MoveY (libre). Con esto prendido, LaneDelta se
+        /// ignora en la pelea: arriba y abajo son los mismos botones y no deben saltar un carril
+        /// ademas de caminar.
+        /// </summary>
+        public bool MovimientoLibre;
 
         /// <summary>A pie: pina hacia donde mira.</summary>
         public bool Golpe;

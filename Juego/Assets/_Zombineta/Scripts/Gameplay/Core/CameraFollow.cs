@@ -199,6 +199,12 @@ namespace Zombineta.Core
                 director.AddTrauma(config.ramTrauma);
 
             // --- Pelea a pie ---
+            // La moto empieza a frenar sin nafta: un tiron de camara hacia adentro marca el momento.
+            if ((events & RunEvent.Frenando) != 0)
+            {
+                director.AddTrauma(0.18f);
+                director.Punch(0f, -0.2f);
+            }
             if ((events & RunEvent.PeleaEmpieza) != 0)
             {
                 director.AddTrauma(0.3f);
@@ -210,6 +216,13 @@ namespace Zombineta.Core
                 director.AddTrauma(0.14f);
                 director.Punch(0.12f, 0f);
                 Hitstop(0.05f);
+            }
+            if ((events & RunEvent.Remate) != 0)
+            {
+                // El remate pisa al golpe comun: mas sacudida, un empujon hacia donde pego y un corte mas largo.
+                director.AddTrauma(0.32f);
+                director.Punch(0.3f, -0.12f);
+                Hitstop(0.1f);
             }
             if ((events & RunEvent.Lastimada) != 0)
             {

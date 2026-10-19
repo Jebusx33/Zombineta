@@ -22,6 +22,33 @@ namespace Zombineta.Juego.Tests
         public void TearDown() => Object.DestroyImmediate(config);
 
         [Test]
+        public void TheFinisher_RumblesInsteadOfTheCommonPunchOfThatSameStep()
+        {
+            config.Set(RumbleKind.Golpe, 0.1f, 0.3f, 0.2f);
+            config.Set(RumbleKind.Remate, 0.8f, 0.5f, 0.2f);
+            var d = new RumbleDirector(config);
+
+            d.Trigger(RunEvent.Golpe | RunEvent.Remate);
+            d.Tick(0f);
+
+            Assert.AreEqual(0.8f, d.Low, 1e-4f, "vibra como remate, no como golpe");
+        }
+
+        [Test]
+        public void ACommonPunchAndGettingHit_BothRumble()
+        {
+            config.Set(RumbleKind.Golpe, 0.1f, 0.3f, 0.2f);
+            config.Set(RumbleKind.Lastimada, 0.7f, 0.2f, 0.2f);
+            var d = new RumbleDirector(config);
+
+            d.Trigger(RunEvent.Golpe | RunEvent.Lastimada);
+            d.Tick(0f);
+
+            Assert.AreEqual(0.7f, d.Low, 1e-4f, "cada motor toma el mas fuerte");
+            Assert.AreEqual(0.3f, d.High, 1e-4f);
+        }
+
+        [Test]
         public void AnEvent_StartsAtItsStrength_AndFadesToZero()
         {
             var d = new RumbleDirector(config);

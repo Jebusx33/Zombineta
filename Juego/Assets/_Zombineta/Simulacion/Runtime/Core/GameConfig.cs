@@ -1,7 +1,26 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Zombineta.Core
 {
+    /// <summary>
+    /// Una oleada de la pelea a pie: desde cuantos segundos de pelea rige, cuantos zombies hay a la
+    /// vez y de que tipos (un peso por tipo, en el orden de Zombies.asset: Comun, Corredor, Pesado).
+    /// </summary>
+    [Serializable]
+    public sealed class OleadaPelea
+    {
+        [Tooltip("Segundos desde que empieza la pelea a partir de los que rige esta oleada.")]
+        public float desdeSegundo;
+        [Tooltip("Zombies peleando a la vez.")]
+        [Min(1)] public int zombies = 3;
+        [Tooltip("Peso de cada tipo de zombie, en el orden de Zombies.asset (Comun, Corredor, Pesado).")]
+        public float[] pesos = { 1f, 0f, 0f };
+        [Tooltip("Multiplica la velocidad con la que caminan.")]
+        public float velocidad = 1f;
+    }
+
     /// <summary>
     /// Todos los numeros de balance del juego viven aca, en un solo asset.
     /// Balancear (T23) es editar este asset en el Inspector: nunca tocar codigo.
@@ -28,6 +47,11 @@ namespace Zombineta.Core
 
         [Header("Combustible")]
         public float fuelMax = 100f;
+        [Tooltip("Nafta con la que se arranca el nivel. 0 o menos = el tanque lleno (fuelMax). Un tanque corto al principio " +
+                 "hace que el primer auxilio llegue pronto, para presentar la mecanica.")]
+        public float fuelInicial = 0f;
+        [Tooltip("Los bidones no aparecen (no se ven ni se agarran) hasta haber usado tantos auxilios. 0 = siempre.")]
+        [Min(0)] public int bidonesDesdeAuxilio = 0;
         [Tooltip("Consumo por segundo en modo Normal.")]
         public float fuelBurnPerSecond = 1.6f;
         public float turboBurnMultiplier = 3f;
@@ -154,8 +178,40 @@ namespace Zombineta.Core
         [Header("Auxilio y pelea a pie")]
         [Tooltip("Pedidos de auxilio por nivel. 0 = sin auxilio: quedarse sin nafta es perder, como siempre.")]
         [Min(0)] public int ayudas = 0;
+        [Tooltip("Segundos que la moto sigue avanzando, frenando y con el motor tosiendo, entre quedarse sin nafta " +
+                 "y bajarse a pelear. 0 = se baja al instante.")]
+        public float paradaSegundos = 1.2f;
+        [Tooltip("Segundos que tarda la moto en volver a velocidad normal despues del auxilio.")]
+        public float arranqueSegundos = 0.9f;
+        [Tooltip("Corazones de mas en la primera pelea de la partida: el jugador todavia esta aprendiendo.")]
+        [Min(0)] public int vidaExtraPrimeraPelea = 1;
+        [Tooltip("Veces que, al caer derribada, la pelea se reinicia en vez de perder. Cada pelea tiene las suyas.")]
+        [Min(0)] public int reintentosPelea = 0;
+        [Tooltip("Oleadas de la pelea, de menos a mas. Vacio = siempre 'zombiesEnArena' del tipo que toque.")]
+        public List<OleadaPelea> oleadas = new List<OleadaPelea>
+        {
+            new OleadaPelea { desdeSegundo = 0f,  zombies = 3, pesos = new[] { 1f, 0f, 0f },      velocidad = 0.85f },
+            new OleadaPelea { desdeSegundo = 10f, zombies = 5, pesos = new[] { 0.7f, 0.3f, 0f },  velocidad = 1f },
+            new OleadaPelea { desdeSegundo = 20f, zombies = 6, pesos = new[] { 0.5f, 0.3f, 0.2f }, velocidad = 1f },
+        };
+        [Header("Premios y botiquines de la pelea")]
+        [Tooltip("Probabilidad de que un zombie que muere (a golpes o a tiros) deje un botiquin: un corazon.")]
+        [Range(0f, 1f)] public float dropBotiquin = 0.15f;
+        [Tooltip("Probabilidad de que deje balas (se suma a la del botiquin: nunca sueltan las dos).")]
+        [Range(0f, 1f)] public float dropBalas = 0.10f;
+        [Tooltip("Balas que da cada drop de balas.")]
+        [Min(1)] public int dropBalasCantidad = 2;
+        [Tooltip("Segundos que queda en el piso un drop antes de desaparecer.")]
+        public float dropSegundos = 10f;
+        [Tooltip("Metros a los que lo recoge al caminar sobre el.")]
+        public float dropAlcance = 0.9f;
+        [Tooltip("Balas que deja la furgoneta segun la nota de la pelea, de peor a mejor (C, B, A, S).")]
+        public int[] premioBalas = { 0, 1, 2, 3 };
+        [Tooltip("Bateria que deja la furgoneta segun la nota (en puntos de bateria), de peor a mejor (C, B, A, S).")]
+        public float[] premioBateria = { 0f, 0f, 25f, 40f };
+
         [Tooltip("Segundos que tarda en llegar la furgoneta: lo que dura la pelea.")]
-        [Min(1f)] public float peleaSegundos = 25f;
+        [Min(1f)] public float peleaSegundos = 30f;
         [Tooltip("Golpes que aguanta la protagonista a pie.")]
         [Min(1)] public int vidaPelea = 5;
         [Tooltip("Metros de ventaja sobre la horda al volver a la moto.")]
@@ -164,10 +220,25 @@ namespace Zombineta.Core
         public float arenaMedioAncho = 12f;
         [Tooltip("Metros por segundo caminando.")]
         public float peatonVelocidad = 6f;
+        [Tooltip("Carriles por segundo al caminar de arriba a abajo (0,99 m cada uno). Con el stick a fondo.")]
+        public float peatonVelocidadCarril = 3f;
+        [Tooltip("Cuantos carriles de diferencia puede haber entre ella y un zombie para que se peguen. " +
+                 "Ella camina entre carriles; los zombies estan en uno entero.")]
+        public float toleranciaCarril = 0.6f;
         [Tooltip("Metros hacia donde mira que alcanza el golpe.")]
         public float golpeAlcance = 1.6f;
-        [Tooltip("Segundos entre golpe y golpe.")]
-        public float golpeEnfriamiento = 0.35f;
+        [Tooltip("Segundos entre un golpe y el siguiente de la misma cadena (1.º y 2.º golpe).")]
+        public float golpeEnfriamiento = 0.2f;
+        [Tooltip("Segundos, una vez pasado el enfriamiento, que quedan para seguir la cadena. Si se pasa, vuelve al 1.º golpe.")]
+        public float comboVentana = 0.6f;
+        [Tooltip("Segundos de pausa despues del 3.º golpe (el remate), antes de poder empezar otra cadena.")]
+        public float rematePausa = 0.55f;
+        [Tooltip("Metros hacia delante (hacia donde mira) que alcanza el remate para derribar. Lo que quedo a su espalda no se toca.")]
+        public float remateRadio = 2.4f;
+        [Tooltip("Metros que el remate empuja a los que derriba.")]
+        public float remateEmpuje = 3.5f;
+        [Tooltip("Segundos que quedan en el piso los derribados por el remate.")]
+        public float remateDerribo = 1.4f;
         [Tooltip("Segundos que dura el movimiento del golpe (para la vista).")]
         public float golpeDuracion = 0.18f;
         [Tooltip("Metros que empuja el golpe.")]
@@ -180,12 +251,17 @@ namespace Zombineta.Core
         public float zombieVelocidadPelea = 2.2f;
         [Tooltip("Metros desde los que un zombie pega.")]
         public float zombieAlcance = 1.1f;
+        [Tooltip("Metros minimos entre dos zombies vivos del mismo carril en la pelea: los demas hacen fila " +
+                 "detras del que esta pegado a la protagonista, en vez de encimarse en el mismo lugar.")]
+        public float zombieSeparacion = 1.1f;
+        [Tooltip("Zombies que pueden estar preparando un ataque a la vez: los demas esperan su turno. Evita que la rodeen y la golpeen todos juntos.")]
+        [Min(1)] public int maxAtacantes = 2;
         [Tooltip("Segundos que se prepara antes de pegar: el aviso para esquivarlo o pegarle primero.")]
-        public float zombiePreparacion = 0.5f;
+        public float zombiePreparacion = 0.6f;
         [Tooltip("Segundos entre ataque y ataque de un mismo zombie.")]
         public float zombieEnfriamiento = 1f;
         [Tooltip("Segundos sin recibir dano despues de un golpe.")]
-        public float invulnerableTrasGolpe = 0.8f;
+        public float invulnerableTrasGolpe = 1f;
         [Tooltip("Metros por segundo de la furgoneta.")]
         public float furgonetaVelocidad = 28f;
         [Tooltip("Metros antes del centro de la arena desde donde entra la furgoneta.")]

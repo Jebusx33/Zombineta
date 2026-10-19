@@ -55,6 +55,39 @@ namespace Zombineta.Level
         }
 
         /// <summary>
+        /// Si los bidones todavia no cuentan: algunos niveles (el primero) no tienen nafta hasta
+        /// que se usa el primer auxilio. Mientras tanto no se agarran ni se ven.
+        /// </summary>
+        public static bool BidonesBloqueados(GameConfig config, RunState state) =>
+            config != null && state != null && config.bidonesDesdeAuxilio > state.AyudasUsadas;
+
+        /// <summary>
+        /// Despeja un tramo del recorrido (la arena de la pelea a pie): los obstaculos, rampas,
+        /// barriles y zombies de frente desaparecen, como si ya se hubieran pasado, y no vuelven
+        /// cuando la moto retoma. Los recursos se dejan: se agarran si se pasa por encima.
+        /// Devuelve cuantos despejo.
+        /// </summary>
+        public int ClearZone(float from, float to)
+        {
+            int cleared = 0;
+            for (int i = 0; i < Items.Length; i++)
+            {
+                var item = Items[i];
+                float d = item.Entry.distance;
+                if (item.Consumed || d < from || d > to)
+                    continue;
+                var kind = item.Entry.kind;
+                if (kind == LevelEntryKind.Obstacle || kind == LevelEntryKind.Ramp ||
+                    kind == LevelEntryKind.Barrel || kind == LevelEntryKind.ZombieFront)
+                {
+                    item.Consumed = true;
+                    cleared++;
+                }
+            }
+            return cleared;
+        }
+
+        /// <summary>
         /// Resuelve el tramo recorrido entre dos posiciones. Funciona igual hacia
         /// adelante que en retroceso, que es justamente el punto: volver por un
         /// bidon que dejaste pasar tiene que agarrarlo.
@@ -99,6 +132,10 @@ namespace Zombineta.Level
                         continue;
                 }
                 if (Mathf.Abs(lane - item.Entry.lane) > LaneTolerance)
+                    continue;
+
+                // Sin nafta en el tramo inicial de algunos niveles: el bidon todavia no existe.
+                if (item.Entry.kind == LevelEntryKind.Fuel && BidonesBloqueados(sim.Config, sim.State))
                     continue;
 
                 // El estado se consulta en cada entrada: una rampa lanza, y lo que sigue en

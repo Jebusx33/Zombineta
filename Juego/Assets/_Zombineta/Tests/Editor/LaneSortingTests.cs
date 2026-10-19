@@ -32,6 +32,23 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
+        public void TheTieBreak_NeverLeavesTheSlot()
+        {
+            for (int i = -25; i < 25; i++)
+            {
+                int o = LaneSorting.Order(1f, SortSlot.Zombie, i);
+                Assert.GreaterOrEqual(o, LaneSorting.Order(1f, SortSlot.Zombie));
+                Assert.Less(o, LaneSorting.Order(1f, SortSlot.Player), "el zombie " + i + " pisa a la jugadora");
+            }
+        }
+
+        [Test]
+        public void TwoZombiesInTheSameLane_GetDifferentOrders()
+        {
+            Assert.AreNotEqual(LaneSorting.Order(1f, SortSlot.Zombie, 3), LaneSorting.Order(1f, SortSlot.Zombie, 4));
+        }
+
+        [Test]
         public void AShadowInTheLaneBelow_IsInFrontOfAnEffectInTheLaneAbove()
         {
             // Un carril entero pesa mas que cualquier slot: la escena se lee de abajo hacia arriba.

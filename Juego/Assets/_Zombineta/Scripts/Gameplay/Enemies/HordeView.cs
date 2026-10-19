@@ -28,6 +28,21 @@ namespace Zombineta.Enemies
         [Tooltip("Color del zombie que se prepara para pegar en la pelea a pie.")]
         [SerializeField] Color avisoDeAtaque = new Color(1f, 0.25f, 0.2f);
 
+        [Header("Aviso de ataque (pelea a pie)")]
+        [Tooltip("Cuanto se echa hacia atras el zombie que prepara el golpe, en grados.")]
+        [SerializeField] float inclinacionAviso = 16f;
+        [Tooltip("Cuanto se lanza hacia adelante justo antes de pegar, en metros.")]
+        [SerializeField] float estocadaAviso = 0.4f;
+        [Tooltip("Aro que aparece en el piso bajo el zombie que va a pegar: se achica hasta el golpe.")]
+        [SerializeField] Color colorAro = new Color(1f, 0.2f, 0.15f, 0.85f);
+
+        [Header("Derribados por el remate")]
+        [Tooltip("Cuanto se inclina el zombie tirado en el piso, en grados.")]
+        [SerializeField] float anguloDerribado = 85f;
+
+        [Tooltip("Carriles por segundo con los que un zombie cambia de carril: se desliza en vez de saltar.")]
+        [SerializeField] float laneChangeSpeed = 4f;
+
         [Tooltip("Metros que la horda sigue avanzando por encima de la moto al atraparla.")]
         [SerializeField] float overrunMeters = 12f;
 
@@ -43,6 +58,12 @@ namespace Zombineta.Enemies
         Animator[] animators;
         SombraProyectada[] shadows;
         int[] generations;
+        float[] lastX;
+        float[] caminata;      // fraccion del ciclo de la caminata lenta (0..1)
+        SpriteRenderer[] avisos;
+        Sprite aroSprite;
+        float[] laneVisual;
+        RunPhase lastPhase = RunPhase.Running;
         bool[] wasAlive;
         float[] lastStagger;
 
@@ -91,6 +112,10 @@ namespace Zombineta.Enemies
             animators = new Animator[count];
             shadows = new SombraProyectada[count];
             generations = new int[count];
+            lastX = new float[count];
+            caminata = new float[count];
+            avisos = new SpriteRenderer[count];
+            laneVisual = new float[count];
             wasAlive = new bool[count];
             lastStagger = new float[count];
             currentLook = new ZombieLook[count];
@@ -104,11 +129,53 @@ namespace Zombineta.Enemies
                 sprites[i] = bodies[i].GetComponentInChildren<SpriteRenderer>();
                 animators[i] = bodies[i].GetComponentInChildren<Animator>();
                 generations[i] = -1;
+                avisos[i] = CrearAviso(bodies[i]);
                 wasAlive[i] = true;
                 lastLookIndex[i] = -1;
                 // La sombra sale sola de la silueta del zombie, segun las luces que tenga cerca.
                 shadows[i] = SombraProyectada.Poner(bodies[i].gameObject, sprites[i], "", 0, true);
             }
+        }
+
+        /// <summary>El aro del aviso de ataque: vive como hijo del cuerpo pero se ubica en el piso, a mano, cada cuadro.</summary>
+        SpriteRenderer CrearAviso(Transform cuerpo)
+        {
+            var go = new GameObject("Aviso de ataque");
+            go.transform.SetParent(cuerpo, false);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = AroSprite();
+            sr.sortingLayerID = LaneSorting.GameLayerId;
+            sr.enabled = false;
+            return sr;
+        }
+
+        /// <summary>Un aro suave y blanco (se tine por color), hecho por codigo: no necesita arte.</summary>
+        Sprite AroSprite()
+        {
+            if (aroSprite != null)
+                return aroSprite;
+
+            const int n = 64;
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false)
+            {
+                wrapMode = TextureWrapMode.Clamp,
+                filterMode = FilterMode.Bilinear,
+            };
+            var pixeles = new Color32[n * n];
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float r = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(n / 2f, n / 2f)) / (n / 2f);
+                    float borde = Mathf.Clamp01(1f - Mathf.Abs(r - 0.86f) / 0.12f);   // el anillo
+                    float relleno = r < 0.86f ? 0.18f : 0f;                           // un velo adentro
+                    byte a = (byte)(Mathf.Clamp01(Mathf.Max(borde, relleno)) * 255f);
+                    pixeles[y * n + x] = new Color32(255, 255, 255, a);
+                }
+            tex.SetPixels32(pixeles);
+            tex.Apply(false, true);
+            aroSprite = Sprite.Create(tex, new Rect(0, 0, n, n), new Vector2(0.5f, 0.5f), n);
+            aroSprite.name = "AroDeAviso";
+            return aroSprite;
         }
 
         /// <summary>
@@ -163,6 +230,9 @@ namespace Zombineta.Enemies
                 if (generations[i] != u.Generation)
                 {
                     generations[i] = u.Generation;
+                    lastX[i] = u.X;
+                    caminata[i] = 0f;
+                    laneVisual[i] = u.Lane;
                     wasAlive[i] = true;
                     lastStagger[i] = 0f;
 
@@ -179,7 +249,7 @@ namespace Zombineta.Enemies
                             look.walk != null ? look.walk.Length : 0,
                             look.hit != null ? look.hit.Length : 0,
                             look.death != null ? look.death.Length : 0,
-                            look.walkFps, deathFps: look.deathFps);
+                            look.walkFps, look.hitSeconds, look.deathFps);
                         if (animators[i] != null)
                             animators[i].enabled = false;
                     }
@@ -193,6 +263,11 @@ namespace Zombineta.Enemies
 
                 bool hasLook = currentLook[i] != null;
 
+                float desplazamiento = Mathf.Abs(u.X - lastX[i]);
+                if (desplazamiento > 1.5f || state.Phase != lastPhase)
+                    desplazamiento = 0f;
+                lastX[i] = u.X;
+
                 if (hasLook)
                 {
                     if (wasAlive[i] && !u.Alive)
@@ -204,13 +279,14 @@ namespace Zombineta.Enemies
                             look.walk != null ? look.walk.Length : 0,
                             look.hit != null ? look.hit.Length : 0,
                             death != null ? death.Length : 0,
-                            look.walkFps, deathFps: look.deathFps);
+                            look.walkFps, look.hitSeconds, look.deathFps);
                         flipbooks[i].Play(FlipbookClip.Death);
                     }
                     else if (u.Alive && u.Stagger > lastStagger[i] + 0.01f)
                         flipbooks[i].Play(FlipbookClip.Hit);
 
-                    flipbooks[i].Tick(Time.deltaTime, speedRatio);
+                    // Aturdido (o tirado por el remate) no camina: el cuadro se queda quieto.
+                    flipbooks[i].Tick(Time.deltaTime, pelea && u.Alive && u.Stagger > 0f ? 0f : speedRatio);
                 }
                 else
                 {
@@ -223,14 +299,69 @@ namespace Zombineta.Enemies
                 wasAlive[i] = u.Alive;
                 lastStagger[i] = u.Stagger;
 
+                // El carril visual se desliza hasta el de la simulacion (que es entero). Al cambiar de
+                // fase (empieza o termina la pelea) los zombies se reubican de golpe: ahi no se desliza.
+                laneVisual[i] = state.Phase != lastPhase
+                    ? u.Lane
+                    : Mathf.MoveTowards(laneVisual[i], u.Lane, laneChangeSpeed * Time.deltaTime);
+
                 float worldX = run.ToWorldX(u.X + overrun);
-                float groundY = run.LaneToWorldY(u.Lane);
+                float groundY = run.LaneToWorldY(laneVisual[i]);
                 bodies[i].position = new Vector3(worldX, groundY, 0f);
                 bodies[i].localScale = Vector3.one * bodyScale * type.scale * (hasLook ? currentLook[i].scale : 1f);
 
                 bool lit = lightOn && u.Alive &&
                            u.X < state.PlayerX && u.X > state.PlayerX - headlightRangeMeters;
-                bodies[i].rotation = Quaternion.Euler(0f, 0f, lit ? litLeanDegrees : 0f);
+
+                float angulo = lit ? litLeanDegrees : 0f;
+                float estocada = 0f;
+                bool preparando = pelea && u.Alive && u.Preparando >= 0f && run.Config.zombiePreparacion > 0f;
+                float avance = preparando ? Mathf.Clamp01(u.Preparando / run.Config.zombiePreparacion) : 0f;
+
+                // Con cuadros dibujados de ataque o de derribo, el cuerpo no se inclina ni rota por codigo.
+                var lookActual = currentLook[i];
+                bool ataqueDibujado = preparando && lookActual != null && lookActual.attack != null && lookActual.attack.Length > 0;
+                bool derribado = pelea && u.Alive && u.Derribado > 0f && u.DerribadoTotal > 0f;
+                bool derriboDibujado = derribado && lookActual != null && lookActual.knockdown != null && lookActual.knockdown.Length > 0;
+
+                if (preparando && !ataqueDibujado)
+                {
+                    // Se echa hacia atras casi toda la preparacion y, al final, se lanza: se ve venir el golpe.
+                    float atras = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(avance / 0.8f));
+                    float lanza = Mathf.Clamp01((avance - 0.85f) / 0.15f);
+                    angulo = u.Mira * inclinacionAviso * (atras * (1f - lanza) - 0.6f * lanza);
+                    estocada = u.Mira * estocadaAviso * lanza;
+                }
+                else if (derribado && !derriboDibujado)
+                {
+                    // Cae hacia donde lo empujaron, queda tirado y se levanta en el ultimo tramo.
+                    float t = 1f - u.Derribado / u.DerribadoTotal;
+                    float cae = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / 0.12f));
+                    float sube = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((t - 0.78f) / 0.22f));
+                    angulo = -u.DerribadoDir * anguloDerribado * cae * (1f - sube);
+                }
+
+                bodies[i].rotation = Quaternion.Euler(0f, 0f, angulo);
+                if (estocada != 0f)
+                    bodies[i].position += new Vector3(estocada, 0f, 0f);
+
+                // El aro del piso: aparece al empezar a preparar el golpe y se achica hasta que pega.
+                var aviso = avisos[i];
+                if (aviso != null)
+                {
+                    aviso.enabled = preparando;
+                    if (preparando)
+                    {
+                        float escala = (1.5f - 0.7f * avance) / Mathf.Max(0.0001f, bodies[i].localScale.x);
+                        aviso.transform.rotation = Quaternion.identity;
+                        aviso.transform.position = new Vector3(worldX, groundY + 0.02f, 0f);
+                        aviso.transform.localScale = new Vector3(1.7f * escala, 0.55f * escala, 1f);
+                        var col = colorAro;
+                        col.a = colorAro.a * Mathf.Lerp(0.35f, 1f, avance);
+                        aviso.color = col;
+                        aviso.sortingOrder = LaneSorting.Order(laneVisual[i], SortSlot.Shadow) + 2;
+                    }
+                }
                 if (sprites[i] != null)
                 {
                     if (hasLook)
@@ -242,8 +373,39 @@ namespace Zombineta.Enemies
                         if (frames != null && frames.Length > 0)
                             sprites[i].sprite = frames[Mathf.Clamp(flipbooks[i].Frame, 0, frames.Length - 1)];
 
-                        // El arte ya diferencia los looks: color blanco salvo el aviso del faro.
-                        sprites[i].color = lit ? litTint : Color.white;
+                        // A pie, los lentos caminan arrastrando los pies: el ciclo avanza con lo que se
+                        // desplazan de verdad (sin patinar) y quedan quietos si no se mueven. Los que corren, y
+                        // todo en la moto, siguen con la animacion de correr.
+                        bool caminaLento = pelea && u.Alive && !ataqueDibujado && !derriboDibujado &&
+                                           flipbooks[i].Clip == FlipbookClip.Walk &&
+                                           look.walkSlow != null && look.walkSlow.Length > 0 &&
+                                           run.Sim.Pelea.VelocidadDe(u) < look.walkSlowSpeedLimit;
+                        if (caminaLento)
+                        {
+                            if (u.Stagger <= 0f && look.walkSlowStrideMeters > 0f)
+                                caminata[i] = Mathf.Repeat(caminata[i] + desplazamiento / look.walkSlowStrideMeters, 1f);
+                            int n = look.walkSlow.Length;
+                            sprites[i].sprite = look.walkSlow[Mathf.Min(n - 1, Mathf.FloorToInt(caminata[i] * n))];
+                        }
+
+                        // Preparando el golpe: los cuadros de ataque se reparten entre el inicio y el golpe.
+                        if (ataqueDibujado)
+                        {
+                            int n = look.attack.Length;
+                            sprites[i].sprite = look.attack[Mathf.Min(n - 1, Mathf.FloorToInt(avance * n))];
+                        }
+                        // Derribado por el remate: cae, queda tirado en el ultimo cuadro y se levanta.
+                        else if (derriboDibujado)
+                        {
+                            int n = look.knockdown.Length;
+                            float transcurrido = u.DerribadoTotal - u.Derribado;
+                            float caida = Mathf.Min(look.knockdownFallSeconds, u.DerribadoTotal * 0.7f);
+                            float k = caida > 0f ? Mathf.Clamp01(transcurrido / caida) : 1f;
+                            sprites[i].sprite = look.knockdown[Mathf.Min(n - 1, Mathf.FloorToInt(k * n))];
+                        }
+
+                        // Todos miden lo mismo; el tipo se distingue por un tinte suave (Zombies.asset).
+                        sprites[i].color = lit ? type.tint * litTint : type.tint;
 
                         if (look.poseBob)
                         {
@@ -264,11 +426,11 @@ namespace Zombineta.Enemies
                     // En la pelea miran hacia la protagonista, y el que se prepara para pegar
                     // se pone rojo: el aviso para esquivarlo o pegarle primero.
                     sprites[i].flipX = pelea && u.Mira < 0;
-                    if (pelea && u.Alive && u.Preparando >= 0f)
+                    if (pelea && u.Alive && u.Preparando >= 0f && !ataqueDibujado)
                         sprites[i].color = Color.Lerp(sprites[i].color, avisoDeAtaque, 0.6f);
 
                     // De pie tapa lo de arriba; caido queda como cualquier cosa tirada en el piso.
-                    sprites[i].sortingOrder = LaneSorting.Order(u.Lane, u.Alive ? SortSlot.Zombie : SortSlot.Item);
+                    sprites[i].sortingOrder = LaneSorting.Order(laneVisual[i], u.Alive ? SortSlot.Zombie : SortSlot.Item, i);
                     sprites[i].sortingLayerID = LaneSorting.GameLayerId;
                 }
 
@@ -276,9 +438,11 @@ namespace Zombineta.Enemies
                 {
                     // Debajo de todo lo de su carril, y solo de pie: el caido ya esta en el piso.
                     shadows[i].Visible = u.Alive;
-                    shadows[i].Orden = LaneSorting.Order(u.Lane, SortSlot.Shadow);
+                    shadows[i].Orden = LaneSorting.Order(laneVisual[i], SortSlot.Shadow);
                 }
             }
+
+            lastPhase = state.Phase;
         }
     }
 }

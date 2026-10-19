@@ -204,15 +204,26 @@ namespace Zombineta.Juego.Flow
                 StartCoroutine(RunPlans());
         }
 
+        /// <summary>
+        /// Migas de pan del cambio de escenas, solo en el editor: si el juego se cuelga con la pantalla en
+        /// negro, la ultima linea "[Escenas]" del Editor.log dice hasta donde llego.
+        /// </summary>
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        static void Traza(string mensaje) => Debug.Log("[Escenas] " + mensaje + " (t=" + Time.realtimeSinceStartup.ToString("0.0") + ", escala " + Time.timeScale + ")");
+
         IEnumerator RunPlans()
         {
             busy = true;
             while (pending.Count > 0)
             {
                 var plan = pending.Dequeue();
+                Traza("plan: descarga [" + string.Join(", ", plan.Unload) + "] carga [" + string.Join(", ", plan.Load) + "] activa " + plan.Active + " fade " + plan.Fade);
 
                 if (plan.Fade && fader != null)
+                {
                     yield return fader.FadeTo(1f, fadeSeconds);
+                    Traza("fundido a negro listo");
+                }
 
                 foreach (var scene in plan.Unload)
                 {
@@ -221,6 +232,7 @@ namespace Zombineta.Juego.Flow
                     var op = SceneManager.UnloadSceneAsync(scene);
                     if (op != null)
                         yield return op;
+                    Traza("descargada " + scene);
                 }
 
                 foreach (var scene in plan.Load)
@@ -232,6 +244,7 @@ namespace Zombineta.Juego.Flow
                         continue;
                     }
                     yield return op;
+                    Traza("cargada " + scene);
                 }
 
                 var active = SceneManager.GetSceneByName(plan.Active);
@@ -239,7 +252,10 @@ namespace Zombineta.Juego.Flow
                     SceneManager.SetActiveScene(active);
 
                 if (plan.Fade && fader != null)
+                {
                     yield return fader.FadeTo(0f, fadeSeconds);
+                    Traza("fundido de vuelta listo");
+                }
             }
             busy = false;
         }

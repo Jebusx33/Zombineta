@@ -31,6 +31,10 @@ namespace Zombineta.Enemies
         [Tooltip("Pinas que aguanta en la pelea a pie antes de morir.")]
         [Min(1)] public int golpesParaMorir = 3;
 
+        [Tooltip("Cuanto resiste el empuje de los golpes a pie: 0 = sale volando, 1 = no se mueve. " +
+                 "Un pesado se tambalea pero no vuela con el remate.")]
+        [Range(0f, 1f)] public float resisteEmpuje = 0f;
+
         [Tooltip("Peso relativo con que aparece en la masa.")]
         public float spawnWeight = 60f;
 

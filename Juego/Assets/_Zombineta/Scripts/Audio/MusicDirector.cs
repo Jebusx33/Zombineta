@@ -150,13 +150,22 @@ namespace Zombineta.Audio
 
         void OnChanged(GameScreen from, GameScreen to) => Aplicar(to);
 
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        static void Traza(string mensaje) => Debug.Log("[Musica] " + mensaje + " (t=" + Time.realtimeSinceStartup.ToString("0.0") + ")");
+
         void Aplicar(GameScreen pantalla)
         {
+            Traza("aplicar " + pantalla);
             AudioClip clip = ClipPara(pantalla, out AudioDeNivel nivelParaTension);
             if (MusicaRegla.Decidir(actualClip, clip) == MusicaAccion.Seguir)
+            {
+                Traza("sigue el mismo tema");
                 return;
+            }
 
+            Traza("cruza a " + (clip != null ? clip.name : "(nada)"));
             Cruzar(clip, pantalla, nivelParaTension);
+            Traza("cruce listo");
         }
 
         AudioClip ClipPara(GameScreen pantalla, out AudioDeNivel nivelParaTension)

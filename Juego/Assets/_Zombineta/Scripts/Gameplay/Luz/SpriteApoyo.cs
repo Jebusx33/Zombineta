@@ -33,6 +33,15 @@ namespace Zombineta.Luz
         static readonly Dictionary<Sprite, Vector2> apoyos = new Dictionary<Sprite, Vector2>();
         static readonly Dictionary<Texture2D, Alfa> hojas = new Dictionary<Texture2D, Alfa>();
 
+        // Con "Enter Play Mode" sin recargar el dominio los static sobreviven entre un Play y el
+        // siguiente, con las claves (sprites y texturas) ya destruidas: se limpian al empezar.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStatics()
+        {
+            apoyos.Clear();
+            hojas.Clear();
+        }
+
         public static Vector2 De(Sprite sprite)
         {
             if (apoyos.TryGetValue(sprite, out var apoyo))

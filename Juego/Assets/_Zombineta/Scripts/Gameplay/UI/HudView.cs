@@ -80,6 +80,38 @@ namespace Zombineta.UI
 
         readonly Vector3[] corners = new Vector3[4];
 
+        // La barra de distancia (marco, relleno y marcador) se esconde mientras se pelea a pie: no
+        // hay recorrido que mostrar y su lugar lo usa la ayuda de controles de la pelea.
+        [Tooltip("Opcional: el marco de la barra de distancia. Sin asignar se busca un hermano llamado 'Progress'.")]
+        [SerializeField] GameObject progressFrame;
+        GameObject[] distanceBar;
+        bool distanceBarShown = true;
+
+        void SetDistanceBarVisible(bool visible)
+        {
+            if (visible == distanceBarShown)
+                return;
+
+            if (distanceBar == null)
+            {
+                var list = new List<GameObject>();
+                var frame = progressFrame;
+                if (frame == null && progressFill != null && progressFill.transform.parent != null)
+                {
+                    var found = progressFill.transform.parent.Find("Progress");
+                    frame = found != null ? found.gameObject : null;
+                }
+                if (frame != null) list.Add(frame);
+                if (progressFill != null) list.Add(progressFill.gameObject);
+                if (progressMarker != null) list.Add(progressMarker.gameObject);
+                distanceBar = list.ToArray();
+            }
+
+            foreach (var go in distanceBar)
+                go.SetActive(visible);
+            distanceBarShown = visible;
+        }
+
         void LateUpdate()
         {
             if (run == null || run.Sim == null)
@@ -87,6 +119,8 @@ namespace Zombineta.UI
 
             var s = run.Sim.State;
             var cfg = run.Config;
+
+            SetDistanceBarVisible(s.Phase != RunPhase.Pelea);
 
             if (fuelFill != null)
             {

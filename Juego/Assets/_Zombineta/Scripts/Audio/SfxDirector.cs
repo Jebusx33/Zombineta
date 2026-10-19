@@ -115,6 +115,13 @@ namespace Zombineta.Audio
             if ((events & RunEvent.RanOutOfFuel) != 0) audio.Play(SonidoClave.SinNafta);
             if ((events & RunEvent.Launched) != 0) audio.Play(SonidoClave.Salto);
 
+            // Pelea a pie: suena cada golpe de la cadena (el paso lo da el estado), el remate y el dano.
+            float aPie = run.ToWorldX(state.PeatonX);
+            if ((events & RunEvent.Remate) != 0) audio.Play(SonidoClave.Remate, aPie);
+            else if ((events & RunEvent.Golpe) != 0) audio.Play(state.ComboPaso == 2 ? SonidoClave.Golpe2 : SonidoClave.Golpe1, aPie);
+            if ((events & RunEvent.GolpeAlAire) != 0) audio.Play(SonidoClave.GolpeAlAire, aPie);
+            if ((events & RunEvent.Lastimada) != 0) audio.Play(SonidoClave.Lastimada, aPie);
+
             // Aterrizaje perfecto pisa al aterrizaje comun cuando vienen juntos en el mismo paso.
             if ((events & RunEvent.LandedPerfect) != 0) audio.Play(SonidoClave.AterrizajePerfecto);
             else if ((events & RunEvent.Landed) != 0) audio.Play(SonidoClave.Aterrizaje);
@@ -185,8 +192,12 @@ namespace Zombineta.Audio
             }
         }
 
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        static void Traza(string mensaje) => Debug.Log("[Sfx] " + mensaje + " (t=" + Time.realtimeSinceStartup.ToString("0.0") + ")");
+
         void OnFlowChanged(GameScreen from, GameScreen to)
         {
+            Traza("cambio de pantalla " + from + " -> " + to);
             var audio = AudioDirector.Instance;
             if (audio == null)
                 return;
@@ -195,6 +206,7 @@ namespace Zombineta.Audio
                 audio.Play(SonidoClave.Victoria);
             else if (to == GameScreen.GameOver)
                 audio.Play(SonidoClave.Derrota);
+            Traza("sonido de pantalla listo");
         }
     }
 }

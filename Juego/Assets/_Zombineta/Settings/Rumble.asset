@@ -37,3 +37,15 @@ MonoBehaviour:
     low: 1
     high: 0.8
     seconds: 0.9
+  - kind: 6
+    low: 0.1
+    high: 0.35
+    seconds: 0.07
+  - kind: 7
+    low: 0.8
+    high: 0.55
+    seconds: 0.28
+  - kind: 8
+    low: 0.7
+    high: 0.3
+    seconds: 0.22

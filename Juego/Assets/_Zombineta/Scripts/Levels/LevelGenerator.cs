@@ -22,7 +22,8 @@ namespace Zombineta.Juego.Levels
         [Tooltip("Obstaculos sueltos cada 100 m (ademas de los de las rampas).")]
         public float obstaclesPer100m = 1.6f;
 
-        [Tooltip("Separacion minima entre dos cosas del mismo carril, en metros.")]
+        [Tooltip("Separacion minima entre los centros de dos cosas del mismo carril, en metros. " +
+                 "Ademas se respeta el ancho del dibujo de cada una (ver LevelFootprint).")]
         public float minGapSameLane = 2f;
 
         [Tooltip("Metros minimos entre obstaculos de carriles vecinos: los dibujos son mas altos " +
@@ -50,8 +51,9 @@ namespace Zombineta.Juego.Levels
     /// encima; devuelve solo lo nuevo.
     ///
     /// Reglas: piezas de rampa con zona de aterrizaje libre; barriles fuera de las rampas;
-    /// zombies de frente lejos de obstaculos de su carril; nunca tres carriles tapados; nada a
-    /// menos de la separacion minima en un mismo carril.
+    /// zombies de frente lejos de obstaculos de su carril; nunca tres carriles tapados; nada
+    /// encimado en un mismo carril (segun el ancho de cada dibujo) ni escondido detras de un
+    /// obstaculo del carril de abajo.
     ///
     /// Con tramos, cada uno multiplica las densidades en su pedazo del recorrido (0 = nada de
     /// eso ahi). Sin tramos el nivel sale parejo, como siempre.
@@ -69,11 +71,11 @@ namespace Zombineta.Juego.Levels
         const float RampZoneAfter = 50f;
 
         // La pieza de rampa, en metros desde la rampa. Con el salto de GameConfig.asset (unos 5,5 m
-        // de vuelo a velocidad normal, 0,5 m de alto) los dos obstaculos quedan dentro del vuelo y
-        // el bidon aereo cerca del punto mas alto. Si cambia el salto, revisar estos numeros y
-        // LevelValidator.LandingFrom.
-        const float RampObstacleNear = 2f;
-        const float RampObstacleFar = 4f;
+        // de vuelo a velocidad normal, 0,5 m de alto) el obstaculo queda dentro del vuelo y el
+        // bidon aereo cerca del punto mas alto. Es uno solo: con dos coches a 2 m de distancia se
+        // encimaban entre ellos y con la rampa. Si cambia el salto, revisar este numero y
+        // LevelValidator.LandingFrom (el obstaculo tiene que quedar antes).
+        const float RampObstacleAt = 4.4f;
         const float RampFuelAt = 3f;
         const float RampFuelHeight = 1f;
 
@@ -103,6 +105,7 @@ namespace Zombineta.Juego.Levels
 
             float Piezas(float d) { var t = Tramos.At(tramos, d); return t != null ? t.piezas : 1f; }
             float Recursos(float d) { var t = Tramos.At(tramos, d); return t != null ? t.recursos : 1f; }
+            float Nafta(float d) { var t = Tramos.At(tramos, d); return t != null ? t.nafta : 1f; }
 
             // Avanza hasta el proximo lugar de algo que va "cada tantos metros": mas seguido donde
             // el tramo lo pide, y de largo donde no lo quiere.
@@ -112,7 +115,7 @@ namespace Zombineta.Juego.Levels
                 return d + (m > 0f ? every / m : SkipStep);
             }
 
-            // 1) Piezas de rampa: rampa, dos obstaculos para sobrevolar y a veces un bidon aereo.
+            // 1) Piezas de rampa: rampa, un obstaculo para sobrevolar y a veces un bidon aereo.
             int piece = 0;
             if (s.rampEvery > 0f)
             {
@@ -123,12 +126,12 @@ namespace Zombineta.Juego.Levels
                     int lane = rng.Next(Lanes);
                     if (AnyInLane(all, lane, d - RampZoneBefore, d + RampZoneAfter))
                         continue;
-                    if (WouldBlock(all, d + RampObstacleNear, lane) || WouldBlock(all, d + RampObstacleFar, lane))
+                    if (WouldBlock(all, d + RampObstacleAt, lane) || HiddenByObstacle(all, d, lane, LevelEntryKind.Ramp) ||
+                        WouldHide(all, d + RampObstacleAt, lane))
                         continue;
 
                     Add(new LevelEntry(d, lane, LevelEntryKind.Ramp));
-                    Add(new LevelEntry(d + RampObstacleNear, lane, LevelEntryKind.Obstacle));
-                    Add(new LevelEntry(d + RampObstacleFar, lane, LevelEntryKind.Obstacle));
+                    Add(new LevelEntry(d + RampObstacleAt, lane, LevelEntryKind.Obstacle));
                     if (piece % 2 == 0)
                         Add(new LevelEntry(d + RampFuelAt, lane, LevelEntryKind.Fuel, RampFuelHeight));
                     piece++;
@@ -144,7 +147,8 @@ namespace Zombineta.Juego.Levels
                         continue;
                     float at = Mathf.Round(d);
                     int lane = rng.Next(Lanes);
-                    if (InAnyRampZone(all, at) || Occupied(all, at, lane, s.minGapSameLane))
+                    if (InAnyRampZone(all, at) || Occupied(all, at, lane, LevelEntryKind.Barrel, s.minGapSameLane) ||
+                        HiddenByObstacle(all, at, lane, LevelEntryKind.Barrel))
                         continue;
                     Add(new LevelEntry(at, lane, LevelEntryKind.Barrel));
                 }
@@ -160,8 +164,9 @@ namespace Zombineta.Juego.Levels
                     float at = Mathf.Round(d);
                     int lane = rng.Next(Lanes);
                     int variant = rng.NextDouble() < s.heavyFrontZombieChance ? 2 : 0;
-                    if (InRampZone(all, at, lane) || Occupied(all, at, lane, s.minGapSameLane) ||
-                        NearKind(all, at, lane, LevelEntryKind.Obstacle, 10f) || WouldBlock(all, at, lane))
+                    if (InRampZone(all, at, lane) || Occupied(all, at, lane, LevelEntryKind.ZombieFront, s.minGapSameLane) ||
+                        NearKind(all, at, lane, LevelEntryKind.Obstacle, 10f) || WouldBlock(all, at, lane) ||
+                        HiddenByObstacle(all, at, lane, LevelEntryKind.ZombieFront))
                         continue;
                     Add(new LevelEntry(at, lane, LevelEntryKind.ZombieFront, 0f, variant));
                 }
@@ -187,8 +192,9 @@ namespace Zombineta.Juego.Levels
                 {
                     float at = Mathf.Round(from + (float)rng.NextDouble() * (to - from));
                     int lane = rng.Next(Lanes);
-                    if (InRampZone(all, at, lane) || Occupied(all, at, lane, s.minGapSameLane) ||
+                    if (InRampZone(all, at, lane) || Occupied(all, at, lane, LevelEntryKind.Obstacle, s.minGapSameLane) ||
                         NearKind(all, at, lane, LevelEntryKind.ZombieFront, 10f) || WouldBlock(all, at, lane) ||
+                        WouldHide(all, at, lane) || HiddenByObstacle(all, at, lane, LevelEntryKind.Obstacle) ||
                         ObstaculoEnCarrilVecino(all, at, lane, s.separacionEntreCarriles))
                         continue;
                     Add(new LevelEntry(at, lane, LevelEntryKind.Obstacle));
@@ -197,25 +203,29 @@ namespace Zombineta.Juego.Levels
             }
 
             // 5) Recursos, repartidos con un poco de azar.
-            PlacePickups(LevelEntryKind.Fuel, s.fuelEvery);
-            PlacePickups(LevelEntryKind.Battery, s.batteryEvery);
-            PlacePickups(LevelEntryKind.Ammo, s.ammoEvery);
+            PlacePickups(LevelEntryKind.Fuel, s.fuelEvery, d => Recursos(d) * Nafta(d));
+            PlacePickups(LevelEntryKind.Battery, s.batteryEvery, Recursos);
+            PlacePickups(LevelEntryKind.Ammo, s.ammoEvery, Recursos);
 
-            void PlacePickups(LevelEntryKind kind, float every)
+            void PlacePickups(LevelEntryKind kind, float every, System.Func<float, float> density)
             {
                 if (every <= 0f)
                     return;
-                for (float d = start + every * 0.5f; d <= end; d = Next(d, every, Recursos))
+                for (float d = start + every * 0.5f; d <= end; d = Next(d, every, density))
                 {
-                    if (Recursos(d) <= 0f)
+                    if (density(d) <= 0f)
                         continue;
                     for (int tries = 0; tries < 4; tries++)
                     {
-                        float jitter = ((float)rng.NextDouble() - 0.5f) * (every / Recursos(d)) * 0.5f;
+                        float jitter = ((float)rng.NextDouble() - 0.5f) * (every / density(d)) * 0.5f;
                         float at = Mathf.Round(Mathf.Clamp(d + jitter, start, end));
                         int lane = rng.Next(Lanes);
+                        // El azar no lo puede correr hacia un tramo donde ese recurso no va (una sequia).
+                        if (density(at) <= 0f)
+                            continue;
                         // Debajo de un salto no se llega: fuera del tramo de la rampa hasta el aterrizaje corto.
-                        if (UnderAJump(all, at, lane) || Occupied(all, at, lane, s.minGapSameLane))
+                        if (UnderAJump(all, at, lane) || Occupied(all, at, lane, kind, s.minGapSameLane) ||
+                            HiddenByObstacle(all, at, lane, kind))
                             continue;
                         Add(new LevelEntry(at, lane, kind));
                         break;
@@ -256,10 +266,32 @@ namespace Zombineta.Juego.Levels
             return false;
         }
 
-        static bool Occupied(List<LevelEntry> all, float at, int lane, float gap)
+        /// <summary>Si algo del mismo carril, en el piso, tocaria a esta cosa segun el ancho de los dos dibujos.</summary>
+        static bool Occupied(List<LevelEntry> all, float at, int lane, LevelEntryKind kind, float floor)
         {
             foreach (var e in all)
-                if (e.lane == lane && e.height <= 0f && Mathf.Abs(e.distance - at) < gap)
+                if (e.lane == lane && e.height <= 0f &&
+                    Mathf.Abs(e.distance - at) < LevelFootprint.MinDistance(e.kind, kind, floor))
+                    return true;
+            return false;
+        }
+
+        /// <summary>Si un obstaculo del carril de abajo taparia a esta cosa.</summary>
+        static bool HiddenByObstacle(List<LevelEntry> all, float at, int lane, LevelEntryKind kind)
+        {
+            var item = new LevelEntry(at, lane, kind);
+            foreach (var e in all)
+                if (LevelFootprint.Hides(e, item))
+                    return true;
+            return false;
+        }
+
+        /// <summary>Si un obstaculo puesto aca taparia algo que ya esta colocado en el carril de arriba.</summary>
+        static bool WouldHide(List<LevelEntry> all, float at, int lane)
+        {
+            var obstacle = new LevelEntry(at, lane, LevelEntryKind.Obstacle);
+            foreach (var e in all)
+                if (LevelFootprint.Hides(obstacle, e))
                     return true;
             return false;
         }

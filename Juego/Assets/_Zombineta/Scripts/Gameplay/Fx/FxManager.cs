@@ -38,6 +38,9 @@ namespace Zombineta.Fx
         [Tooltip("Altura sobre el piso del carril de donde sale la traza (la mano de la jugadora), en unidades de mundo.")]
         [SerializeField] float tracerHeight = 0.55f;
 
+        [Tooltip("Lo mismo, pero a pie en la pelea: la protagonista parada dispara desde la mano, no desde la cadera.")]
+        [SerializeField] float tracerHeightPelea = 1.25f;
+
         [Tooltip("Altura sobre el piso del carril donde nacen las particulas (el cuerpo del zombie), en unidades de mundo.")]
         [SerializeField] float effectHeight = 0.5f;
 
@@ -59,7 +62,7 @@ namespace Zombineta.Fx
             public ParticleSystem raiz;
             public ParticleSystem[] capas;
             public ParticleSystem.MinMaxGradient[] colores;
-            public Renderer[] renderers;
+            public ParticleSystemRenderer[] renderers;
             public int[] ordenes;
         }
 
@@ -141,6 +144,11 @@ namespace Zombineta.Fx
                 Play(horde.Events[i], gore);
         }
 
+        // Hacia donde estan dibujados los efectos de los prefabs: lo de la horda sale hacia la izquierda
+        // (los zombies vienen de atras de la moto), el atropello hacia la derecha (la moto empuja).
+        // Si el evento va hacia el otro lado (a pie se dispara y se pega para los dos), se espeja.
+        const int Izquierda = -1, Derecha = 1;
+
         void Play(HordeEvent e, bool gore)
         {
             Vector3 at = new Vector3(run.ToWorldX(e.X), run.LaneToWorldY(e.Lane) + effectHeight, 0f);
@@ -151,23 +159,25 @@ namespace Zombineta.Fx
             {
                 case HordeEventKind.Tracer:
                     ShowTracer(e);
-                    Emit(muzzles, new Vector3(run.ToWorldX(e.FromX), run.LaneToWorldY(e.Lane) + tracerHeight, 0f),
-                         null, e.Lane);
+                    Emit(muzzles, MuzzlePosition(e), null, e.Lane, e.X >= e.FromX ? Derecha : Izquierda, Izquierda);
                     break;
 
                 case HordeEventKind.Impact:
-                    Emit(impacts, at, tinte, e.Lane);
+                    Emit(impacts, at, tinte, e.Lane, e.Dir, Izquierda);
                     break;
 
                 case HordeEventKind.Death:
-                    Emit(e.Cause == DeathCause.RunOver ? runOvers : deaths, at, tinte, e.Lane);
+                    if (e.Cause == DeathCause.RunOver)
+                        Emit(runOvers, at, tinte, e.Lane, 0, Derecha);
+                    else
+                        Emit(deaths, at, tinte, e.Lane, e.Dir, Izquierda);
                     if (gore)
                         Stain(new Vector3(at.x, run.LaneToWorldY(e.Lane), 0f), e.Lane,
                               bloodSprite != null ? bloodSprite : decalSprite, bloodColor, 1f);
                     break;
 
                 case HordeEventKind.Explosion:
-                    Emit(explosions, at, null, e.Lane);
+                    Emit(explosions, at, null, e.Lane, 0, Izquierda);
                     if (scorchSprite != null)
                         Stain(new Vector3(at.x, run.LaneToWorldY(e.Lane), 0f), e.Lane, scorchSprite, scorchColor, scorchScale);
                     break;
@@ -178,13 +188,25 @@ namespace Zombineta.Fx
             }
         }
 
+        bool OnFoot => run.Sim.State.Phase == RunPhase.Pelea;
+
+        /// <summary>De donde sale el disparo: de la mano de la protagonista, que a pie camina entre carriles.</summary>
+        Vector3 MuzzlePosition(HordeEvent e)
+        {
+            if (OnFoot)
+                return new Vector3(run.ToWorldX(e.FromX), run.LaneToWorldY(run.Sim.State.LaneVisual) + tracerHeightPelea, 0f);
+            return new Vector3(run.ToWorldX(e.FromX), run.LaneToWorldY(e.Lane) + tracerHeight, 0f);
+        }
+
         void ShowTracer(HordeEvent e)
         {
             if (tracer == null)
                 return;
-            float y = run.LaneToWorldY(e.Lane) + tracerHeight;
-            tracer.SetPosition(0, new Vector3(run.ToWorldX(e.FromX), y, 0f));
-            tracer.SetPosition(1, new Vector3(run.ToWorldX(e.X), y, 0f));
+            float h = OnFoot ? tracerHeightPelea : tracerHeight;
+            float y0 = MuzzlePosition(e).y;
+            float y1 = run.LaneToWorldY(e.Lane) + h;
+            tracer.SetPosition(0, new Vector3(run.ToWorldX(e.FromX), y0, 0f));
+            tracer.SetPosition(1, new Vector3(run.ToWorldX(e.X), y1, 0f));
             tracer.sortingOrder = LaneSorting.Order(e.Lane, SortSlot.Effect);
             tracer.sortingLayerID = LaneSorting.GameLayerId;
             tracer.enabled = true;
@@ -216,7 +238,13 @@ namespace Zombineta.Fx
             tracer.SetPropertyBlock(tracerBlock);
         }
 
-        void Emit(List<Instancia> pool, Vector3 at, Color? tinte, int lane)
+        /// <summary>
+        /// Reproduce un efecto del pool. "dir" es hacia donde va el evento (0 = no se sabe) y
+        /// "autorDir" hacia donde esta dibujado el prefab: si no coinciden, se espeja (el
+        /// transform gira 180 grados sobre Y para las direcciones y los desplazamientos, y cada
+        /// renderer se voltea para las texturas que no son simetricas, como la llama del fogonazo).
+        /// </summary>
+        void Emit(List<Instancia> pool, Vector3 at, Color? tinte, int lane, int dir, int autorDir)
         {
             if (pool.Count == 0)
                 return;
@@ -232,6 +260,8 @@ namespace Zombineta.Fx
                 }
 
             chosen.raiz.transform.position = at;
+            bool espejar = dir != 0 && dir != autorDir;
+            chosen.raiz.transform.rotation = espejar ? Quaternion.Euler(0f, 180f, 0f) : Quaternion.identity;
 
             for (int c = 0; c < chosen.capas.Length; c++)
             {
@@ -244,6 +274,7 @@ namespace Zombineta.Fx
             {
                 chosen.renderers[r].sortingOrder = baseOrder + chosen.ordenes[r];
                 chosen.renderers[r].sortingLayerID = LaneSorting.GameLayerId;
+                chosen.renderers[r].flip = espejar ? new Vector3(1f, 0f, 0f) : Vector3.zero;
             }
 
             chosen.raiz.Clear(true);

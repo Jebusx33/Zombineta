@@ -65,7 +65,9 @@ namespace Zombineta.Luz
                 return;
 
             var state = run.Sim.State;
-            var atMoto = new Vector2(run.ToWorldX(state.PlayerX), run.LaneToWorldY(state.LaneVisual));
+            // A pie la moto queda parada y quien dispara es la protagonista: los destellos salen de ella.
+            float x = state.Phase == RunPhase.Pelea ? state.PeatonX : state.PlayerX;
+            var atMoto = new Vector2(run.ToWorldX(x), run.LaneToWorldY(state.LaneVisual));
 
             if ((events & RunEvent.Shot) != 0)
                 director.Trigger(FlashKind.Shot, atMoto);
