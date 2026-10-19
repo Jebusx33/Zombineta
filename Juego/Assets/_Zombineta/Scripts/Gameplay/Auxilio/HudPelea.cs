@@ -25,7 +25,7 @@ namespace Zombineta.Auxilio
         [Tooltip("Segundos que la ayuda de controles queda grande al empezar la pelea; despues queda chica.")]
         [SerializeField] float segundosAyuda = 7f;
 
-        Text auxilio, vida, ayudas, cartel, controles, combo;
+        Text auxilio, vida, ayudas, cartel, controles, combo, pocaNafta;
         Image barra, fondoBarra, rojo;
         GameObject panel;
         float cartelRestante;
@@ -86,6 +86,18 @@ namespace Zombineta.Auxilio
             sombra.effectDistance = new Vector2(5f, -5f);
             cartel.enabled = false;
 
+            // Aviso de poca nafta (solo en niveles con auxilio): debajo del marco del combustible.
+            pocaNafta = NuevoTexto("Poca nafta", transform, font, 30, TextAnchor.UpperLeft, Vector2.zero, new Vector2(420f, 44f));
+            var pr2 = pocaNafta.rectTransform;
+            pr2.anchorMin = pr2.anchorMax = pr2.pivot = new Vector2(0f, 1f);
+            pr2.anchoredPosition = new Vector2(48f, -124f);
+            pocaNafta.fontStyle = FontStyle.Bold;
+            pocaNafta.color = new Color(1f, 0.35f, 0.25f);
+            var ps2 = pocaNafta.gameObject.AddComponent<Outline>();
+            ps2.effectColor = Color.black;
+            ps2.effectDistance = new Vector2(2f, -2f);
+            pocaNafta.enabled = false;
+
             // Ayuda de controles abajo, con las teclas o botones del dispositivo que se esta usando.
             controles = NuevoTexto("Controles", transform, font, 30, TextAnchor.LowerCenter, Vector2.zero, new Vector2(1700f, 60f));
             var kr = controles.rectTransform;
@@ -111,11 +123,27 @@ namespace Zombineta.Auxilio
 
         void AlPasar(RunEvent ev)
         {
+            // La moto empieza a frenar: el aviso sale en ese momento, antes de que se baje.
+            if ((ev & RunEvent.Frenando) != 0)
+                Mostrar("¡SIN NAFTA!", new Color(1f, 0.85f, 0.2f));
             if ((ev & RunEvent.PeleaEmpieza) != 0)
             {
-                Mostrar("¡SIN NAFTA!", new Color(1f, 0.85f, 0.2f));
+                Mostrar("¡AGUANTÁ!", new Color(1f, 0.6f, 0.2f));
                 ayudaDesde = Time.unscaledTime;
             }
+            if ((ev & RunEvent.OleadaNueva) != 0 && run != null && run.Sim != null)
+            {
+                int n = run.Sim.State.Oleada + 1;
+                bool ultima = run.Config.oleadas != null && n >= run.Config.oleadas.Count;
+                Mostrar(ultima ? "¡ÚLTIMA OLEADA!" : "OLEADA " + n, ultima ? new Color(1f, 0.4f, 0.3f) : Color.white);
+            }
+            if ((ev & RunEvent.PeleaReintenta) != 0)
+            {
+                Mostrar("¡OTRA VEZ!", new Color(1f, 0.5f, 0.5f));
+                ayudaDesde = Time.unscaledTime;
+            }
+            if ((ev & RunEvent.AuxilioTermina) != 0)
+                Mostrar("¡A CORRER!", new Color(0.55f, 1f, 0.55f));
             if ((ev & RunEvent.AuxilioLlega) != 0)
                 Mostrar("¡AUXILIO!", new Color(0.55f, 1f, 0.55f));
 
@@ -172,6 +200,18 @@ namespace Zombineta.Auxilio
                 ayudas.text = "AUXILIOS: " + s.Ayudas;
 
             ActualizarControles(pelea);
+
+            // Poca nafta (en niveles con auxilio y con auxilios todavia): parpadea para que no sorprenda.
+            bool aviso = !pelea && s.Phase == RunPhase.Running && c.ayudas > 0 && s.Ayudas > 0 &&
+                         s.Fuel > 0f && c.fuelMax > 0f && s.Fuel / c.fuelMax < 0.25f;
+            pocaNafta.enabled = aviso;
+            if (aviso)
+            {
+                pocaNafta.text = "¡POCA NAFTA!";
+                var pn = pocaNafta.color;
+                pn.a = 0.55f + 0.45f * Mathf.Abs(Mathf.Sin(Time.unscaledTime * 6f));
+                pocaNafta.color = pn;
+            }
 
             // Recibir un golpe: los corazones se sacuden y se agrandan, y los bordes se ponen rojos un instante.
             golpeRecibido = Mathf.MoveTowards(golpeRecibido, 0f, Time.unscaledDeltaTime / Mathf.Max(0.05f, segundosGolpeRecibido));

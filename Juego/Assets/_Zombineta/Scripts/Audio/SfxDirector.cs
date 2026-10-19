@@ -192,8 +192,12 @@ namespace Zombineta.Audio
             }
         }
 
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        static void Traza(string mensaje) => Debug.Log("[Sfx] " + mensaje + " (t=" + Time.realtimeSinceStartup.ToString("0.0") + ")");
+
         void OnFlowChanged(GameScreen from, GameScreen to)
         {
+            Traza("cambio de pantalla " + from + " -> " + to);
             var audio = AudioDirector.Instance;
             if (audio == null)
                 return;
@@ -202,6 +206,7 @@ namespace Zombineta.Audio
                 audio.Play(SonidoClave.Victoria);
             else if (to == GameScreen.GameOver)
                 audio.Play(SonidoClave.Derrota);
+            Traza("sonido de pantalla listo");
         }
     }
 }

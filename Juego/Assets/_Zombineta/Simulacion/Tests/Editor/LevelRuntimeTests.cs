@@ -336,5 +336,85 @@ namespace Zombineta.Tests
 
             Assert.IsFalse(level.Items[0].Consumed);
         }
+
+        // --- Fase 4: bidones bloqueados y arena despejada ---------------------------
+
+        [Test]
+        public void TheFuelCannotBePickedUp_UntilTheFirstAidIsUsed()
+        {
+            var c = MakeConfig();
+            c.bidonesDesdeAuxilio = 1;
+            c.fuelInicial = 50f;
+            var sim = new RunSimulation(c);
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(30f, 1, LevelEntryKind.Fuel)));
+
+            Advance(sim, level, 4f, PlayerIntent.Idle);   // pasa por encima del bidon (a 10 m/s)
+
+            Assert.IsTrue(sim.State.PlayerX > 30f);
+            Assert.IsFalse(level.Items[0].Consumed, "sin gastar: todavia no existe");
+            Assert.Less(sim.State.Fuel, 50f, "y no recargo");
+        }
+
+        [Test]
+        public void AfterTheFirstAid_TheFuelIsBackToNormal()
+        {
+            var c = MakeConfig();
+            c.bidonesDesdeAuxilio = 1;
+            var sim = new RunSimulation(c);
+            sim.State.AyudasUsadas = 1;
+            sim.State.Fuel = 10f;
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(30f, 1, LevelEntryKind.Fuel)));
+
+            Advance(sim, level, 4f, PlayerIntent.Idle);
+
+            Assert.IsTrue(level.Items[0].Consumed);
+            Assert.Greater(sim.State.Fuel, 25f, "recargo");
+        }
+
+        [Test]
+        public void ALevelWithoutTheRule_AlwaysHasFuel()
+        {
+            var sim = new RunSimulation(MakeConfig());
+            sim.State.Fuel = 10f;
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(30f, 1, LevelEntryKind.Fuel)));
+
+            Advance(sim, level, 4f, PlayerIntent.Idle);
+
+            Assert.IsTrue(level.Items[0].Consumed);
+        }
+
+        [Test]
+        public void ClearingTheArena_RemovesTheObstaclesButNotThePickups()
+        {
+            var level = new LevelRuntime(MakeLevel(
+                new LevelEntry(100f, 1, LevelEntryKind.Obstacle),
+                new LevelEntry(105f, 0, LevelEntryKind.Ramp),
+                new LevelEntry(110f, 2, LevelEntryKind.Barrel),
+                new LevelEntry(112f, 1, LevelEntryKind.ZombieFront),
+                new LevelEntry(114f, 1, LevelEntryKind.Ammo),
+                new LevelEntry(500f, 1, LevelEntryKind.Obstacle)));
+
+            int quitados = level.ClearZone(90f, 130f);
+
+            Assert.AreEqual(4, quitados);
+            Assert.IsTrue(level.Items[0].Consumed && level.Items[1].Consumed && level.Items[2].Consumed && level.Items[3].Consumed);
+            Assert.IsFalse(level.Items[4].Consumed, "los recursos se quedan");
+            Assert.IsFalse(level.Items[5].Consumed, "lo que esta lejos no se toca");
+        }
+
+        [Test]
+        public void TheClearedArena_StaysClearedWhenTheBikeResumes()
+        {
+            var sim = new RunSimulation(MakeConfig());
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(100f, 1, LevelEntryKind.Obstacle)));
+            level.ClearZone(90f, 110f);
+            sim.State.PlayerX = 95f;
+
+            Advance(sim, level, 2f, PlayerIntent.Idle);   // pasa sobre donde estaba el coche
+
+            Assert.IsTrue(sim.State.PlayerX > 100f);
+            Assert.AreEqual(RunPhase.Running, sim.State.Phase);
+            Assert.Greater(sim.State.Fuel, 95f, "ni choque ni castigo de nafta");
+        }
     }
 }

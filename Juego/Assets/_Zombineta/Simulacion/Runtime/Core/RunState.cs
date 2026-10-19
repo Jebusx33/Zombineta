@@ -81,6 +81,21 @@ namespace Zombineta.Core
         // --- Auxilio y pelea a pie ---
         /// <summary>Pedidos de auxilio que le quedan en el nivel.</summary>
         public int Ayudas;
+        /// <summary>Auxilios que ya uso: los bidones de algunos niveles aparecen recien despues del primero.</summary>
+        public int AyudasUsadas;
+        /// <summary>
+        /// Segundos que le quedan a la moto frenando antes de bajarse a pelear (sin nafta, con ayuda).
+        /// Negativo = no esta frenando.
+        /// </summary>
+        public float FrenadoRestante = -1f;
+        /// <summary>Velocidad que llevaba al quedarse sin nafta: de ahi baja hasta parar.</summary>
+        public float VelocidadAlFrenar;
+        /// <summary>Segundos que le quedan al arranque suave despues del auxilio (0 = ya a velocidad normal).</summary>
+        public float ArranqueRestante;
+        /// <summary>Oleada de la pelea en curso (0 = la primera).</summary>
+        public int Oleada;
+        /// <summary>Veces que todavia puede reintentar esta pelea si la derriban.</summary>
+        public int ReintentosPelea;
         /// <summary>Golpes que aguanta en la pelea. Solo cuenta mientras pelea.</summary>
         public int Vida;
         /// <summary>Segundos que faltan para que llegue la furgoneta.</summary>

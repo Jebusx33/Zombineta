@@ -297,5 +297,31 @@ namespace Zombineta.Juego.Tests
                 Assert.Less(lanes.Count, 3, "tres carriles tapados cerca de " + b.distance + " m");
             }
         }
+
+        [Test]
+        public void ADroughtTramo_HasNoFuel_ButStillHasTheOtherResources()
+        {
+            var tramos = new List<Tramo>
+            {
+                new Tramo { nombre = "Con nafta", hasta = 1000f },
+                new Tramo { nombre = "Sequia", hasta = 3000f, nafta = 0f },
+                new Tramo { nombre = "Final", hasta = 4000f },
+            };
+
+            var entries = LevelGenerator.Generate(Settings(), Length, null, tramos);
+
+            Assert.AreEqual(0, entries.FindAll(e => e.kind == LevelEntryKind.Fuel && e.distance >= 1000f && e.distance < 3000f &&
+                                                    e.height <= 0f).Count, "ni un bidon en la sequia");
+            Assert.Greater(entries.FindAll(e => e.kind == LevelEntryKind.Fuel && e.distance < 1000f).Count, 0, "antes si hay");
+            Assert.Greater(entries.FindAll(e => e.kind == LevelEntryKind.Fuel && e.distance >= 3000f).Count, 0, "despues vuelven");
+            Assert.Greater(entries.FindAll(e => e.kind == LevelEntryKind.Ammo && e.distance >= 1000f && e.distance < 3000f).Count, 0,
+                "las balas y la bateria siguen");
+        }
+
+        [Test]
+        public void TheDefaultTramo_HasTheNormalFuel()
+        {
+            Assert.AreEqual(1f, new Tramo().nafta, 0.0001f);
+        }
     }
 }

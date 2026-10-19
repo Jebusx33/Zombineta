@@ -39,6 +39,12 @@ namespace Zombineta.Core
         AuxilioTermina = 1 << 23,
         /// <summary>El tercer golpe de la cadena: derriba a los que la rodean.</summary>
         Remate = 1 << 24,
+        /// <summary>Empieza una oleada nueva de la pelea (el numero esta en State.Oleada).</summary>
+        OleadaNueva = 1 << 25,
+        /// <summary>La derribaron pero tenia un reintento: la pelea vuelve a empezar.</summary>
+        PeleaReintenta = 1 << 26,
+        /// <summary>Sin nafta y con ayuda: la moto empieza a frenar antes de que la protagonista se baje.</summary>
+        Frenando = 1 << 27,
     }
 
     /// <summary>
@@ -99,7 +105,7 @@ namespace Zombineta.Core
             State.HordeX = Horde.FrontX;
             State.Lane = 1;
             State.LaneVisual = 1f;
-            State.Fuel = config.fuelMax;
+            State.Fuel = config.fuelInicial > 0f ? Mathf.Min(config.fuelInicial, config.fuelMax) : config.fuelMax;
             State.Battery = config.batteryMax;
             State.Ammo = Mathf.Clamp(config.ammoAtStart, 0, config.ammoMax);
             State.HeadlightOn = false;
@@ -117,6 +123,12 @@ namespace Zombineta.Core
             State.BoostRemaining = 0f;
             State.Fallen = false;
             State.Ayudas = config.ayudas;
+            State.AyudasUsadas = 0;
+            State.FrenadoRestante = -1f;
+            State.VelocidadAlFrenar = 0f;
+            State.ArranqueRestante = 0f;
+            State.Oleada = 0;
+            State.ReintentosPelea = 0;
             State.Vida = 0;
             State.PeleaRestante = 0f;
             State.PeatonX = 0f;
@@ -170,6 +182,11 @@ namespace Zombineta.Core
 
             if (State.BoostRemaining > 0f)
                 State.BoostRemaining = Mathf.Max(0f, State.BoostRemaining - dt);
+
+            if (State.ArranqueRestante > 0f)
+                State.ArranqueRestante = Mathf.Max(0f, State.ArranqueRestante - dt);
+            if (State.FrenadoRestante > 0f)
+                State.FrenadoRestante = Mathf.Max(0f, State.FrenadoRestante - dt);
 
             bool hadFuel = State.Fuel > 0f;
             State.Mode = intent.Mode;
@@ -276,9 +293,17 @@ namespace Zombineta.Core
             if (State.StunRemaining > 0f)
                 return 0f;
 
-            // Sin nafta la moto se para: la horda hace el resto.
+            // Sin nafta la moto se para: la horda hace el resto. Con auxilio disponible no se clava de
+            // golpe: sigue avanzando con el motor tosiendo y va frenando hasta que la protagonista se baja.
             if (State.Fuel <= 0f)
+            {
+                if (State.FrenadoRestante > 0f && config.paradaSegundos > 0f)
+                {
+                    float k = Mathf.Clamp01(State.FrenadoRestante / config.paradaSegundos);
+                    return State.VelocidadAlFrenar * k * k;
+                }
                 return 0f;
+            }
 
             float speed;
             switch (State.Mode)
@@ -297,6 +322,13 @@ namespace Zombineta.Core
             // El impulso del aterrizaje perfecto solo empuja hacia adelante.
             if (State.BoostRemaining > 0f && speed > 0f)
                 speed *= config.landingBoostMultiplier;
+
+            // Despues del auxilio arranca de a poco, no a velocidad completa de un cuadro al otro.
+            if (State.ArranqueRestante > 0f && config.arranqueSegundos > 0f && speed > 0f)
+            {
+                float avance = 1f - Mathf.Clamp01(State.ArranqueRestante / config.arranqueSegundos);
+                speed *= avance * avance * (3f - 2f * avance);
+            }
 
             return speed;
         }
@@ -419,9 +451,33 @@ namespace Zombineta.Core
 
         RunEvent CheckEndConditions()
         {
-            // Sin nafta y con ayudas: no se pierde, se pide el auxilio y se pelea a pie.
+            // Sin nafta y con ayudas: no se pierde, se pide el auxilio y se pelea a pie. Antes la moto
+            // frena de a poco (paradaSegundos): se ve que se queda sin nafta y despues se baja.
             if (State.Fuel <= 0f && !State.Airborne && Pelea.PuedeEmpezar)
-                return Pelea.Empezar();
+            {
+                if (config.paradaSegundos <= 0f)
+                    return Pelea.Empezar();
+
+                if (State.FrenadoRestante < 0f)
+                {
+                    State.FrenadoRestante = config.paradaSegundos;
+                    State.VelocidadAlFrenar = PlayerSpeed;
+                    return RunEvent.Frenando;
+                }
+                if (State.FrenadoRestante <= 0f)
+                    return Pelea.Empezar();
+
+                // Todavia frenando: la horda no la pierde en este rato, pero si la inercia la lleva a la meta, gana.
+                if (State.PlayerX >= config.goalDistance)
+                {
+                    State.FrenadoRestante = -1f;
+                    State.Phase = RunPhase.Won;
+                    return RunEvent.Won;
+                }
+                return RunEvent.None;
+            }
+            if (State.FrenadoRestante >= 0f && State.Fuel > 0f)
+                State.FrenadoRestante = -1f;   // llego a un bidon a tiempo
 
             if (State.HordeX >= State.PlayerX)
             {

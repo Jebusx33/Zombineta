@@ -135,8 +135,12 @@ namespace Zombineta.Juego.Levels
                 cameraRig.TimeHeld = true;
         }
 
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        static void Traza(string mensaje) => Debug.Log("[Final] " + mensaje + " (t=" + Time.realtimeSinceStartup.ToString("0.0") + ", escala " + Time.timeScale + ")");
+
         void BeginFinale(bool won)
         {
+            Traza(won ? "victoria" : "atrapada: empieza el plano final");
             finaleWon = won;
             float hold = 0f;
             if (cameraRig != null)
@@ -156,6 +160,7 @@ namespace Zombineta.Juego.Levels
 
         void Finish()
         {
+            Traza("termina el plano final: pasa a " + (finaleWon ? "nivel completo" : "game over"));
             finaleLeft = 0f;
             finished = true;
             if (cameraRig != null)

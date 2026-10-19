@@ -74,8 +74,10 @@ namespace Zombineta.Core
                 return;
 
             // Pruebas: F4 vacia el tanque (para llegar a la pelea sin esperar).
+            // Casi vacio, no cero: el tanque se acaba en el cuadro siguiente igual que en una partida de
+            // verdad (con la moto a velocidad y frenando), en vez de aparecer ya parada.
             if (input != null && input.DebugSinNaftaPressed && Sim.State.Phase == RunPhase.Running)
-                Sim.State.Fuel = 0f;
+                Sim.State.Fuel = Mathf.Min(Sim.State.Fuel, 0.01f);
 
             if (Sim.State.Phase != RunPhase.Running && Sim.State.Phase != RunPhase.Pelea)
             {
@@ -110,6 +112,14 @@ namespace Zombineta.Core
             // efectivamente recorrido: asi nada se saltea por ir rapido.
             if (level != null && sim.State.Phase == RunPhase.Running && !Mathf.Approximately(before, after))
                 events |= level.Collect(sim, before, after);
+
+            // La arena de la pelea a pie se despeja: nada de coches ni rampas debajo de los que pelean.
+            if (level != null && (events & RunEvent.PeleaEmpieza) != 0)
+            {
+                float centro = sim.Pelea.Centro;
+                float ancho = sim.Config.arenaMedioAncho + 6f;
+                level.ClearZone(centro - ancho, centro + ancho);
+            }
 
             return events;
         }

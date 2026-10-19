@@ -58,8 +58,10 @@ namespace Zombineta.Enemies
         Animator[] animators;
         SombraProyectada[] shadows;
         int[] generations;
+        float[] lastX;
+        float[] caminata;      // fraccion del ciclo de la caminata lenta (0..1)
         SpriteRenderer[] avisos;
-        static Sprite aroSprite;
+        Sprite aroSprite;
         float[] laneVisual;
         RunPhase lastPhase = RunPhase.Running;
         bool[] wasAlive;
@@ -110,6 +112,8 @@ namespace Zombineta.Enemies
             animators = new Animator[count];
             shadows = new SombraProyectada[count];
             generations = new int[count];
+            lastX = new float[count];
+            caminata = new float[count];
             avisos = new SpriteRenderer[count];
             laneVisual = new float[count];
             wasAlive = new bool[count];
@@ -146,7 +150,7 @@ namespace Zombineta.Enemies
         }
 
         /// <summary>Un aro suave y blanco (se tine por color), hecho por codigo: no necesita arte.</summary>
-        static Sprite AroSprite()
+        Sprite AroSprite()
         {
             if (aroSprite != null)
                 return aroSprite;
@@ -226,6 +230,8 @@ namespace Zombineta.Enemies
                 if (generations[i] != u.Generation)
                 {
                     generations[i] = u.Generation;
+                    lastX[i] = u.X;
+                    caminata[i] = 0f;
                     laneVisual[i] = u.Lane;
                     wasAlive[i] = true;
                     lastStagger[i] = 0f;
@@ -243,7 +249,7 @@ namespace Zombineta.Enemies
                             look.walk != null ? look.walk.Length : 0,
                             look.hit != null ? look.hit.Length : 0,
                             look.death != null ? look.death.Length : 0,
-                            look.walkFps, deathFps: look.deathFps);
+                            look.walkFps, look.hitSeconds, look.deathFps);
                         if (animators[i] != null)
                             animators[i].enabled = false;
                     }
@@ -257,6 +263,11 @@ namespace Zombineta.Enemies
 
                 bool hasLook = currentLook[i] != null;
 
+                float desplazamiento = Mathf.Abs(u.X - lastX[i]);
+                if (desplazamiento > 1.5f || state.Phase != lastPhase)
+                    desplazamiento = 0f;
+                lastX[i] = u.X;
+
                 if (hasLook)
                 {
                     if (wasAlive[i] && !u.Alive)
@@ -268,7 +279,7 @@ namespace Zombineta.Enemies
                             look.walk != null ? look.walk.Length : 0,
                             look.hit != null ? look.hit.Length : 0,
                             death != null ? death.Length : 0,
-                            look.walkFps, deathFps: look.deathFps);
+                            look.walkFps, look.hitSeconds, look.deathFps);
                         flipbooks[i].Play(FlipbookClip.Death);
                     }
                     else if (u.Alive && u.Stagger > lastStagger[i] + 0.01f)
@@ -307,7 +318,13 @@ namespace Zombineta.Enemies
                 bool preparando = pelea && u.Alive && u.Preparando >= 0f && run.Config.zombiePreparacion > 0f;
                 float avance = preparando ? Mathf.Clamp01(u.Preparando / run.Config.zombiePreparacion) : 0f;
 
-                if (preparando)
+                // Con cuadros dibujados de ataque o de derribo, el cuerpo no se inclina ni rota por codigo.
+                var lookActual = currentLook[i];
+                bool ataqueDibujado = preparando && lookActual != null && lookActual.attack != null && lookActual.attack.Length > 0;
+                bool derribado = pelea && u.Alive && u.Derribado > 0f && u.DerribadoTotal > 0f;
+                bool derriboDibujado = derribado && lookActual != null && lookActual.knockdown != null && lookActual.knockdown.Length > 0;
+
+                if (preparando && !ataqueDibujado)
                 {
                     // Se echa hacia atras casi toda la preparacion y, al final, se lanza: se ve venir el golpe.
                     float atras = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(avance / 0.8f));
@@ -315,7 +332,7 @@ namespace Zombineta.Enemies
                     angulo = u.Mira * inclinacionAviso * (atras * (1f - lanza) - 0.6f * lanza);
                     estocada = u.Mira * estocadaAviso * lanza;
                 }
-                else if (pelea && u.Alive && u.Derribado > 0f && u.DerribadoTotal > 0f)
+                else if (derribado && !derriboDibujado)
                 {
                     // Cae hacia donde lo empujaron, queda tirado y se levanta en el ultimo tramo.
                     float t = 1f - u.Derribado / u.DerribadoTotal;
@@ -356,8 +373,39 @@ namespace Zombineta.Enemies
                         if (frames != null && frames.Length > 0)
                             sprites[i].sprite = frames[Mathf.Clamp(flipbooks[i].Frame, 0, frames.Length - 1)];
 
-                        // El arte ya diferencia los looks: color blanco salvo el aviso del faro.
-                        sprites[i].color = lit ? litTint : Color.white;
+                        // A pie, los lentos caminan arrastrando los pies: el ciclo avanza con lo que se
+                        // desplazan de verdad (sin patinar) y quedan quietos si no se mueven. Los que corren, y
+                        // todo en la moto, siguen con la animacion de correr.
+                        bool caminaLento = pelea && u.Alive && !ataqueDibujado && !derriboDibujado &&
+                                           flipbooks[i].Clip == FlipbookClip.Walk &&
+                                           look.walkSlow != null && look.walkSlow.Length > 0 &&
+                                           run.Sim.Pelea.VelocidadDe(u) < look.walkSlowSpeedLimit;
+                        if (caminaLento)
+                        {
+                            if (u.Stagger <= 0f && look.walkSlowStrideMeters > 0f)
+                                caminata[i] = Mathf.Repeat(caminata[i] + desplazamiento / look.walkSlowStrideMeters, 1f);
+                            int n = look.walkSlow.Length;
+                            sprites[i].sprite = look.walkSlow[Mathf.Min(n - 1, Mathf.FloorToInt(caminata[i] * n))];
+                        }
+
+                        // Preparando el golpe: los cuadros de ataque se reparten entre el inicio y el golpe.
+                        if (ataqueDibujado)
+                        {
+                            int n = look.attack.Length;
+                            sprites[i].sprite = look.attack[Mathf.Min(n - 1, Mathf.FloorToInt(avance * n))];
+                        }
+                        // Derribado por el remate: cae, queda tirado en el ultimo cuadro y se levanta.
+                        else if (derriboDibujado)
+                        {
+                            int n = look.knockdown.Length;
+                            float transcurrido = u.DerribadoTotal - u.Derribado;
+                            float caida = Mathf.Min(look.knockdownFallSeconds, u.DerribadoTotal * 0.7f);
+                            float k = caida > 0f ? Mathf.Clamp01(transcurrido / caida) : 1f;
+                            sprites[i].sprite = look.knockdown[Mathf.Min(n - 1, Mathf.FloorToInt(k * n))];
+                        }
+
+                        // Todos miden lo mismo; el tipo se distingue por un tinte suave (Zombies.asset).
+                        sprites[i].color = lit ? type.tint * litTint : type.tint;
 
                         if (look.poseBob)
                         {
@@ -378,7 +426,7 @@ namespace Zombineta.Enemies
                     // En la pelea miran hacia la protagonista, y el que se prepara para pegar
                     // se pone rojo: el aviso para esquivarlo o pegarle primero.
                     sprites[i].flipX = pelea && u.Mira < 0;
-                    if (pelea && u.Alive && u.Preparando >= 0f)
+                    if (pelea && u.Alive && u.Preparando >= 0f && !ataqueDibujado)
                         sprites[i].color = Color.Lerp(sprites[i].color, avisoDeAtaque, 0.6f);
 
                     // De pie tapa lo de arriba; caido queda como cualquier cosa tirada en el piso.

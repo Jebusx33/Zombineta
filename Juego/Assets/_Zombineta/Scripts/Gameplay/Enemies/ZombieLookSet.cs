@@ -13,7 +13,28 @@ namespace Zombineta.Enemies
     {
         public string name;
         public Sprite[] walk;
+        [Tooltip("Cuando le pegan y aguanta (un golpe comun, o el balazo que no lo mata).")]
         public Sprite[] hit;
+        [Tooltip("Segundos que dura la animacion de hit: conviene que cubra lo que queda frenado (golpeFreno).")]
+        public float hitSeconds = 0.2f;
+
+        [Tooltip("Caminata lenta (arrastrando los pies) para la pelea a pie. Se usa mientras el zombie camine mas despacio " +
+                 "que 'walkSlowSpeedLimit'; los que corren siguen con 'walk'. En la moto no se usa.")]
+        public Sprite[] walkSlow;
+        [Tooltip("Metros por segundo por debajo de los cuales, a pie, camina en vez de correr.")]
+        public float walkSlowSpeedLimit = 2.6f;
+        [Tooltip("Metros que avanza en un ciclo completo de la caminata lenta. El ciclo se reparte segun lo que se desplaza " +
+                 "de verdad (no segun el reloj): si patina, subir; si parece que corre en el lugar, bajar.")]
+        public float walkSlowStrideMeters = 1.3f;
+
+        [Tooltip("Preparando el ataque a pie: se reparte entre el inicio de la preparacion y el golpe. " +
+                 "Si esta, el aviso (inclinacion, estocada y color rojo) ya viene dibujado y no se simula.")]
+        public Sprite[] attack;
+
+        [Tooltip("Derribado por el remate: cae y queda tirado. Si esta, reemplaza a la rotacion de relleno.")]
+        public Sprite[] knockdown;
+        [Tooltip("Segundos que tarda en caer del todo; despues se queda en el ultimo cuadro hasta levantarse.")]
+        public float knockdownFallSeconds = 0.55f;
         public Sprite[] death;
         [Tooltip("Muerte por bala. Vacio: usa death para toda causa.")]
         public Sprite[] deathBullet;

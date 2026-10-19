@@ -34,6 +34,10 @@ namespace Zombineta.Level
 
         [Tooltip("Rampas, barriles y zombies de frente.")]
         [Min(0f)] public float piezas = 1f;
+
+        [Tooltip("Solo los bidones de nafta, ademas de 'recursos'. 0 = sequia: sin bidones en este tramo, " +
+                 "y la nafta se acaba (y llega el auxilio) donde el diseno lo quiere.")]
+        [Min(0f)] public float nafta = 1f;
     }
 
     /// <summary>

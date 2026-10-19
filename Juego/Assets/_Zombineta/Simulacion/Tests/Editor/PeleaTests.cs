@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using Zombineta.Core;
@@ -47,6 +48,13 @@ namespace Zombineta.Tests
             c.invulnerableTrasGolpe = 0.8f;
             c.furgonetaVelocidad = 28f;
             c.furgonetaDesde = 24f;
+
+            // Lo de la Fase 4 apagado: estos tests prueban la pelea de siempre. Los de la Fase 4 lo prenden.
+            c.paradaSegundos = 0f;
+            c.arranqueSegundos = 0f;
+            c.vidaExtraPrimeraPelea = 0;
+            c.reintentosPelea = 0;
+            c.oleadas = new List<OleadaPelea>();
             return c;
         }
 
@@ -468,7 +476,7 @@ namespace Zombineta.Tests
         }
 
         [Test]
-        public void TheFinisher_KnocksDownEveryoneAround_WithoutCostingThemHits()
+        public void TheFinisher_KnocksDownEveryoneInFront_AndLeavesTheOnesBehindAlone()
         {
             var sim = SinNafta(Rapido());
             // Lejos mientras se dan los dos primeros golpes: asi ninguno los toca antes del remate.
@@ -487,14 +495,34 @@ namespace Zombineta.Tests
             Assert.IsTrue((ev & RunEvent.Remate) != 0);
             Assert.IsTrue(detras.Alive && espalda.Alive, "el barrido no los mata");
             Assert.Greater(detras.Derribado, 1f, "queda en el piso");
-            Assert.Greater(espalda.Derribado, 1f, "tambien los de atras");
+            Assert.AreEqual(0f, espalda.Derribado, 0.0001f, "el que esta a su espalda no se toca");
             Assert.Greater(detras.Golpes, 2, "no pierde golpes");
             Assert.Greater(detras.X, xDetras + 3f, "sale empujado hacia donde pego");
-            Assert.Less(espalda.X, xEspalda - 3f, "y los de atras, hacia el otro lado");
+            Assert.AreEqual(xEspalda, espalda.X, 0.15f, "y no sale empujado");
             Assert.Greater(otroCarril.Derribado, 0f, "un carril de diferencia tambien entra en el barrido");
             Assert.AreEqual(0f, lejos.Derribado, 0.0001f, "fuera del radio no pasa nada");
             Assert.AreEqual(xLejos, lejos.X, 0.5f);
             Assert.AreEqual(2, delante.Golpes, "el de enfrente si recibe un golpe de verdad");
+        }
+
+        [TestCase(1)]
+        [TestCase(-1)]
+        public void TheFinisher_HitsWhereSheLooks_InBothDirections(int mira)
+        {
+            var sim = SinNafta(Rapido());
+            var z = Poner(sim, (25f * mira, 1), (26f * mira, 1), (-25f * mira, 1));
+            sim.State.Mira = mira;
+            Golpe(sim, 0f);
+            Golpe(sim, 0.25f);
+            Avanzar(sim, 0.24f, Quieta);
+            Reponer(z, sim, 1.2f * mira, 2f * mira, -1.5f * mira);
+            sim.State.Mira = mira;
+
+            var ev = sim.Tick(new PlayerIntent { Golpe = true }, Dt);
+
+            Assert.IsTrue((ev & RunEvent.Remate) != 0);
+            Assert.Greater(z[1].Derribado, 1f, "el de delante cae");
+            Assert.AreEqual(0f, z[2].Derribado, 0.0001f, "el de atras no");
         }
 
         [Test]
@@ -525,13 +553,13 @@ namespace Zombineta.Tests
             c.zombies = roster;
 
             var sim = SinNafta(c);
-            var z = Poner(sim, (25f, 1), (26f, 1), (-25f, 1));
+            var z = Poner(sim, (25f, 1), (26f, 1), (27f, 2));   // el tercero, en otro carril: no se pisan
             z[1].Type = 1;   // pesado
             z[2].Type = 0;   // comun
             Golpe(sim, 0f);
             Golpe(sim, 0.25f);
             Avanzar(sim, 0.24f, Quieta);
-            Reponer(z, sim, 1f, 2f, -2f);
+            Reponer(z, sim, 1f, 2f, 1.8f);
             float pesado0 = z[1].X, comun0 = z[2].X;
 
             Golpe(sim, 0f);
@@ -575,6 +603,299 @@ namespace Zombineta.Tests
             Avanzar(sim, 0.7f, Quieta);   // el primero ya pego (0,6 s de preparacion)
 
             Assert.IsTrue(z[1 - primero].Preparando >= 0f || sim.State.Vida < 5, "le toca al que esperaba");
+        }
+
+        // --- Fase 4: nafta, frenado, arranque, oleadas y reintento -------------------
+
+        static GameConfig Frenando()
+        {
+            var c = Rapido();
+            c.paradaSegundos = 1.2f;
+            c.arranqueSegundos = 0.9f;
+            return c;
+        }
+
+        [Test]
+        public void TheTankStartsAsShortAsTheLevelWants()
+        {
+            var c = MakeConfig();
+            c.fuelInicial = 30f;
+            Assert.AreEqual(30f, new RunSimulation(c).State.Fuel, 0.001f);
+
+            c.fuelInicial = 0f;
+            Assert.AreEqual(c.fuelMax, new RunSimulation(c).State.Fuel, 0.001f, "0 = tanque lleno");
+
+            c.fuelInicial = 999f;
+            Assert.AreEqual(c.fuelMax, new RunSimulation(c).State.Fuel, 0.001f, "nunca mas que el tanque");
+        }
+
+        [Test]
+        public void RunningOutOfFuel_BrakesForAWhile_BeforeSheGetsOff()
+        {
+            var sim = new RunSimulation(Frenando());
+            sim.State.PlayerX = 500f;
+            sim.Horde.Reset(400f);
+            sim.State.Fuel = 0.01f;
+
+            // El tanque se vacia en el primer cuadro: ahi arranca el frenado, todavia sobre la moto.
+            RunEvent ev = RunEvent.None;
+            for (int i = 0; i < 5 && (ev & RunEvent.Frenando) == 0; i++)
+                ev |= sim.Tick(Quieta, Dt);
+            Assert.IsTrue((ev & RunEvent.Frenando) != 0, "avisa que empieza a frenar");
+            Assert.AreEqual(RunPhase.Running, sim.State.Phase, "todavia no se bajo");
+            float velocidadAlFrenar = sim.State.VelocidadAlFrenar;
+            Assert.Greater(velocidadAlFrenar, 5f, "venia a toda velocidad");
+
+            float x0 = sim.State.PlayerX, anterior = float.MaxValue;
+            for (int i = 0; i < 40; i++)
+            {
+                sim.Tick(Quieta, Dt);
+                Assert.LessOrEqual(sim.PlayerSpeed, anterior + 0.0001f, "solo frena, nunca acelera");
+                anterior = sim.PlayerSpeed;
+            }
+            Assert.Greater(sim.State.PlayerX, x0 + 1f, "sigue avanzando mientras frena");
+            Assert.AreEqual(RunPhase.Running, sim.State.Phase);
+
+            RunEvent fin = RunEvent.None;
+            for (int i = 0; i < 120 && sim.State.Phase == RunPhase.Running; i++)
+                fin |= sim.Tick(Quieta, Dt);
+            Assert.AreEqual(RunPhase.Pelea, sim.State.Phase, "pasado el frenado se baja a pelear");
+            Assert.IsTrue((fin & RunEvent.PeleaEmpieza) != 0);
+            Assert.AreEqual(0f, sim.PlayerSpeed, 0.001f, "la moto quedo parada");
+        }
+
+        [Test]
+        public void WhileBraking_TheHordeCannotCatchHer()
+        {
+            var c = Frenando();
+            var sim = new RunSimulation(c);
+            sim.State.PlayerX = 500f;
+            sim.Horde.Reset(499.5f);       // la horda casi encima
+            sim.State.HordeX = sim.Horde.FrontX;
+            sim.State.Fuel = 0.01f;
+
+            for (int i = 0; i < 90 && sim.State.Phase == RunPhase.Running; i++)
+                sim.Tick(Quieta, Dt);
+
+            Assert.AreNotEqual(RunPhase.Lost, sim.State.Phase, "mientras frena no la alcanzan: pelea");
+        }
+
+        [Test]
+        public void IfTheMomentumCarriesHerToTheGoalWhileBraking_SheWins()
+        {
+            var c = Frenando();
+            var sim = new RunSimulation(c);
+            sim.State.PlayerX = c.goalDistance - 2f;
+            sim.Horde.Reset(c.goalDistance - 100f);
+            sim.State.Fuel = 0.01f;
+
+            for (int i = 0; i < 120 && sim.State.Phase == RunPhase.Running; i++)
+                sim.Tick(Quieta, Dt);
+
+            Assert.AreEqual(RunPhase.Won, sim.State.Phase);
+        }
+
+        [Test]
+        public void WithoutHelpLeft_NoBrakingTransition_ItIsTheOldDefeat()
+        {
+            var c = Frenando();
+            c.ayudas = 0;
+            var sim = new RunSimulation(c);
+            sim.State.PlayerX = 500f;
+            sim.Horde.Reset(460f);
+            sim.State.Fuel = 0f;
+
+            for (int i = 0; i < 600 && sim.State.Phase == RunPhase.Running; i++)
+                sim.Tick(Quieta, Dt);
+
+            Assert.AreEqual(RunPhase.Lost, sim.State.Phase);
+            Assert.AreEqual(LossReason.OutOfFuel, sim.State.Loss);
+        }
+
+        [Test]
+        public void AfterTheAid_TheBikeStartsOffSlowlyAndReachesNormalSpeed()
+        {
+            var sim = SinNafta(Frenando());
+            for (int i = 0; i < 200 && sim.State.Phase == RunPhase.Running; i++)
+                sim.Tick(Quieta, Dt);                 // primero frena y se baja
+            Assert.AreEqual(RunPhase.Pelea, sim.State.Phase);
+            sim.State.PeleaRestante = 0f;
+            Avanzar(sim, 5f, Quieta);                 // llega la furgoneta y termina
+            Assert.AreEqual(RunPhase.Running, sim.State.Phase);
+            Assert.Greater(sim.State.ArranqueRestante, 0f);
+
+            sim.Tick(Quieta, Dt);
+            Assert.Less(sim.PlayerSpeed, 3f, "arranca despacio");
+
+            for (int i = 0; i < 80; i++)
+                sim.Tick(Quieta, Dt);
+            Assert.AreEqual(10f, sim.PlayerSpeed, 0.01f, "y llega a la velocidad normal");
+        }
+
+        [Test]
+        public void TheFirstFight_HasAnExtraHeart_TheNextOnesDoNot()
+        {
+            var c = Rapido();
+            c.vidaExtraPrimeraPelea = 1;
+            var sim = SinNafta(c);
+            Assert.AreEqual(1, sim.State.AyudasUsadas);
+            Assert.AreEqual(c.vidaPelea + 1, sim.State.Vida);
+
+            sim.State.PeleaRestante = 0f;
+            Avanzar(sim, 5f, Quieta);
+            sim.State.Fuel = 0f;
+            sim.Tick(Quieta, Dt);
+
+            Assert.AreEqual(2, sim.State.AyudasUsadas);
+            Assert.AreEqual(c.vidaPelea, sim.State.Vida, "la segunda pelea ya no tiene el corazon de mas");
+        }
+
+        static GameConfig ConOleadas()
+        {
+            var c = Rapido();
+            var roster = ScriptableObject.CreateInstance<Zombineta.Enemies.ZombieRoster>();
+            roster.types.Add(new Zombineta.Enemies.ZombieType { name = "Comun", speedMultiplier = 1f, deathChance = 1f, golpesParaMorir = 3 });
+            roster.types.Add(new Zombineta.Enemies.ZombieType { name = "Corredor", speedMultiplier = 1.35f, deathChance = 1f, golpesParaMorir = 2 });
+            roster.types.Add(new Zombineta.Enemies.ZombieType { name = "Pesado", speedMultiplier = 0.75f, deathChance = 1f, golpesParaMorir = 5 });
+            c.zombies = roster;
+            c.hordeCount = 12;
+            c.oleadas = new List<OleadaPelea>
+            {
+                new OleadaPelea { desdeSegundo = 0f,  zombies = 3, pesos = new[] { 1f, 0f, 0f }, velocidad = 0.5f },
+                new OleadaPelea { desdeSegundo = 10f, zombies = 5, pesos = new[] { 0f, 1f, 0f }, velocidad = 1f },
+                new OleadaPelea { desdeSegundo = 20f, zombies = 6, pesos = new[] { 0f, 0f, 1f }, velocidad = 1f },
+            };
+            c.peleaSegundos = 30f;
+            return c;
+        }
+
+        static int Activos(RunSimulation sim)
+        {
+            int n = 0;
+            for (int i = 0; i < sim.Horde.Units.Length; i++)
+                if (sim.Pelea.Activo(i)) n++;
+            return n;
+        }
+
+        [Test]
+        public void TheFirstWave_IsFewAndOfTheCommonKind()
+        {
+            var sim = SinNafta(ConOleadas());
+
+            Assert.AreEqual(3, Activos(sim));
+            for (int i = 0; i < sim.Horde.Units.Length; i++)
+                if (sim.Pelea.Activo(i))
+                    Assert.AreEqual(0, sim.Horde.Units[i].Type, "solo comunes al principio");
+            Assert.AreEqual(0, sim.State.Oleada);
+        }
+
+        [Test]
+        public void TheWalkingSpeed_FollowsTheKindAndTheWave_SoTheViewCanChooseBetweenWalkingAndRunning()
+        {
+            var c = ConOleadas();
+            var sim = SinNafta(c);
+            var comun = sim.Horde.Units[0];
+            Assert.IsTrue(sim.Pelea.Activo(0));
+            Assert.AreEqual(c.zombieVelocidadPelea * 1f * 0.5f, sim.Pelea.VelocidadDe(comun), 0.001f, "comun de la primera oleada: lento");
+
+            comun.Type = 1;   // corredor
+            sim.State.Oleada = 1;
+            Assert.AreEqual(c.zombieVelocidadPelea * 1.35f * 1f, sim.Pelea.VelocidadDe(comun), 0.001f, "corredor de la segunda: corre");
+            Assert.Greater(sim.Pelea.VelocidadDe(comun), 2.6f, "por encima del limite de caminar lento");
+        }
+
+        [Test]
+        public void TheWavesGrow_WithMoreZombiesAndNewKinds_AndAnnounceThemselves()
+        {
+            var sim = SinNafta(ConOleadas());
+            int anuncios = 0;
+            var vistos = new HashSet<int>();
+
+            for (int t = 0; t < 60 * 29 && sim.State.Phase == RunPhase.Pelea; t++)
+            {
+                sim.State.Vida = 5;                     // no es lo que se prueba aca
+                var ev = sim.Tick(Quieta, Dt);
+                if ((ev & RunEvent.OleadaNueva) != 0) anuncios++;
+                for (int i = 0; i < sim.Horde.Units.Length; i++)
+                    if (sim.Pelea.Activo(i) && sim.Horde.Units[i].Alive)
+                        vistos.Add(sim.Horde.Units[i].Type);
+            }
+
+            Assert.AreEqual(2, anuncios, "dos oleadas nuevas despues de la primera");
+            Assert.AreEqual(2, sim.State.Oleada);
+            Assert.AreEqual(6, Activos(sim), "la ultima oleada trae seis a la vez");
+            CollectionAssert.Contains(vistos, 1);
+            CollectionAssert.Contains(vistos, 2);
+        }
+
+        [Test]
+        public void TheWaveCountsKeepGoingEvenWhenZombiesDie()
+        {
+            var sim = SinNafta(ConOleadas());
+            for (int t = 0; t < 60 * 11; t++)
+            {
+                sim.State.Vida = 5;
+                sim.Tick(Quieta, Dt);
+            }
+            Assert.AreEqual(5, Activos(sim), "a los 10 s son cinco los que pelean");
+        }
+
+        [Test]
+        public void IfTheyKnockHerDownWithARetryLeft_TheFightStartsOver()
+        {
+            var c = Rapido();
+            c.reintentosPelea = 1;
+            var sim = SinNafta(c);
+            var z = Poner(sim, (0.8f, 1));
+            sim.State.Vida = 1;
+            z[0].Enfriamiento = 0f;
+            float restanteAntes = sim.State.PeleaRestante;
+
+            RunEvent ev = RunEvent.None;
+            for (int t = 0; t < 120 && (ev & RunEvent.PeleaReintenta) == 0; t++)
+                ev |= sim.Tick(Quieta, Dt);
+
+            Assert.IsTrue((ev & RunEvent.PeleaReintenta) != 0);
+            Assert.AreEqual(RunPhase.Pelea, sim.State.Phase, "no pierde");
+            Assert.AreEqual(c.vidaPelea, sim.State.Vida, "vida entera otra vez");
+            Assert.AreEqual(c.peleaSegundos, sim.State.PeleaRestante, 0.001f, "el reloj del auxilio de nuevo");
+            Assert.Greater(sim.State.Invulnerable, 1f, "un respiro para reacomodarse");
+            Assert.AreEqual(0, sim.State.ReintentosPelea);
+            Assert.AreEqual(1, sim.State.AyudasUsadas, "el reintento no gasta otro auxilio");
+        }
+
+        [Test]
+        public void AfterUsingTheRetry_TheNextKnockdownIsTheDefeat()
+        {
+            var c = Rapido();
+            c.reintentosPelea = 1;
+            var sim = SinNafta(c);
+
+            for (int vez = 0; vez < 2 && sim.State.Phase == RunPhase.Pelea; vez++)
+            {
+                var z = Poner(sim, (0.8f, 1));
+                sim.State.Vida = 1;
+                sim.State.Invulnerable = 0f;
+                z[0].Enfriamiento = 0f;
+                for (int t = 0; t < 120 && sim.State.Phase == RunPhase.Pelea && sim.State.Vida > 0 && sim.State.ReintentosPelea >= 0; t++)
+                {
+                    sim.Tick(Quieta, Dt);
+                    if (vez == 0 && sim.State.ReintentosPelea == 0) break;
+                }
+            }
+
+            Assert.AreEqual(RunPhase.Lost, sim.State.Phase);
+            Assert.AreEqual(LossReason.Derribada, sim.State.Loss);
+        }
+
+        [Test]
+        public void SwitchedOffWavesAndRetries_KeepTheOldBehaviour()
+        {
+            var c = Rapido();   // sin oleadas (MakeConfig las vacia): 'zombiesEnArena' de siempre
+            c.zombiesEnArena = 6;
+            var sim = SinNafta(c);
+            Assert.AreEqual(6, Activos(sim));
+            Assert.AreEqual(0, sim.State.ReintentosPelea);
         }
 
         // --- Movimiento libre ---------------------------------------------------

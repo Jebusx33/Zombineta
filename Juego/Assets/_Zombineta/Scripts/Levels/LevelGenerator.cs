@@ -101,6 +101,7 @@ namespace Zombineta.Juego.Levels
 
             float Piezas(float d) { var t = Tramos.At(tramos, d); return t != null ? t.piezas : 1f; }
             float Recursos(float d) { var t = Tramos.At(tramos, d); return t != null ? t.recursos : 1f; }
+            float Nafta(float d) { var t = Tramos.At(tramos, d); return t != null ? t.nafta : 1f; }
 
             // Avanza hasta el proximo lugar de algo que va "cada tantos metros": mas seguido donde
             // el tramo lo pide, y de largo donde no lo quiere.
@@ -197,23 +198,26 @@ namespace Zombineta.Juego.Levels
             }
 
             // 5) Recursos, repartidos con un poco de azar.
-            PlacePickups(LevelEntryKind.Fuel, s.fuelEvery);
-            PlacePickups(LevelEntryKind.Battery, s.batteryEvery);
-            PlacePickups(LevelEntryKind.Ammo, s.ammoEvery);
+            PlacePickups(LevelEntryKind.Fuel, s.fuelEvery, d => Recursos(d) * Nafta(d));
+            PlacePickups(LevelEntryKind.Battery, s.batteryEvery, Recursos);
+            PlacePickups(LevelEntryKind.Ammo, s.ammoEvery, Recursos);
 
-            void PlacePickups(LevelEntryKind kind, float every)
+            void PlacePickups(LevelEntryKind kind, float every, System.Func<float, float> density)
             {
                 if (every <= 0f)
                     return;
-                for (float d = start + every * 0.5f; d <= end; d = Next(d, every, Recursos))
+                for (float d = start + every * 0.5f; d <= end; d = Next(d, every, density))
                 {
-                    if (Recursos(d) <= 0f)
+                    if (density(d) <= 0f)
                         continue;
                     for (int tries = 0; tries < 4; tries++)
                     {
-                        float jitter = ((float)rng.NextDouble() - 0.5f) * (every / Recursos(d)) * 0.5f;
+                        float jitter = ((float)rng.NextDouble() - 0.5f) * (every / density(d)) * 0.5f;
                         float at = Mathf.Round(Mathf.Clamp(d + jitter, start, end));
                         int lane = rng.Next(Lanes);
+                        // El azar no lo puede correr hacia un tramo donde ese recurso no va (una sequia).
+                        if (density(at) <= 0f)
+                            continue;
                         // Debajo de un salto no se llega: fuera del tramo de la rampa hasta el aterrizaje corto.
                         if (UnderAJump(all, at, lane) || Occupied(all, at, lane, kind, s.minGapSameLane) ||
                             HiddenByObstacle(all, at, lane, kind))

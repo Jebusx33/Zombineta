@@ -26,6 +26,9 @@ namespace Zombineta.Auxilio
         [Tooltip("Metros por segundo con que la vista alcanza a la posicion de la simulacion: mas que lo que camina, " +
                  "asi el empujon de un golpe recibido se desliza en vez de teletransportarla.")]
         [SerializeField] float velocidadVisual = 9f;
+        [Tooltip("Segundos que dura el salto con que se baja de la moto, y su altura en unidades.")]
+        [SerializeField] float segundosBajada = 0.4f;
+        [SerializeField] float alturaBajada = 0.55f;
         [Tooltip("Cuanto se echa hacia atras al disparar, en unidades. Sin pose de disparo, es lo que marca el tiro.")]
         [SerializeField] float retrocesoDisparo = 0.22f;
 
@@ -156,11 +159,18 @@ namespace Zombineta.Auxilio
             caminata = camina ? caminata + Time.deltaTime * 11f : 0f;
             float paso = camina ? Mathf.Abs(Mathf.Sin(caminata)) * 0.08f : 0f;
 
+            // Al empezar la pelea (o al reintentarla) se baja de un salto, en vez de aparecer de golpe.
+            float segundosPelea = run.Config.peleaSegundos - s.PeleaRestante;
+            float bajada = s.Phase == RunPhase.Pelea && !s.FurgonetaEnCamino && segundosBajada > 0f &&
+                           segundosPelea >= 0f && segundosPelea < segundosBajada
+                ? Mathf.Sin(segundosPelea / segundosBajada * Mathf.PI) * alturaBajada
+                : 0f;
+
             float xMundo = run.ToWorldX(s.PeatonX);
             xVisual = xListo ? Mathf.MoveTowards(xVisual, xMundo, velocidadVisual * Time.deltaTime) : xMundo;
             xListo = true;
             float x = xVisual + adelanto;
-            float y = run.LaneToWorldY(s.LaneVisual) + paso;
+            float y = run.LaneToWorldY(s.LaneVisual) + paso + bajada;
             cuerpo.transform.position = new Vector3(x, y - cuerpo.sprite.bounds.min.y * cuerpo.transform.localScale.y, 0f);
             cuerpo.flipX = s.Mira < 0;
             cuerpo.sortingOrder = LaneSorting.Order(s.LaneVisual, SortSlot.Player);

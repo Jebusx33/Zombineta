@@ -20,6 +20,8 @@ namespace Zombineta.Auxilio
         const float DistanciaParaCambiarCarril = 6f;
         // Donde esperan, fuera de cuadro, los zombies que no estan peleando.
         const float Estacionamiento = 80f;
+        // Metros hacia atras que todavia cuentan como "delante" en los golpes: pegado a ella, aunque este apenas detras.
+        const float AtrasTolerado = 0.3f;
         // Media anchura de la furgoneta al arrollar, en metros.
         const float AnchoFurgoneta = 2.5f;
 
@@ -54,8 +56,12 @@ namespace Zombineta.Auxilio
         public RunEvent Empezar()
         {
             s.Ayudas--;
+            s.AyudasUsadas++;
+            s.FrenadoRestante = -1f;
             s.Phase = RunPhase.Pelea;
-            s.Vida = c.vidaPelea;
+            s.Vida = c.vidaPelea + (s.AyudasUsadas == 1 ? c.vidaExtraPrimeraPelea : 0);
+            s.Oleada = 0;
+            s.ReintentosPelea = c.reintentosPelea;
             s.PeleaRestante = c.peleaSegundos;
             s.Invulnerable = 0f;
             s.GolpeEnfriamiento = 0f;
@@ -76,9 +82,19 @@ namespace Zombineta.Auxilio
             s.PeatonX = centro;
             cargo = false;
 
+            ArmarArena();
+            return RunEvent.PeleaEmpieza;
+        }
+
+        /// <summary>
+        /// Los zombies de la primera oleada (o "zombiesEnArena" si no hay oleadas) entran a la
+        /// arena y el resto queda estacionado fuera de cuadro. Sirve para empezar y para reintentar.
+        /// </summary>
+        void ArmarArena()
+        {
             var units = h.Units;
             activo = new bool[units.Length];
-            int enArena = Mathf.Min(c.zombiesEnArena, units.Length);
+            int enArena = Mathf.Min(ObjetivoDeZombies(0), units.Length);
             for (int i = 0; i < units.Length; i++)
             {
                 var u = units[i];
@@ -96,11 +112,90 @@ namespace Zombineta.Auxilio
                 {
                     u.X = centro - Estacionamiento;
                     u.Stagger = 0f;
+                    u.Derribado = 0f;
+                    u.Preparando = -1f;
                 }
             }
             h.RecomputeFront();
             s.HordeX = h.FrontX;
-            return RunEvent.PeleaEmpieza;
+        }
+
+        // --- Oleadas -----------------------------------------------------------
+
+        bool HayOleadas => c.oleadas != null && c.oleadas.Count > 0;
+
+        OleadaPelea OleadaActual => HayOleadas ? c.oleadas[Mathf.Clamp(s.Oleada, 0, c.oleadas.Count - 1)] : null;
+
+        int ObjetivoDeZombies(int oleada) =>
+            HayOleadas ? c.oleadas[Mathf.Clamp(oleada, 0, c.oleadas.Count - 1)].zombies : c.zombiesEnArena;
+
+        /// <summary>
+        /// La oleada que corresponde a estos segundos de pelea. Cuando sube, entran los zombies
+        /// que faltan para llegar a la cantidad de la oleada nueva, por los costados.
+        /// </summary>
+        RunEvent AvanzarOleadas()
+        {
+            if (!HayOleadas)
+                return RunEvent.None;
+
+            float t = c.peleaSegundos - s.PeleaRestante;
+            int idx = 0;
+            for (int i = 0; i < c.oleadas.Count; i++)
+                if (c.oleadas[i].desdeSegundo <= t)
+                    idx = i;
+
+            var ev = RunEvent.None;
+            if (idx != s.Oleada)
+            {
+                s.Oleada = idx;
+                ev |= RunEvent.OleadaNueva;
+            }
+
+            var units = h.Units;
+            int activos = 0;
+            for (int i = 0; i < units.Length; i++)
+                if (activo[i])
+                    activos++;
+
+            int objetivo = Mathf.Min(ObjetivoDeZombies(s.Oleada), units.Length);
+            for (int i = 0; i < units.Length && activos < objetivo; i++)
+            {
+                if (activo[i])
+                    continue;
+                activo[i] = true;
+                activos++;
+                lado = -lado;
+                float x = lado < 0
+                    ? centro - c.arenaMedioAncho - 2f - (float)rng.NextDouble() * 3f
+                    : centro + c.arenaMedioAncho + 2f + (float)rng.NextDouble() * 3f;
+                Preparar(i, x, rng.Next(RunSimulation.LaneCount), nuevo: true);
+            }
+            return ev;
+        }
+
+        /// <summary>El tipo de zombie que toca en la oleada actual, segun sus pesos. Sin oleadas, el que ya tenia.</summary>
+        int ElegirTipo(int actual)
+        {
+            var o = OleadaActual;
+            if (o == null || o.pesos == null || o.pesos.Length == 0)
+                return actual;
+
+            int tipos = c.zombies != null && c.zombies.types != null ? Mathf.Max(1, c.zombies.types.Count) : 1;
+            int n = Mathf.Min(o.pesos.Length, tipos);
+            float total = 0f;
+            for (int i = 0; i < n; i++)
+                total += Mathf.Max(0f, o.pesos[i]);
+            if (total <= 0f)
+                return actual;
+
+            float r = (float)rng.NextDouble() * total;
+            for (int i = 0; i < n; i++)
+            {
+                r -= Mathf.Max(0f, o.pesos[i]);
+                if (r <= 0f)
+                    return i;
+            }
+            return n - 1;
         }
 
         public RunEvent Step(PlayerIntent intent, float dt)
@@ -121,6 +216,7 @@ namespace Zombineta.Auxilio
             ev |= MoverProtagonista(intent, dt);
             ev |= Pegar(intent);
             ev |= Disparar(intent);
+            ev |= AvanzarOleadas();
             ev |= MoverZombies(dt);
             if (s.Phase != RunPhase.Pelea)
                 return ev; // la derribaron
@@ -208,7 +304,8 @@ namespace Zombineta.Auxilio
 
         /// <summary>
         /// El tercer golpe: el de enfrente lo recibe como un golpe mas (puede morir) y todos los
-        /// que estan a menos de remateRadio, de los dos lados, caen al piso sin perder golpes.
+        /// que tiene delante, a menos de remateRadio, caen al piso sin perder golpes. Los que
+        /// quedaron a su espalda no se tocan: el remate pega hacia donde mira.
         /// </summary>
         RunEvent Rematar(ZombieUnit principal)
         {
@@ -229,7 +326,8 @@ namespace Zombineta.Auxilio
                 if (Mathf.Abs(u.Lane - s.PeatonY) > c.toleranciaCarril + 0.5f)
                     continue;
                 float dx = u.X - s.PeatonX;
-                if (Mathf.Abs(dx) > c.remateRadio)
+                // Solo hacia donde mira. Uno pegado a ella y apenas detras cuenta (como en el golpe comun).
+                if (dx * s.Mira < -AtrasTolerado || Mathf.Abs(dx) > c.remateRadio)
                     continue;
                 h.Derribar(u, dx >= 0f ? 1 : -1, c.remateEmpuje, c.remateDerribo);
                 conecto = true;
@@ -281,6 +379,14 @@ namespace Zombineta.Auxilio
         }
 
         // --- Los zombies -------------------------------------------------------
+
+        /// <summary>
+        /// Metros por segundo con los que camina este zombie a pie: la base de la pelea por su tipo y
+        /// por la oleada. La vista la usa para elegir entre caminar lento o correr.
+        /// </summary>
+        public float VelocidadDe(ZombieUnit u) =>
+            c.zombieVelocidadPelea * h.Type(u.Type).speedMultiplier * (OleadaActual != null ? OleadaActual.velocidad : 1f);
+
 
         /// <summary>Si el zombie esta en un carril lo bastante cerca del de ella para pegarse.</summary>
         bool Alineado(ZombieUnit u) => Mathf.Abs(u.Lane - s.PeatonY) <= c.toleranciaCarril;
@@ -371,7 +477,7 @@ namespace Zombineta.Auxilio
                 float objetivo = alineado ? c.zombieAlcance * 0.8f : 0.4f;
                 if (Mathf.Abs(dx) > objetivo)
                 {
-                    float v = c.zombieVelocidadPelea * h.Type(u.Type).speedMultiplier;
+                    float v = VelocidadDe(u);
                     u.X += Mathf.Sign(dx) * Mathf.Min(v * dt, Mathf.Abs(dx) - objetivo);
                 }
             }
@@ -387,14 +493,45 @@ namespace Zombineta.Auxilio
             if (s.Vida > 0)
                 return RunEvent.Lastimada;
 
+            // Derribada con un reintento: la pelea vuelve a empezar en vez de perder.
+            if (s.ReintentosPelea > 0)
+                return Reintentar();
+
             s.Phase = RunPhase.Lost;
             s.Loss = LossReason.Derribada;
             return RunEvent.Lastimada | RunEvent.Lost;
         }
 
+        /// <summary>
+        /// Vuelve al principio de la pelea: vida entera, el reloj del auxilio de nuevo y la arena
+        /// rearmada desde la primera oleada. No gasta otro auxilio. Un respiro de 2 s sin dano.
+        /// </summary>
+        RunEvent Reintentar()
+        {
+            s.ReintentosPelea--;
+            s.Vida = c.vidaPelea;
+            s.PeleaRestante = c.peleaSegundos;
+            s.Oleada = 0;
+            s.Invulnerable = 2f;
+            s.GolpeEnfriamiento = 0f;
+            s.Golpeando = 0f;
+            s.ComboPaso = 0;
+            s.ComboVentana = 0f;
+            s.PeatonX = centro;
+            ArmarArena();
+            return RunEvent.Lastimada | RunEvent.PeleaReintenta;
+        }
+
         void Preparar(int indice, float x, int carril, bool nuevo)
         {
             var u = h.Units[indice];
+            // Con oleadas, el tipo lo da la oleada; si cambia es otro zombie para la vista (otra pinta).
+            int tipo = ElegirTipo(u.Type);
+            if (tipo != u.Type)
+            {
+                u.Type = tipo;
+                nuevo = true;
+            }
             if (nuevo)
                 u.Generation++;
             x = Despejar(indice, x, carril);
@@ -540,6 +677,7 @@ namespace Zombineta.Auxilio
             s.PlayerX = s.PeatonX;
             s.Fuel = c.fuelMax;
             s.Vida = 0;
+            s.ArranqueRestante = c.arranqueSegundos;
             h.Reset(s.PlayerX - c.gapTrasAuxilio);
             s.HordeX = h.FrontX;
             activo = null;

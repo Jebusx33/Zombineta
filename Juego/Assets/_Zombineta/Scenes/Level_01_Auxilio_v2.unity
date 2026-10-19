@@ -8291,6 +8291,7 @@ MonoBehaviour:
     obstaculos: 0.4
     recursos: 1.2
     piezas: 0.4
+    nafta: 1
   - nombre: Desarrollar
     hasta: 750
     presionHorda: 1
@@ -8298,6 +8299,7 @@ MonoBehaviour:
     obstaculos: 1
     recursos: 1
     piezas: 1
+    nafta: 1
   - nombre: Aviso de apagon
     hasta: 830
     presionHorda: 1
@@ -8305,6 +8307,7 @@ MonoBehaviour:
     obstaculos: 0
     recursos: 0
     piezas: 0
+    nafta: 0
   - nombre: Desarrollar II
     hasta: 1050
     presionHorda: 1
@@ -8312,6 +8315,7 @@ MonoBehaviour:
     obstaculos: 1.3
     recursos: 1
     piezas: 1.2
+    nafta: 0
   - nombre: Respiro
     hasta: 1150
     presionHorda: 0.9
@@ -8319,6 +8323,7 @@ MonoBehaviour:
     obstaculos: 0
     recursos: 2
     piezas: 0
+    nafta: 0
   - nombre: Apagon I
     hasta: 1350
     presionHorda: 1.05
@@ -8326,6 +8331,7 @@ MonoBehaviour:
     obstaculos: 1.2
     recursos: 1
     piezas: 0.5
+    nafta: 0
   - nombre: Claro
     hasta: 1430
     presionHorda: 1
@@ -8333,6 +8339,7 @@ MonoBehaviour:
     obstaculos: 0.3
     recursos: 2
     piezas: 0
+    nafta: 0
   - nombre: Apagon II
     hasta: 1630
     presionHorda: 1.05
@@ -8340,6 +8347,7 @@ MonoBehaviour:
     obstaculos: 1.4
     recursos: 1
     piezas: 0.5
+    nafta: 0
   - nombre: Examen
     hasta: 1800
     presionHorda: 1.1
@@ -8347,6 +8355,7 @@ MonoBehaviour:
     obstaculos: 1.6
     recursos: 1
     piezas: 1.3
+    nafta: 0
   - nombre: Recta final
     hasta: 2000
     presionHorda: 0.9
@@ -8354,7 +8363,11 @@ MonoBehaviour:
     obstaculos: 0.2
     recursos: 1.5
     piezas: 0
-  ayudas: 2
+    nafta: 2
+  ayudas: 3
+  combustibleInicial: 45
+  bidonesDesdeAuxilio: 1
+  reintentosPelea: 1
   looks: {fileID: 11400000, guid: 526ce8163bc04b242a6e808590ae5fbe, type: 2}
   lookSeed: 12345
   shadowSprite: {fileID: 21300000, guid: 8c1bb8c15f5a47141b8d044f53482a77, type: 3}
