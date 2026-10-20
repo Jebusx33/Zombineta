@@ -51,6 +51,8 @@ namespace Zombineta.Core
         BalasRecogidas = 1 << 29,
         /// <summary>Pisa un botiquin o balas que no necesita (vida o cargador llenos): el tipo esta en State.DropLlenoKind.</summary>
         DropLleno = 1 << 30,
+        /// <summary>Dos aciertos seguidos: la horda retrocede un rato y le deja espacio.</summary>
+        HordaRetrocede = 1 << 31,
     }
 
     /// <summary>
@@ -143,6 +145,11 @@ namespace Zombineta.Core
             State.Nota = NotaPelea.C;
             State.PremioBalas = 0;
             State.PremioBateria = 0f;
+            State.AciertosRecientes = 0;
+            State.VentanaAciertos = 0f;
+            State.RetrocesoRestante = 0f;
+            State.RetrocesoEnfriamiento = 0f;
+            Horde.RetrocesoVelocidad = 0f;
             State.PremioBalasLleno = false;
             State.PremioBateriaLleno = false;
             State.DropLlenoKind = 0;
@@ -226,9 +233,13 @@ namespace Zombineta.Core
 
             State.PlayerX = Mathf.Max(0f, State.PlayerX + PlayerSpeed * dt);
 
+            Horde.RetrocesoVelocidad = State.RetrocesoRestante > 0f && config.retrocesoSegundos > 0f
+                ? config.retrocesoMetros / config.retrocesoSegundos
+                : 0f;
             Horde.Step(dt, ComputeHordeSpeedFactor());
             State.HordeX = Horde.FrontX;
             HordeSpeed = Horde.FrontSpeed;
+            AvanzarRetroceso(dt);
 
             AdvanceLaneVisual(dt);
             State.Elapsed += dt;
@@ -266,6 +277,45 @@ namespace Zombineta.Core
             return State.HeadlightOn ? RunEvent.HeadlightOn : RunEvent.HeadlightOff;
         }
 
+        /// <summary>
+        /// Un disparo dio en un zombie. Con los aciertos de la ventana, la horda retrocede unos
+        /// metros durante unos segundos: espacio seguro para quien viene disparando. Despues hay que
+        /// esperar el enfriamiento para que vuelva a pasar.
+        /// </summary>
+        RunEvent RegistrarAcierto()
+        {
+            if (config.retrocesoAciertos <= 0 || config.retrocesoMetros <= 0f)
+                return RunEvent.None;
+
+            if (State.AciertosRecientes == 0)
+                State.VentanaAciertos = config.retrocesoVentana;
+            State.AciertosRecientes++;
+
+            if (State.AciertosRecientes < config.retrocesoAciertos || State.RetrocesoEnfriamiento > 0f)
+                return RunEvent.None;
+
+            State.RetrocesoRestante = config.retrocesoSegundos;
+            State.RetrocesoEnfriamiento = config.retrocesoEnfriamiento;
+            State.AciertosRecientes = 0;
+            State.VentanaAciertos = 0f;
+            return RunEvent.HordaRetrocede;
+        }
+
+        void AvanzarRetroceso(float dt)
+        {
+            if (State.VentanaAciertos > 0f)
+            {
+                State.VentanaAciertos -= dt;
+                if (State.VentanaAciertos <= 0f)
+                {
+                    State.VentanaAciertos = 0f;
+                    State.AciertosRecientes = 0;
+                }
+            }
+            State.RetrocesoRestante = Mathf.Max(0f, State.RetrocesoRestante - dt);
+            State.RetrocesoEnfriamiento = Mathf.Max(0f, State.RetrocesoEnfriamiento - dt);
+        }
+
         RunEvent ApplyFire(bool fire)
         {
             if (!fire)
@@ -298,7 +348,7 @@ namespace Zombineta.Core
             {
                 Horde.HitZombie(zombie, from);
                 State.HordeX = Horde.FrontX;
-                return RunEvent.Shot;
+                return RunEvent.Shot | RegistrarAcierto();
             }
 
             Horde.Miss(from, lane, range);

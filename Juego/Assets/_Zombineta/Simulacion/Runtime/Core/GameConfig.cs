@@ -125,6 +125,18 @@ namespace Zombineta.Core
         public float explosionScareRadius = 16f;
         public float explosionScareSeconds = 1f;
 
+        [Header("Disparo que despeja la horda")]
+        [Tooltip("Disparos que dan en un zombie, seguidos, para que la horda retroceda y le deje espacio. 0 = apagado.")]
+        [Min(0)] public int retrocesoAciertos = 2;
+        [Tooltip("Segundos en los que tienen que caer esos aciertos, contados desde el primero.")]
+        [Min(0.1f)] public float retrocesoVentana = 3f;
+        [Tooltip("Metros de distancia que gana sobre la horda mientras retrocede.")]
+        [Min(0f)] public float retrocesoMetros = 12f;
+        [Tooltip("Segundos que dura el retroceso.")]
+        [Min(0.1f)] public float retrocesoSegundos = 3f;
+        [Tooltip("Segundos desde un retroceso hasta que otro puede volver a dispararse.")]
+        [Min(0f)] public float retrocesoEnfriamiento = 8f;
+
         [Header("Contacto con el recorrido")]
         [Tooltip("Metros del centro de la moto a su punta delantera. Se agarra y se choca cuando " +
                  "la punta toca el borde de algo, no cuando el centro pasa por el centro. 0 = puntual.")]

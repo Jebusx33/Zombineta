@@ -65,6 +65,7 @@ MonoBehaviour:
   maxLaunchVerticalSpeed: 8
   leanRate: 60
   maxPitch: 22
+  retrocesoAciertos: 0
   perfectLandingAngle: 8
   safeLandingAngle: 25
   landingBoostMultiplier: 1.25

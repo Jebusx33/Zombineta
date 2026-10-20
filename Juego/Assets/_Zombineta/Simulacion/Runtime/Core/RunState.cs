@@ -111,6 +111,12 @@ namespace Zombineta.Core
         /// <summary>Nota de la ultima pelea terminada, y lo que dejo la furgoneta por ella.</summary>
         public NotaPelea Nota;
         public int PremioBalas;
+        /// <summary>Aciertos de disparo seguidos y los segundos que le quedan a la ventana para el retroceso de la horda.</summary>
+        public int AciertosRecientes;
+        public float VentanaAciertos;
+        /// <summary>Segundos que le quedan al retroceso de la horda, y hasta cuando no se puede repetir.</summary>
+        public float RetrocesoRestante;
+        public float RetrocesoEnfriamiento;
         public float PremioBateria;
         /// <summary>El premio tenia balas (o bateria) pero ya estaba todo lleno: no entro nada.</summary>
         public bool PremioBalasLleno;

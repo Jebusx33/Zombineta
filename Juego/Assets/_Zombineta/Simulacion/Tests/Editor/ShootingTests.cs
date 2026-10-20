@@ -30,6 +30,7 @@ namespace Zombineta.Tests
             c.shotRangeMeters = 60f;
             c.deathScareRadius = 4f;
             c.deathScareSeconds = 0.5f;
+            c.retrocesoAciertos = 0;   // el retroceso de la horda tiene sus propios tests
             return c;
         }
 
@@ -185,5 +186,141 @@ namespace Zombineta.Tests
             Assert.IsTrue(tracer, "falta la traza");
             Assert.IsTrue(death, "falta la muerte");
         }
-    }
+    
+        // --- Playtest de Axo, fase C: dos aciertos despejan la horda --------------------
+
+        /// <summary>Dos blancos en el carril de la jugadora y el resto de la horda atras, en otro carril.</summary>
+        static RunSimulation MakeRetreat(bool enabled)
+        {
+            var cfg = MakeConfig();
+            cfg.zombies = Roster(1f);
+            cfg.ammoMax = 20;
+            cfg.ammoAtStart = 20;
+            cfg.retrocesoAciertos = enabled ? 2 : 0;
+            cfg.retrocesoVentana = 3f;
+            cfg.retrocesoMetros = 12f;
+            cfg.retrocesoSegundos = 3f;
+            cfg.retrocesoEnfriamiento = 8f;
+            var sim = new RunSimulation(cfg);
+            var us = sim.Horde.Units;
+            for (int i = 0; i < us.Length; i++)
+            {
+                us[i].Alive = true; us[i].Stagger = 0f; us[i].CorpseLeft = 0f; us[i].Type = 0;
+                us[i].Lane = i < 4 ? 1 : 0;
+                us[i].X = -8f - 2f * i;
+            }
+            sim.Horde.RecomputeFront();
+            sim.State.HordeX = sim.Horde.FrontX;
+            return sim;
+        }
+
+        static RunEvent Disparar(RunSimulation sim, int cuantos, float entreDisparos)
+        {
+            var ev = RunEvent.None;
+            for (int i = 0; i < cuantos; i++)
+            {
+                ev |= sim.Tick(Fire(), Dt);
+                for (int t = 0; t < Mathf.RoundToInt(entreDisparos / Dt); t++)
+                    ev |= sim.Tick(PlayerIntent.Idle, Dt);
+            }
+            return ev;
+        }
+
+        static void Pasar(RunSimulation sim, float segundos)
+        {
+            for (int t = 0; t < Mathf.RoundToInt(segundos / Dt); t++)
+                sim.Tick(PlayerIntent.Idle, Dt);
+        }
+
+        [Test]
+        public void TwoHitsInTheWindow_MakeTheHordeFallBack()
+        {
+            var sim = MakeRetreat(true);
+            var ev = Disparar(sim, 2, 0.2f);
+
+            Assert.IsTrue(Has(ev, RunEvent.HordaRetrocede), "el segundo acierto la hace retroceder");
+            Assert.Greater(sim.State.RetrocesoRestante, 0f);
+        }
+
+        [Test]
+        public void TheRetreat_GainsAboutTheConfiguredMeters_OverItsDuration()
+        {
+            var con = MakeRetreat(true);
+            var sin = MakeRetreat(false);
+            Disparar(con, 2, 0.2f);
+            Disparar(sin, 2, 0.2f);
+            Pasar(con, 4f);
+            Pasar(sin, 4f);
+
+            // Una de las que quedaron atras y no recibio tiros.
+            float diferencia = sin.Horde.Units[7].X - con.Horde.Units[7].X;
+            Assert.AreEqual(12f, diferencia, 0.5f);
+        }
+
+        [Test]
+        public void TheHorde_GoesBackToItsPaceAfterTheRetreat()
+        {
+            var sim = MakeRetreat(true);
+            Disparar(sim, 2, 0.2f);
+            Pasar(sim, 3.5f);
+            Assert.AreEqual(0f, sim.State.RetrocesoRestante, 1e-4f);
+
+            float antes = sim.Horde.Units[7].X;
+            Pasar(sim, 1f);
+            Assert.Greater(sim.Horde.Units[7].X, antes, "vuelve a avanzar");
+        }
+
+        [Test]
+        public void OneHit_DoesNotMakeTheHordeFallBack()
+        {
+            var sim = MakeRetreat(true);
+            var ev = Disparar(sim, 1, 0.2f);
+            Assert.IsFalse(Has(ev, RunEvent.HordaRetrocede));
+        }
+
+        [Test]
+        public void TwoHitsTooFarApart_DoNotCount()
+        {
+            var sim = MakeRetreat(true);
+            var ev = Disparar(sim, 2, 3.5f);   // mas que la ventana de 3 s
+            Assert.IsFalse(Has(ev, RunEvent.HordaRetrocede));
+        }
+
+        [Test]
+        public void MissedShots_DoNotCountAsHits()
+        {
+            var sim = MakeRetreat(true);
+            foreach (var u in sim.Horde.Units) u.Lane = 0;   // nadie en el carril de la jugadora
+            var ev = Disparar(sim, 3, 0.2f);
+            Assert.IsFalse(Has(ev, RunEvent.HordaRetrocede));
+        }
+
+        [Test]
+        public void TheRetreat_HasACooldown_ButWorksAgainAfterIt()
+        {
+            var sim = MakeRetreat(true);
+            Disparar(sim, 2, 0.2f);                       // retrocede
+            Pasar(sim, 3.5f);
+
+            foreach (var u in sim.Horde.Units) { u.Alive = true; u.Lane = 1; u.X = sim.State.PlayerX - 8f; u.CorpseLeft = 0f; }
+            var ev = Disparar(sim, 2, 0.2f);              // dentro del enfriamiento (8 s)
+            Assert.IsFalse(Has(ev, RunEvent.HordaRetrocede), "todavia en enfriamiento");
+
+            Pasar(sim, 9f);
+            foreach (var u in sim.Horde.Units) { u.Alive = true; u.Lane = 1; u.X = sim.State.PlayerX - 8f; u.Stagger = 0f; u.CorpseLeft = 0f; }
+            ev = Disparar(sim, 2, 0.2f);
+            Assert.IsTrue(Has(ev, RunEvent.HordaRetrocede), "pasado el enfriamiento vuelve a funcionar");
+        }
+
+        [Test]
+        public void Reset_ClearsTheRetreat()
+        {
+            var sim = MakeRetreat(true);
+            Disparar(sim, 2, 0.2f);
+            sim.Reset();
+            Assert.AreEqual(0f, sim.State.RetrocesoRestante);
+            Assert.AreEqual(0f, sim.State.RetrocesoEnfriamiento);
+            Assert.AreEqual(0f, sim.Horde.RetrocesoVelocidad);
+        }
+}
 }

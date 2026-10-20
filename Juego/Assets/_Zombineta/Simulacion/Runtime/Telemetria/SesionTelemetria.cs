@@ -94,6 +94,7 @@ namespace Zombineta.Telemetria
                 filas.Add(Fila(t, s, "botiquin", "vida=" + s.Vida));
             }
             if ((ev & RunEvent.BalasRecogidas) != 0) filas.Add(Fila(t, s, "balas_recogidas", "balas=" + s.Ammo));
+            if ((ev & RunEvent.HordaRetrocede) != 0) filas.Add(Fila(t, s, "horda_retrocede", "metros=" + N(s.Gap)));
             if ((ev & RunEvent.DropLleno) != 0) filas.Add(Fila(t, s, "drop_lleno", s.DropLlenoKind == 0 ? "vida" : "balas"));
             if ((ev & RunEvent.PeleaReintenta) != 0)
             {

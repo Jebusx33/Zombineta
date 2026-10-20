@@ -97,6 +97,12 @@ namespace Zombineta.Enemies
         /// <summary>X del vivo mas adelantado: el que te puede alcanzar.</summary>
         public float FrontX => frontX;
 
+        /// <summary>
+        /// Metros por segundo que la horda entera cede mientras dura el retroceso que provoca el disparo
+        /// (0 = ninguno). Se resta a lo que avanzan, y tambien afecta a los frenados.
+        /// </summary>
+        public float RetrocesoVelocidad { get; set; }
+
         /// <summary>Velocidad efectiva del frente en el ultimo Step (m/s). Para el HUD de debug.</summary>
         public float FrontSpeed { get; private set; }
 
@@ -107,6 +113,7 @@ namespace Zombineta.Enemies
         {
             frontX = front;
             FrontSpeed = 0f;
+            RetrocesoVelocidad = 0f;
             events.Clear();
 
             for (int i = 0; i < Units.Length; i++)
@@ -183,6 +190,12 @@ namespace Zombineta.Enemies
                 {
                     speed = config.hordeBaseSpeed * Type(u.Type).speedMultiplier * speedFactor;
                     u.X += speed * dt;
+                }
+
+                if (RetrocesoVelocidad > 0f && u.Alive)
+                {
+                    u.X -= RetrocesoVelocidad * dt;
+                    speed = Mathf.Max(0f, speed - RetrocesoVelocidad);
                 }
 
                 if (u.X > front)

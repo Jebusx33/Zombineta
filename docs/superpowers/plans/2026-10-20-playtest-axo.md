@@ -126,7 +126,7 @@ fáciles de agarrar y los obstáculos del mismo carril no cambian. Se mide con l
 Verificado fuera de Unity: 256 tests en verde (5 nuevos: carril de al lado, a dos carriles, solo
 recolectables, telemetría de lo pasado y de lo agarrado) y el juego compila.
 
-## Fase C — Disparar despeja la horda
+## Fase C — Disparar despeja la horda ✅ hecha (falta verla en Play)
 
 Hoy `ApplyFire` mata al zombie más cercano del carril y la horda sigue empujando desde atrás,
 así que el carril se rellena al instante. Propuesta: **dos disparos que dan en el blanco en
@@ -135,6 +135,29 @@ segundos (parámetros: metros, segundos y enfriamiento en `GameConfig`), con avi
 Revisar el comportamiento de las **luces**, que también asustan a la horda (`Scare`), para que
 el espacio seguro funcione igual. Tests de simulación: tras 2 aciertos el frente de la horda
 queda más lejos y vuelve a avanzar pasado el tiempo.
+
+**Lo hecho**
+- **Dos aciertos seguidos** (`retrocesoAciertos` = 2) en una ventana de 3 s (`retrocesoVentana`)
+  hacen que la horda **ceda 12 m en 3 s** (`retrocesoMetros`, `retrocesoSegundos`): cada zombie
+  vivo avanza menos de lo normal, a razón de 4 m/s, y la distancia ganada se queda (no vuelve a
+  achicarse sola). **Enfriamiento de 8 s** (`retrocesoEnfriamiento`) hasta el siguiente. Solo
+  cuentan los tiros que dan en un zombie (no los que fallan ni los de barril).
+- Cartel **"¡LOS ALEJASTE!"** al activarse (`AvisoDeEspacio`, se crea solo, sin tocar escenas) y
+  fila `horda_retrocede` en la telemetría.
+- Apagado en el tutorial (`retrocesoAciertos` = 0 en `TutorialConfig`).
+- **Luces (lo que pidió revisar):** hoy el faro **frena** a la horda al 50 % mientras está
+  prendido (`headlightHordeSlowFactor`), pero no le gana espacio ni la hace retroceder; no
+  respawnea nada (los zombies muertos reaparecen al fondo de la masa, 8–14 m atrás del frente,
+  tras 1 s de cadáver). Así que con las luces no "se llena el carril al instante": simplemente la
+  horda sigue cerca a velocidad reducida. Si se quiere el mismo espacio seguro con las luces
+  (por ejemplo, un retroceso al prenderlas), se puede agregar con el mismo mecanismo; queda como
+  decisión del equipo.
+- Los zombies retroceden con la misma animación de correr (no hay animación de "asustado");
+  si molesta, se puede cambiar por la de golpe recibido.
+
+Verificado fuera de Unity: 264 tests en verde (8 nuevos: dispara el retroceso, gana los 12 m,
+vuelve a su ritmo, un solo acierto, aciertos muy separados, fallos, enfriamiento, reinicio) y el
+juego compila.
 
 ## Fase D — Golpes del beat'em up
 
