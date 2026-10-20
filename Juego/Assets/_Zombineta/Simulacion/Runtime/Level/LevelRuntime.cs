@@ -16,6 +16,11 @@ namespace Zombineta.Level
         {
             public LevelEntry Entry;
             public bool Consumed;
+            /// <summary>
+            /// Lo despejo la arena de la ultima pelea (ClearZone): no cuenta para nada, pero la vista lo
+            /// deja de decorado mientras dura la pelea, como si la protagonista siguiera varada ahi.
+            /// </summary>
+            public bool Despejado;
         }
 
         /// <summary>Cuanto puede desviarse el carril visual y aun asi contar como encuentro.</summary>
@@ -46,12 +51,16 @@ namespace Zombineta.Level
             entry.distance = metros;
             item.Entry = entry;
             item.Consumed = false;
+            item.Despejado = false;
         }
 
         public void Reset()
         {
             for (int i = 0; i < Items.Length; i++)
+            {
                 Items[i].Consumed = false;
+                Items[i].Despejado = false;
+            }
         }
 
         /// <summary>
@@ -64,12 +73,17 @@ namespace Zombineta.Level
         /// <summary>
         /// Despeja un tramo del recorrido (la arena de la pelea a pie): los obstaculos, rampas,
         /// barriles y zombies de frente desaparecen, como si ya se hubieran pasado, y no vuelven
-        /// cuando la moto retoma. Los recursos se dejan: se agarran si se pasa por encima.
-        /// Devuelve cuantos despejo.
+        /// cuando la moto retoma. Los recursos se dejan (la vista los esconde mientras se pelea).
+        /// Lo despejado queda marcado: la vista lo conserva de decorado durante la pelea, salvo los
+        /// zombies de frente. Devuelve cuantos despejo.
         /// </summary>
         public int ClearZone(float from, float to)
         {
             int cleared = 0;
+            // Solo cuenta lo despejado en esta pelea.
+            for (int i = 0; i < Items.Length; i++)
+                Items[i].Despejado = false;
+
             for (int i = 0; i < Items.Length; i++)
             {
                 var item = Items[i];
@@ -81,6 +95,7 @@ namespace Zombineta.Level
                     kind == LevelEntryKind.Barrel || kind == LevelEntryKind.ZombieFront)
                 {
                     item.Consumed = true;
+                    item.Despejado = kind != LevelEntryKind.ZombieFront;
                     cleared++;
                 }
             }

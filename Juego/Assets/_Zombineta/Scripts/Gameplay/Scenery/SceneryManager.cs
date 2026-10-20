@@ -133,6 +133,7 @@ namespace Zombineta.Scenery
                 int n = cfg.variants.Count;
                 var widths = new float[n];
                 var weights = new float[n];
+                var especiales = new bool[n];
                 scales = new float[n];
                 mins = new Vector3[n];
                 poolPorVariante = new List<Transform>[n];
@@ -165,6 +166,7 @@ namespace Zombineta.Scenery
                     mins[i] = b.min;
 
                     var acomp = Acompanante(v);
+                    especiales[i] = acomp != null;
                     if (acomp != null)
                     {
                         float k = sr.sprite.pixelsPerUnit / acomp.sprite.pixelsPerUnit;
@@ -176,7 +178,8 @@ namespace Zombineta.Scenery
 
                 layout = new SceneryLayout(widths, weights, cfg.gapChance, cfg.gapMin,
                                            cfg.gapMax, cfg.noImmediateRepeat, cfg.seed,
-                                           LayoutStartX, reservas, cfg.huecoLimpio);
+                                           LayoutStartX, reservas, cfg.huecoLimpio,
+                                           especiales, cfg.tilesEntreAcompanantes);
             }
 
             static SpriteRenderer Acompanante(SceneryVariant v)

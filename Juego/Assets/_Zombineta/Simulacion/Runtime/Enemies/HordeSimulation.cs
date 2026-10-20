@@ -58,6 +58,16 @@ namespace Zombineta.Enemies
         public float DerribadoTotal;
         /// <summary>Hacia donde cayo: 1 derecha, -1 izquierda.</summary>
         public int DerribadoDir = 1;
+        /// <summary>Si todavia le toca saltar (solo los de la primera oleada, y una vez).</summary>
+        public bool PuedeSaltar;
+        /// <summary>0 no salta; 1 agachado (se ve venir); 2 en el aire; 3 aterrizando y levantandose.</summary>
+        public int SaltoFase;
+        /// <summary>Segundos que lleva en esta fase del salto.</summary>
+        public float SaltoT;
+        /// <summary>Metros de donde despego y donde va a caer.</summary>
+        public float SaltoX0, SaltoX1;
+        /// <summary>Carril donde va a caer (el de ella): al despegar pasa a ser el suyo.</summary>
+        public int SaltoLane;
     }
 
     /// <summary>
@@ -129,6 +139,9 @@ namespace Zombineta.Enemies
                 // El primero justo en el frente: la ventaja inicial es exactamente startingGap.
                 u.X = i == 0 ? front : front - (float)rng.NextDouble() * config.hordeDepthMeters;
                 u.Generation++;
+                u.PuedeSaltar = false;
+                u.SaltoFase = 0;
+                u.SaltoT = 0f;
             }
         }
 

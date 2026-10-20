@@ -190,7 +190,7 @@ juego compila.
 
 Verificado fuera de Unity: 267 tests en verde y el juego compila.
 
-## Fase E — Zombies que saltan (cuando llegue la animación)
+## Fase E — Zombies que saltan ✅ hecha (falta verla en Play)
 
 La idea de Axo: en vez de caminar, el zombie **se te tira encima de forma exagerada**; se
 puede **golpear en el aire** (muerte de un golpe: riesgoso pero eficaz) o **esquivar** (cae, queda
@@ -206,15 +206,85 @@ Diseño propuesto (a confirmar, ver preguntas):
 - Cantidad limitada (cuenta dentro de `maxAtacantes`) y solo algunos tipos/oleadas.
 - Hace falta la animación (la tiene el usuario) para el salto en el aire y la caída.
 
-## Fase F — Revisiones menores
+**Lo hecho (con la hoja de 25 cuadros que pasó el equipo)**
 
-- **Bocacalles juntas:** comprobar si las genera el generador de escenario o la escena; si es
-  el generador, exigir al menos un edificio entre dos bocacalles (con test).
-- **Luces del entorno de la pista:** idea para evaluar con el arte; no bloquea nada.
+> **Corrección del 20/10 (tarde):** la primera versión hacía saltar a zombies que ya venían
+> *caminando*. La idea del equipo es otra: el problema es el **corte de la moto al beat'em up**
+> (la horda que corría detrás de la moto de golpe camina). El salto es el puente. Quedó así:
+>
+> - **Los que se ven son los que saltan.** Al bajarse de la moto, los zombies de la horda que
+>   estaban más cerca (los 3 de la primera oleada) **conservan su lugar, su carril y su pinta**
+>   (no se reubican ni cambian de aspecto) y **siguen corriendo** hacia ella a 11 m/s
+>   (`saltoVelocidadCarrera`, la carrera de la horda). Quedan acotados entre 9 y 24 m detrás de
+>   ella (`saltoEntradaMin`/`Max`): ni encima, ni tan lejos que tarden. Los que no entran en la
+>   primera oleada desaparecen fuera de cuadro. En un reintento entran corriendo por atrás.
+> - **Frenando, la horda acompaña a la moto** y no se le acerca a menos de 14 m
+>   (`frenadoGapHorda`): al bajarse se la ve venir y hay ~1 s antes del primer salto.
+> - **Saltan desde el carril en que vienen** y caen en el carril de ella (se deslizan al
+>   despegar); no cambian de carril mientras corren. Los que esperan turno (tope de 2 saltando)
+>   se quedan a distancia en vez de pasarle por al lado.
+> - Después de saltar (o de ser esquivados) quedan en el piso y **caminan lento / se arrastran**,
+>   como las oleadas siguientes.
+
+- **Cuándo salta:** solo los zombies de la **primera oleada** de cada pelea (la transición de
+  correr a pelear a pie) y una sola vez cada uno. Si ya no salta (oleadas siguientes) camina como
+  siempre. Se apaga con `GameConfig.saltoActivo`.
+- **Cómo es:** al acercarse a entre 5,5 y 1 m, el zombie **se agacha** (0,45 s,
+  con un aro rojo en el piso donde va a caer, que se achica), **vuela** (0,7 s) y **cae** un poco
+  antes de ella, de su lado. El punto de caída la sigue mientras se agacha y queda **fijo al
+  despegar**: se esquiva alejándose más de 1,3 m (`saltoRadio`) o cambiando de carril. A lo sumo
+  dos saltan a la vez (`saltoMaxSimultaneos`, cuentan dentro de `maxAtacantes`).
+- **Si le cae encima:** **1 de vida** (y la empuja un poco, con el respiro de siempre) y el zombie
+  se recupera antes. **Si lo esquiva:** queda en el piso 1 s (`saltoAterrizaje`), se levanta y
+  camina; no vuelve a saltar.
+- **Golpe en el aire:** lo **mata** de una (también el barrido del remate). **Balazo en el aire:**
+  le saca **1 golpe** y lo tira donde está, sin dañarla; si le quedaba 1, lo mata. Un golpe o
+  tiro mientras se agacha le corta el salto y cuenta como uno común.
+- **Dibujo:** hoja `ZombieCorredor_salto.png` (5×5 de 256 px, pivote en los pies, escala igualada
+  a la del resto: 181 px por unidad) conectada a los tres tipos en `ZombieLooks.asset`. Cuadros:
+  0–6 agacharse, 7–17 vuelo, 18–24 aterrizar y levantarse (`saltoCuadrosAgachar` = 7,
+  `saltoCuadrosVuelo` = 11). Las alturas del vuelo ya vienen dibujadas, así que el cuerpo solo se
+  mueve en horizontal.
+- Telemetría: `saltos_acertados`, `saltos_esquivados` y `saltos_cortados` en la fila
+  `pelea_termina`.
+- **Para pulir con el arte:** en los cuadros 9 a 14 los brazos tocan el borde derecho de la
+  celda (256 px) y quedan cortados; conviene ampliar la celda o acortar el brazo en esos cuadros.
+  Sin sonido de salto/aterrizaje todavía (faltan clips).
+
+Verificado fuera de Unity: 289 tests en verde con los del salto (primera oleada, ventana de
+distancia, agacharse–vuelo–caída, daño, esquivar, golpe y balazo en el aire, corte al agacharse,
+tope de simultáneos) y los de la transición (los más cercanos de la horda siguen con su carril y
+corren, acotados a la zona de entrada, saltan desde otro carril, el que espera no pasa de largo,
+la horda no se acerca frenando) y el juego compila.
+
+## Fase F — Revisiones menores ✅ hecha (falta verla en Play)
+
+- **Bocacalles juntas (min 5:34):** causa encontrada. La capa "Calle" del nivel 1 tiene la calle
+  común (peso 5) y la bocacalle (peso 1) **sin evitar repeticiones**, así que dos bocacalles
+  podían salir seguidas y sus calles laterales dejaban un solo hueco sin edificios. Ahora cada
+  capa tiene `tilesEntreAcompanantes` (por defecto **1**): entre dos tiles con calle lateral hay
+  siempre al menos un tile común (13 unidades), y en ese lugar entra un edificio (7,8). Sigue
+  siendo determinista por semilla, pero la calle del nivel 1 se reparte distinto (las bocacalles
+  cambian de lugar). Tests: sin la regla salen pegadas, con la regla nunca en 50 semillas.
+- **Luces del entorno de la pista:** sigue siendo una idea abierta para hablar con el arte.
+
+## Extra — La arena sigue siendo el lugar donde quedó varada
+
+Pedido del 20/10: al empezar la pelea se quitaban los consumibles **y también los coches y
+barriles**; eso quita la sensación de que sigue donde se quedó. Ahora:
+- Lo despejado para la pelea (**coches/obstáculos, barriles y rampas**) se **queda de decorado**
+  mientras se pelea (`LevelRuntime.Item.Despejado`; no choca ni explota: es solo dibujo).
+- Al volver a la moto se **desvanece en 0,5 s** (`segundosDesvanecer`) en vez de desaparecer de
+  golpe. Se apaga con `conservarDecoradoEnPelea` en `LevelScene`.
+- Siguen escondidos: los **recolectables** (nafta, baterías, balas), los **carteles de aviso** de
+  carril y los **zombies de frente** del recorrido (no tiene sentido que haya uno parado).
+- Solo cuenta lo despejado en la última pelea; al reiniciar el nivel se borra la marca.
+
+Verificado fuera de Unity: 283 tests en verde y el juego compila.
 
 ## Orden y estimación
 
-A (medio día) → B (1 día, con diagnóstico) → C → D → E (cuando haya animación) → F.
+A → B → C → D → E → F, más el extra de la arena: todas hechas el 20/10 (falta verlas en Play).
 Cada fase se prueba fuera de Unity (tests de simulación + compilación) y se anota en este
 archivo; después hace falta mirarla en Play. La telemetría de cada partida nos da los números.
 

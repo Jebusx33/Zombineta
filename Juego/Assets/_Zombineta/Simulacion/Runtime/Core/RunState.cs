@@ -108,6 +108,10 @@ namespace Zombineta.Core
         public int PeleaGolpesRecibidos;
         public int PeleaRemates;
         public int PeleaBotiquines;
+        /// <summary>Saltos de zombies: los que le cayeron encima, los que esquivo y los que corto en el aire (golpe o balazo).</summary>
+        public int PeleaSaltosAcertados;
+        public int PeleaSaltosEsquivados;
+        public int PeleaSaltosCortados;
         /// <summary>Nota de la ultima pelea terminada, y lo que dejo la furgoneta por ella.</summary>
         public NotaPelea Nota;
         public int PremioBalas;

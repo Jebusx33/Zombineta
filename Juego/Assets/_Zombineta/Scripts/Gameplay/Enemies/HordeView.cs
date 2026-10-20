@@ -323,6 +323,9 @@ namespace Zombineta.Enemies
                 bool ataqueDibujado = preparando && lookActual != null && lookActual.attack != null && lookActual.attack.Length > 0;
                 bool derribado = pelea && u.Alive && u.Derribado > 0f && u.DerribadoTotal > 0f;
                 bool derriboDibujado = derribado && lookActual != null && lookActual.knockdown != null && lookActual.knockdown.Length > 0;
+                // Saltando sobre ella (primera oleada): el cuadro sale de la fase y del tiempo del salto de la simulacion.
+                bool saltoDibujado = pelea && u.Alive && u.SaltoFase != 0 && lookActual != null && lookActual.salto != null && lookActual.salto.Length > 0;
+                bool anunciaSalto = pelea && u.Alive && (u.SaltoFase == 1 || u.SaltoFase == 2);
 
                 if (preparando && !ataqueDibujado)
                 {
@@ -346,18 +349,33 @@ namespace Zombineta.Enemies
                     bodies[i].position += new Vector3(estocada, 0f, 0f);
 
                 // El aro del piso: aparece al empezar a preparar el golpe y se achica hasta que pega.
+                // Lo mismo para el salto: el aro marca en el piso donde va a caer, y se achica hasta que cae.
+                float avanceAro = avance;
+                float xAro = worldX;
+                float yAro = groundY;
+                if (anunciaSalto)
+                {
+                    yAro = run.LaneToWorldY(u.SaltoLane);
+                    var cfgSalto = run.Config;
+                    avanceAro = u.SaltoFase == 1
+                        ? 0.5f * Mathf.Clamp01(u.SaltoT / Mathf.Max(0.01f, cfgSalto.saltoAgacharse))
+                        : 0.5f + 0.5f * Mathf.Clamp01(u.SaltoT / Mathf.Max(0.01f, cfgSalto.saltoVuelo));
+                    xAro = run.ToWorldX(u.SaltoX1 + overrun);
+                }
+
                 var aviso = avisos[i];
                 if (aviso != null)
                 {
-                    aviso.enabled = preparando;
-                    if (preparando)
+                    bool aro = preparando || anunciaSalto;
+                    aviso.enabled = aro;
+                    if (aro)
                     {
-                        float escala = (1.5f - 0.7f * avance) / Mathf.Max(0.0001f, bodies[i].localScale.x);
+                        float escala = (1.5f - 0.7f * avanceAro) / Mathf.Max(0.0001f, bodies[i].localScale.x);
                         aviso.transform.rotation = Quaternion.identity;
-                        aviso.transform.position = new Vector3(worldX, groundY + 0.02f, 0f);
+                        aviso.transform.position = new Vector3(xAro, yAro + 0.02f, 0f);
                         aviso.transform.localScale = new Vector3(1.7f * escala, 0.55f * escala, 1f);
                         var col = colorAro;
-                        col.a = colorAro.a * Mathf.Lerp(0.35f, 1f, avance);
+                        col.a = colorAro.a * Mathf.Lerp(0.35f, 1f, avanceAro);
                         aviso.color = col;
                         aviso.sortingOrder = LaneSorting.Order(laneVisual[i], SortSlot.Shadow) + 2;
                     }
@@ -402,6 +420,24 @@ namespace Zombineta.Enemies
                             float caida = Mathf.Min(look.knockdownFallSeconds, u.DerribadoTotal * 0.7f);
                             float k = caida > 0f ? Mathf.Clamp01(transcurrido / caida) : 1f;
                             sprites[i].sprite = look.knockdown[Mathf.Min(n - 1, Mathf.FloorToInt(k * n))];
+                        }
+
+                        // Saltando sobre ella: agacharse, vuelo y aterrizaje, segun la fase de la simulacion.
+                        if (saltoDibujado)
+                        {
+                            var cfg = run.Config;
+                            int n = look.salto.Length;
+                            int agachar = Mathf.Clamp(look.saltoCuadrosAgachar, 1, Mathf.Max(1, n - 2));
+                            int vuelo = Mathf.Clamp(look.saltoCuadrosVuelo, 1, Mathf.Max(1, n - agachar - 1));
+                            int aterrizar = Mathf.Max(1, n - agachar - vuelo);
+                            int cuadro;
+                            if (u.SaltoFase == 1)
+                                cuadro = Mathf.Min(agachar - 1, Mathf.FloorToInt(u.SaltoT / Mathf.Max(0.01f, cfg.saltoAgacharse) * agachar));
+                            else if (u.SaltoFase == 2)
+                                cuadro = agachar + Mathf.Min(vuelo - 1, Mathf.FloorToInt(u.SaltoT / Mathf.Max(0.01f, cfg.saltoVuelo) * vuelo));
+                            else
+                                cuadro = agachar + vuelo + Mathf.Min(aterrizar - 1, Mathf.FloorToInt(u.SaltoT / Mathf.Max(0.01f, cfg.saltoAterrizaje) * aterrizar));
+                            sprites[i].sprite = look.salto[Mathf.Clamp(cuadro, 0, n - 1)];
                         }
 
                         // Todos miden lo mismo; el tipo se distingue por un tinte suave (Zombies.asset).

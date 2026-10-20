@@ -108,6 +108,8 @@ namespace Zombineta.Telemetria
                 filas.Add(Fila(t, s, "pelea_termina",
                     "nota=" + s.Nota + ";bajas=" + s.PeleaBajas + ";remates=" + s.PeleaRemates +
                     ";golpes_recibidos=" + s.PeleaGolpesRecibidos + ";botiquines=" + s.PeleaBotiquines +
+                    ";saltos_acertados=" + s.PeleaSaltosAcertados + ";saltos_esquivados=" + s.PeleaSaltosEsquivados +
+                    ";saltos_cortados=" + s.PeleaSaltosCortados +
                     ";premio_balas=" + s.PremioBalas + ";premio_bateria=" + N(s.PremioBateria)));
             }
             if ((ev & RunEvent.Won) != 0) filas.Add(Fila(t, s, "victoria", ""));

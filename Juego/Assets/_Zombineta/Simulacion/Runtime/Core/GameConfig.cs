@@ -125,6 +125,41 @@ namespace Zombineta.Core
         public float explosionScareRadius = 16f;
         public float explosionScareSeconds = 1f;
 
+        [Header("Salto de los zombies (primera oleada)")]
+        [Tooltip("Los zombies de la primera oleada de la pelea se agachan y saltan sobre ella al acercarse: es la transicion " +
+                 "de correr a pelear a pie. Un golpe en el aire los mata; un balazo les saca 1 golpe y los tira; si no esquiva, " +
+                 "le cae encima y le saca 1 de vida.")]
+        public bool saltoActivo = true;
+        [Tooltip("Distancia maxima a la que un zombie empieza a agacharse para saltar, en metros.")]
+        [Min(0f)] public float saltoDistanciaMax = 5.5f;
+        [Tooltip("Distancia minima: mas cerca que esto ya no salta, ataca.")]
+        [Min(0f)] public float saltoDistanciaMin = 1f;
+        [Tooltip("Metros por segundo a los que corren hacia ella los zombies de la primera oleada hasta saltar: es la misma " +
+                 "carrera de la horda de la moto, para que al bajarse no pasen de correr a caminar.")]
+        [Min(0f)] public float saltoVelocidadCarrera = 11f;
+        [Tooltip("Al bajarse de la moto, los de la horda que se ven siguen donde estaban, pero no mas cerca que esto (metros " +
+                 "detras de ella): da el segundo de respiro antes del primer salto.")]
+        [Min(0f)] public float saltoEntradaMin = 9f;
+        [Tooltip("...ni mas lejos que esto: los que estaban fuera de pantalla se acercan a esa distancia, asi llegan enseguida.")]
+        [Min(0f)] public float saltoEntradaMax = 24f;
+        [Tooltip("Segundos que se agacha antes de saltar. En ese tiempo se ve venir (aro rojo en donde va a caer).")]
+        [Min(0.05f)] public float saltoAgacharse = 0.45f;
+        [Tooltip("Segundos que dura el salto en el aire. Se lo puede golpear o esquivar.")]
+        [Min(0.05f)] public float saltoVuelo = 0.7f;
+        [Tooltip("Segundos que queda en el piso al caer (se levanta despues). Si le cayo encima a ella, se recupera antes.")]
+        [Min(0f)] public float saltoAterrizaje = 1f;
+        [Tooltip("Metros alrededor del punto de caida donde le pega a ella. Esquivarlo es alejarse mas que esto.")]
+        [Min(0f)] public float saltoRadio = 1.3f;
+        [Tooltip("Metros antes de ella (de su lado) donde cae: no se le sube encima.")]
+        [Min(0f)] public float saltoAlcanceCaida = 0.7f;
+        [Tooltip("Cuantos zombies pueden estar saltando a la vez (cuentan dentro de 'maxAtacantes').")]
+        [Min(1)] public int saltoMaxSimultaneos = 2;
+
+        [Header("Frenada")]
+        [Tooltip("Mientras la moto frena por quedarse sin nafta, la horda no se le acerca a menos de estos metros (se queda " +
+                 "a la velocidad de la moto): asi, al bajarse, la horda se ve venir y no esta encima. 0 = sin tope.")]
+        [Min(0f)] public float frenadoGapHorda = 14f;
+
         [Header("Disparo que despeja la horda")]
         [Tooltip("Disparos que dan en un zombie, seguidos, para que la horda retroceda y le deje espacio. 0 = apagado.")]
         [Min(0)] public int retrocesoAciertos = 2;

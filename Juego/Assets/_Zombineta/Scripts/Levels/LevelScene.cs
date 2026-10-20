@@ -63,6 +63,13 @@ namespace Zombineta.Juego.Levels
         [Tooltip("A que altura de la moto llegan, en unidades de mundo sobre su carril.")]
         [SerializeField] float alturaDeLlegada = 0.5f;
 
+        [Header("Arena de la pelea")]
+        [Tooltip("Los coches, barriles y rampas despejados para la pelea se quedan de decorado mientras se pelea " +
+                 "(la protagonista sigue varada donde estaba) y se van de a poco al volver a la moto.")]
+        [SerializeField] bool conservarDecoradoEnPelea = true;
+        [Tooltip("Segundos que tardan en desvanecerse al volver a la moto.")]
+        [SerializeField] float segundosDesvanecer = 0.5f;
+
         [Header("Looks")]
         [Tooltip("Aspectos por tipo de zombie, para la cara del ZombieFront. Sin asignar: tinte de Zombies.asset.")]
         [SerializeField] ZombieLookSet looks;
@@ -381,6 +388,24 @@ namespace Zombineta.Juego.Levels
 
         static bool EsRecurso(LevelEntryKind kind) => LevelRuntime.EsRecurso(kind);
 
+        /// <summary>Cambia la opacidad de todos los dibujos del item. Solo toca algo cuando cambia.</summary>
+        void AplicarOpacidad(LevelItem item, int index, float opacidad)
+        {
+            if (Mathf.Abs(opacidadAplicada[index] - opacidad) < 0.001f)
+                return;
+            if (renderers[index] == null)
+                renderers[index] = item.GetComponentsInChildren<SpriteRenderer>(true);
+            foreach (var sr in renderers[index])
+            {
+                if (sr == null)
+                    continue;
+                var c = sr.color;
+                c.a = opacidad;
+                sr.color = c;
+            }
+            opacidadAplicada[index] = opacidad;
+        }
+
         /// <summary>
         /// Solo dibujo: el recolectable flota, y si la moto lo puede agarrar (su carril o el de al
         /// lado, a su altura) se le va acercando al estar cerca, hasta llegar a ella justo cuando lo
@@ -431,6 +456,10 @@ namespace Zombineta.Juego.Levels
         // Se resta antes de sumar lo nuevo, asi si algo mueve el item (el tutorial lo reubica) no se acumula.
         Vector3[] desplazamiento;
         float[] atraccion;
+        // Lo despejado que queda de decorado: cuanto le queda de opacidad al irse, y la que se le aplico.
+        float[] desvanecer;
+        float[] opacidadAplicada;
+        SpriteRenderer[][] renderers;
 
         void Update()
         {
@@ -443,6 +472,11 @@ namespace Zombineta.Juego.Levels
                 {
                     desplazamiento = new Vector3[runtime.Length];
                     atraccion = new float[runtime.Length];
+                    desvanecer = new float[runtime.Length];
+                    opacidadAplicada = new float[runtime.Length];
+                    renderers = new SpriteRenderer[runtime.Length][];
+                    for (int k = 0; k < opacidadAplicada.Length; k++)
+                        opacidadAplicada[k] = 1f;
                 }
                 bool sinBidones = LevelRuntime.BidonesBloqueados(run.Config, run.Sim.State);
                 // A pie no hay nafta, baterias ni balas del recorrido que agarrar: no se ven.
@@ -453,6 +487,22 @@ namespace Zombineta.Juego.Levels
                         continue;
                     bool visible = !runtime[index].Consumed && !(sinBidones && item.kind == LevelEntryKind.Fuel) &&
                                    !(peleando && EsRecurso(item.kind));
+
+                    // Lo que se despejo para la pelea (coches, barriles, rampas) queda de decorado mientras
+                    // dura, y al volver a la moto se desvanece en vez de aparecer o desaparecer de golpe.
+                    float opacidad = 1f;
+                    if (!visible && conservarDecoradoEnPelea && runtime[index].Despejado && !EsRecurso(item.kind))
+                    {
+                        if (peleando)
+                            desvanecer[index] = 1f;
+                        else
+                            desvanecer[index] = segundosDesvanecer > 0f
+                                ? Mathf.Max(0f, desvanecer[index] - Time.deltaTime / segundosDesvanecer)
+                                : 0f;
+                        visible = desvanecer[index] > 0f;
+                        opacidad = desvanecer[index];
+                    }
+                    AplicarOpacidad(item, index, opacidad);
                     // Con prefab, la vista vive en "Vista" (hijo): apagar ese GameObject entero
                     // (sprite, luz y sombra propia del prefab juntos). Sin prefab, el sprite sigue
                     // en el propio item, como antes.

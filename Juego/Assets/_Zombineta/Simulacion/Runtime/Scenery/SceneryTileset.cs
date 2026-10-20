@@ -106,6 +106,10 @@ namespace Zombineta.Scenery
                  "dejar un agujero entre edificios.")]
         public bool huecoLimpio;
 
+        [Tooltip("Cuantos tiles comunes tiene que haber, como minimo, entre dos tiles con acompanante (dos bocacalles): " +
+                 "asi siempre queda lugar para al menos un edificio entre una calle lateral y la otra. 0 = sin regla.")]
+        [Min(0)] public int tilesEntreAcompanantes = 1;
+
         [Tooltip("Los tiles de esta capa tiran sombra sobre la calle cuando pasan cerca de una luz " +
                  "del escenario (arboles, postes). No marcar en capas de fondo que tienen las luces " +
                  "ni en las del frente.")]

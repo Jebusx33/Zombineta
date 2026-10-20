@@ -59,6 +59,7 @@ namespace Zombineta.Tests
             c.dropBalas = 0f;
             c.premioBalas = new[] { 0, 0, 0, 0 };
             c.premioBateria = new[] { 0f, 0f, 0f, 0f };
+            c.saltoActivo = false;   // el salto de los zombies tiene sus propios tests
             return c;
         }
 
@@ -1502,6 +1503,327 @@ namespace Zombineta.Tests
             var e2 = Golpe(sim, 0.28f);
 
             Assert.IsTrue((e2 & RunEvent.GolpeAlAire) != 0);
+        }
+
+        // --- Playtest de Axo, fase E: zombies que saltan en la primera oleada ---------------
+
+        static GameConfig ConSaltos()
+        {
+            var c = Rapido();
+            c.saltoActivo = true;
+            c.saltoDistanciaMin = 2.5f;
+            c.saltoDistanciaMax = 5.5f;
+            c.saltoAgacharse = 0.45f;
+            c.saltoVuelo = 0.7f;
+            c.saltoAterrizaje = 1f;
+            c.saltoRadio = 1.3f;
+            c.saltoAlcanceCaida = 0.7f;
+            c.saltoMaxSimultaneos = 2;
+            c.maxAtacantes = 5;
+            return c;
+        }
+
+        /// <summary>Un solo zombie que todavia tiene que saltar, a esa distancia (positiva: a su derecha, adonde mira).</summary>
+        static Zombineta.Enemies.ZombieUnit Saltarin(RunSimulation sim, float distancia)
+        {
+            var z = UnoSolo(sim, distancia);
+            z.PuedeSaltar = true;
+            return z;
+        }
+
+        static PlayerIntent CaminarDerecha => new PlayerIntent { MoveX = 1f, MovimientoLibre = true };
+
+        [Test]
+        public void TheFirstWaveArrivesJumping_TheOthersDoNot()
+        {
+            var con = SinNafta(ConSaltos());
+            bool alguno = false;
+            for (int i = 0; i < con.Horde.Units.Length; i++)
+                if (con.Pelea.Activo(i) && con.Horde.Units[i].PuedeSaltar)
+                    alguno = true;
+            Assert.IsTrue(alguno, "los de la primera oleada pueden saltar");
+
+            var cfg = ConSaltos();
+            cfg.saltoActivo = false;
+            var sin = SinNafta(cfg);
+            for (int i = 0; i < sin.Horde.Units.Length; i++)
+                Assert.IsFalse(sin.Horde.Units[i].PuedeSaltar);
+        }
+
+        [Test]
+        public void AZombieInTheJumpWindow_CrouchesFirst_ThenFliesAndLandsBeforeHer()
+        {
+            var sim = SinNafta(ConSaltos());
+            var z = Saltarin(sim, 5f);
+
+            sim.Tick(Quieta, Dt);
+            Assert.AreEqual(1, z.SaltoFase, "se agacha");
+            float px = sim.State.PeatonX;
+
+            Avanzar(sim, 0.46f, Quieta);
+            Assert.AreEqual(2, z.SaltoFase, "despega");
+
+            Avanzar(sim, 0.72f, Quieta);
+            Assert.AreEqual(3, z.SaltoFase, "cae");
+            Assert.AreEqual(px + 0.7f, z.X, 0.05f, "cae un poco antes de ella, de su lado");
+        }
+
+        [Test]
+        public void TooCloseOrTooFar_ItJustWalks()
+        {
+            var lejos = SinNafta(ConSaltos());
+            var zl = Saltarin(lejos, 9f);
+            lejos.Tick(Quieta, Dt);
+            Assert.AreEqual(0, zl.SaltoFase);
+
+            var cerca = SinNafta(ConSaltos());
+            var zc = Saltarin(cerca, 1.5f);
+            cerca.Tick(Quieta, Dt);
+            Assert.AreEqual(0, zc.SaltoFase);
+        }
+
+        [Test]
+        public void IfShesStillThereWhenItLands_ItCostsHerOneHeart()
+        {
+            var sim = SinNafta(ConSaltos());
+            var z = Saltarin(sim, 5f);
+
+            Avanzar(sim, 1.2f, Quieta);
+
+            Assert.AreEqual(4, sim.State.Vida, "1 de dano");
+            Assert.AreEqual(1, sim.State.PeleaSaltosAcertados);
+            Assert.AreEqual(1, sim.State.PeleaGolpesRecibidos);
+        }
+
+        [Test]
+        public void IfSheMovesAwayAfterItTakesOff_ItMissesAndLiesOnTheFloor()
+        {
+            var sim = SinNafta(ConSaltos());
+            var z = Saltarin(sim, 5f);
+
+            Avanzar(sim, 0.46f, Quieta);                // despega
+            Avanzar(sim, 0.75f, CaminarDerecha);        // se aleja mas que el radio
+
+            Assert.AreEqual(5, sim.State.Vida, "esquivado");
+            Assert.AreEqual(1, sim.State.PeleaSaltosEsquivados);
+            Assert.AreEqual(3, z.SaltoFase, "queda en el piso un rato");
+            Assert.IsTrue(z.Alive);
+
+            Avanzar(sim, 1.1f, Quieta);
+            Assert.AreEqual(0, z.SaltoFase, "despues se levanta y sigue (ya no vuelve a saltar)");
+            Assert.IsFalse(z.PuedeSaltar);
+        }
+
+        [Test]
+        public void APunchInTheAir_KillsItOnTheSpot()
+        {
+            var sim = SinNafta(ConSaltos());
+            var z = Saltarin(sim, 5f);
+
+            Avanzar(sim, 0.46f, Quieta);                // despega
+            for (int i = 0; i < 60 && Mathf.Abs(z.X - sim.State.PeatonX) > 1.5f; i++)
+                sim.Tick(Quieta, Dt);
+            Assert.AreEqual(2, z.SaltoFase, "sigue en el aire");
+
+            var ev = sim.Tick(new PlayerIntent { Golpe = true }, Dt);
+
+            Assert.IsTrue((ev & RunEvent.Golpe) != 0);
+            Assert.IsFalse(z.Alive, "un golpe en el aire lo mata");
+            Assert.AreEqual(1, sim.State.PeleaSaltosCortados);
+            Assert.AreEqual(1, sim.State.PeleaBajas);
+            Avanzar(sim, 1.5f, Quieta);
+            Assert.AreEqual(5, sim.State.Vida, "y no le cae encima");
+        }
+
+        [Test]
+        public void ABulletInTheAir_TakesOneHitOff_AndMakesItFallWithoutHurtingHer()
+        {
+            var sim = SinNafta(ConSaltos());
+            var z = Saltarin(sim, 5f);
+
+            Avanzar(sim, 0.46f + 0.3f, Quieta);         // en pleno vuelo
+            Assert.AreEqual(2, z.SaltoFase);
+
+            sim.Tick(new PlayerIntent { Fire = true }, Dt);
+
+            Assert.IsTrue(z.Alive);
+            Assert.AreEqual(2, z.Golpes, "1 de dano");
+            Assert.AreEqual(3, z.SaltoFase, "cae donde estaba");
+            Avanzar(sim, 1.5f, Quieta);
+            Assert.AreEqual(5, sim.State.Vida);
+            Assert.AreEqual(0, sim.State.PeleaSaltosAcertados);
+        }
+
+        [Test]
+        public void ABulletInTheAir_KillsAZombieWithOneHitLeft()
+        {
+            var sim = SinNafta(ConSaltos());
+            var z = Saltarin(sim, 5f);
+            z.Golpes = 1;
+
+            Avanzar(sim, 0.46f + 0.3f, Quieta);
+            sim.Tick(new PlayerIntent { Fire = true }, Dt);
+
+            Assert.IsFalse(z.Alive);
+            Assert.AreEqual(1, sim.State.PeleaBajas);
+        }
+
+        [Test]
+        public void AHitWhileItCrouches_CutsTheJump_AndLandsAsAnOrdinaryHit()
+        {
+            var sim = SinNafta(ConSaltos());
+            var z = Saltarin(sim, 1f);
+            z.SaltoFase = 1;
+            z.SaltoT = 0.1f;
+            z.PuedeSaltar = false;
+
+            sim.Tick(new PlayerIntent { Golpe = true }, Dt);
+
+            Assert.AreEqual(0, z.SaltoFase, "no salta");
+            Assert.IsTrue(z.Alive);
+            Assert.AreEqual(2, z.Golpes, "el golpe cuenta como uno comun");
+        }
+
+        [Test]
+        public void OnlyAFewJumpAtTheSameTime()
+        {
+            var sim = SinNafta(ConSaltos());
+            var z = Poner(sim, (4f, 1), (4.5f, 1), (-4f, 1));
+            foreach (var u in z) u.PuedeSaltar = true;
+
+            sim.Tick(Quieta, Dt);
+
+            int saltando = 0;
+            foreach (var u in z) if (u.SaltoFase == 1) saltando++;
+            Assert.AreEqual(2, saltando, "saltoMaxSimultaneos");
+        }
+
+        // --- La transicion: la horda que se ve en la moto es la que salta ---------------
+
+        /// <summary>
+        /// La moto sin nafta con la horda atras: tres zombies a 8, 20 y 30 m (carriles 2, 0 y 1), uno mas a 50 m.
+        /// Con parada 0 la pelea empieza en el acto.
+        /// </summary>
+        static RunSimulation BajarseConLaHorda(out Zombineta.Enemies.ZombieUnit[] z)
+        {
+            var c = ConSaltos();
+            c.zombiesEnArena = 3;
+            var sim = new RunSimulation(c);
+            sim.State.PlayerX = 500f;
+            sim.Horde.Reset(470f);
+            var us = sim.Horde.Units;
+            float[] x = { 492f, 480f, 470f, 465f };
+            int[] carril = { 2, 0, 1, 1 };
+            for (int i = 0; i < us.Length; i++)
+            {
+                us[i].Alive = true;
+                us[i].Type = 0;
+                us[i].X = i < x.Length ? x[i] : 465f;   // dentro de la masa: mas atras se reciclaria
+                us[i].Lane = i < carril.Length ? carril[i] : 1;
+            }
+            sim.Horde.RecomputeFront();
+            z = new[] { us[0], us[1], us[2], us[3] };
+            sim.State.Fuel = 0f;
+            sim.Tick(Quieta, Dt);
+            return sim;
+        }
+
+        [Test]
+        public void GettingOffTheBike_TheNearestOfTheHorde_KeepTheirLaneAndTypeAndComeRunning()
+        {
+            var sim0 = BajarseConLaHorda(out var z);
+            Assert.AreEqual(RunPhase.Pelea, sim0.State.Phase);
+            Assert.IsTrue(sim0.Pelea.Activo(0) && sim0.Pelea.Activo(1) && sim0.Pelea.Activo(2), "los tres mas cercanos");
+            Assert.IsFalse(sim0.Pelea.Activo(3), "el cuarto queda fuera");
+
+            Assert.AreEqual(2, z[0].Lane);
+            Assert.AreEqual(0, z[1].Lane);
+            Assert.AreEqual(1, z[2].Lane);
+            foreach (var u in new[] { z[0], z[1], z[2] })
+            {
+                Assert.IsTrue(u.PuedeSaltar);
+                Assert.AreEqual(11f, sim0.Pelea.VelocidadDe(u), 0.001f, "corren, no caminan");
+            }
+        }
+
+        [Test]
+        public void TheOnesTooCloseOrTooFar_AreKeptInsideTheEntryZone()
+        {
+            var sim = BajarseConLaHorda(out var z);
+            float centro = sim.Pelea.Centro;
+
+            Assert.AreEqual(centro - 9f, z[0].X, 0.4f, "a 8 m: no mas cerca que saltoEntradaMin");
+            Assert.AreEqual(centro - 20f, z[1].X, 0.4f, "a 20 m: donde estaba");
+            Assert.AreEqual(centro - 24f, z[2].X, 0.05f, "a 30 m: no mas lejos que saltoEntradaMax");
+        }
+
+        [Test]
+        public void TheyKeepRunning_UntilTheyJump()
+        {
+            var sim = BajarseConLaHorda(out var z);
+            float antes = z[1].X;
+
+            Avanzar(sim, 0.5f, Quieta);
+
+            Assert.AreEqual(antes + 11f * 0.5f, z[1].X, 0.4f, "11 m/s: la carrera de la horda");
+            Assert.AreEqual(0, z[1].SaltoFase, "todavia no esta a distancia de salto");
+        }
+
+        [Test]
+        public void ARunnerFromAnotherLane_JumpsAndLandsInHerLane()
+        {
+            var sim = BajarseConLaHorda(out var z);   // ella en el carril 1; el z[1] corre por el 0
+            Avanzar(sim, 3f, Quieta);
+
+            Assert.AreEqual(sim.State.Lane, z[1].Lane, "cayo en el carril de ella");
+            Assert.IsFalse(z[1].PuedeSaltar, "ya salto");
+        }
+
+        [Test]
+        public void ARunnerWaitingForItsTurn_DoesNotRunPastHer()
+        {
+            var sim = BajarseConLaHorda(out var z);
+            // Todos al alcance de salto a la vez: dos saltan, el tercero espera su turno a distancia.
+            z[0].X = sim.State.PeatonX - 5f; z[1].X = sim.State.PeatonX - 5f; z[2].X = sim.State.PeatonX - 4.5f;
+            sim.Tick(Quieta, Dt);
+            int saltando = 0;
+            foreach (var u in new[] { z[0], z[1], z[2] }) if (u.SaltoFase == 1) saltando++;
+            Assert.AreEqual(2, saltando);
+
+            var espera = z[0].SaltoFase == 0 ? z[0] : z[1].SaltoFase == 0 ? z[1] : z[2];
+            float x = espera.X;
+            Avanzar(sim, 0.2f, Quieta);
+            Assert.AreEqual(x, espera.X, 0.01f, "espera donde esta");
+        }
+
+        [Test]
+        public void WhileTheBikeBrakes_TheHordeDoesNotCloseInOnIt()
+        {
+            float MinimaDistancia(float tope)
+            {
+                var c = MakeConfig();
+                c.paradaSegundos = 1.2f;
+                c.frenadoGapHorda = tope;
+                var sim = new RunSimulation(c);
+                sim.State.PlayerX = 500f;
+                sim.Horde.Reset(484f);                // 16 m detras
+                sim.State.Fuel = 0f;
+                float minima = float.MaxValue;
+                for (int i = 0; i < 300 && sim.State.Phase == RunPhase.Running; i++)
+                {
+                    sim.Tick(Quieta, Dt);
+                    if (sim.State.Phase == RunPhase.Running)
+                        minima = Mathf.Min(minima, sim.State.Gap);
+                }
+                Assert.AreEqual(RunPhase.Pelea, sim.State.Phase);
+                return minima;
+            }
+
+            float conTope = MinimaDistancia(14f);
+            float sinTope = MinimaDistancia(0f);
+
+            Assert.GreaterOrEqual(conTope, 12f, "la horda acompana a la moto mientras frena");
+            Assert.Less(sinTope, conTope, "sin el tope se le acerca mas");
         }
 }
 }

@@ -577,5 +577,52 @@ namespace Zombineta.Tests
 
             Assert.AreEqual(0, total);
         }
+
+        // --- Lo despejado queda de decorado -------------------------------------------
+
+        [Test]
+        public void TheClearedArena_IsMarked_ExceptTheZombiesInFront_AndResourcesAreNotCleared()
+        {
+            var level = new LevelRuntime(MakeLevel(
+                new LevelEntry(100f, 1, LevelEntryKind.Obstacle),
+                new LevelEntry(102f, 0, LevelEntryKind.Barrel),
+                new LevelEntry(104f, 1, LevelEntryKind.Ramp),
+                new LevelEntry(106f, 2, LevelEntryKind.ZombieFront),
+                new LevelEntry(108f, 1, LevelEntryKind.Fuel)));
+
+            level.ClearZone(90f, 130f);
+
+            Assert.IsTrue(level.Items[0].Despejado, "el coche queda de decorado");
+            Assert.IsTrue(level.Items[1].Despejado, "el barril tambien");
+            Assert.IsTrue(level.Items[2].Despejado, "y la rampa");
+            Assert.IsTrue(level.Items[3].Consumed);
+            Assert.IsFalse(level.Items[3].Despejado, "los zombies de frente no");
+            Assert.IsFalse(level.Items[4].Consumed, "el recurso no se despeja");
+        }
+
+        [Test]
+        public void OnlyTheLastClearingCounts_AndRestartingWipesTheMark()
+        {
+            var level = new LevelRuntime(MakeLevel(
+                new LevelEntry(100f, 1, LevelEntryKind.Obstacle),
+                new LevelEntry(400f, 1, LevelEntryKind.Obstacle)));
+
+            level.ClearZone(90f, 130f);
+            level.ClearZone(390f, 430f);
+            Assert.IsFalse(level.Items[0].Despejado, "el de la pelea anterior ya no es decorado");
+            Assert.IsTrue(level.Items[1].Despejado);
+
+            level.Reset();
+            Assert.IsFalse(level.Items[1].Despejado);
+            Assert.IsFalse(level.Items[1].Consumed);
+        }
+
+        [Test]
+        public void ABarrelBlownUpByAShot_IsNotMarkedAsCleared()
+        {
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(100f, 1, LevelEntryKind.Barrel)));
+            level.Items[0].Consumed = true;   // detonado, no despejado
+            Assert.IsFalse(level.Items[0].Despejado);
+        }
 }
 }

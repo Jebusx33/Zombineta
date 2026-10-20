@@ -84,6 +84,34 @@ MonoBehaviour:
       - {fileID: -451839245, guid: 7bf545a6bc5f449aa73a7fe688a36b75, type: 3}
       walkSlowSpeedLimit: 2.6
       walkSlowStrideMeters: 1.3
+      salto:
+      - {fileID: -1635867623, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 242919145, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 1151546559, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 371604198, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1116974621, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 490503660, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1671873803, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 1360479661, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -216230830, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 795333729, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 770469649, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1244575616, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1067243076, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 1843903756, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 1310548704, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -685500075, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -892829760, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -182760317, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 332530800, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 905646816, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -586081635, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -334073303, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1647343540, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -38522803, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 525316139, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      saltoCuadrosAgachar: 7
+      saltoCuadrosVuelo: 11
       attack:
       - {fileID: 242919145, guid: cbfdab1e8e8948319bb283b377b8f2e7, type: 3}
       - {fileID: 1151546559, guid: cbfdab1e8e8948319bb283b377b8f2e7, type: 3}
@@ -247,6 +275,34 @@ MonoBehaviour:
       - {fileID: -451839245, guid: 7bf545a6bc5f449aa73a7fe688a36b75, type: 3}
       walkSlowSpeedLimit: 2.6
       walkSlowStrideMeters: 1.3
+      salto:
+      - {fileID: -1635867623, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 242919145, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 1151546559, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 371604198, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1116974621, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 490503660, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1671873803, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 1360479661, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -216230830, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 795333729, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 770469649, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1244575616, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1067243076, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 1843903756, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 1310548704, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -685500075, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -892829760, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -182760317, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 332530800, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 905646816, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -586081635, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -334073303, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1647343540, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -38522803, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 525316139, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      saltoCuadrosAgachar: 7
+      saltoCuadrosVuelo: 11
       attack:
       - {fileID: 242919145, guid: cbfdab1e8e8948319bb283b377b8f2e7, type: 3}
       - {fileID: 1151546559, guid: cbfdab1e8e8948319bb283b377b8f2e7, type: 3}
@@ -410,6 +466,34 @@ MonoBehaviour:
       - {fileID: -451839245, guid: 7bf545a6bc5f449aa73a7fe688a36b75, type: 3}
       walkSlowSpeedLimit: 2.6
       walkSlowStrideMeters: 1.3
+      salto:
+      - {fileID: -1635867623, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 242919145, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 1151546559, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 371604198, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1116974621, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 490503660, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1671873803, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 1360479661, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -216230830, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 795333729, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 770469649, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1244575616, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1067243076, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 1843903756, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 1310548704, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -685500075, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -892829760, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -182760317, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 332530800, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 905646816, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -586081635, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -334073303, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -1647343540, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: -38522803, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      - {fileID: 525316139, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
+      saltoCuadrosAgachar: 7
+      saltoCuadrosVuelo: 11
       attack:
       - {fileID: 242919145, guid: cbfdab1e8e8948319bb283b377b8f2e7, type: 3}
       - {fileID: 1151546559, guid: cbfdab1e8e8948319bb283b377b8f2e7, type: 3}

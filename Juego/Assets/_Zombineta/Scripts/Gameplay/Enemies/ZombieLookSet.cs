@@ -27,6 +27,15 @@ namespace Zombineta.Enemies
                  "de verdad (no segun el reloj): si patina, subir; si parece que corre en el lugar, bajar.")]
         public float walkSlowStrideMeters = 1.3f;
 
+        [Tooltip("El salto sobre la protagonista (primera oleada de la pelea): agacharse, volar y caer/levantarse, todo en una " +
+                 "hoja. El salto de la simulacion elige el cuadro segun la fase y el tiempo. Las alturas del vuelo ya vienen " +
+                 "dibujadas en los cuadros.")]
+        public Sprite[] salto;
+        [Tooltip("Cuantos de los primeros cuadros de 'salto' son el agacharse (de pie hasta encogido, antes de despegar).")]
+        [Min(1)] public int saltoCuadrosAgachar = 7;
+        [Tooltip("Cuantos de los siguientes cuadros son el vuelo. Los que quedan son el aterrizaje y el levantarse.")]
+        [Min(1)] public int saltoCuadrosVuelo = 11;
+
         [Tooltip("Preparando el ataque a pie: se reparte entre el inicio de la preparacion y el golpe. " +
                  "Si esta, el aviso (inclinacion, estocada y color rojo) ya viene dibujado y no se simula.")]
         public Sprite[] attack;

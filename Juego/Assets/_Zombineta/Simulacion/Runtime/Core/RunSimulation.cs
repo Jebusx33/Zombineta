@@ -142,6 +142,9 @@ namespace Zombineta.Core
             State.PeleaGolpesRecibidos = 0;
             State.PeleaRemates = 0;
             State.PeleaBotiquines = 0;
+            State.PeleaSaltosAcertados = 0;
+            State.PeleaSaltosEsquivados = 0;
+            State.PeleaSaltosCortados = 0;
             State.Nota = NotaPelea.C;
             State.PremioBalas = 0;
             State.PremioBateria = 0f;
@@ -236,7 +239,12 @@ namespace Zombineta.Core
             Horde.RetrocesoVelocidad = State.RetrocesoRestante > 0f && config.retrocesoSegundos > 0f
                 ? config.retrocesoMetros / config.retrocesoSegundos
                 : 0f;
-            Horde.Step(dt, ComputeHordeSpeedFactor());
+            float factorHorda = ComputeHordeSpeedFactor();
+            // Frenando por falta de nafta, la horda acompana a la moto: no se le acerca a menos de frenadoGapHorda.
+            if (State.FrenadoRestante > 0f && config.frenadoGapHorda > 0f && config.hordeBaseSpeed > 0f &&
+                State.Gap < config.frenadoGapHorda + 4f)
+                factorHorda = Mathf.Min(factorHorda, PlayerSpeed / config.hordeBaseSpeed);
+            Horde.Step(dt, factorHorda);
             State.HordeX = Horde.FrontX;
             HordeSpeed = Horde.FrontSpeed;
             AvanzarRetroceso(dt);

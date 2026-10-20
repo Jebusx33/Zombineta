@@ -249,6 +249,63 @@ namespace Zombineta.Tests
             for (int i = 0; i < a.Count; i++)
                 Assert.AreEqual(a[i].X, b[i].X);
         }
+        // --- Playtest de Axo, fase F: nunca dos bocacalles pegadas ---------------------
+
+        static int ContarEspecialesPegados(SceneryLayout layout, float hasta, int especial)
+        {
+            layout.EnsureCovered(hasta);
+            int pegados = 0;
+            for (int i = 1; i < layout.Placed.Count; i++)
+                if (layout.Placed[i].Variant == especial && layout.Placed[i - 1].Variant == especial)
+                    pegados++;
+            return pegados;
+        }
+
+        [Test]
+        public void WithoutTheRule_TwoCrossStreetsCanEndUpTogether()
+        {
+            // La calle del nivel 1: comun (peso 5) y bocacalle (peso 1), sin evitar repeticiones.
+            int pegadas = 0;
+            for (int seed = 1; seed <= 20; seed++)
+                pegadas += ContarEspecialesPegados(
+                    new SceneryLayout(new[] { 13f, 13f }, new[] { 5f, 1f }, 0f, 0f, 0f, false, seed, 0f,
+                                      especiales: new[] { false, true }, tilesEntreEspeciales: 0),
+                    3000f, 1);
+            Assert.Greater(pegadas, 0, "el caso de antes existe");
+        }
+
+        [Test]
+        public void WithTheRule_ThereIsAlwaysACommonTileBetweenTwoCrossStreets()
+        {
+            for (int seed = 1; seed <= 50; seed++)
+            {
+                var layout = new SceneryLayout(new[] { 13f, 13f }, new[] { 5f, 1f }, 0f, 0f, 0f, false, seed, 0f,
+                                               especiales: new[] { false, true }, tilesEntreEspeciales: 1);
+                Assert.AreEqual(0, ContarEspecialesPegados(layout, 5000f, 1), "semilla " + seed);
+            }
+        }
+
+        [Test]
+        public void TheRule_StillBuildsTheSameStreetForTheSameSeed()
+        {
+            var a = new SceneryLayout(new[] { 13f, 13f }, new[] { 3f, 2f }, 0f, 0f, 0f, false, 9, 0f,
+                                      especiales: new[] { false, true }, tilesEntreEspeciales: 2);
+            var b = new SceneryLayout(new[] { 13f, 13f }, new[] { 3f, 2f }, 0f, 0f, 0f, false, 9, 0f,
+                                      especiales: new[] { false, true }, tilesEntreEspeciales: 2);
+            var sa = Snapshot(a, 800f);
+            var sb = Snapshot(b, 800f);
+
+            Assert.AreEqual(sa.Count, sb.Count);
+            for (int i = 0; i < sa.Count; i++)
+                Assert.AreEqual(sa[i].Variant, sb[i].Variant);
+            // Con dos de separacion: nunca hay un especial a menos de dos tiles del anterior.
+            for (int i = 0; i < sa.Count; i++)
+                if (sa[i].Variant == 1)
+                    for (int j = Mathf_Max(0, i - 2); j < i; j++)
+                        Assert.AreNotEqual(1, sa[j].Variant);
+        }
+
+        static int Mathf_Max(int a, int b) => a > b ? a : b;
     }
 
     public class ParallaxMathTests

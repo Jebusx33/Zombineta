@@ -90,6 +90,9 @@ namespace Zombineta.Auxilio
             s.PeleaGolpesRecibidos = 0;
             s.PeleaRemates = 0;
             s.PeleaBotiquines = 0;
+            s.PeleaSaltosAcertados = 0;
+            s.PeleaSaltosEsquivados = 0;
+            s.PeleaSaltosCortados = 0;
             s.PremioBalas = 0;
             s.PremioBateria = 0f;
             s.PremioBalasLleno = false;
@@ -115,7 +118,7 @@ namespace Zombineta.Auxilio
             s.PeatonX = centro;
             cargo = false;
 
-            ArmarArena();
+            ArmarArena(desdeLaHorda: true);
             return RunEvent.PeleaEmpieza;
         }
 
@@ -123,11 +126,18 @@ namespace Zombineta.Auxilio
         /// Los zombies de la primera oleada (o "zombiesEnArena" si no hay oleadas) entran a la
         /// arena y el resto queda estacionado fuera de cuadro. Sirve para empezar y para reintentar.
         /// </summary>
-        void ArmarArena()
+        void ArmarArena(bool desdeLaHorda)
         {
             var units = h.Units;
             activo = new bool[units.Length];
             int enArena = Mathf.Min(ObjetivoDeZombies(0), units.Length);
+
+            if (c.saltoActivo)
+            {
+                ArmarArenaCorriendo(enArena, desdeLaHorda);
+                return;
+            }
+
             for (int i = 0; i < units.Length; i++)
             {
                 var u = units[i];
@@ -147,7 +157,74 @@ namespace Zombineta.Auxilio
                     u.Stagger = 0f;
                     u.Derribado = 0f;
                     u.Preparando = -1f;
+                    u.PuedeSaltar = false;
+                    u.SaltoFase = 0;
                 }
+            }
+            h.RecomputeFront();
+            s.HordeX = h.FrontX;
+        }
+
+        /// <summary>
+        /// La primera oleada llega CORRIENDO por atras y salta sobre ella: sigue la carrera de la horda
+        /// de la moto, asi al bajarse los zombies no pasan de correr a caminar. Al bajarse de la moto, los
+        /// de la horda que estaban mas cerca (los que se ven) siguen donde estaban, con su carril y su
+        /// pinta, acotados a [saltoEntradaMin, saltoEntradaMax] metros detras de ella. En un reintento,
+        /// o si no alcanzan, entran por atras fuera de pantalla.
+        /// </summary>
+        void ArmarArenaCorriendo(int enArena, bool desdeLaHorda)
+        {
+            var units = h.Units;
+            var elegidos = new System.Collections.Generic.List<int>();
+            if (desdeLaHorda)
+            {
+                for (int i = 0; i < units.Length; i++)
+                    if (units[i].Alive)
+                        elegidos.Add(i);
+                elegidos.Sort((a, b) =>
+                {
+                    int cmp = Mathf.Abs(centro - units[a].X).CompareTo(Mathf.Abs(centro - units[b].X));
+                    return cmp != 0 ? cmp : a.CompareTo(b);
+                });
+                if (elegidos.Count > enArena)
+                    elegidos.RemoveRange(enArena, elegidos.Count - enArena);
+            }
+
+            float minimo = Mathf.Min(c.saltoEntradaMin, c.saltoEntradaMax);
+            float maximo = Mathf.Max(c.saltoEntradaMin, c.saltoEntradaMax);
+
+            // Los que ya venian en la horda: donde estaban, acotados a la zona de entrada.
+            foreach (int i in elegidos)
+            {
+                var u = units[i];
+                float detras = Mathf.Clamp(centro - u.X, minimo, maximo);
+                activo[i] = true;
+                Preparar(i, centro - detras, u.Lane, nuevo: false, conservarTipo: true);
+            }
+
+            // Lo que falte para llegar a la cantidad: entran por atras, fuera de pantalla.
+            int puestos = elegidos.Count;
+            for (int i = 0; i < units.Length && puestos < enArena; i++)
+            {
+                if (activo[i])
+                    continue;
+                activo[i] = true;
+                puestos++;
+                float detras = minimo + (float)rng.NextDouble() * (maximo - minimo);
+                Preparar(i, centro - detras, rng.Next(RunSimulation.LaneCount), nuevo: !units[i].Alive);
+            }
+
+            for (int i = 0; i < units.Length; i++)
+            {
+                if (activo[i])
+                    continue;
+                var u = units[i];
+                u.X = centro - Estacionamiento;
+                u.Stagger = 0f;
+                u.Derribado = 0f;
+                u.Preparando = -1f;
+                u.PuedeSaltar = false;
+                u.SaltoFase = 0;
             }
             h.RecomputeFront();
             s.HordeX = h.FrontX;
@@ -332,6 +409,8 @@ namespace Zombineta.Auxilio
             if (u == null)
                 return RunEvent.GolpeAlAire;
 
+            if (GolpeEnElAire(u))
+                return RunEvent.Golpe;
             if (h.Golpear(u, s.Mira, c.golpeEmpuje, c.golpeFreno))
                 Baja(u);
             return RunEvent.Golpe;
@@ -347,7 +426,7 @@ namespace Zombineta.Auxilio
             bool conecto = false;
             if (principal != null)
             {
-                if (h.Golpear(principal, s.Mira, c.golpeEmpuje, c.golpeFreno))
+                if (!GolpeEnElAire(principal) && h.Golpear(principal, s.Mira, c.golpeEmpuje, c.golpeFreno))
                     Baja(principal);
                 conecto = true;
             }
@@ -365,7 +444,8 @@ namespace Zombineta.Auxilio
                 // Solo hacia donde mira. Uno pegado a ella y apenas detras cuenta (como en el golpe comun).
                 if (dx * s.Mira < -AtrasTolerado || Mathf.Abs(dx) > c.remateRadio)
                     continue;
-                h.Derribar(u, dx >= 0f ? 1 : -1, c.remateEmpuje, c.remateDerribo);
+                if (!GolpeEnElAire(u))
+                    h.Derribar(u, dx >= 0f ? 1 : -1, c.remateEmpuje, c.remateDerribo);
                 conecto = true;
             }
 
@@ -492,6 +572,16 @@ namespace Zombineta.Auxilio
             var u = MasCercano(s.PeatonX, s.Mira, c.shotRangeMeters);
             if (u != null)
             {
+                if (u.SaltoFase == 2)
+                {
+                    BalazoEnElAire(u);
+                    return RunEvent.Shot;
+                }
+                if (u.SaltoFase == 1)
+                {
+                    u.SaltoFase = 0;   // el tiro le corta el salto
+                    u.SaltoT = 0f;
+                }
                 if (h.HitZombie(u, s.PeatonX))
                     Baja(u);
                 return RunEvent.Shot;
@@ -531,7 +621,9 @@ namespace Zombineta.Auxilio
         /// por la oleada. La vista la usa para elegir entre caminar lento o correr.
         /// </summary>
         public float VelocidadDe(ZombieUnit u) =>
-            c.zombieVelocidadPelea * h.Type(u.Type).speedMultiplier * (OleadaActual != null ? OleadaActual.velocidad : 1f);
+            u.PuedeSaltar && u.SaltoFase == 0
+                ? c.saltoVelocidadCarrera   // los que todavia tienen que saltar vienen corriendo
+                : c.zombieVelocidadPelea * h.Type(u.Type).speedMultiplier * (OleadaActual != null ? OleadaActual.velocidad : 1f);
 
 
         /// <summary>Si el zombie esta en un carril lo bastante cerca del de ella para pegarse.</summary>
@@ -544,9 +636,19 @@ namespace Zombineta.Auxilio
 
             // Cuantos estan preparando un ataque ahora: hay un tope, los demas esperan su turno.
             int atacando = 0;
+            int saltando = 0;
             for (int i = 0; i < units.Length; i++)
-                if (activo[i] && units[i].Alive && units[i].Preparando >= 0f)
+            {
+                if (!activo[i] || !units[i].Alive)
+                    continue;
+                if (units[i].Preparando >= 0f)
                     atacando++;
+                if (units[i].SaltoFase == 1 || units[i].SaltoFase == 2)
+                {
+                    atacando++;
+                    saltando++;
+                }
+            }
 
             for (int i = 0; i < units.Length; i++)
             {
@@ -569,6 +671,15 @@ namespace Zombineta.Auxilio
                     continue;
                 }
 
+                // Saltando: el salto manda hasta que termina (se agacha, vuela, cae y se levanta).
+                if (u.SaltoFase != 0)
+                {
+                    ev |= AvanzarSalto(u, dt);
+                    if (s.Phase != RunPhase.Pelea)
+                        return ev;
+                    continue;
+                }
+
                 u.Derribado = Mathf.Max(0f, u.Derribado - dt);
                 if (u.Stagger > 0f)
                 {
@@ -580,13 +691,30 @@ namespace Zombineta.Auxilio
                 u.Mira = dx >= 0f ? 1 : -1;
 
                 bool alineado = Alineado(u);
-                if (!alineado)
+                if (!alineado && !u.PuedeSaltar)
                 {
                     u.CambioCarril -= dt;
                     if (Mathf.Abs(dx) < DistanciaParaCambiarCarril && u.CambioCarril <= 0f)
                     {
                         u.Lane += System.Math.Sign(s.Lane - u.Lane);
                         u.CambioCarril = 0.6f + (float)rng.NextDouble() * 0.6f;
+                    }
+                }
+
+                // Los de la primera oleada vienen corriendo y, al acercarse, se agachan y saltan sobre ella desde el
+                // carril en que esten (con lugar para pocos a la vez; los demas esperan su turno a distancia).
+                if (u.PuedeSaltar && u.Preparando < 0f)
+                {
+                    float distancia = Mathf.Abs(dx);
+                    if (distancia <= c.saltoDistanciaMax && distancia >= c.saltoDistanciaMin)
+                    {
+                        if (atacando < c.maxAtacantes && saltando < c.saltoMaxSimultaneos)
+                        {
+                            IniciarSalto(u);
+                            atacando++;
+                            saltando++;
+                        }
+                        continue;
                     }
                 }
 
@@ -630,6 +758,128 @@ namespace Zombineta.Auxilio
             return ev;
         }
 
+        // --- El salto de los zombies ---------------------------------------------
+
+        /// <summary>Donde va a caer: un poco antes de ella, de su lado, para no subirsele encima.</summary>
+        float PuntoDeCaida(ZombieUnit u)
+        {
+            float dir = s.PeatonX >= u.X ? 1f : -1f;
+            return s.PeatonX - dir * c.saltoAlcanceCaida;
+        }
+
+        void IniciarSalto(ZombieUnit u)
+        {
+            u.PuedeSaltar = false;
+            u.SaltoFase = 1;
+            u.SaltoT = 0f;
+            u.Preparando = -1f;
+            u.Mira = s.PeatonX >= u.X ? 1 : -1;
+            u.SaltoX0 = u.X;
+            u.SaltoX1 = PuntoDeCaida(u);
+            u.SaltoLane = s.Lane;
+        }
+
+        RunEvent AvanzarSalto(ZombieUnit u, float dt)
+        {
+            u.SaltoT += dt;
+            switch (u.SaltoFase)
+            {
+                case 1:
+                    // Agachado: el punto de caida la sigue, pero al despegar queda fijo y se puede esquivar.
+                    u.SaltoX1 = PuntoDeCaida(u);
+                    u.SaltoLane = s.Lane;
+                    if (u.SaltoT >= c.saltoAgacharse)
+                    {
+                        u.SaltoFase = 2;
+                        u.SaltoT = 0f;
+                        u.SaltoX0 = u.X;
+                        u.Lane = u.SaltoLane;   // salta hacia el carril de ella (la vista lo desliza)
+                    }
+                    return RunEvent.None;
+
+                case 2:
+                {
+                    float t = c.saltoVuelo > 0f ? Mathf.Clamp01(u.SaltoT / c.saltoVuelo) : 1f;
+                    u.X = Mathf.Lerp(u.SaltoX0, u.SaltoX1, t);
+                    return t >= 1f ? Aterrizar(u) : RunEvent.None;
+                }
+
+                default:
+                    u.Derribado = Mathf.Max(0f, u.Derribado - dt);
+                    if (u.Stagger > 0f)
+                        u.Stagger = Mathf.Max(0f, u.Stagger - dt);
+                    if (u.SaltoT >= c.saltoAterrizaje)
+                    {
+                        u.SaltoFase = 0;
+                        u.SaltoT = 0f;
+                        u.Enfriamiento = 0.3f + (float)rng.NextDouble() * 0.5f;
+                    }
+                    return RunEvent.None;
+            }
+        }
+
+        /// <summary>Cae en el punto marcado: si ella sigue ahi (y no esta en su respiro) le saca 1 de vida.</summary>
+        RunEvent Aterrizar(ZombieUnit u)
+        {
+            u.SaltoFase = 3;
+            u.SaltoT = 0f;
+            u.X = u.SaltoX1;
+
+            bool acierta = Alineado(u) && Mathf.Abs(s.PeatonX - u.X) <= c.saltoRadio && s.Invulnerable <= 0f;
+            if (!acierta)
+            {
+                s.PeleaSaltosEsquivados++;
+                return RunEvent.None;
+            }
+
+            s.PeleaSaltosAcertados++;
+            u.SaltoT = Mathf.Max(0f, c.saltoAterrizaje - 0.4f);   // si le cayo encima se recupera antes
+            return Lastimar(s.PeatonX >= u.X ? 1 : -1);
+        }
+
+        /// <summary>
+        /// Un golpe a un zombie que salta. En el aire lo mata de una (devuelve true); agachado, le
+        /// corta el salto y el golpe sigue como uno comun (devuelve false).
+        /// </summary>
+        bool GolpeEnElAire(ZombieUnit u)
+        {
+            if (u.SaltoFase == 2)
+            {
+                h.Kill(u, DeathCause.Golpe, s.Mira);
+                u.SaltoFase = 0;
+                s.PeleaSaltosCortados++;
+                Baja(u);
+                return true;
+            }
+            if (u.SaltoFase == 1)
+            {
+                u.SaltoFase = 0;
+                u.SaltoT = 0f;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Un balazo a un zombie en el aire: le saca 1 golpe. Si no llega a morir, lo tira donde esta
+        /// (cae sin hacerle dano a ella).
+        /// </summary>
+        void BalazoEnElAire(ZombieUnit u)
+        {
+            h.Tracer(s.PeatonX, u.X, u.Lane);
+            u.Golpes--;
+            s.PeleaSaltosCortados++;
+            if (u.Golpes <= 0)
+            {
+                h.Kill(u, DeathCause.Bullet, s.Mira);
+                u.SaltoFase = 0;
+                Baja(u);
+                return;
+            }
+            u.SaltoFase = 3;
+            u.SaltoT = 0f;
+            u.Stagger = Mathf.Max(u.Stagger, c.golpeFreno);
+        }
+
         RunEvent Lastimar(int desde)
         {
             s.Vida--;
@@ -665,15 +915,16 @@ namespace Zombineta.Auxilio
             s.ComboPaso = 0;
             s.ComboVentana = 0f;
             s.PeatonX = centro;
-            ArmarArena();
+            ArmarArena(desdeLaHorda: false);
             return RunEvent.Lastimada | RunEvent.PeleaReintenta;
         }
 
-        void Preparar(int indice, float x, int carril, bool nuevo)
+        void Preparar(int indice, float x, int carril, bool nuevo, bool conservarTipo = false)
         {
             var u = h.Units[indice];
             // Con oleadas, el tipo lo da la oleada; si cambia es otro zombie para la vista (otra pinta).
-            int tipo = ElegirTipo(u.Type);
+            // Los que siguen de la horda de la moto conservan el suyo: es el mismo zombie que se veia.
+            int tipo = conservarTipo ? u.Type : ElegirTipo(u.Type);
             if (tipo != u.Type)
             {
                 u.Type = tipo;
@@ -691,6 +942,10 @@ namespace Zombineta.Auxilio
             u.Lane = carril;
             u.Golpes = h.Type(u.Type).golpesParaMorir;
             u.Preparando = -1f;
+            // En la primera oleada llegan saltando (la transicion de correr a pelear a pie); en las demas, caminando.
+            u.PuedeSaltar = c.saltoActivo && s.Oleada == 0;
+            u.SaltoFase = 0;
+            u.SaltoT = 0f;
             u.Enfriamiento = 0.3f + (float)rng.NextDouble() * 0.5f;
             u.CambioCarril = (float)rng.NextDouble() * 0.8f;
             u.Mira = x < s.PeatonX ? 1 : -1;
@@ -745,7 +1000,7 @@ namespace Zombineta.Auxilio
             {
                 fila.Clear();
                 for (int i = 0; i < units.Length; i++)
-                    if (activo[i] && units[i].Alive && units[i].Lane == carril)
+                    if (activo[i] && units[i].Alive && units[i].Lane == carril && units[i].SaltoFase != 2)
                         fila.Add(i);
                 if (fila.Count < 2)
                     continue;

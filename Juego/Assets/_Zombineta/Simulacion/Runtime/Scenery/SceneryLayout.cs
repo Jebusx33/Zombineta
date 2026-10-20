@@ -52,9 +52,13 @@ namespace Zombineta.Scenery
         readonly List<TilePlacement> placed = new List<TilePlacement>();
         readonly Func<float, Reserva?> reservas;
         readonly bool huecoLimpio;
+        readonly bool[] especiales;
+        readonly int tilesEntreEspeciales;
 
         float cursor;
         int lastVariant = -1;
+        // Tiles puestos desde el ultimo "especial" (el que trae un acompanante, como una bocacalle).
+        int desdeEspecial = int.MaxValue;
 
         /// <param name="widths">Ancho de cada variante. Una variante con ancho no positivo nunca se usa.</param>
         /// <param name="weights">Probabilidad relativa de cada variante.</param>
@@ -70,12 +74,18 @@ namespace Zombineta.Scenery
         /// viene de antes puede meterse por debajo: asi no queda un agujero al costado.</param>
         /// <param name="huecoLimpio">Ningun tile pisa un tramo reservado, ni el que viene de antes:
         /// si no entra entero antes del tramo, la capa sigue despues (arboles sobre la bocacalle).</param>
+        /// <param name="especiales">Opcional: que variantes son "especiales" (traen un acompanante: una bocacalle).</param>
+        /// <param name="tilesEntreEspeciales">Cuantos tiles comunes tiene que haber, como minimo, entre dos
+        /// especiales: asi no quedan dos bocacalles pegadas, sin un edificio en el medio. 0 = sin regla.</param>
         public SceneryLayout(float[] widths, float[] weights, float gapChance, float gapMin,
                              float gapMax, bool noImmediateRepeat, int seed, float startX,
-                             Func<float, Reserva?> reservas = null, bool huecoLimpio = false)
+                             Func<float, Reserva?> reservas = null, bool huecoLimpio = false,
+                             bool[] especiales = null, int tilesEntreEspeciales = 0)
         {
             this.reservas = reservas;
             this.huecoLimpio = huecoLimpio;
+            this.especiales = especiales != null && especiales.Length == widths.Length ? especiales : null;
+            this.tilesEntreEspeciales = Math.Max(0, tilesEntreEspeciales);
             if (widths == null || weights == null || widths.Length != weights.Length)
                 throw new ArgumentException("widths y weights tienen que tener el mismo largo");
 
@@ -134,6 +144,7 @@ namespace Zombineta.Scenery
                 placed.Add(new TilePlacement { X = cursor, Width = widths[v], Variant = v });
                 cursor += widths[v];
                 lastVariant = v;
+                desdeEspecial = EsEspecial(v) ? 0 : (desdeEspecial == int.MaxValue ? int.MaxValue : desdeEspecial + 1);
 
                 if (gapChance > 0f && rng.NextDouble() < gapChance)
                     cursor += gapMin + (float)rng.NextDouble() * (gapMax - gapMin);
@@ -162,7 +173,39 @@ namespace Zombineta.Scenery
                 results.Add(placed[i]);
         }
 
+        bool EsEspecial(int v) => especiales != null && especiales[v];
+
         int Pick()
+        {
+            int v = ElegirSinPegarEspeciales();
+            return v;
+        }
+
+        /// <summary>Si toca un especial muy pegado a otro, lo cambia por un tile comun.</summary>
+        int ElegirSinPegarEspeciales()
+        {
+            int v = PickBase();
+            if (tilesEntreEspeciales <= 0 || !EsEspecial(v) || desdeEspecial >= tilesEntreEspeciales)
+                return v;
+
+            for (int tries = 0; tries < 8; tries++)
+            {
+                v = Roll();
+                if (!EsEspecial(v))
+                    return v;
+            }
+            // La suerte insiste: el primer comun utilizable, que sigue siendo deterministico.
+            for (int step = 0; step < widths.Length; step++)
+            {
+                int i = (v + 1 + step) % widths.Length;
+                float antes = i == 0 ? 0f : weightPrefix[i - 1];
+                if (weightPrefix[i] > antes && !EsEspecial(i))
+                    return i;
+            }
+            return v;   // no hay ningun comun utilizable: sin regla
+        }
+
+        int PickBase()
         {
             int v = Roll();
 
