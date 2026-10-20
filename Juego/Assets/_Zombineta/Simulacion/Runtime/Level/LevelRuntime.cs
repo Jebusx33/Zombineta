@@ -131,7 +131,8 @@ namespace Zombineta.Level
                     if (d - h > ocupaHasta || d + h < ocupaDesde)
                         continue;
                 }
-                if (Mathf.Abs(lane - item.Entry.lane) > LaneTolerance)
+                // Los recolectables se agarran tambien desde el carril de al lado (imanCarriles); lo demas, solo en el suyo.
+                if (Mathf.Abs(lane - item.Entry.lane) > ToleranciaDeCarril(item.Entry.kind, cfg))
                     continue;
 
                 // Sin nafta en el tramo inicial de algunos niveles: el bidon todavia no existe.
@@ -173,6 +174,13 @@ namespace Zombineta.Level
 
             return events;
         }
+
+        public static bool EsRecurso(LevelEntryKind kind) =>
+            kind == LevelEntryKind.Fuel || kind == LevelEntryKind.Battery || kind == LevelEntryKind.Ammo;
+
+        /// <summary>Diferencia de carril con la que todavia hay encuentro: la de siempre, o mas amplia en los recolectables.</summary>
+        public static float ToleranciaDeCarril(LevelEntryKind kind, GameConfig cfg) =>
+            EsRecurso(kind) ? Mathf.Max(LaneTolerance, cfg.imanCarriles + 0.01f) : LaneTolerance;
 
         /// <summary>Lo que ocupa a lo largo un item, desde su centro: el suyo o el de su tipo.</summary>
         public static float MedioLargo(LevelEntry e, GameConfig cfg)

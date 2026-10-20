@@ -133,6 +133,11 @@ namespace Zombineta.Core
         [Min(0f)] public float motoCola = 0f;
         [Tooltip("Medio largo de los pickups cuando el nivel no lo dice, en metros.")]
         [Min(0f)] public float medioLargoRecurso = 0f;
+        [Tooltip("Cuantos carriles de distancia tiene que estar un recolectable (nafta, bateria, municion) para que la " +
+                 "moto lo agarre: 0 = solo en su carril, 1 = en el suyo o en el de al lado. A dos carriles no se agarra.")]
+        [Min(0f)] public float imanCarriles = 1f;
+        [Tooltip("Solo dibujo: a cuantos metros por delante de la moto un recolectable al alcance empieza a acercarse a ella.")]
+        [Min(0f)] public float imanMetros = 7f;
         [Tooltip("Medio largo de los obstaculos cuando el nivel no lo dice, en metros.")]
         [Min(0f)] public float medioLargoObstaculo = 0f;
         [Tooltip("Medio largo de los zombies de frente cuando el nivel no lo dice, en metros.")]

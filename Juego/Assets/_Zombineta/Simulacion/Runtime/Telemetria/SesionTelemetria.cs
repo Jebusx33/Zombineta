@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using UnityEngine;
 using Zombineta.Core;
+using Zombineta.Level;
 
 namespace Zombineta.Telemetria
 {
@@ -32,6 +34,12 @@ namespace Zombineta.Telemetria
         public int GolpesRecibidos { get; private set; }
         public int Botiquines { get; private set; }
         public int Reintentos { get; private set; }
+        public int ItemsPasados { get; private set; }
+
+        // Por cada recolectable del recorrido: lo mas cerca (en carriles) que estuvo la moto mientras lo pisaba.
+        readonly Dictionary<int, float> cercania = new Dictionary<int, float>();
+        readonly Dictionary<int, bool> volando = new Dictionary<int, bool>();
+        readonly HashSet<int> pasados = new HashSet<int>();
 
         public SesionTelemetria(string nivel, int intento)
         {
@@ -106,6 +114,51 @@ namespace Zombineta.Telemetria
             return filas;
         }
 
+        /// <summary>
+        /// Los recolectables que la moto dejo atras sin agarrar: una fila por cada uno, con el carril de
+        /// cada uno, lo cerca que estuvo y si iba en el aire. Con eso se ve si fallo por carril, por
+        /// altura o por dibujo.
+        /// </summary>
+        public List<string> RecolectablesPasados(float t, RunState s, GameConfig cfg, LevelRuntime level)
+        {
+            var filas = new List<string>();
+            if (level == null || cfg == null || s.Phase != RunPhase.Running)
+                return filas;
+
+            bool sinBidones = LevelRuntime.BidonesBloqueados(cfg, s);
+            for (int i = 0; i < level.Items.Length; i++)
+            {
+                var item = level.Items[i];
+                var e = item.Entry;
+                if (item.Consumed || pasados.Contains(i) || !LevelRuntime.EsRecurso(e.kind) ||
+                    (sinBidones && e.kind == LevelEntryKind.Fuel))
+                    continue;
+
+                float medio = LevelRuntime.MedioLargo(e, cfg);
+                float adelante = e.distance - s.PlayerX;
+
+                // Mientras la moto lo pisa (de punta a cola) se anota lo cerca que paso.
+                if (adelante - medio <= cfg.motoNariz && adelante + medio >= -cfg.motoCola)
+                {
+                    float dif = Mathf.Abs(s.LaneVisual - e.lane);
+                    cercania[i] = cercania.TryGetValue(i, out var antes) ? Mathf.Min(antes, dif) : dif;
+                    volando[i] = (volando.TryGetValue(i, out var v) && v) || s.Airborne;
+                    continue;
+                }
+
+                // Ya quedo todo atras sin que se lo lleve.
+                if (adelante + medio < -cfg.motoCola && cercania.ContainsKey(i))
+                {
+                    pasados.Add(i);
+                    ItemsPasados++;
+                    filas.Add(Fila(t, s, "item_pasado",
+                        "tipo=" + e.kind + ";metros=" + N(e.distance) + ";carril_item=" + e.lane +
+                        ";dif_carril=" + N(cercania[i]) + ";altura_item=" + N(e.height) + ";en_aire=" + (volando[i] ? "si" : "no")));
+                }
+            }
+            return filas;
+        }
+
         public string Inicio(float t, RunState s) => Fila(t, s, "inicio", "");
 
         /// <summary>La fila final: como termino y cuanto duro cada fase.</summary>
@@ -115,7 +168,8 @@ namespace Zombineta.Telemetria
                 ";corriendo=" + N(SegundosCorriendo) + ";frenando=" + N(SegundosFrenando) + ";peleando=" + N(SegundosPeleando) +
                 ";metros_max=" + N(MetrosMaximos) + ";auxilios=" + Auxilios + ";reintentos=" + Reintentos +
                 ";choques=" + Choques + ";caidas=" + Caidas + ";bajas=" + Bajas + ";remates=" + Remates +
-                ";golpes_recibidos=" + GolpesRecibidos + ";botiquines=" + Botiquines);
+                ";golpes_recibidos=" + GolpesRecibidos + ";botiquines=" + Botiquines +
+                ";items_pasados=" + ItemsPasados);
 
         /// <summary>Una fila del CSV. El detalle puede traer ";" propios (clave=valor;clave=valor): va entre comillas.</summary>
         public string Fila(float t, RunState s, string evento, string detalle) =>

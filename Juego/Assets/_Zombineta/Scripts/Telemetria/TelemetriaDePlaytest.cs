@@ -82,7 +82,11 @@ namespace Zombineta.Telemetria
 
             var state = run.Sim.State;
             if (!run.Paused)
+            {
                 sesion.Tiempo(state, Time.unscaledDeltaTime);
+                foreach (var fila in sesion.RecolectablesPasados(Time.realtimeSinceStartup, state, run.Config, run.Level))
+                    Escribir(fila);
+            }
 
             if (!cerrada && (state.Phase == RunPhase.Won || state.Phase == RunPhase.Lost))
                 Cerrar(state.Phase == RunPhase.Won ? "ganada" : "perdida");

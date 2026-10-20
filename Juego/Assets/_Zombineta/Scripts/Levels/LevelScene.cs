@@ -49,6 +49,20 @@ namespace Zombineta.Juego.Levels
         [Tooltip("Veces que la pelea a pie se reinicia si derriban a la protagonista, en vez de perder.")]
         [Min(0)] [SerializeField] int reintentosPelea;
 
+        [Header("Recolectables")]
+        [Tooltip("Los recolectables (nafta, bateria, municion) flotan: suben y bajan despacio.")]
+        [SerializeField] bool flotarRecolectables = true;
+        [Tooltip("Cuanto suben y bajan, en unidades de mundo.")]
+        [SerializeField] float flotarAltura = 0.1f;
+        [Tooltip("Velocidad del vaiven.")]
+        [SerializeField] float flotarVelocidad = 3f;
+        [Tooltip("Cuanto se levantan del piso al flotar, en unidades de mundo.")]
+        [SerializeField] float flotarElevacion = 0.15f;
+        [Tooltip("Los que la moto puede agarrar (su carril o el de al lado) se acercan a ella al estar cerca, hasta que se agarran.")]
+        [SerializeField] bool acercarRecolectables = true;
+        [Tooltip("A que altura de la moto llegan, en unidades de mundo sobre su carril.")]
+        [SerializeField] float alturaDeLlegada = 0.5f;
+
         [Header("Looks")]
         [Tooltip("Aspectos por tipo de zombie, para la cara del ZombieFront. Sin asignar: tinte de Zombies.asset.")]
         [SerializeField] ZombieLookSet looks;
@@ -365,8 +379,58 @@ namespace Zombineta.Juego.Levels
 
         // --- Vista -------------------------------------------------------------------
 
-        static bool EsRecurso(LevelEntryKind kind) =>
-            kind == LevelEntryKind.Fuel || kind == LevelEntryKind.Battery || kind == LevelEntryKind.Ammo;
+        static bool EsRecurso(LevelEntryKind kind) => LevelRuntime.EsRecurso(kind);
+
+        /// <summary>
+        /// Solo dibujo: el recolectable flota, y si la moto lo puede agarrar (su carril o el de al
+        /// lado, a su altura) se le va acercando al estar cerca, hasta llegar a ella justo cuando lo
+        /// agarra. La regla de agarrarlo es de LevelRuntime; esto solo lo hace visible.
+        /// </summary>
+        void AnimarRecolectable(LevelItem item, int index, LevelRuntime.Item runtimeItem)
+        {
+            var s = run.Sim.State;
+            var cfg = run.Config;
+            var posicion = item.transform.position - desplazamiento[index];
+
+            // Cuanto lo atrae: 0 lejos, 1 en el momento en que la punta de la moto lo toca.
+            float objetivo = 0f;
+            if (acercarRecolectables && s.Phase == RunPhase.Running && cfg.imanMetros > 0f)
+            {
+                var e = runtimeItem.Entry;
+                bool alcance = Mathf.Abs(s.LaneVisual - e.lane) <= LevelRuntime.ToleranciaDeCarril(e.kind, cfg);
+                bool aAltura = e.height > 0f ? run.Sim.IsAtHeight(e.height) : !s.Airborne;
+                float adelante = e.distance - s.PlayerX;
+                float llegada = cfg.motoNariz + LevelRuntime.MedioLargo(e, cfg);
+                if (alcance && aAltura && adelante <= cfg.imanMetros && adelante >= -cfg.motoCola && cfg.imanMetros > llegada)
+                    objetivo = Mathf.Clamp01((cfg.imanMetros - adelante) / (cfg.imanMetros - llegada));
+            }
+            // Sube de golpe con la moto (llega a tiempo) y baja suave (no pega saltos si cambia de carril).
+            atraccion[index] = objetivo >= atraccion[index]
+                ? objetivo
+                : Mathf.MoveTowards(atraccion[index], objetivo, Time.deltaTime * 4f);
+            float a = atraccion[index];
+
+            var nuevo = posicion;
+            if (flotarRecolectables)
+            {
+                float vaiven = Mathf.Sin(Time.time * flotarVelocidad + index * 1.7f) * flotarAltura;
+                nuevo.y += (flotarElevacion + vaiven) * (1f - a);
+            }
+            if (a > 0f)
+            {
+                float altoMoto = s.Airborne ? run.HeightToWorld(s.Height) : 0f;
+                var moto = new Vector3(run.ToWorldX(s.PlayerX), run.LaneToWorldY(s.LaneVisual) + altoMoto + alturaDeLlegada, posicion.z);
+                nuevo = Vector3.Lerp(nuevo, moto, a * a);
+            }
+
+            desplazamiento[index] = nuevo - posicion;
+            item.transform.position = nuevo;
+        }
+
+        // Lo que la vista le sumo a la posicion de cada recolectable este cuadro (vaiven + acercamiento).
+        // Se resta antes de sumar lo nuevo, asi si algo mueve el item (el tutorial lo reubica) no se acumula.
+        Vector3[] desplazamiento;
+        float[] atraccion;
 
         void Update()
         {
@@ -375,6 +439,11 @@ namespace Zombineta.Juego.Levels
                 if (run == null || run.Level == null)
                     return;
                 var runtime = run.Level.Items;
+                if (desplazamiento == null || desplazamiento.Length != runtime.Length)
+                {
+                    desplazamiento = new Vector3[runtime.Length];
+                    atraccion = new float[runtime.Length];
+                }
                 bool sinBidones = LevelRuntime.BidonesBloqueados(run.Config, run.Sim.State);
                 // A pie no hay nafta, baterias ni balas del recorrido que agarrar: no se ven.
                 bool peleando = run.Sim.State.Phase == RunPhase.Pelea;
@@ -397,6 +466,9 @@ namespace Zombineta.Juego.Levels
                     }
                     if (shadow != null)
                         shadow.Visible = visible;
+
+                    if (visible && EsRecurso(item.kind))
+                        AnimarRecolectable(item, index, runtime[index]);
                 }
                 return;
             }

@@ -83,7 +83,7 @@ Verificado fuera de Unity: 251 tests en verde (5 nuevos de pelea, 3 de salto) y 
 5. **Premio que no llega.** Con S da +3 balas y +40 de batería, pero si ya las tenía llenas no
    queda nada. Ver pregunta; mínimo: el cartel dice "MUNICIÓN LLENA" en vez de callar.
 
-## Fase B — Recolectables (la más importante)
+## Fase B — Recolectables (la más importante) ✅ hecha (falta verla en Play)
 
 **Qué encontré.** En la simulación la zona de recolección es *generosa*: la moto ocupa ±1,4 m
 y el recurso ±0,5 m, o sea que lo agarra si pasa a 3,3 m, y vale carril con tolerancia 0,5.
@@ -104,6 +104,27 @@ No se puede saber sin verlo, así que:
 
 Factibilidad: alta. El riesgo es el balance: con tolerancia de un carril los recursos son más
 fáciles de agarrar y los obstáculos del mismo carril no cambian. Se mide con la telemetría.
+
+**Lo hecho**
+- **Se agarran desde el carril de al lado** (`GameConfig.imanCarriles` = 1; 0 vuelve a "solo en su
+  carril"). A dos carriles no se agarran. Vale solo para nafta, batería y munición; los obstáculos
+  siguen chocando solo en su carril. La altura sigue igual: lo del piso no se agarra en el aire y lo
+  aéreo solo a su altura.
+- **Flotan y se acercan** (solo dibujo, en `LevelScene`): suben y bajan despacio
+  (`flotarAltura`, `flotarVelocidad`, `flotarElevacion`) y, si la moto los puede agarrar y están a
+  menos de `imanMetros` (7 m), se van hacia ella y llegan justo cuando los agarra. Si cambia de
+  carril y ya no los alcanza, vuelven a su lugar sin saltos. Se apaga con
+  `acercarRecolectables` / `flotarRecolectables`.
+- **Telemetría `item_pasado`:** una fila por cada recolectable que la moto pisó sin agarrar, con
+  tipo, metros, carril del ítem, `dif_carril` (lo cerca que pasó, en carriles), altura del ítem y si
+  iba en el aire; y `items_pasados` en el resumen. Con eso la próxima prueba dice por qué falló
+  (carril, altura o dibujo) en vez de adivinar.
+- **No se encontró un error de colisión** en la simulación (la zona ya era de ±3,3 m); queda por
+  confirmar con la telemetría si el problema era el carril o que el dibujo parecía estar en otro
+  lado. El carril de al lado y el acercamiento cubren ambos casos.
+
+Verificado fuera de Unity: 256 tests en verde (5 nuevos: carril de al lado, a dos carriles, solo
+recolectables, telemetría de lo pasado y de lo agarrado) y el juego compila.
 
 ## Fase C — Disparar despeja la horda
 

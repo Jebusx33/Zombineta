@@ -34,6 +34,7 @@ namespace Zombineta.Tests
             c.rubberBandMaxBonus = 0f;
             c.crashStunDuration = 1f;
             c.crashFuelPenalty = 10f;
+            c.imanCarriles = 0f;   // estos tests miden la regla de "solo en su carril"; el imán tiene los suyos
             return c;
         }
 
@@ -484,5 +485,97 @@ namespace Zombineta.Tests
             Assert.AreEqual(RunPhase.Running, sim.State.Phase);
             Assert.Greater(sim.State.Fuel, 95f, "ni choque ni castigo de nafta");
         }
-    }
+    
+        // --- Playtest de Axo, fase B: recolectables desde el carril de al lado ---------
+
+        [Test]
+        public void WithTheMagnet_APickupInTheNextLane_IsCollected()
+        {
+            var cfg = MakeConfig();
+            cfg.imanCarriles = 1f;
+            var sim = new RunSimulation(cfg);
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(50f, 0, LevelEntryKind.Fuel)));
+
+            Advance(sim, level, 8f, Driving(DriveMode.Normal));   // pasa por el carril 1
+
+            Assert.IsTrue(level.Items[0].Consumed, "estaba en el carril de al lado");
+        }
+
+        [Test]
+        public void WithTheMagnet_APickupTwoLanesAway_IsStillMissed()
+        {
+            var cfg = MakeConfig();
+            cfg.imanCarriles = 1f;
+            var sim = new RunSimulation(cfg);
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(50f, 2, LevelEntryKind.Fuel)));
+
+            sim.Tick(new PlayerIntent { Mode = DriveMode.Normal, LaneDelta = -1 }, Dt);   // baja al carril 0
+            Advance(sim, level, 8f, Driving(DriveMode.Normal));
+
+            Assert.IsFalse(level.Items[0].Consumed, "a dos carriles queda lejos");
+        }
+
+        [Test]
+        public void TheMagnet_OnlyAppliesToPickups_NotToObstacles()
+        {
+            var cfg = MakeConfig();
+            cfg.imanCarriles = 1f;
+            var sim = new RunSimulation(cfg);
+            float nafta = sim.State.Fuel;
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(50f, 0, LevelEntryKind.Obstacle)));
+
+            Advance(sim, level, 8f, Driving(DriveMode.Normal));
+
+            Assert.IsFalse(level.Items[0].Consumed, "el obstaculo del carril de al lado no choca");
+            Assert.IsFalse(sim.State.StunRemaining > 0f);
+        }
+
+        [Test]
+        public void TheTelemetry_ReportsAPickupLeftBehind_WithItsLaneDistance()
+        {
+            var cfg = MakeConfig();
+            cfg.imanCarriles = 0f;
+            cfg.motoNariz = 1.4f;
+            cfg.motoCola = 1.4f;
+            cfg.medioLargoRecurso = 0.5f;
+            var sim = new RunSimulation(cfg);
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(50f, 0, LevelEntryKind.Ammo)));
+            var sesion = new Zombineta.Telemetria.SesionTelemetria("n", 1);
+
+            var filas = new System.Collections.Generic.List<string>();
+            for (int i = 0; i < 60 * 8; i++)
+            {
+                float antes = sim.State.PlayerX;
+                sim.Tick(Driving(DriveMode.Normal), Dt);
+                level.Collect(sim, antes, sim.State.PlayerX);
+                filas.AddRange(sesion.RecolectablesPasados(i * Dt, sim.State, cfg, level));
+            }
+
+            Assert.AreEqual(1, filas.Count);
+            StringAssert.Contains(";item_pasado;", filas[0]);
+            StringAssert.Contains("tipo=Ammo", filas[0]);
+            StringAssert.Contains("dif_carril=1.0", filas[0]);
+            Assert.AreEqual(1, sesion.ItemsPasados);
+        }
+
+        [Test]
+        public void TheTelemetry_DoesNotReportWhatWasCollected()
+        {
+            var cfg = MakeConfig();
+            var sim = new RunSimulation(cfg);
+            var level = new LevelRuntime(MakeLevel(new LevelEntry(50f, 1, LevelEntryKind.Fuel)));
+            var sesion = new Zombineta.Telemetria.SesionTelemetria("n", 1);
+
+            int total = 0;
+            for (int i = 0; i < 60 * 8; i++)
+            {
+                float antes = sim.State.PlayerX;
+                sim.Tick(Driving(DriveMode.Normal), Dt);
+                level.Collect(sim, antes, sim.State.PlayerX);
+                total += sesion.RecolectablesPasados(i * Dt, sim.State, cfg, level).Count;
+            }
+
+            Assert.AreEqual(0, total);
+        }
+}
 }
