@@ -73,8 +73,16 @@ namespace Zombineta.Auxilio
                 run.Stepped -= AlPasar;
         }
 
+        // El ultimo golpe: si dio en alguien se ve pleno; si fue al aire, mas chico y apagado.
+        bool golpeConecto;
+
         void AlPasar(RunEvent ev)
         {
+            if ((ev & RunEvent.Golpe) != 0)
+                golpeConecto = true;
+            else if ((ev & RunEvent.GolpeAlAire) != 0)
+                golpeConecto = false;
+
             if ((ev & RunEvent.Shot) != 0 && run.Sim != null && run.Sim.State.Phase == RunPhase.Pelea)
                 disparoRestante = DuracionDisparo;
         }
@@ -278,11 +286,17 @@ namespace Zombineta.Auxilio
                 golpe.flipX = s.Mira < 0;
                 golpe.sortingOrder = cuerpo.sortingOrder + 1;
                 // El tercer golpe de la cadena (el remate) es un barrido mas grande y anaranjado.
+                // El barrido termina justo donde termina el golpe (el alcance de la simulacion, medido
+                // desde ella): lo que se ve tocado es lo que se golpea, ni mas ni menos.
                 bool remate = s.ComboPaso == 3;
-                golpe.transform.localScale = golpeEscalaBase * (remate ? 1.9f : 1f);
-                golpe.transform.position = new Vector3(x + s.Mira * (remate ? 1.7f : 1.1f), y + altoPeaton * 0.62f, 0f);
+                float escala = (remate ? 1.9f : 1f) * (golpeConecto ? 1f : 0.8f);
+                golpe.transform.localScale = golpeEscalaBase * escala;
+                float alcance = remate ? c.remateRadio : c.golpeAlcance;
+                float mitad = golpe.sprite != null ? golpe.sprite.bounds.extents.x * golpe.transform.lossyScale.x : 0.5f;
+                float borde = run.ToWorldX(s.PeatonX) + s.Mira * alcance * run.Config.worldUnitsPerMeter;
+                golpe.transform.position = new Vector3(borde - s.Mira * mitad, y + altoPeaton * 0.62f, 0f);
                 var col = remate ? new Color(1f, 0.6f, 0.25f) : Color.white;
-                col.a = t;
+                col.a = golpeConecto ? t : t * 0.45f;
                 golpe.color = col;
             }
         }

@@ -260,8 +260,10 @@ namespace Zombineta.Core
         public float remateDerribo = 1.4f;
         [Tooltip("Segundos que dura el movimiento del golpe (para la vista).")]
         public float golpeDuracion = 0.18f;
-        [Tooltip("Metros que empuja el golpe.")]
-        public float golpeEmpuje = 2.5f;
+        [Tooltip("Metros que empuja cada golpe comun al zombie. Tiene que ser menos que lo que sobra entre el alcance y donde " +
+                 "suele quedar parado (cerca de 'zombieAlcance'): si lo manda mas lejos que 'golpeAlcance', el segundo golpe de la " +
+                 "cadena da al aire. El remate es el que lo manda lejos (remateEmpuje).")]
+        public float golpeEmpuje = 0.35f;
         [Tooltip("Segundos que queda frenado el zombie golpeado.")]
         public float golpeFreno = 0.5f;
         [Tooltip("Zombies a la vez en la pelea.")]

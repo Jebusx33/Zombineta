@@ -80,9 +80,9 @@ MonoBehaviour:
   arenaMedioAncho: 12
   peatonVelocidad: 6
   golpeAlcance: 1.6
-  golpeEnfriamiento: 0.35
-  golpeDuracion: 0.18
-  golpeEmpuje: 2.5
+  golpeEnfriamiento: 0.27
+  golpeDuracion: 0.15
+  golpeEmpuje: 0.35
   golpeFreno: 0.5
   zombiesEnArena: 8
   zombieVelocidadPelea: 2.2

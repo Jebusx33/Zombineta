@@ -1446,5 +1446,62 @@ namespace Zombineta.Tests
             Assert.IsFalse(sim.State.PremioBalasLleno);
             Assert.IsFalse(sim.State.PremioBateriaLleno);
         }
+
+        // --- Playtest de Axo, fase D: el golpe llega hasta donde se ve -------------------
+
+        [Test]
+        public void ThePunch_ReachesExactlyTheConfiguredDistance()
+        {
+            var c = Rapido();
+            var simDentro = SinNafta(c);
+            var dentro = Poner(simDentro, (c.golpeAlcance - 0.05f, 1));
+            var evDentro = Golpe(simDentro, 0f);
+
+            var simFuera = SinNafta(c);
+            Poner(simFuera, (c.golpeAlcance + 0.05f, 1));
+            var evFuera = Golpe(simFuera, 0f);
+
+            Assert.IsTrue((evDentro & RunEvent.Golpe) != 0, "justo dentro del alcance conecta");
+            Assert.IsTrue((evFuera & RunEvent.GolpeAlAire) != 0, "un poco mas lejos, al aire");
+        }
+
+        [Test]
+        public void TheThreeHitsOfTheChain_AllLandOnTheSameZombie_WithTheGameTuning()
+        {
+            // Con el empuje del juego, el golpeado queda a tiro del siguiente: la cadena conecta entera.
+            var c = Rapido();
+            c.golpeAlcance = 1.6f;
+            c.golpeEnfriamiento = 0.27f;
+            c.golpeEmpuje = 0.35f;
+            c.golpeFreno = 0.5f;
+            var sim = SinNafta(c);
+            var z = Poner(sim, (c.zombieAlcance, 1));   // donde se para a pegar
+
+            var e1 = Golpe(sim, 0f);
+            var e2 = Golpe(sim, 0.28f);
+            var e3 = Golpe(sim, 0.28f);
+
+            Assert.IsTrue((e1 & RunEvent.Golpe) != 0, "1.º conecta");
+            Assert.IsTrue((e2 & RunEvent.Golpe) != 0, "2.º conecta");
+            Assert.IsTrue((e3 & RunEvent.Remate) != 0, "3.º, el remate, conecta");
+            Assert.IsFalse(z[0].Alive, "tres golpes lo matan");
+        }
+
+        [Test]
+        public void ABigPush_BreaksTheChain_BecauseTheSecondHitFindsNobody()
+        {
+            // Lo que pasaba con 2,5 m de empuje por golpe: el segundo golpe daba al aire.
+            var c = Rapido();
+            c.golpeAlcance = 1.6f;
+            c.golpeEnfriamiento = 0.27f;
+            c.golpeEmpuje = 2.5f;
+            var sim = SinNafta(c);
+            Poner(sim, (c.zombieAlcance, 1));
+
+            Golpe(sim, 0f);
+            var e2 = Golpe(sim, 0.28f);
+
+            Assert.IsTrue((e2 & RunEvent.GolpeAlAire) != 0);
+        }
 }
 }

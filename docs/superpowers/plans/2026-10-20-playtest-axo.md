@@ -159,13 +159,36 @@ Verificado fuera de Unity: 264 tests en verde (8 nuevos: dispara el retroceso, g
 vuelve a su ritmo, un solo acierto, aciertos muy separados, fallos, enfriamiento, reinicio) y el
 juego compila.
 
-## Fase D — Golpes del beat'em up
+## Fase D — Golpes del beat'em up ✅ hecha (falta verla en Play)
 
 - Alinear el momento en que el golpe conecta con el dibujo (hoy conecta al apretar, y el barrido
   llega a su punto más lejano a la mitad de `golpeDuracion`): el impacto pasa al pico del
   barrido, o el alcance se achica a lo visible. Se prueba con tests de tiempo.
 - Atacar un poco más rápido: bajar `golpeEnfriamiento` (0,35 en el asset) y/o `golpeDuracion`.
 - Combos extra: **al final**, como pidió.
+
+**Lo hecho**
+- **La colisión no estaba "más adelante" que el dibujo, el dibujo se quedaba corto:** el golpe
+  conecta hasta `golpeAlcance` (1,6 m) medido desde ella, pero el barrido se dibujaba centrado a
+  1,1 m (más el avance del cuerpo). Ahora el barrido termina justo donde termina el golpe: el
+  borde de adelante queda en `golpeAlcance` y, en el remate, en `remateRadio`. Lo que se ve
+  tocado es lo que se golpea. Test nuevo del borde del alcance.
+- **Se nota si pegó o no:** el golpe que da en alguien se ve pleno; el que va al aire sale más
+  chico (80 %) y apagado (45 %). Antes se veían igual.
+- **Un poco más rápido:** `golpeEnfriamiento` 0,35 → 0,27 s y `golpeDuracion` 0,18 → 0,15 s (en
+  `GameConfig` y `TutorialConfig`). La cadena de 3 golpes tarda ~0,54 s en vez de ~0,7 s. La pausa
+  del remate (0,55 s) y la ventana de la cadena no cambian.
+- **El empuje rompía la cadena (lo detectó el equipo):** cada golpe común mandaba al zombie
+  2,5 m hacia atrás de un salto (`golpeEmpuje`), y el alcance es 1,6 m: un zombie parado a pegar
+  (~1,1 m) quedaba a 3,6 m y el 2.º golpe daba al aire, salvo que ella caminara detrás. Ahora el
+  empuje es de **0,35 m** (el pesado, con su resistencia, casi no se mueve): el golpeado se
+  tambalea en su lugar (sigue frenado 0,5 s) y los 3 golpes de la cadena conectan sobre el mismo
+  zombie. El que lo manda lejos es el remate (`remateEmpuje` 3,5 m). Tests nuevos: la cadena
+  entera conecta con el empuje del juego, y con 2,5 m el 2.º golpe da al aire (el caso de antes).
+  Si se quiere más "sacudida" en cada golpe, es mejor la animación del golpeado que el empuje.
+- Combos nuevos: queda para el final, como se pidió.
+
+Verificado fuera de Unity: 267 tests en verde y el juego compila.
 
 ## Fase E — Zombies que saltan (cuando llegue la animación)
 
