@@ -15,6 +15,11 @@ namespace Zombineta.Enemies
         [Tooltip("Multiplica la velocidad base de la horda. Mas de 1 = se despega y va de puntero.")]
         public float speedMultiplier = 1f;
 
+        [Min(0f)]
+        [Tooltip("Lo mismo pero para la pelea a pie. 0 = usa 'speedMultiplier'. Sirve para que el que corre en la moto " +
+                 "tambien se mueva como corre cuando pelea a pie, sin acelerar a la horda de la moto.")]
+        public float speedMultiplierAPie = 0f;
+
         [Range(0f, 1f)]
         [Tooltip("Probabilidad de morir por cada bala. Menos de 1 = a veces encaja el tiro y sigue.")]
         public float deathChance = 0.85f;

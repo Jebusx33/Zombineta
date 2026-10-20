@@ -25,6 +25,7 @@ MonoBehaviour:
     scale: 1
   - name: Corredor
     speedMultiplier: 1.35
+    speedMultiplierAPie: 1.85
     deathChance: 1
     staggerOnHit: 0
     ramStun: 0

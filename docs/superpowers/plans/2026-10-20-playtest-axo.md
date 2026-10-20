@@ -226,10 +226,44 @@ Diseño propuesto (a confirmar, ver preguntas):
 > - Después de saltar (o de ser esquivados) quedan en el piso y **caminan lento / se arrastran**,
 >   como las oleadas siguientes.
 
+> **Revisión de la animación del salto:** el equipo vio que el zombie "quedaba suspendido"
+> antes de caer y que el tamaño no coincidía con las otras animaciones. Qué se encontró y se corrigió:
+>
+> - **Suspendido:** en la hoja, los cuadros 9 a 14 tienen al zombie casi a la misma altura sobre
+>   el piso (0,22–0,36 m) y recién el 15 toca el suelo. Se usaban 11 cuadros para el vuelo, así que
+>   esos 6 cuadros "flotando" duraban ~0,4 s, y los cuadros 15 a 17 (ya tocando el piso) se
+>   dibujaban mientras todavía avanzaba en el aire: patinaba. Ahora el vuelo son los cuadros 7 a
+>   14 (**8**), y el **cuadro 15 (el pie tocando el piso) arranca justo cuando la simulación lo hace
+>   caer**. Además el cuerpo sigue un **arco** parejo (`saltoAltura` = 1 m): sube, llega al máximo a
+>   mitad del vuelo (cuadros de brazos y piernas recogidos) y baja hasta tocar el piso al caer. Como
+>   los cuadros ya traen su propia altura, al arco se le resta la que cada cuadro ya tiene. En el
+>   aire no proyecta sombra desde los pies (como la moto); si un balazo lo corta, cae rápido en vez
+>   de aparecer de golpe en el piso.
+> - **Tamaño:** la hoja se había importado a 181 píxeles por unidad, calculado contra el cuadro de
+>   caminar (que está encorvado). El zombie parado de la hoja de salto mide 217 px, igual que el de
+>   ataque (216) y hurt (223), que usan **165**: quedaba ~9 % más chico. Ahora usa 165, igual que
+>   ataque, hurt y caminar.
+> - **Del correr al agacharse:** el cuadro 0–1 (de pie) hacía que se enderezara antes de agacharse;
+>   ahora arranca en el cuadro 2 (`saltoPrimerCuadro`). Y al agacharse **ya no frena en seco**: sigue
+>   deslizándose hacia ella con la inercia de la carrera (que se va frenando) y deja siempre al menos
+>   2 m de vuelo. Por eso empieza a agacharse desde más lejos (`saltoDistanciaMax` 5,5 → 8 m).
+> - Recién golpeado mientras aterriza, se ve la animación del golpe y no la del aterrizaje.
+> - **Segundo ajuste (caer → caminar):** en los últimos cuadros del vuelo el dibujo todavía traía los
+>   pies a ~0,2 m del piso y el arco ya había bajado, y el cuerpo se quedaba a la altura del dibujo
+>   hasta el cuadro de aterrizaje (un instante "colgado"). Ahora el cuerpo baja lo que haga falta
+>   para tocar el piso justo al caer. El arco es un poco más bajo (`saltoAltura` 1 → 0,9 m), el
+>   aterrizaje dura menos (`saltoAterrizaje` 1 → 0,85 s) y se usan 8 cuadros del aterrizaje
+>   (`saltoCuadrosAterrizar`): se dejan afuera los dos últimos, el zombie parado quieto, así del
+>   aterrizaje pasa derecho a caminar sin quedarse inmóvil.
+> - **Corredor (azul) a pie:** en las oleadas 2 y 3 se movía a 2,2 × 1,35 ≈ 3 m/s pero con la
+>   animación de correr a pleno, y parecía patinar. Nuevo `speedMultiplierAPie` por tipo
+>   (en `Zombies.asset`: Corredor 1,85 → ≈ 4 m/s a pie). La horda de la moto no cambia
+>   (`speedMultiplier` sigue en 1,35).
+
 - **Cuándo salta:** solo los zombies de la **primera oleada** de cada pelea (la transición de
   correr a pelear a pie) y una sola vez cada uno. Si ya no salta (oleadas siguientes) camina como
   siempre. Se apaga con `GameConfig.saltoActivo`.
-- **Cómo es:** al acercarse a entre 5,5 y 1 m, el zombie **se agacha** (0,45 s,
+- **Cómo es:** al acercarse a entre 8 y 1 m, el zombie **se agacha** (0,45 s,
   con un aro rojo en el piso donde va a caer, que se achica), **vuela** (0,7 s) y **cae** un poco
   antes de ella, de su lado. El punto de caída la sigue mientras se agacha y queda **fijo al
   despegar**: se esquiva alejándose más de 1,3 m (`saltoRadio`) o cambiando de carril. A lo sumo
@@ -251,7 +285,7 @@ Diseño propuesto (a confirmar, ver preguntas):
   celda (256 px) y quedan cortados; conviene ampliar la celda o acortar el brazo en esos cuadros.
   Sin sonido de salto/aterrizaje todavía (faltan clips).
 
-Verificado fuera de Unity: 289 tests en verde con los del salto (primera oleada, ventana de
+Verificado fuera de Unity: 290 tests en verde con los del salto (primera oleada, ventana de
 distancia, agacharse–vuelo–caída, daño, esquivar, golpe y balazo en el aire, corte al agacharse,
 tope de simultáneos) y los de la transición (los más cercanos de la horda siguen con su carril y
 corren, acotados a la zona de entrada, saltan desde otro carril, el que espera no pasa de largo,

@@ -110,8 +110,11 @@ MonoBehaviour:
       - {fileID: -1647343540, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
       - {fileID: -38522803, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
       - {fileID: 525316139, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
-      saltoCuadrosAgachar: 7
-      saltoCuadrosVuelo: 11
+      saltoPrimerCuadro: 2
+      saltoCuadrosAgachar: 5
+      saltoCuadrosVuelo: 8
+      saltoCuadrosAterrizar: 8
+      saltoAltura: 0.9
       attack:
       - {fileID: 242919145, guid: cbfdab1e8e8948319bb283b377b8f2e7, type: 3}
       - {fileID: 1151546559, guid: cbfdab1e8e8948319bb283b377b8f2e7, type: 3}
@@ -301,8 +304,11 @@ MonoBehaviour:
       - {fileID: -1647343540, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
       - {fileID: -38522803, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
       - {fileID: 525316139, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
-      saltoCuadrosAgachar: 7
-      saltoCuadrosVuelo: 11
+      saltoPrimerCuadro: 2
+      saltoCuadrosAgachar: 5
+      saltoCuadrosVuelo: 8
+      saltoCuadrosAterrizar: 8
+      saltoAltura: 0.9
       attack:
       - {fileID: 242919145, guid: cbfdab1e8e8948319bb283b377b8f2e7, type: 3}
       - {fileID: 1151546559, guid: cbfdab1e8e8948319bb283b377b8f2e7, type: 3}
@@ -492,8 +498,11 @@ MonoBehaviour:
       - {fileID: -1647343540, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
       - {fileID: -38522803, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
       - {fileID: 525316139, guid: fa25dd4d67514a78b6dbe2f1caa16d6e, type: 3}
-      saltoCuadrosAgachar: 7
-      saltoCuadrosVuelo: 11
+      saltoPrimerCuadro: 2
+      saltoCuadrosAgachar: 5
+      saltoCuadrosVuelo: 8
+      saltoCuadrosAterrizar: 8
+      saltoAltura: 0.9
       attack:
       - {fileID: 242919145, guid: cbfdab1e8e8948319bb283b377b8f2e7, type: 3}
       - {fileID: 1151546559, guid: cbfdab1e8e8948319bb283b377b8f2e7, type: 3}

@@ -36,6 +36,12 @@ namespace Zombineta.Auxilio
         const float Estacionamiento = 80f;
         // Metros hacia atras que todavia cuentan como "delante" en los golpes: pegado a ella, aunque este apenas detras.
         const float AtrasTolerado = 0.3f;
+        // Metros de vuelo que le quedan como minimo al zombie que salta, aunque se deslice agachado.
+        const float MinimoDeVuelo = 2f;
+
+        /// <summary>Cuanto se multiplica la velocidad base a pie: la de la pelea de su tipo, o la de la horda si no la tiene.</summary>
+        static float MultiplicadorAPie(Zombineta.Enemies.ZombieType t) =>
+            t.speedMultiplierAPie > 0f ? t.speedMultiplierAPie : t.speedMultiplier;
         // Media anchura de la furgoneta al arrollar, en metros.
         const float AnchoFurgoneta = 2.5f;
 
@@ -623,7 +629,7 @@ namespace Zombineta.Auxilio
         public float VelocidadDe(ZombieUnit u) =>
             u.PuedeSaltar && u.SaltoFase == 0
                 ? c.saltoVelocidadCarrera   // los que todavia tienen que saltar vienen corriendo
-                : c.zombieVelocidadPelea * h.Type(u.Type).speedMultiplier * (OleadaActual != null ? OleadaActual.velocidad : 1f);
+                : c.zombieVelocidadPelea * MultiplicadorAPie(h.Type(u.Type)) * (OleadaActual != null ? OleadaActual.velocidad : 1f);
 
 
         /// <summary>Si el zombie esta en un carril lo bastante cerca del de ella para pegarse.</summary>
@@ -785,7 +791,13 @@ namespace Zombineta.Auxilio
             switch (u.SaltoFase)
             {
                 case 1:
-                    // Agachado: el punto de caida la sigue, pero al despegar queda fijo y se puede esquivar.
+                {
+                    // Agachado sigue deslizandose hacia ella con la inercia de la carrera (se frena de a poco), pero
+                    // deja siempre un tramo de vuelo. El punto de caida la sigue; al despegar queda fijo y se puede esquivar.
+                    float dir = s.PeatonX >= u.X ? 1f : -1f;
+                    float hastaElPunto = Mathf.Abs(PuntoDeCaida(u) - u.X);
+                    float inercia = c.saltoVelocidadCarrera * (1f - Mathf.Clamp01(u.SaltoT / Mathf.Max(0.01f, c.saltoAgacharse)));
+                    u.X += dir * Mathf.Min(inercia * dt, Mathf.Max(0f, hastaElPunto - MinimoDeVuelo));
                     u.SaltoX1 = PuntoDeCaida(u);
                     u.SaltoLane = s.Lane;
                     if (u.SaltoT >= c.saltoAgacharse)
@@ -796,6 +808,7 @@ namespace Zombineta.Auxilio
                         u.Lane = u.SaltoLane;   // salta hacia el carril de ella (la vista lo desliza)
                     }
                     return RunEvent.None;
+                }
 
                 case 2:
                 {

@@ -31,10 +31,20 @@ namespace Zombineta.Enemies
                  "hoja. El salto de la simulacion elige el cuadro segun la fase y el tiempo. Las alturas del vuelo ya vienen " +
                  "dibujadas en los cuadros.")]
         public Sprite[] salto;
-        [Tooltip("Cuantos de los primeros cuadros de 'salto' son el agacharse (de pie hasta encogido, antes de despegar).")]
-        [Min(1)] public int saltoCuadrosAgachar = 7;
-        [Tooltip("Cuantos de los siguientes cuadros son el vuelo. Los que quedan son el aterrizaje y el levantarse.")]
-        [Min(1)] public int saltoCuadrosVuelo = 11;
+        [Tooltip("Cuadros de 'salto' que se saltean al principio: los de pie. El zombie viene corriendo y se agacha " +
+                 "desde ya, sin enderezarse primero.")]
+        [Min(0)] public int saltoPrimerCuadro = 2;
+        [Tooltip("Cuantos cuadros, desde el primero, son el agacharse (antes de despegar).")]
+        [Min(1)] public int saltoCuadrosAgachar = 5;
+        [Tooltip("Cuantos cuadros siguientes son el vuelo, hasta que toca el piso. Los que quedan son el aterrizaje y el " +
+                 "levantarse. El primero de los de aterrizaje tiene que ser el del pie tocando el piso.")]
+        [Min(1)] public int saltoCuadrosVuelo = 8;
+        [Tooltip("Altura maxima del salto, en metros de mundo. Los cuadros del vuelo ya vienen levantados del piso a su " +
+                 "manera; esto les da un arco parejo (sube, llega a esta altura y baja hasta tocar el piso justo al caer).")]
+        [Min(0f)] public float saltoAltura = 0.9f;
+        [Tooltip("Cuantos cuadros del aterrizaje se usan (desde el del pie tocando el piso). 0 = todos los que quedan. Los ultimos de la " +
+                 "hoja son el zombie parado quieto: sin usarlos, del aterrizaje pasa derecho a caminar, sin quedarse inmovil.")]
+        [Min(0)] public int saltoCuadrosAterrizar = 8;
 
         [Tooltip("Preparando el ataque a pie: se reparte entre el inicio de la preparacion y el golpe. " +
                  "Si esta, el aviso (inclinacion, estocada y color rojo) ya viene dibujado y no se simula.")]

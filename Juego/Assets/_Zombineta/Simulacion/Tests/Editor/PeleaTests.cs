@@ -1825,5 +1825,42 @@ namespace Zombineta.Tests
             Assert.GreaterOrEqual(conTope, 12f, "la horda acompana a la moto mientras frena");
             Assert.Less(sinTope, conTope, "sin el tope se le acerca mas");
         }
+
+        [Test]
+        public void CrouchingItKeepsSlidingTowardHer_ButAlwaysLeavesRoomToFly()
+        {
+            var sim = SinNafta(ConSaltos());
+            var z = Saltarin(sim, 5.5f);
+            float px = sim.State.PeatonX;
+
+            sim.Tick(Quieta, Dt);                    // se agacha
+            float antes = z.X;
+            Avanzar(sim, 0.46f, Quieta);             // despega
+
+            Assert.AreEqual(2, z.SaltoFase);
+            Assert.Less(z.X, antes, "avanzo agachado con la inercia de la carrera");
+            Assert.GreaterOrEqual(Mathf.Abs(z.SaltoX1 - z.X), 1.9f, "y le queda tramo de vuelo");
+            Assert.Less(Mathf.Abs(z.X - px), 5.5f);
+        }
+
+        [Test]
+        public void ARunnerOnFoot_MovesAsFastAsItLooks_WithoutSpeedingUpTheHordeOnTheBike()
+        {
+            var c = Rapido();
+            c.zombieVelocidadPelea = 2f;
+            var roster = ScriptableObject.CreateInstance<Zombineta.Enemies.ZombieRoster>();
+            roster.types.Add(new Zombineta.Enemies.ZombieType { name = "Comun", speedMultiplier = 1f, deathChance = 1f });
+            roster.types.Add(new Zombineta.Enemies.ZombieType { name = "Corredor", speedMultiplier = 1.35f, speedMultiplierAPie = 2f, deathChance = 1f });
+            c.zombies = roster;
+            var sim = SinNafta(c);
+            var z = UnoSolo(sim, 5f);
+
+            z.Type = 1;
+            Assert.AreEqual(4f, sim.Pelea.VelocidadDe(z), 0.001f, "a pie: 2 x speedMultiplierAPie");
+            Assert.AreEqual(1.35f, sim.Horde.Type(1).speedMultiplier, 0.001f, "en la moto sigue igual");
+
+            z.Type = 0;
+            Assert.AreEqual(2f, sim.Pelea.VelocidadDe(z), 0.001f, "sin multiplicador a pie usa el de siempre");
+        }
 }
 }

@@ -59,6 +59,7 @@ namespace Zombineta.Enemies
         SombraProyectada[] shadows;
         int[] generations;
         float[] lastX;
+        float[] saltoAlto;     // metros que lleva levantado el zombie que salta (se alisa para que no pegue saltos)
         float[] caminata;      // fraccion del ciclo de la caminata lenta (0..1)
         SpriteRenderer[] avisos;
         Sprite aroSprite;
@@ -113,6 +114,7 @@ namespace Zombineta.Enemies
             shadows = new SombraProyectada[count];
             generations = new int[count];
             lastX = new float[count];
+            saltoAlto = new float[count];
             caminata = new float[count];
             avisos = new SpriteRenderer[count];
             laneVisual = new float[count];
@@ -231,6 +233,7 @@ namespace Zombineta.Enemies
                 {
                     generations[i] = u.Generation;
                     lastX[i] = u.X;
+                    saltoAlto[i] = 0f;
                     caminata[i] = 0f;
                     laneVisual[i] = u.Lane;
                     wasAlive[i] = true;
@@ -324,7 +327,11 @@ namespace Zombineta.Enemies
                 bool derribado = pelea && u.Alive && u.Derribado > 0f && u.DerribadoTotal > 0f;
                 bool derriboDibujado = derribado && lookActual != null && lookActual.knockdown != null && lookActual.knockdown.Length > 0;
                 // Saltando sobre ella (primera oleada): el cuadro sale de la fase y del tiempo del salto de la simulacion.
-                bool saltoDibujado = pelea && u.Alive && u.SaltoFase != 0 && lookActual != null && lookActual.salto != null && lookActual.salto.Length > 0;
+                // Recien golpeado en el piso (aterrizando) se ve el golpe, no el aterrizaje.
+                bool saltoDibujado = pelea && u.Alive && u.SaltoFase != 0 && !(u.SaltoFase == 3 && u.Stagger > 0f) &&
+                                     lookActual != null && lookActual.salto != null && lookActual.salto.Length > 0;
+                float saltoObjetivo = 0f;   // cuanto se sube o baja el cuerpo respecto del piso
+                float saltoNeto = 0f;       // altura real de los pies sobre el piso
                 bool anunciaSalto = pelea && u.Alive && (u.SaltoFase == 1 || u.SaltoFase == 2);
 
                 if (preparando && !ataqueDibujado)
@@ -422,22 +429,40 @@ namespace Zombineta.Enemies
                             sprites[i].sprite = look.knockdown[Mathf.Min(n - 1, Mathf.FloorToInt(k * n))];
                         }
 
-                        // Saltando sobre ella: agacharse, vuelo y aterrizaje, segun la fase de la simulacion.
+                        // Saltando sobre ella: agacharse, vuelo y aterrizaje, segun la fase de la simulacion. Los cuadros
+                        // del vuelo ya vienen levantados del piso (cada uno a su altura): para que el arco sea parejo,
+                        // la altura que se le agrega es la del arco menos la que el cuadro ya trae. Asi sube, llega a
+                        // 'saltoAltura' y baja hasta tocar el piso justo cuando la simulacion lo hace caer.
                         if (saltoDibujado)
                         {
                             var cfg = run.Config;
                             int n = look.salto.Length;
-                            int agachar = Mathf.Clamp(look.saltoCuadrosAgachar, 1, Mathf.Max(1, n - 2));
-                            int vuelo = Mathf.Clamp(look.saltoCuadrosVuelo, 1, Mathf.Max(1, n - agachar - 1));
-                            int aterrizar = Mathf.Max(1, n - agachar - vuelo);
+                            int primero = Mathf.Clamp(look.saltoPrimerCuadro, 0, Mathf.Max(0, n - 3));
+                            int agachar = Mathf.Clamp(look.saltoCuadrosAgachar, 1, Mathf.Max(1, n - primero - 2));
+                            int vuelo = Mathf.Clamp(look.saltoCuadrosVuelo, 1, Mathf.Max(1, n - primero - agachar - 1));
+                            int aterrizar = Mathf.Max(1, n - primero - agachar - vuelo);
+                            if (look.saltoCuadrosAterrizar > 0)
+                                aterrizar = Mathf.Min(aterrizar, look.saltoCuadrosAterrizar);
                             int cuadro;
                             if (u.SaltoFase == 1)
-                                cuadro = Mathf.Min(agachar - 1, Mathf.FloorToInt(u.SaltoT / Mathf.Max(0.01f, cfg.saltoAgacharse) * agachar));
+                                cuadro = primero + Mathf.Min(agachar - 1, Mathf.FloorToInt(u.SaltoT / Mathf.Max(0.01f, cfg.saltoAgacharse) * agachar));
                             else if (u.SaltoFase == 2)
-                                cuadro = agachar + Mathf.Min(vuelo - 1, Mathf.FloorToInt(u.SaltoT / Mathf.Max(0.01f, cfg.saltoVuelo) * vuelo));
+                                cuadro = primero + agachar + Mathf.Min(vuelo - 1, Mathf.FloorToInt(u.SaltoT / Mathf.Max(0.01f, cfg.saltoVuelo) * vuelo));
                             else
-                                cuadro = agachar + vuelo + Mathf.Min(aterrizar - 1, Mathf.FloorToInt(u.SaltoT / Mathf.Max(0.01f, cfg.saltoAterrizaje) * aterrizar));
-                            sprites[i].sprite = look.salto[Mathf.Clamp(cuadro, 0, n - 1)];
+                                cuadro = primero + agachar + vuelo + Mathf.Min(aterrizar - 1, Mathf.FloorToInt(u.SaltoT / Mathf.Max(0.01f, cfg.saltoAterrizaje) * aterrizar));
+                            var elegido = look.salto[Mathf.Clamp(cuadro, 0, n - 1)];
+                            sprites[i].sprite = elegido;
+
+                            if (u.SaltoFase == 2)
+                            {
+                                float t = Mathf.Clamp01(u.SaltoT / Mathf.Max(0.01f, cfg.saltoVuelo));
+                                float arco = look.saltoAltura * 4f * t * (1f - t);
+                                float yaTrae = Mathf.Max(0f, elegido.bounds.min.y) * bodies[i].localScale.y;
+                                // Sin tope en cero: en los ultimos cuadros el dibujo todavia trae los pies en el aire y el arco
+                                // ya llego abajo; el cuerpo baja lo que haga falta para tocar el piso justo al caer.
+                                saltoObjetivo = arco - yaTrae;
+                                saltoNeto = arco;
+                            }
                         }
 
                         // Todos miden lo mismo; el tipo se distingue por un tinte suave (Zombies.asset).
@@ -470,10 +495,18 @@ namespace Zombineta.Enemies
                     sprites[i].sortingLayerID = LaneSorting.GameLayerId;
                 }
 
+                // El salto levanta el cuerpo. Sube tal cual la curva; si algo lo corta (un balazo) cae rapido, no de golpe.
+                saltoAlto[i] = saltoObjetivo >= saltoAlto[i]
+                    ? saltoObjetivo
+                    : Mathf.MoveTowards(saltoAlto[i], saltoObjetivo, 8f * Time.deltaTime);
+                if (saltoAlto[i] != 0f)
+                    bodies[i].position += Vector3.up * saltoAlto[i];
+
                 if (shadows[i] != null)
                 {
-                    // Debajo de todo lo de su carril, y solo de pie: el caido ya esta en el piso.
-                    shadows[i].Visible = u.Alive;
+                    // Debajo de todo lo de su carril, y solo de pie: el caido ya esta en el piso. En el aire no
+                    // proyecta desde los pies (como la moto).
+                    shadows[i].Visible = u.Alive && saltoNeto < 0.08f && saltoAlto[i] < 0.08f;
                     shadows[i].Orden = LaneSorting.Order(laneVisual[i], SortSlot.Shadow);
                 }
             }

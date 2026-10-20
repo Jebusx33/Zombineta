@@ -130,8 +130,9 @@ namespace Zombineta.Core
                  "de correr a pelear a pie. Un golpe en el aire los mata; un balazo les saca 1 golpe y los tira; si no esquiva, " +
                  "le cae encima y le saca 1 de vida.")]
         public bool saltoActivo = true;
-        [Tooltip("Distancia maxima a la que un zombie empieza a agacharse para saltar, en metros.")]
-        [Min(0f)] public float saltoDistanciaMax = 5.5f;
+        [Tooltip("Distancia maxima a la que un zombie empieza a agacharse para saltar, en metros. Al agacharse sigue deslizandose " +
+                 "hacia ella con lo que traia de la carrera, asi que el salto sale de bastante mas cerca.")]
+        [Min(0f)] public float saltoDistanciaMax = 8f;
         [Tooltip("Distancia minima: mas cerca que esto ya no salta, ataca.")]
         [Min(0f)] public float saltoDistanciaMin = 1f;
         [Tooltip("Metros por segundo a los que corren hacia ella los zombies de la primera oleada hasta saltar: es la misma " +
@@ -146,8 +147,8 @@ namespace Zombineta.Core
         [Min(0.05f)] public float saltoAgacharse = 0.45f;
         [Tooltip("Segundos que dura el salto en el aire. Se lo puede golpear o esquivar.")]
         [Min(0.05f)] public float saltoVuelo = 0.7f;
-        [Tooltip("Segundos que queda en el piso al caer (se levanta despues). Si le cayo encima a ella, se recupera antes.")]
-        [Min(0f)] public float saltoAterrizaje = 1f;
+        [Tooltip("Segundos que dura el aterrizaje y el levantarse, hasta que echa a caminar. Si le cayo encima a ella, se recupera antes.")]
+        [Min(0f)] public float saltoAterrizaje = 0.85f;
         [Tooltip("Metros alrededor del punto de caida donde le pega a ella. Esquivarlo es alejarse mas que esto.")]
         [Min(0f)] public float saltoRadio = 1.3f;
         [Tooltip("Metros antes de ella (de su lado) donde cae: no se le sube encima.")]
