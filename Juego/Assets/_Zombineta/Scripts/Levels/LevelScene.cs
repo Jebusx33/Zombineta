@@ -365,6 +365,9 @@ namespace Zombineta.Juego.Levels
 
         // --- Vista -------------------------------------------------------------------
 
+        static bool EsRecurso(LevelEntryKind kind) =>
+            kind == LevelEntryKind.Fuel || kind == LevelEntryKind.Battery || kind == LevelEntryKind.Ammo;
+
         void Update()
         {
             if (Application.isPlaying)
@@ -373,11 +376,14 @@ namespace Zombineta.Juego.Levels
                     return;
                 var runtime = run.Level.Items;
                 bool sinBidones = LevelRuntime.BidonesBloqueados(run.Config, run.Sim.State);
+                // A pie no hay nafta, baterias ni balas del recorrido que agarrar: no se ven.
+                bool peleando = run.Sim.State.Phase == RunPhase.Pelea;
                 foreach (var (item, index, shadow, look) in bound)
                 {
                     if (item == null)
                         continue;
-                    bool visible = !runtime[index].Consumed && !(sinBidones && item.kind == LevelEntryKind.Fuel);
+                    bool visible = !runtime[index].Consumed && !(sinBidones && item.kind == LevelEntryKind.Fuel) &&
+                                   !(peleando && EsRecurso(item.kind));
                     // Con prefab, la vista vive en "Vista" (hijo): apagar ese GameObject entero
                     // (sprite, luz y sombra propia del prefab juntos). Sin prefab, el sprite sigue
                     // en el propio item, como antes.

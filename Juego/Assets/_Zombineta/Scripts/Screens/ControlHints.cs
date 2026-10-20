@@ -66,9 +66,17 @@ namespace Zombineta.Juego.Screens
         }
 
         /// <summary>Ayuda de la pelea a pie, con los controles del esquema que se esta usando.</summary>
-        public static string TextForPelea(ControlScheme scheme) =>
-            "Mover: " + Accion("Mover", scheme) + "   ·   Golpe: " + Accion("Golpe", scheme) +
-            " (3 seguidos = remate)   ·   Disparo: " + Accion("Fire", scheme);
+        /// <param name="colorClave">Color HTML ("#FF4D40") para resaltar las teclas de golpe y disparo, o null para texto liso.</param>
+        public static string TextForPelea(ControlScheme scheme, string colorClave = null)
+        {
+            string golpe = Resaltar(Accion("Golpe", scheme), colorClave);
+            string disparo = Resaltar(Accion("Fire", scheme), colorClave);
+            return "Mover: " + Accion("Mover", scheme) + "   ·   Golpe: " + golpe +
+                   " (3 seguidos = remate)   ·   Disparo: " + disparo;
+        }
+
+        static string Resaltar(string tecla, string color) =>
+            string.IsNullOrEmpty(color) || string.IsNullOrEmpty(tecla) ? tecla : "<b><color=" + color + ">" + tecla + "</color></b>";
 
         /// <summary>La tecla o el boton que hace esa accion en el esquema dado (o null si no existe).</summary>
         public static string Accion(string accion, ControlScheme scheme)

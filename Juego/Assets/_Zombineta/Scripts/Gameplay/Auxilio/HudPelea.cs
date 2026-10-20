@@ -22,8 +22,10 @@ namespace Zombineta.Auxilio
         [SerializeField] float segundosCombo = 0.9f;
         [Tooltip("Segundos que dura el destello al recibir un golpe.")]
         [SerializeField] float segundosGolpeRecibido = 0.35f;
-        [Tooltip("Segundos que la ayuda de controles queda grande al empezar la pelea; despues queda chica.")]
-        [SerializeField] float segundosAyuda = 7f;
+        [Tooltip("Tamano de la letra de la ayuda de controles (fijo, no se achica).")]
+        [SerializeField] int tamanoAyuda = 38;
+        [Tooltip("Color de las teclas clave (golpe y disparo) en la ayuda de controles.")]
+        [SerializeField] Color colorTeclasClave = new Color(1f, 0.3f, 0.25f);
         [Tooltip("Segundos que queda en pantalla la nota de la pelea con sus premios.")]
         [SerializeField] float segundosNota = 3f;
         [Tooltip("Segundos que queda el aviso de lo recogido del suelo (botiquin, balas).")]
@@ -33,7 +35,6 @@ namespace Zombineta.Auxilio
         Image barra, fondoBarra, rojo;
         GameObject panel;
         float cartelRestante;
-        float ayudaDesde = -1f;
         float comboRestante;
         float notaRestante;
         float notaOpacidadPremios = 1f;
@@ -168,7 +169,6 @@ namespace Zombineta.Auxilio
             if ((ev & RunEvent.PeleaEmpieza) != 0)
             {
                 Mostrar("¡AGUANTÁ!", new Color(1f, 0.6f, 0.2f));
-                ayudaDesde = Time.unscaledTime;
             }
             if ((ev & RunEvent.OleadaNueva) != 0 && run != null && run.Sim != null)
             {
@@ -179,7 +179,6 @@ namespace Zombineta.Auxilio
             if ((ev & RunEvent.PeleaReintenta) != 0)
             {
                 Mostrar("¡OTRA VEZ!", new Color(1f, 0.5f, 0.5f));
-                ayudaDesde = Time.unscaledTime;
             }
             if ((ev & RunEvent.AuxilioTermina) != 0)
             {
@@ -188,6 +187,8 @@ namespace Zombineta.Auxilio
             }
             if ((ev & RunEvent.BotiquinRecogido) != 0)
                 MostrarRecogida("+1 ♥", new Color(0.4f, 1f, 0.5f));
+            if ((ev & RunEvent.DropLleno) != 0 && run != null && run.Sim != null)
+                MostrarRecogida(run.Sim.State.DropLlenoKind == 0 ? "VIDA LLENA" : "MUNICIÓN LLENA", new Color(1f, 1f, 1f));
             if ((ev & RunEvent.BalasRecogidas) != 0 && run != null)
                 MostrarRecogida("+" + run.Config.dropBalasCantidad + " BALAS", new Color(1f, 0.85f, 0.3f));
             if ((ev & RunEvent.AuxilioLlega) != 0)
@@ -227,8 +228,12 @@ namespace Zombineta.Auxilio
             var partes = new System.Collections.Generic.List<string>();
             if (s.PremioBalas > 0)
                 partes.Add("+" + s.PremioBalas + (s.PremioBalas == 1 ? " BALA" : " BALAS"));
+            else if (s.PremioBalasLleno)
+                partes.Add("MUNICIÓN LLENA");
             if (s.PremioBateria > 0.5f && run.Config.batteryMax > 0f)
                 partes.Add("+" + Mathf.RoundToInt(s.PremioBateria / run.Config.batteryMax * 100f) + "% BATERÍA");
+            else if (s.PremioBateriaLleno)
+                partes.Add("BATERÍA LLENA");
             premios.text = partes.Count > 0 ? string.Join("   ", partes) : "SIN PREMIO";
             notaOpacidadPremios = partes.Count > 0 ? 1f : 0.6f;
             notaRestante = segundosNota;
@@ -370,24 +375,21 @@ namespace Zombineta.Auxilio
         }
 
         /// <summary>
-        /// Los primeros segundos de la pelea, la ayuda de controles se ve grande y entera; despues
-        /// queda como una linea chica y translucida, para quien se olvide.
+        /// La ayuda de controles de la pelea: solo en la primera (ahi se aprende), todo el tiempo que
+        /// dura (incluido el reintento), con el mismo tamano y las teclas de golpe y disparo en rojo.
+        /// En las peleas siguientes ya no sale.
         /// </summary>
         void ActualizarControles(bool pelea)
         {
-            controles.enabled = pelea && !run.Sim.State.FurgonetaEnCamino;
+            bool primera = run.Sim.State.AyudasUsadas <= 1;
+            controles.enabled = pelea && primera && !run.Sim.State.FurgonetaEnCamino;
             if (!controles.enabled)
                 return;
 
             var scheme = InputDeviceTracker.Shared != null ? InputDeviceTracker.Shared.Current : ControlScheme.KeyboardMouse;
-            controles.text = ControlHints.TextForPelea(scheme);
-
-            float desde = ayudaDesde >= 0f ? Time.unscaledTime - ayudaDesde : float.MaxValue;
-            float k = Mathf.Clamp01((segundosAyuda - desde) / 1.5f); // 1 al principio, baja en el ultimo segundo y medio
-            controles.fontSize = Mathf.RoundToInt(Mathf.Lerp(24f, 40f, k));
-            var col = controles.color;
-            col.a = Mathf.Lerp(0.55f, 1f, k);
-            controles.color = col;
+            controles.supportRichText = true;
+            controles.fontSize = tamanoAyuda;
+            controles.text = ControlHints.TextForPelea(scheme, "#" + ColorUtility.ToHtmlStringRGB(colorTeclasClave));
         }
 
         static Text NuevoTexto(string nombre, Transform padre, Font font, int tam, TextAnchor anclaje, Vector2 pos, Vector2 tamano)

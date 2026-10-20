@@ -112,6 +112,11 @@ namespace Zombineta.Core
         public NotaPelea Nota;
         public int PremioBalas;
         public float PremioBateria;
+        /// <summary>El premio tenia balas (o bateria) pero ya estaba todo lleno: no entro nada.</summary>
+        public bool PremioBalasLleno;
+        public bool PremioBateriaLleno;
+        /// <summary>Del ultimo aviso de "lleno": 0 = botiquin (vida llena), 1 = balas (cargador lleno).</summary>
+        public int DropLlenoKind;
         /// <summary>Golpes que aguanta en la pelea. Solo cuenta mientras pelea.</summary>
         public int Vida;
         /// <summary>Segundos que faltan para que llegue la furgoneta.</summary>

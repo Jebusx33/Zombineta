@@ -157,3 +157,4 @@ desktop.ini
 
 # Archivos que deja la telemetria de los playtests (uno por sesion)
 /Juego/Playtests/
+*.pdf.meta

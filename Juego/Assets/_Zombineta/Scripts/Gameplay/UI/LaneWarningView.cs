@@ -50,6 +50,9 @@ namespace Zombineta.UI
             if (run == null || run.Level == null || run.Sim == null)
                 return;
 
+            // A pie no hay carriles que cuidar: los avisos se van mientras dura la pelea.
+            bool peleando = run.Sim.State.Phase == RunPhase.Pelea;
+
             float playerX = run.Sim.State.PlayerX;
             float near = playerX + hideDistance;
             float far = playerX + warnDistance;
@@ -64,7 +67,7 @@ namespace Zombineta.UI
                 if (entry.kind != LevelEntryKind.Obstacle && entry.kind != LevelEntryKind.ZombieFront)
                     continue;
 
-                if (entry.distance <= near || entry.distance > far)
+                if (peleando || entry.distance <= near || entry.distance > far)
                     continue;
 
                 int lane = entry.lane;

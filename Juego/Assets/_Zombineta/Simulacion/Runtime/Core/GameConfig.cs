@@ -162,7 +162,9 @@ namespace Zombineta.Core
         [Min(0f)] public float maxLaunchVerticalSpeed = 0f;
         [Tooltip("Grados por segundo que inclina la jugadora con A/D en el aire.")]
         public float leanRate = 60f;
-        public float maxPitch = 80f;
+        [Tooltip("Inclinacion maxima de la moto en el aire, en grados. Por debajo de 'safeLandingAngle' mantener el turbo o el " +
+                 "retroceso apretados en el aire nunca la hace caer; el aterrizaje perfecto (con impulso) sigue pidiendo enderezarla.")]
+        public float maxPitch = 22f;
         [Tooltip("Aterrizar con menos inclinacion que esta da impulso.")]
         public float perfectLandingAngle = 8f;
         [Tooltip("Aterrizar con mas inclinacion que esta tira la moto al piso.")]

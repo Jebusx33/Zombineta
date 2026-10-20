@@ -246,6 +246,52 @@ namespace Zombineta.Tests
         }
 
         [Test]
+        public void TurboJump_WithoutSpin_AsInTheTutorial_LandsSafelyWithoutManeuvering()
+        {
+            // El tutorial no gira la moto en la rampa: acelerar y saltar no deja de espaldas ni castiga.
+            var c = MakeConfig();
+            c.launchSpinPerExcessSpeed = 0f;
+            var sim = new RunSimulation(c);
+            var f = Jump(sim, DriveMode.Turbo, NoInput);
+
+            Assert.IsTrue(Has(f.Landing, RunEvent.Landed));
+            Assert.IsFalse(Has(f.Landing, RunEvent.Fell));
+            Assert.IsFalse(sim.State.Fallen);
+        }
+
+        [Test]
+        public void HoldingTurboOrReverseInTheAir_WithTheGameTuning_NeverMakesHerFall()
+        {
+            // El ritmo no se corta por seguir acelerando en el aire: la inclinacion tiene tope por debajo del angulo seguro.
+            foreach (var mantener in new Func<RunState, DriveMode>[] { LeanForward, LeanBack, NoInput })
+            {
+                var c = MakeConfig();
+                c.launchPitch = 15f;
+                c.launchSpinPerExcessSpeed = 1f;
+                c.maxPitch = 22f;
+                var sim = new RunSimulation(c);
+                var f = Jump(sim, DriveMode.Turbo, mantener);
+
+                Assert.IsTrue(Has(f.Landing, RunEvent.Landed), "aterriza");
+                Assert.IsFalse(Has(f.Landing, RunEvent.Fell), "no se cae");
+                Assert.IsFalse(sim.State.Fallen);
+            }
+        }
+
+        [Test]
+        public void TheLeanCap_StillLetsHerStraightenUpForThePerfectLanding()
+        {
+            var c = MakeConfig();
+            c.launchPitch = 15f;
+            c.launchSpinPerExcessSpeed = 1f;
+            c.maxPitch = 22f;
+            var sim = new RunSimulation(c);
+            var f = Jump(sim, DriveMode.Turbo, Stabilize);
+
+            Assert.IsTrue(Has(f.Landing, RunEvent.LandedPerfect));
+        }
+
+        [Test]
         public void TurboJump_HoldingForwardAllTheWay_AlsoFalls()
         {
             var sim = new RunSimulation(MakeConfig());

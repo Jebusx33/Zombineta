@@ -24,6 +24,8 @@ namespace Zombineta.Auxilio
         public int Lane;
         public float Left;
         public float Total;
+        /// <summary>Ya aviso que no lo necesita: no repite hasta que ella se aparte y vuelva.</summary>
+        public bool Avisado;
     }
 
     public sealed class PeleaSimulation
@@ -90,6 +92,8 @@ namespace Zombineta.Auxilio
             s.PeleaBotiquines = 0;
             s.PremioBalas = 0;
             s.PremioBateria = 0f;
+            s.PremioBalasLleno = false;
+            s.PremioBateriaLleno = false;
             drops.Clear();
             s.PeleaRestante = c.peleaSegundos;
             s.Invulnerable = 0f;
@@ -406,20 +410,32 @@ namespace Zombineta.Auxilio
                 }
 
                 if (Mathf.Abs(d.X - s.PeatonX) > c.dropAlcance || Mathf.Abs(d.Lane - s.PeatonY) > c.toleranciaCarril + 0.3f)
+                {
+                    d.Avisado = false;
                     continue;
+                }
+
+                bool lleno = d.Kind == DropKind.Botiquin ? s.Vida >= s.VidaMax : s.Ammo >= c.ammoMax;
+                if (lleno)
+                {
+                    // Lo deja ahi, por si lo necesita despues, pero avisa para que no parezca que no pasa nada.
+                    if (!d.Avisado)
+                    {
+                        d.Avisado = true;
+                        s.DropLlenoKind = (int)d.Kind;
+                        ev |= RunEvent.DropLleno;
+                    }
+                    continue;
+                }
 
                 if (d.Kind == DropKind.Botiquin)
                 {
-                    if (s.Vida >= s.VidaMax)
-                        continue;   // con la vida llena lo deja ahi, por si lo necesita despues
                     s.Vida++;
                     s.PeleaBotiquines++;
                     ev |= RunEvent.BotiquinRecogido;
                 }
                 else
                 {
-                    if (s.Ammo >= c.ammoMax)
-                        continue;
                     s.Ammo = Mathf.Min(c.ammoMax, s.Ammo + c.dropBalasCantidad);
                     ev |= RunEvent.BalasRecogidas;
                 }
@@ -457,10 +473,12 @@ namespace Zombineta.Auxilio
             int antes = s.Ammo;
             s.Ammo = Mathf.Min(c.ammoMax, s.Ammo + Mathf.Max(0, balas));
             s.PremioBalas = s.Ammo - antes;
+            s.PremioBalasLleno = balas > 0 && s.PremioBalas == 0;
 
             float bateriaAntes = s.Battery;
             s.Battery = Mathf.Min(c.batteryMax, s.Battery + Mathf.Max(0f, bateria));
             s.PremioBateria = s.Battery - bateriaAntes;
+            s.PremioBateriaLleno = bateria > 0f && s.PremioBateria <= 0f;
         }
 
         RunEvent Disparar(PlayerIntent intent)

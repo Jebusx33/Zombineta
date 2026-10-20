@@ -1342,5 +1342,109 @@ namespace Zombineta.Tests
             sim.Tick(Quieta, Dt);
             Assert.AreEqual(units[0].X, units[1].X, 0.2f);
         }
-    }
+    
+        // --- Playtest de Axo, fase A: avisos de "lleno" y premio con todo lleno -----------
+
+        [Test]
+        public void AMedkitWithFullLife_WarnsOnce_AndStaysOnTheFloor()
+        {
+            var c = Rapido();
+            c.dropBotiquin = 1f;
+            var sim = SinNafta(c);
+            var z = Poner(sim, (5f, 1));
+            MatarDeUnTiro(sim, z[0]);
+            var drop = sim.Pelea.Drops[0];
+
+            sim.State.PeatonX = drop.X;
+            sim.State.PeatonY = drop.Lane;
+            var ev = sim.Tick(Quieta, Dt);
+
+            Assert.IsTrue((ev & RunEvent.DropLleno) != 0, "avisa que tiene la vida llena");
+            Assert.AreEqual(0, sim.State.DropLlenoKind);
+            Assert.AreEqual(1, sim.Pelea.Drops.Count, "se queda por si lo necesita");
+
+            ev = sim.Tick(Quieta, Dt);
+            Assert.IsTrue((ev & RunEvent.DropLleno) == 0, "parada encima no repite el aviso");
+        }
+
+        [Test]
+        public void TheFullWarning_ComesBackAfterMovingAwayAndComingBack()
+        {
+            var c = Rapido();
+            c.dropBotiquin = 1f;
+            c.dropSegundos = 60f;
+            var sim = SinNafta(c);
+            var z = Poner(sim, (5f, 1));
+            MatarDeUnTiro(sim, z[0]);
+            var drop = sim.Pelea.Drops[0];
+
+            sim.State.PeatonX = drop.X;
+            sim.State.PeatonY = drop.Lane;
+            sim.Tick(Quieta, Dt);
+
+            sim.State.PeatonX = drop.X + 10f;
+            sim.Tick(Quieta, Dt);
+
+            sim.State.PeatonX = drop.X;
+            var ev = sim.Tick(Quieta, Dt);
+            Assert.IsTrue((ev & RunEvent.DropLleno) != 0);
+        }
+
+        [Test]
+        public void FullAmmoMagazine_WarnsAboutBullets()
+        {
+            var c = Rapido();
+            c.dropBotiquin = 0f;
+            c.dropBalas = 1f;
+            var sim = SinNafta(c);
+            var z = Poner(sim, (5f, 1));
+            MatarDeUnTiro(sim, z[0]);
+            var drop = sim.Pelea.Drops[0];
+            sim.State.Ammo = c.ammoMax;
+
+            sim.State.PeatonX = drop.X;
+            sim.State.PeatonY = drop.Lane;
+            var ev = sim.Tick(Quieta, Dt);
+
+            Assert.IsTrue((ev & RunEvent.DropLleno) != 0);
+            Assert.AreEqual(1, sim.State.DropLlenoKind);
+        }
+
+        [Test]
+        public void TheReward_SaysWhenItWasWastedBecauseEverythingWasFull()
+        {
+            var c = Rapido();
+            c.premioBalas = new[] { 0, 1, 2, 3 };
+            c.premioBateria = new[] { 0f, 0f, 25f, 40f };
+            var sim = SinNafta(c);
+            sim.State.Ammo = c.ammoMax;
+            sim.State.Battery = c.batteryMax;
+            sim.State.PeleaGolpesRecibidos = 0;   // S
+
+            sim.State.PeleaRestante = 0f;
+            Avanzar(sim, 5f, Quieta);
+
+            Assert.AreEqual(NotaPelea.S, sim.State.Nota);
+            Assert.AreEqual(0, sim.State.PremioBalas);
+            Assert.IsTrue(sim.State.PremioBalasLleno);
+            Assert.IsTrue(sim.State.PremioBateriaLleno);
+        }
+
+        [Test]
+        public void ACGrade_IsNotReportedAsFull_ItJustLeavesNothing()
+        {
+            var c = Rapido();
+            c.premioBalas = new[] { 0, 1, 2, 3 };
+            c.premioBateria = new[] { 0f, 0f, 25f, 40f };
+            var sim = SinNafta(c);
+            sim.State.Ammo = c.ammoMax;
+            sim.State.PeleaGolpesRecibidos = 6;   // C
+
+            sim.State.PeleaRestante = 0f;
+            Avanzar(sim, 5f, Quieta);
+
+            Assert.IsFalse(sim.State.PremioBalasLleno);
+            Assert.IsFalse(sim.State.PremioBateriaLleno);
+        }
+}
 }

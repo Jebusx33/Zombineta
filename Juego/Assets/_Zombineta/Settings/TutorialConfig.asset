@@ -61,10 +61,10 @@ MonoBehaviour:
   jumpGravity: 18
   leanLift: 0
   launchPitch: 15
-  launchSpinPerExcessSpeed: 1
+  launchSpinPerExcessSpeed: 0
   maxLaunchVerticalSpeed: 8
   leanRate: 60
-  maxPitch: 80
+  maxPitch: 22
   perfectLandingAngle: 8
   safeLandingAngle: 25
   landingBoostMultiplier: 1.25

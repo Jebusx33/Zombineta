@@ -49,6 +49,8 @@ namespace Zombineta.Core
         BotiquinRecogido = 1 << 28,
         /// <summary>Recogio las balas que solto un zombie.</summary>
         BalasRecogidas = 1 << 29,
+        /// <summary>Pisa un botiquin o balas que no necesita (vida o cargador llenos): el tipo esta en State.DropLlenoKind.</summary>
+        DropLleno = 1 << 30,
     }
 
     /// <summary>
@@ -141,6 +143,9 @@ namespace Zombineta.Core
             State.Nota = NotaPelea.C;
             State.PremioBalas = 0;
             State.PremioBateria = 0f;
+            State.PremioBalasLleno = false;
+            State.PremioBateriaLleno = false;
+            State.DropLlenoKind = 0;
             State.Vida = 0;
             State.PeleaRestante = 0f;
             State.PeatonX = 0f;
