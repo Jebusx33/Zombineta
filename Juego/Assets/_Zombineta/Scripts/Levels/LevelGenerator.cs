@@ -34,6 +34,10 @@ namespace Zombineta.Juego.Levels
         public float fuelEvery = 120f;
         public float batteryEvery = 450f;
         public float ammoEvery = 380f;
+        [Tooltip("Granadas (arma secundaria de la moto). 0 = ninguna.")]
+        public float granadaEvery = 650f;
+        [Tooltip("Bombas temporizadoras (para la pelea a pie). 0 = ninguna.")]
+        public float bombaEvery = 1000f;
 
         [Header("Piezas (cada cuantos metros)")]
         public float rampEvery = 250f;
@@ -206,6 +210,9 @@ namespace Zombineta.Juego.Levels
             PlacePickups(LevelEntryKind.Fuel, s.fuelEvery, d => Recursos(d) * Nafta(d));
             PlacePickups(LevelEntryKind.Battery, s.batteryEvery, Recursos);
             PlacePickups(LevelEntryKind.Ammo, s.ammoEvery, Recursos);
+            // Al final de los demas recursos: asi no cambian los lugares de lo que ya salia de una semilla.
+            PlacePickups(LevelEntryKind.Granada, s.granadaEvery, Recursos);
+            PlacePickups(LevelEntryKind.BombaTemporal, s.bombaEvery, Recursos);
 
             void PlacePickups(LevelEntryKind kind, float every, System.Func<float, float> density)
             {

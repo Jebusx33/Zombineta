@@ -26,6 +26,10 @@ namespace Zombineta.Auxilio
         [SerializeField] int tamanoAyuda = 38;
         [Tooltip("Color de las teclas clave (golpe y disparo) en la ayuda de controles.")]
         [SerializeField] Color colorTeclasClave = new Color(1f, 0.3f, 0.25f);
+        [Tooltip("Color de las teclas de la granada y la bomba en la ayuda de controles.")]
+        [SerializeField] Color colorTeclasArsenal = new Color(1f, 0.82f, 0.25f);
+        [Tooltip("Segundos que queda el aviso de que se baja con granada y bomba (solo la primera pelea).")]
+        [SerializeField] float segundosAvisoArsenal = 4f;
         [Tooltip("Segundos que queda en pantalla la nota de la pelea con sus premios.")]
         [SerializeField] float segundosNota = 3f;
         [Tooltip("Segundos que queda el aviso de lo recogido del suelo (botiquin, balas).")]
@@ -39,6 +43,7 @@ namespace Zombineta.Auxilio
         float notaRestante;
         float notaOpacidadPremios = 1f;
         float recogidaRestante;
+        float recogidaTotal = 1f;
         float golpeRecibido;     // 1 al recibir un golpe, baja a 0
         Vector2 vidaPosicion;
 
@@ -169,6 +174,13 @@ namespace Zombineta.Auxilio
             if ((ev & RunEvent.PeleaEmpieza) != 0)
             {
                 Mostrar("¡AGUANTÁ!", new Color(1f, 0.6f, 0.2f));
+                // La primera pelea arranca con una granada y una bomba: se avisa con que tecla se usan.
+                if (run != null && run.Sim != null && run.Sim.State.AyudasUsadas <= 1)
+                {
+                    var esquema = InputDeviceTracker.Shared != null ? InputDeviceTracker.Shared.Current : ControlScheme.KeyboardMouse;
+                    MostrarRecogida("¡USÁ LA GRANADA (" + ControlHints.Accion("GranadaPie", esquema) + ") Y LA BOMBA (" +
+                                    ControlHints.Accion("Bomba", esquema) + ")!", new Color(1f, 0.82f, 0.25f), segundosAvisoArsenal);
+                }
             }
             if ((ev & RunEvent.OleadaNueva) != 0 && run != null && run.Sim != null)
             {
@@ -191,8 +203,12 @@ namespace Zombineta.Auxilio
                 MostrarRecogida(run.Sim.State.DropLlenoKind == 0 ? "VIDA LLENA" : "MUNICIÓN LLENA", new Color(1f, 1f, 1f));
             if ((ev & RunEvent.BalasRecogidas) != 0 && run != null)
                 MostrarRecogida("+" + run.Config.dropBalasCantidad + " BALAS", new Color(1f, 0.85f, 0.3f));
-            if ((ev & RunEvent.AuxilioLlega) != 0)
-                Mostrar("¡AUXILIO!", new Color(0.55f, 1f, 0.55f));
+            if ((ev & RunEvent.PeleaGanada) != 0)
+                Mostrar("¡AGARRÁ EL BIDÓN!", new Color(0.55f, 1f, 0.55f));
+            if ((ev & RunEvent.BombaPuesta) != 0)
+                MostrarRecogida("¡BOMBA!", new Color(1f, 0.5f, 0.3f));
+            if ((ev & RunEvent.BombaExplota) != 0 && run != null && run.Sim != null)
+                Mostrar(run.Sim.State.UltimaExplosionMuertos > 0 ? "¡BOOM!" : "¡BOOM... NADA!", new Color(1f, 0.6f, 0.25f));
 
             // La cadena de golpes: el paso lo da el estado. Los golpes al aire tambien cuentan.
             if (run != null && run.Sim != null && (ev & (RunEvent.Golpe | RunEvent.GolpeAlAire)) != 0)
@@ -209,11 +225,12 @@ namespace Zombineta.Auxilio
                 golpeRecibido = 1f;
         }
 
-        void MostrarRecogida(string texto, Color color)
+        void MostrarRecogida(string texto, Color color, float segundos = -1f)
         {
             recogida.text = texto;
             recogida.color = color;
-            recogidaRestante = segundosRecogida;
+            recogidaTotal = segundos > 0f ? segundos : segundosRecogida;
+            recogidaRestante = recogidaTotal;
         }
 
         /// <summary>La nota de la pelea y lo que dejo: balas y bateria (o nada, con la peor nota).</summary>
@@ -277,9 +294,24 @@ namespace Zombineta.Auxilio
             panel.SetActive(pelea);
             if (pelea)
             {
-                auxilio.text = s.FurgonetaEnCamino ? "¡LLEGO EL AUXILIO!" : "AUXILIO EN " + Mathf.CeilToInt(s.PeleaRestante);
-                float llegada = c.peleaSegundos > 0f ? 1f - s.PeleaRestante / c.peleaSegundos : 1f;
-                barra.rectTransform.sizeDelta = new Vector2(fondoBarra.rectTransform.rect.width * Mathf.Clamp01(llegada), 0f);
+                // Sin reloj: se pelea por oleadas. La barra es lo que se lleva vencido de la oleada en curso.
+                float vencidos;
+                if (s.BidonEnElPiso)
+                {
+                    auxilio.text = "¡AGARRÁ EL BIDÓN!";
+                    vencidos = 1f;
+                }
+                else if (s.OleadaRespiro > 0f)
+                {
+                    auxilio.text = "OLEADA " + (s.Oleada + 1) + "/" + s.Oleadas + " VENCIDA";
+                    vencidos = 1f;
+                }
+                else
+                {
+                    auxilio.text = "OLEADA " + (s.Oleada + 1) + "/" + s.Oleadas + "  ·  QUEDAN " + s.ZombiesRestantes;
+                    vencidos = s.OleadaTotal > 0 ? 1f - (float)s.ZombiesRestantes / s.OleadaTotal : 0f;
+                }
+                barra.rectTransform.sizeDelta = new Vector2(fondoBarra.rectTransform.rect.width * Mathf.Clamp01(vencidos), 0f);
                 vida.text = new string('♥', Mathf.Max(0, s.Vida)) + new string('♡', Mathf.Max(0, c.vidaPelea - s.Vida));
             }
 
@@ -349,7 +381,7 @@ namespace Zombineta.Auxilio
             if (recogidaRestante > 0f)
             {
                 recogidaRestante -= Time.unscaledDeltaTime;
-                float k = Mathf.Clamp01(recogidaRestante / segundosRecogida);
+                float k = Mathf.Clamp01(recogidaRestante / recogidaTotal);
                 recogida.enabled = pelea;
                 recogida.rectTransform.localScale = Vector3.one * (1f + 0.3f * Mathf.Clamp01((k - 0.7f) / 0.3f));
                 var rec = recogida.color;
@@ -382,14 +414,15 @@ namespace Zombineta.Auxilio
         void ActualizarControles(bool pelea)
         {
             bool primera = run.Sim.State.AyudasUsadas <= 1;
-            controles.enabled = pelea && primera && !run.Sim.State.FurgonetaEnCamino;
+            controles.enabled = pelea && primera && !run.Sim.State.BidonEnElPiso;
             if (!controles.enabled)
                 return;
 
             var scheme = InputDeviceTracker.Shared != null ? InputDeviceTracker.Shared.Current : ControlScheme.KeyboardMouse;
             controles.supportRichText = true;
             controles.fontSize = tamanoAyuda;
-            controles.text = ControlHints.TextForPelea(scheme, "#" + ColorUtility.ToHtmlStringRGB(colorTeclasClave));
+            controles.text = ControlHints.TextForPelea(scheme, "#" + ColorUtility.ToHtmlStringRGB(colorTeclasClave),
+                                                       "#" + ColorUtility.ToHtmlStringRGB(colorTeclasArsenal));
         }
 
         static Text NuevoTexto(string nombre, Transform padre, Font font, int tam, TextAnchor anclaje, Vector2 pos, Vector2 tamano)

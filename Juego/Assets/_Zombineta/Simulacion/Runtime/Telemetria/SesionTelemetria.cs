@@ -35,6 +35,8 @@ namespace Zombineta.Telemetria
         public int Botiquines { get; private set; }
         public int Reintentos { get; private set; }
         public int ItemsPasados { get; private set; }
+        public int GranadasLanzadas { get; private set; }
+        public int BombasUsadas { get; private set; }
 
         // Por cada recolectable del recorrido: lo mas cerca (en carriles) que estuvo la moto mientras lo pisaba.
         readonly Dictionary<int, float> cercania = new Dictionary<int, float>();
@@ -81,7 +83,8 @@ namespace Zombineta.Telemetria
                 Auxilios++;
                 filas.Add(Fila(t, s, "pelea_empieza", "auxilio=" + s.AyudasUsadas + ";vida=" + s.Vida));
             }
-            if ((ev & RunEvent.OleadaNueva) != 0) filas.Add(Fila(t, s, "oleada", "n=" + (s.Oleada + 1)));
+            if ((ev & RunEvent.OleadaNueva) != 0)
+                filas.Add(Fila(t, s, "oleada", "n=" + (s.Oleada + 1) + ";de=" + s.Oleadas + ";zombies=" + s.OleadaTotal));
             if ((ev & RunEvent.Remate) != 0) Remates++;
             if ((ev & RunEvent.Lastimada) != 0)
             {
@@ -101,7 +104,20 @@ namespace Zombineta.Telemetria
                 Reintentos++;
                 filas.Add(Fila(t, s, "pelea_reintenta", ""));
             }
-            if ((ev & RunEvent.AuxilioLlega) != 0) filas.Add(Fila(t, s, "auxilio_llega", ""));
+            if ((ev & RunEvent.GranadaLanzada) != 0)
+            {
+                GranadasLanzadas++;
+                filas.Add(Fila(t, s, "granada_lanzada", "quedan=" + s.Granadas));
+            }
+            if ((ev & RunEvent.GranadaExplota) != 0) filas.Add(Fila(t, s, "granada_explota", "muertos=" + s.UltimaExplosionMuertos));
+            if ((ev & RunEvent.GranadaDenegada) != 0) filas.Add(Fila(t, s, "granada_denegada", ""));
+            if ((ev & RunEvent.BombaPuesta) != 0)
+            {
+                BombasUsadas++;
+                filas.Add(Fila(t, s, "bomba_puesta", "quedan=" + s.Bombas));
+            }
+            if ((ev & RunEvent.BombaExplota) != 0) filas.Add(Fila(t, s, "bomba_explota", "muertos=" + s.UltimaExplosionMuertos));
+            if ((ev & RunEvent.PeleaGanada) != 0) filas.Add(Fila(t, s, "pelea_ganada", "duracion=" + N(s.PeleaTiempo)));
             if ((ev & RunEvent.AuxilioTermina) != 0)
             {
                 Bajas += s.PeleaBajas;
@@ -109,7 +125,8 @@ namespace Zombineta.Telemetria
                     "nota=" + s.Nota + ";bajas=" + s.PeleaBajas + ";remates=" + s.PeleaRemates +
                     ";golpes_recibidos=" + s.PeleaGolpesRecibidos + ";botiquines=" + s.PeleaBotiquines +
                     ";saltos_acertados=" + s.PeleaSaltosAcertados + ";saltos_esquivados=" + s.PeleaSaltosEsquivados +
-                    ";saltos_cortados=" + s.PeleaSaltosCortados +
+                    ";saltos_cortados=" + s.PeleaSaltosCortados + ";bombas=" + s.PeleaBombas +
+                    ";duracion_pelea=" + N(s.PeleaTiempo) +
                     ";premio_balas=" + s.PremioBalas + ";premio_bateria=" + N(s.PremioBateria)));
             }
             if ((ev & RunEvent.Won) != 0) filas.Add(Fila(t, s, "victoria", ""));
@@ -172,7 +189,7 @@ namespace Zombineta.Telemetria
                 ";metros_max=" + N(MetrosMaximos) + ";auxilios=" + Auxilios + ";reintentos=" + Reintentos +
                 ";choques=" + Choques + ";caidas=" + Caidas + ";bajas=" + Bajas + ";remates=" + Remates +
                 ";golpes_recibidos=" + GolpesRecibidos + ";botiquines=" + Botiquines +
-                ";items_pasados=" + ItemsPasados);
+                ";items_pasados=" + ItemsPasados + ";granadas_lanzadas=" + GranadasLanzadas + ";bombas_usadas=" + BombasUsadas);
 
         /// <summary>Una fila del CSV. El detalle puede traer ";" propios (clave=valor;clave=valor): va entre comillas.</summary>
         public string Fila(float t, RunState s, string evento, string detalle) =>

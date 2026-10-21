@@ -45,7 +45,9 @@ namespace Zombineta.Juego.Tests
         [Test]
         public void HintsText_MatchesTheScheme()
         {
-            StringAssert.StartsWith("W/S o ↑/↓ carril", ControlHints.TextFor(ControlScheme.KeyboardMouse));
+            StringAssert.StartsWith("↑/↓ carril", ControlHints.TextFor(ControlScheme.KeyboardMouse));
+            StringAssert.Contains("X disparar · Z granada · Espacio faro", ControlHints.TextFor(ControlScheme.KeyboardMouse));
+            StringAssert.Contains("LB granada", ControlHints.TextFor(ControlScheme.Gamepad));
             StringAssert.StartsWith("Stick o cruceta carril", ControlHints.TextFor(ControlScheme.Gamepad));
             StringAssert.Contains("En el aire, turbo y retroceso inclinan la moto.", ControlHints.TextFor(ControlScheme.Gamepad));
         }
@@ -55,9 +57,17 @@ namespace Zombineta.Juego.Tests
         [Test]
         public void Accion_DevuelveLaTeclaPorEsquema()
         {
-            Assert.AreEqual("D", ControlHints.Accion("Turbo", ControlScheme.KeyboardMouse));
+            Assert.AreEqual("→", ControlHints.Accion("Turbo", ControlScheme.KeyboardMouse));
+            Assert.AreEqual("X", ControlHints.Accion("Golpe", ControlScheme.KeyboardMouse));
+            Assert.AreEqual("Z", ControlHints.Accion("FirePie", ControlScheme.KeyboardMouse));
+            Assert.AreEqual("Z", ControlHints.Accion("Granada", ControlScheme.KeyboardMouse));
+            Assert.AreEqual("LB", ControlHints.Accion("Granada", ControlScheme.Gamepad));
+            Assert.AreEqual("Espacio", ControlHints.Accion("Bomba", ControlScheme.KeyboardMouse));
+            Assert.AreEqual("Y", ControlHints.Accion("Bomba", ControlScheme.Gamepad));
+            Assert.AreEqual("C", ControlHints.Accion("GranadaPie", ControlScheme.KeyboardMouse));
+            Assert.AreEqual("LB", ControlHints.Accion("GranadaPie", ControlScheme.Gamepad));
             Assert.AreEqual("RT", ControlHints.Accion("Turbo", ControlScheme.Gamepad));
-            Assert.AreEqual("A", ControlHints.Accion("Reverse", ControlScheme.KeyboardMouse));
+            Assert.AreEqual("←", ControlHints.Accion("Reverse", ControlScheme.KeyboardMouse));
             Assert.AreEqual("LT", ControlHints.Accion("Reverse", ControlScheme.Gamepad));
             Assert.AreEqual("Espacio", ControlHints.Accion("Headlight", ControlScheme.KeyboardMouse));
             Assert.AreEqual("Y", ControlHints.Accion("Headlight", ControlScheme.Gamepad));
@@ -74,7 +84,7 @@ namespace Zombineta.Juego.Tests
         {
             string texto = "Mantené {Turbo} para acelerar y {Reverse} para frenar.";
             Assert.AreEqual(
-                "Mantené D para acelerar y A para frenar.",
+                "Mantené → para acelerar y ← para frenar.",
                 ControlHints.Resolver(texto, ControlScheme.KeyboardMouse));
             Assert.AreEqual(
                 "Mantené RT para acelerar y LT para frenar.",

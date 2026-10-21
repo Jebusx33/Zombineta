@@ -6,7 +6,7 @@ using Zombineta.Player;
 
 namespace Zombineta.Juego.Screens
 {
-    /// <summary>Pinta la ayuda de controles (teclado/mouse o joystick) segun el ultimo dispositivo usado.</summary>
+    /// <summary>Pinta la ayuda de controles (teclado o joystick) segun el ultimo dispositivo usado.</summary>
     public sealed class ControlHints : MonoBehaviour
     {
         [SerializeField] Text text;
@@ -16,16 +16,23 @@ namespace Zombineta.Juego.Screens
         // Tabla unica de etiquetas por accion y esquema: la usan Accion/Resolver (marcadores
         // {Turbo}, {Reverse}, etc. en los carteles del tutorial). TextFor no sale de aca: es una
         // frase armada a mano, distinta por como combina las acciones en una sola linea.
+        //
+        // Controles de beat'em up. Teclado: flechas y tres teclas, X y Z cambian de funcion segun el modo.
+        // WASD sigue andando como alternativa, pero no se anuncia.
         static readonly Dictionary<string, string> EtiquetasTeclado = new Dictionary<string, string>
         {
-            { "Turbo", "D" },
-            { "Reverse", "A" },
-            { "LaneUp", "W/↑" },
-            { "LaneDown", "S/↓" },
-            { "Fire", "X o click" },
-            { "Headlight", "Espacio" },
-            { "Mover", "WASD o flechas" },
-            { "Golpe", "Z, J o clic derecho" },
+            { "Turbo", "→" },
+            { "Reverse", "←" },
+            { "LaneUp", "↑" },
+            { "LaneDown", "↓" },
+            { "Fire", "X" },            // en la moto
+            { "Granada", "Z" },         // en la moto
+            { "GranadaPie", "C" },      // a pie
+            { "Headlight", "Espacio" }, // en la moto
+            { "Mover", "Flechas" },     // a pie
+            { "Golpe", "X" },           // a pie
+            { "FirePie", "Z" },         // a pie: el disparo
+            { "Bomba", "Espacio" },     // a pie
         };
 
         static readonly Dictionary<string, string> EtiquetasGamepad = new Dictionary<string, string>
@@ -35,9 +42,13 @@ namespace Zombineta.Juego.Screens
             { "LaneUp", "Stick o cruceta ↑" },
             { "LaneDown", "Stick o cruceta ↓" },
             { "Fire", "X o RB" },
+            { "Granada", "LB" },
+            { "GranadaPie", "LB" },
             { "Headlight", "Y" },
             { "Mover", "Stick o cruceta" },
             { "Golpe", "A" },
+            { "FirePie", "X o RB" },
+            { "Bomba", "Y" },
         };
 
         static readonly Regex Marcador = new Regex("\\{(\\w+)\\}", RegexOptions.Compiled);
@@ -50,7 +61,7 @@ namespace Zombineta.Juego.Screens
         public static string TextFor(ControlScheme scheme)
         {
             bool gamepad = scheme == ControlScheme.Gamepad;
-            string carril = gamepad ? "Stick o cruceta carril" : "W/S o ↑/↓ carril";
+            string carril = gamepad ? "Stick o cruceta carril" : "↑/↓ carril";
             string pausa = gamepad ? "Start pausa" : "Esc pausa";
 
             string firstLine = string.Join(" · ", new[]
@@ -59,6 +70,7 @@ namespace Zombineta.Juego.Screens
                 Accion("Turbo", scheme) + " turbo",
                 Accion("Reverse", scheme) + " retroceso",
                 Accion("Fire", scheme) + " disparar",
+                Accion("Granada", scheme) + " granada",
                 Accion("Headlight", scheme) + " faro",
                 pausa,
             });
@@ -66,13 +78,17 @@ namespace Zombineta.Juego.Screens
         }
 
         /// <summary>Ayuda de la pelea a pie, con los controles del esquema que se esta usando.</summary>
-        /// <param name="colorClave">Color HTML ("#FF4D40") para resaltar las teclas de golpe y disparo, o null para texto liso.</param>
-        public static string TextForPelea(ControlScheme scheme, string colorClave = null)
+        /// <param name="colorClave">Color HTML ("#FF4D40") para resaltar las teclas de ataque y disparo, o null para texto liso.</param>
+        /// <param name="colorArsenal">Color HTML para resaltar las teclas de la granada y la bomba, o null para texto liso.</param>
+        public static string TextForPelea(ControlScheme scheme, string colorClave = null, string colorArsenal = null)
         {
             string golpe = Resaltar(Accion("Golpe", scheme), colorClave);
-            string disparo = Resaltar(Accion("Fire", scheme), colorClave);
-            return "Mover: " + Accion("Mover", scheme) + "   ·   Golpe: " + golpe +
-                   " (3 seguidos = remate)   ·   Disparo: " + disparo;
+            string disparo = Resaltar(Accion("FirePie", scheme), colorClave);
+            string granada = Resaltar(Accion("GranadaPie", scheme), colorArsenal);
+            string bomba = Resaltar(Accion("Bomba", scheme), colorArsenal);
+            return "Mover: " + Accion("Mover", scheme) + "   ·   Atacar: " + golpe +
+                   " (3 seguidos = remate)   ·   Disparo: " + disparo +
+                   "   ·   Granada: " + granada + "   ·   Bomba: " + bomba;
         }
 
         static string Resaltar(string tecla, string color) =>

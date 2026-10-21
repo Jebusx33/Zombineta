@@ -58,7 +58,7 @@ MonoBehaviour:
     cantidad: 1
     resaltar: 3
     hordaSuelta: 0
-  - texto: "\xA1La horda! Disparar la empuja y el faro la frena. Lleg\xE1 al refugio."
+  - texto: "\xA1La horda! Disparar la empuja, el faro la frena y {Granada} lanza una granada hacia atr\xE1s. Lleg\xE1 al refugio."
     condicion: 9
     cantidad: 0
     resaltar: 4

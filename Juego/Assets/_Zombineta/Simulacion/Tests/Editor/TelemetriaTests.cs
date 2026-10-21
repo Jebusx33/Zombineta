@@ -111,5 +111,32 @@ namespace Zombineta.Tests
             var nombre = SesionTelemetria.NombreDeArchivo(new System.DateTime(2026, 10, 18, 9, 5, 3));
             Assert.AreEqual("sesion_20261018_090503.csv", nombre);
         }
+
+        [Test]
+        public void TheWeaponsAndTheWaves_LeaveTheirRows_AndTheCountersGoUp()
+        {
+            var sesion = new SesionTelemetria("n", 1);
+            var s = Estado();
+            s.Granadas = 2;
+            s.UltimaExplosionMuertos = 4;
+            s.Oleada = 1; s.Oleadas = 4; s.OleadaTotal = 5; s.PeleaTiempo = 40f;
+            s.Bombas = 1;
+
+            var filas = sesion.Eventos(3f, s,
+                RunEvent.GranadaLanzada | RunEvent.GranadaExplota | RunEvent.BombaPuesta | RunEvent.BombaExplota |
+                RunEvent.OleadaNueva | RunEvent.PeleaGanada);
+            string todas = string.Join(" | ", filas);
+
+            StringAssert.Contains(";granada_lanzada;", todas);
+            StringAssert.Contains(";granada_explota;", todas);
+            StringAssert.Contains("muertos=4", todas);
+            StringAssert.Contains(";bomba_puesta;", todas);
+            StringAssert.Contains(";bomba_explota;", todas);
+            StringAssert.Contains("n=2;de=4;zombies=5", todas);
+            StringAssert.Contains(";pelea_ganada;", todas);
+            Assert.AreEqual(1, sesion.GranadasLanzadas);
+            Assert.AreEqual(1, sesion.BombasUsadas);
+            StringAssert.Contains("granadas_lanzadas=1;bombas_usadas=1", sesion.Resumen(9f, s, "ganada"));
+        }
     }
 }

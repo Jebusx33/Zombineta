@@ -7,7 +7,7 @@ namespace Zombineta.Core
 {
     /// <summary>Que paso durante un tick. Las Views leen esto para SFX y VFX.</summary>
     [Flags]
-    public enum RunEvent
+    public enum RunEvent : long
     {
         None = 0,
         LaneChanged = 1 << 0,
@@ -33,9 +33,10 @@ namespace Zombineta.Core
         Golpe = 1 << 19,
         GolpeAlAire = 1 << 20,
         Lastimada = 1 << 21,
-        /// <summary>Se cumplio el tiempo: la furgoneta entra en pantalla.</summary>
-        AuxilioLlega = 1 << 22,
-        /// <summary>La furgoneta paso: tanque lleno y de vuelta a la moto.</summary>
+        // (los bits 22 y 23 eran la llegada y la partida de la furgoneta del auxilio: ya no existe)
+        /// <summary>
+        /// Recogio el bidon del ultimo zombie y vuelve a la moto con el tanque lleno. (Antes: la furgoneta paso.)
+        /// </summary>
         AuxilioTermina = 1 << 23,
         /// <summary>El tercer golpe de la cadena: derriba a los que la rodean.</summary>
         Remate = 1 << 24,
@@ -50,9 +51,23 @@ namespace Zombineta.Core
         /// <summary>Recogio las balas que solto un zombie.</summary>
         BalasRecogidas = 1 << 29,
         /// <summary>Pisa un botiquin o balas que no necesita (vida o cargador llenos): el tipo esta en State.DropLlenoKind.</summary>
-        DropLleno = 1 << 30,
+        DropLleno = 1L << 30,
         /// <summary>Dos aciertos seguidos: la horda retrocede un rato y le deja espacio.</summary>
-        HordaRetrocede = 1 << 31,
+        HordaRetrocede = 1L << 31,
+        /// <summary>Lanzo una granada hacia atras desde la moto (el vuelo esta en State.GranadaVuelo).</summary>
+        GranadaLanzada = 1L << 32,
+        /// <summary>La granada cayo y exploto sobre la horda.</summary>
+        GranadaExplota = 1L << 33,
+        /// <summary>Quiso lanzar una granada y no tenia (o ya habia una en el aire).</summary>
+        GranadaDenegada = 1L << 34,
+        /// <summary>A pie, puso una bomba temporizadora: la mecha esta en State.BombaMecha.</summary>
+        BombaPuesta = 1L << 35,
+        /// <summary>La bomba exploto: cayeron todos los zombies que estaban peleando.</summary>
+        BombaExplota = 1L << 36,
+        /// <summary>Quiso poner una bomba y no tenia, ya habia una puesta o no habia a quien explotar.</summary>
+        BombaDenegada = 1L << 37,
+        /// <summary>Vencio la ultima oleada: el ultimo zombie suelta un bidon y hay que ir a buscarlo.</summary>
+        PeleaGanada = 1L << 38,
     }
 
     /// <summary>
@@ -76,8 +91,21 @@ namespace Zombineta.Core
 
         public GameConfig Config => config;
 
-        /// <summary>Los barriles del recorrido. Lo setea RunController; en tests puede ser null.</summary>
-        public IBarrelField Barrels { get; set; }
+        IBarrelField barrels;
+
+        /// <summary>
+        /// Los barriles del recorrido. Lo setea RunController; en tests puede ser null. En la moto no se
+        /// les dispara: solo sirven en la pelea a pie, donde explotan los que quedaron en la arena.
+        /// </summary>
+        public IBarrelField Barrels
+        {
+            get => barrels;
+            set
+            {
+                barrels = value;
+                Pelea.Barrels = value;
+            }
+        }
 
         /// <summary>Velocidad efectiva de la jugadora en el ultimo tick (m/s).</summary>
         public float PlayerSpeed { get; private set; }
@@ -103,6 +131,7 @@ namespace Zombineta.Core
                 : throw new ArgumentNullException(nameof(config));
             Horde = new HordeSimulation(this.config, this.config.zombies, this.config.hordeSeed);
             Pelea = new Zombineta.Auxilio.PeleaSimulation(this.config, State, Horde, this.config.hordeSeed + 1);
+            Pelea.Run = this;
             Reset();
         }
 
@@ -116,6 +145,14 @@ namespace Zombineta.Core
             State.Fuel = config.fuelInicial > 0f ? Mathf.Min(config.fuelInicial, config.fuelMax) : config.fuelMax;
             State.Battery = config.batteryMax;
             State.Ammo = Mathf.Clamp(config.ammoAtStart, 0, config.ammoMax);
+            State.Granadas = Mathf.Clamp(config.granadaInicial, 0, config.granadaMax);
+            State.Bombas = Mathf.Clamp(config.bombaInicial, 0, config.bombaMax);
+            State.GranadaVuelo = 0f;
+            State.GranadaX = 0f;
+            State.BombaMecha = 0f;
+            State.BombaX = 0f;
+            State.UltimaExplosionMuertos = 0;
+            Horde.SinRegenerar = 0f;
             State.HeadlightOn = false;
             State.Mode = DriveMode.Normal;
             State.StunRemaining = 0f;
@@ -145,6 +182,13 @@ namespace Zombineta.Core
             State.PeleaSaltosAcertados = 0;
             State.PeleaSaltosEsquivados = 0;
             State.PeleaSaltosCortados = 0;
+            State.PeleaBombas = 0;
+            State.PeleaTiempo = 0f;
+            State.OleadaTotal = 0;
+            State.Oleadas = 0;
+            State.ZombiesRestantes = 0;
+            State.OleadaRespiro = 0f;
+            State.BidonEnElPiso = false;
             State.Nota = NotaPelea.C;
             State.PremioBalas = 0;
             State.PremioBateria = 0f;
@@ -157,14 +201,11 @@ namespace Zombineta.Core
             State.PremioBateriaLleno = false;
             State.DropLlenoKind = 0;
             State.Vida = 0;
-            State.PeleaRestante = 0f;
             State.PeatonX = 0f;
             State.Mira = 1;
             State.Invulnerable = 0f;
             State.GolpeEnfriamiento = 0f;
             State.Golpeando = 0f;
-            State.FurgonetaEnCamino = false;
-            State.FurgonetaX = 0f;
             PlayerSpeed = 0f;
             HordeSpeed = 0f;
         }
@@ -198,6 +239,7 @@ namespace Zombineta.Core
             events |= ApplyLaneChange(intent.LaneDelta);
             events |= ApplyHeadlightToggle(intent.ToggleHeadlight);
             events |= ApplyFire(intent.Fire);
+            events |= ApplyGranada(intent.Granada);
 
             // El aturdimiento por choque corre aunque la moto este frenada.
             if (State.StunRemaining > 0f)
@@ -235,6 +277,7 @@ namespace Zombineta.Core
             events |= DrainBattery(dt);
 
             State.PlayerX = Mathf.Max(0f, State.PlayerX + PlayerSpeed * dt);
+            events |= AvanzarGranada(dt);
 
             Horde.RetrocesoVelocidad = State.RetrocesoRestante > 0f && config.retrocesoSegundos > 0f
                 ? config.retrocesoMetros / config.retrocesoSegundos
@@ -324,6 +367,44 @@ namespace Zombineta.Core
             State.RetrocesoEnfriamiento = Mathf.Max(0f, State.RetrocesoEnfriamiento - dt);
         }
 
+        /// <summary>
+        /// Lanza una granada hacia atras: vuela unos instantes y explota a granadaDistancia metros de la
+        /// moto sobre la horda, con el alcance de un barril. Una sola en el aire a la vez.
+        /// </summary>
+        RunEvent ApplyGranada(bool lanzar)
+        {
+            if (!lanzar)
+                return RunEvent.None;
+            if (State.Granadas <= 0 || State.GranadaVuelo > 0f)
+                return RunEvent.GranadaDenegada;
+
+            State.Granadas--;
+            State.GranadaVuelo = Mathf.Max(0.01f, config.granadaVuelo);
+            State.GranadaX = State.PlayerX - config.granadaDistancia;
+            State.GranadaDir = -1;
+            return RunEvent.GranadaLanzada;
+        }
+
+        /// <summary>
+        /// La granada en el aire cae siempre a granadaDistancia metros por detras de la moto. Al llegar
+        /// explota, y la horda no repone a los caidos durante hordaSinRegenerar segundos.
+        /// </summary>
+        RunEvent AvanzarGranada(float dt)
+        {
+            if (State.GranadaVuelo <= 0f)
+                return RunEvent.None;
+
+            State.GranadaVuelo -= dt;
+            State.GranadaX = State.PlayerX - config.granadaDistancia;
+            if (State.GranadaVuelo > 0f)
+                return RunEvent.None;
+
+            State.GranadaVuelo = 0f;
+            var ev = Explode(State.GranadaX, State.Lane) | RunEvent.GranadaExplota;
+            Horde.SinRegenerar = Mathf.Max(Horde.SinRegenerar, config.hordaSinRegenerar);
+            return ev;
+        }
+
         RunEvent ApplyFire(bool fire)
         {
             if (!fire)
@@ -338,19 +419,9 @@ namespace Zombineta.Core
             int lane = State.Lane;
             float range = config.shotRangeMeters;
 
+            // Pega en el primer zombie que encuentra hacia atras. (Los barriles ya no explotan en la moto:
+            // solo en la pelea a pie.)
             var zombie = Horde.NearestBehind(from, lane, range);
-            float barrelX = 0f;
-            int barrelIndex = -1;
-            bool hasBarrel = Barrels != null &&
-                             Barrels.TryNearestBarrel(from, lane, range, out barrelX, out barrelIndex);
-
-            // Pega en lo primero que encuentra hacia atras: el barril o el zombie.
-            if (hasBarrel && (zombie == null || barrelX > zombie.X))
-            {
-                Horde.Tracer(from, barrelX, lane);
-                Barrels.Detonate(barrelIndex, this);
-                return RunEvent.Shot | RunEvent.Explosion;
-            }
 
             if (zombie != null)
             {
@@ -586,6 +657,12 @@ namespace Zombineta.Core
                 case PickupKind.Ammo:
                     State.Ammo = Mathf.Min(config.ammoMax, State.Ammo + config.ammoPickupAmount);
                     break;
+                case PickupKind.Grenade:
+                    State.Granadas = Mathf.Min(config.granadaMax, State.Granadas + 1);
+                    break;
+                case PickupKind.Bomb:
+                    State.Bombas = Mathf.Min(config.bombaMax, State.Bombas + 1);
+                    break;
             }
 
             return RunEvent.PickedUp;
@@ -627,7 +704,7 @@ namespace Zombineta.Core
         /// <summary>Un barril explota: mata a la horda en el radio. Lo llama LevelRuntime.</summary>
         public RunEvent Explode(float x, int lane)
         {
-            Horde.Explode(x, lane);
+            State.UltimaExplosionMuertos = Horde.Explode(x, lane);
             State.HordeX = Horde.FrontX;
             return RunEvent.Explosion;
         }

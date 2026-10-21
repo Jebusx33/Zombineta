@@ -76,8 +76,8 @@ namespace Zombineta.UI
 
             GUILayout.BeginArea(new Rect(16f, Screen.height - 44f, 900f, 40f));
             GUILayout.Label(
-                "W/S o flechas: carril   |   D o -> : turbo   |   A o <- : retroceso   " +
-                "|   Espacio: faro   |   X o click: disparar", style);
+                "↑/↓: carril   |   → : turbo   |   ← : retroceso   " +
+                "|   Espacio: faro   |   X: disparar   |   Z: granada", style);
             GUILayout.EndArea();
         }
     }

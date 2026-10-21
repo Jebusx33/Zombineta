@@ -30,6 +30,9 @@ namespace Zombineta.UI
         [Tooltip("Donde queda el marco copiado, desde la esquina de arriba a la izquierda, en pixeles del Canvas.")]
         [SerializeField] Vector2 posicion = new Vector2(40f, -40f);
 
+        /// <summary>El marco de la municion que se ve ahora (el de la pelea o el de la moto). Null si todavia no esta armado.</summary>
+        public RectTransform MarcoVisible => !inicializado ? null : enPelea ? marcoCopia : marco;
+
         RectTransform marcoCopia;
         RectTransform[] originales;
         RectTransform[] copias;

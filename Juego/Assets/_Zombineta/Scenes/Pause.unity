@@ -519,7 +519,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: "W/S o \u2191/\u2193 carril \xB7 D turbo \xB7 A retroceso \xB7 X o click disparar \xB7 Espacio faro \xB7 Esc pausa\nEn el aire, turbo y retroceso inclinan la moto."
+  m_Text: "\u2191/\u2193 carril \xB7 \u2192 turbo \xB7 \u2190 retroceso \xB7 X disparar \xB7 Z granada \xB7 Espacio faro \xB7 Esc pausa\nEn el aire, turbo y retroceso inclinan la moto."
 --- !u!222 &391013465
 CanvasRenderer:
   m_ObjectHideFlags: 0

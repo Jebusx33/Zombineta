@@ -90,30 +90,42 @@ namespace Zombineta.Tests
         static PlayerIntent Fire() => new PlayerIntent { Mode = DriveMode.Normal, Fire = true };
 
         [Test]
-        public void ShootingABarrel_ExplodesItAndKillsAround()
+        public void ShootingABarrelFromTheBike_NoLongerExplodesIt()
         {
             var sim = Make(MakeLevel(new LevelEntry(-20f, 1, LevelEntryKind.Barrel)), out var level);
+            ClearHorde(sim);
+            Place(sim, 0, -22f, 1);
+
+            var events = sim.Tick(Fire(), Dt);
+
+            Assert.AreEqual(RunEvent.None, events & RunEvent.Explosion, "en la moto los barriles no explotan");
+            Assert.IsFalse(level.Items[0].Consumed, "el barril sigue ahi, de adorno");
+        }
+
+        [Test]
+        public void AnExplosion_KillsAroundItAndNotFarAway()
+        {
+            var sim = Make(MakeLevel(), out _);
             ClearHorde(sim);
             var close = Place(sim, 0, -22f, 1);
             var far = Place(sim, 1, -60f, 1);
 
-            var events = sim.Tick(Fire(), Dt);
+            var events = sim.Explode(-20f, 1);
 
             Assert.AreNotEqual(RunEvent.None, events & RunEvent.Explosion);
-            Assert.IsFalse(close.Alive, "estaba a 2 m del barril");
+            Assert.IsFalse(close.Alive, "estaba a 2 m");
             Assert.IsTrue(far.Alive, "estaba a 40 m");
-            Assert.IsTrue(level.Items[0].Consumed, "el barril se gasto");
         }
 
         [Test]
         public void AnExplosion_KillsInEveryLane()
         {
-            var sim = Make(MakeLevel(new LevelEntry(-20f, 1, LevelEntryKind.Barrel)), out _);
+            var sim = Make(MakeLevel(), out _);
             ClearHorde(sim);
             var a = Place(sim, 0, -21f, 0);
             var b = Place(sim, 1, -22f, 2);
 
-            sim.Tick(Fire(), Dt);
+            sim.Explode(-20f, 1);
 
             Assert.IsFalse(a.Alive);
             Assert.IsFalse(b.Alive, "la explosion no respeta carriles");
@@ -122,11 +134,11 @@ namespace Zombineta.Tests
         [Test]
         public void AnExplosion_ScaresBeyondItsKillRadius()
         {
-            var sim = Make(MakeLevel(new LevelEntry(-20f, 1, LevelEntryKind.Barrel)), out _);
+            var sim = Make(MakeLevel(), out _);
             ClearHorde(sim);
             var outside = Place(sim, 0, -32f, 0);   // a 12 m: fuera del radio de muerte (8), dentro del susto (16)
 
-            sim.Tick(Fire(), Dt);
+            sim.Explode(-20f, 1);
 
             Assert.IsTrue(outside.Alive);
             Assert.Greater(outside.Stagger, 0f);
@@ -141,7 +153,7 @@ namespace Zombineta.Tests
             ClearHorde(sim);
             var farFromFirst = Place(sim, 0, -31f, 2);   // a 11 m del primero, a 5 del segundo
 
-            sim.Tick(Fire(), Dt);
+            level.Detonate(0, sim);
 
             Assert.IsTrue(level.Items[0].Consumed);
             Assert.IsTrue(level.Items[1].Consumed, "el segundo barril explota por cadena");

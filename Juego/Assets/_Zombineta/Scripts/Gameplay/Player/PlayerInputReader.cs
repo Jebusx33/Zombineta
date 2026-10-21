@@ -5,8 +5,15 @@ using Zombineta.Core;
 namespace Zombineta.Player
 {
     /// <summary>
-    /// Traduce los controles (teclado, mouse o joystick) a un PlayerIntent. Lee el mapa de
-    /// acciones "Moto": que tecla o boton hace que vive en el asset de acciones, no aca.
+    /// Traduce los controles (teclado o joystick) a un PlayerIntent. Lee el mapa de acciones
+    /// "Moto": que tecla o boton hace que vive en el asset de acciones, no aca.
+    ///
+    /// Los controles son los de un beat'em up y los botones cambian segun el modo:
+    ///   - Moto:  X dispara, Z lanza una granada, Espacio la luz, flechas carril y velocidad.
+    ///   - A pie: X ataca, Z dispara, C lanza una granada, Espacio pone la bomba,
+    ///     flechas mueven.
+    /// En el joystick cada boton hace lo mismo en los dos modos (A golpe, X o RB disparo, LB granada) salvo
+    /// Y: la luz en la moto y la bomba a pie.
     /// </summary>
     public sealed class PlayerInputReader : MonoBehaviour
     {
@@ -20,6 +27,7 @@ namespace Zombineta.Player
         public const float MoverDeadzone = 0.25f;
 
         InputAction laneUp, laneDown, turbo, reverse, fire, headlight, quickRestart, debugWin, debugLose, golpe, debugSinNafta, mover;
+        InputAction firePie, granada, granadaPie, bomba;
 
         void OnEnable()
         {
@@ -42,14 +50,19 @@ namespace Zombineta.Player
             quickRestart = moto.FindAction("QuickRestart", true);
             debugWin = moto.FindAction("DebugWin", true);
             debugLose = moto.FindAction("DebugLose", true);
-            // Opcionales: un asset de acciones viejo sin la pelea a pie sigue andando.
+            // Opcionales: un asset de acciones viejo sin la pelea a pie ni las granadas sigue andando.
             golpe = moto.FindAction("Golpe", false);
             debugSinNafta = moto.FindAction("DebugSinNafta", false);
             mover = moto.FindAction("Mover", false);
+            firePie = moto.FindAction("FirePie", false);
+            granada = moto.FindAction("Granada", false);
+            granadaPie = moto.FindAction("GranadaPie", false);
+            bomba = moto.FindAction("Bomba", false);
             moto.Enable();
         }
 
-        public PlayerIntent Read()
+        /// <param name="aPie">La protagonista esta peleando a pie: el mismo boton hace otra cosa.</param>
+        public PlayerIntent Read(bool aPie = false)
         {
             var intent = PlayerIntent.Idle;
             if (map == null)
@@ -67,10 +80,16 @@ namespace Zombineta.Player
             else if (isReverse && !isTurbo)
                 intent.Mode = DriveMode.Reverse;
 
-            intent.ToggleHeadlight = headlight.WasPressedThisFrame();
-            intent.Fire = fire.WasPressedThisFrame();
+            // Espacio: la luz en la moto, la bomba a pie. Z: la granada en la moto, el disparo a pie (la granada
+            // a pie es C). En el joystick: LB es la granada en los dos modos e Y la luz o la bomba.
+            intent.ToggleHeadlight = !aPie && headlight.WasPressedThisFrame();
+            var lanzar = aPie && granadaPie != null ? granadaPie : granada;
+            intent.Granada = lanzar != null && lanzar.WasPressedThisFrame();
+            intent.Bomba = aPie && bomba != null && bomba.WasPressedThisFrame();
+            var disparo = aPie && firePie != null ? firePie : fire;
+            intent.Fire = disparo.WasPressedThisFrame();
 
-            // A pie: movimiento libre con stick, cruceta, flechas o WASD. Un asset de acciones viejo
+            // A pie: movimiento libre con stick, cruceta o flechas. Un asset de acciones viejo
             // sin "Mover" sigue andando como antes: turbo y retroceso son derecha e izquierda.
             if (mover != null)
             {

@@ -21,6 +21,7 @@ namespace Zombineta.Juego.EditorTools.Levels
         {
             LevelEntryKind.Obstacle, LevelEntryKind.ZombieFront, LevelEntryKind.Barrel, LevelEntryKind.Ramp,
             LevelEntryKind.Fuel, LevelEntryKind.Battery, LevelEntryKind.Ammo,
+            LevelEntryKind.Granada, LevelEntryKind.BombaTemporal,
         };
 
         static readonly Dictionary<LevelEntryKind, string> Labels = new Dictionary<LevelEntryKind, string>
@@ -32,6 +33,8 @@ namespace Zombineta.Juego.EditorTools.Levels
             { LevelEntryKind.Fuel, "Nafta" },
             { LevelEntryKind.Battery, "Bateria" },
             { LevelEntryKind.Ammo, "Balas" },
+            { LevelEntryKind.Granada, "Granada" },
+            { LevelEntryKind.BombaTemporal, "Bomba" },
         };
 
         // Lo que se esta por colocar. Estatico: lo comparten todas las Scene views.

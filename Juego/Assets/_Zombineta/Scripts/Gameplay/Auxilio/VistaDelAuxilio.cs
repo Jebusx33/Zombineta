@@ -7,9 +7,10 @@ using Zombineta.Player;
 namespace Zombineta.Auxilio
 {
     /// <summary>
-    /// Lo que se ve de la pelea a pie en el mundo: la protagonista caminando y pegando, y la
-    /// furgoneta del auxilio cruzando. Solo lee el estado de la simulacion. Mientras pelea a pie
-    /// la moto (con la protagonista arriba) se esconde: el arte todavia no tiene la moto sola.
+    /// Lo que se ve de la pelea a pie en el mundo: la protagonista caminando y pegando, y lo que
+    /// queda en el piso (botiquines, balas y el bidon del ultimo zombie). Solo lee el estado de la
+    /// simulacion. Mientras pelea a pie la moto (con la protagonista arriba) se esconde: el arte
+    /// todavia no tiene la moto sola.
     /// </summary>
     public sealed class VistaDelAuxilio : MonoBehaviour
     {
@@ -32,26 +33,23 @@ namespace Zombineta.Auxilio
         [Tooltip("Cuanto se echa hacia atras al disparar, en unidades. Sin pose de disparo, es lo que marca el tiro.")]
         [SerializeField] float retrocesoDisparo = 0.22f;
 
-        [Header("Furgoneta")]
-        [SerializeField] Sprite furgoneta;
-        [Tooltip("Alto de la furgoneta, en unidades de mundo: cruza los tres carriles.")]
-        [SerializeField] float altoFurgoneta = 3.6f;
-        [SerializeField] Color colorFaros = new Color(1f, 0.92f, 0.7f);
-
         [Header("Lo que sueltan los zombies")]
         [Tooltip("Dibujo del botiquin. Vacio: se usa uno de prueba (cruz verde).")]
         [SerializeField] Sprite botiquin;
         [Tooltip("Dibujo de las balas. Vacio: se usa uno de prueba (tres balas).")]
         [SerializeField] Sprite balas;
+        [Tooltip("Dibujo del bidon que suelta el ultimo zombie. Vacio: Resources/Arsenal/Bidon, o uno de prueba (bidon rojo).")]
+        [SerializeField] Sprite bidon;
+        [Tooltip("El bidon es mas grande que lo demas: es lo que hay que ir a buscar.")]
+        [SerializeField] float altoBidon = 1.1f;
         [Tooltip("Alto de lo que queda en el piso, en unidades de mundo.")]
         [SerializeField] float altoDrop = 0.7f;
         [Tooltip("Segundos antes de irse en que empieza a titilar.")]
         [SerializeField] float segundosTitileo = 3f;
         [SerializeField] float rebote = 0.08f;
 
-        SpriteRenderer cuerpo, golpe, van;
+        SpriteRenderer cuerpo, golpe;
         readonly System.Collections.Generic.List<SpriteRenderer> drops = new System.Collections.Generic.List<SpriteRenderer>();
-        Light2D faros;
         Renderer[] moto;
         bool motoEscondida;
         float caminata;
@@ -97,21 +95,7 @@ namespace Zombineta.Auxilio
             golpe = Crear("Golpe", swoosh, 1.1f, out _);
             golpe.transform.SetParent(cuerpo.transform, true);
             golpeEscalaBase = golpe.transform.localScale;
-            van = Crear("Furgoneta del auxilio", furgoneta, altoFurgoneta, out _);
 
-            var faroGo = new GameObject("Faros");
-            faroGo.transform.SetParent(van.transform, false);
-            faros = faroGo.AddComponent<Light2D>();
-            faros.lightType = Light2D.LightType.Point;
-            faros.blendStyleIndex = 1;
-            faros.color = colorFaros;
-            faros.intensity = 0.45f;
-            faros.pointLightOuterRadius = 6f;
-            faros.pointLightInnerRadius = 0.5f;
-            // Solo la calle: si alumbra la capa del juego, la propia furgoneta queda blanca.
-            faros.targetSortingLayers = new[] { SortingLayer.NameToID("Calle") };
-            faros.shadowsEnabled = false;
-            faros.enabled = false;
         }
 
         SpriteRenderer Crear(string nombre, Sprite sprite, float alto, out GameObject go)
@@ -136,7 +120,6 @@ namespace Zombineta.Auxilio
             bool aPie = s.Phase == RunPhase.Pelea || (s.Phase == RunPhase.Lost && s.Loss == LossReason.Derribada);
             EsconderMoto(aPie);
             DibujarProtagonista(s, aPie);
-            DibujarFurgoneta(s);
             DibujarDrops(s);
         }
 
@@ -152,11 +135,13 @@ namespace Zombineta.Auxilio
                     drops.Add(NuevoDrop(drops.Count));
                 var d = lista[i];
                 var sr = drops[i];
-                sr.sprite = d.Kind == DropKind.Botiquin ? SpriteBotiquin() : SpriteBalas();
+                bool esBidon = d.Kind == DropKind.Bidon;
+                sr.sprite = esBidon ? SpriteBidon() : d.Kind == DropKind.Botiquin ? SpriteBotiquin() : SpriteBalas();
                 sr.enabled = Mathf.Repeat(Time.time * 10f, 1f) < 0.5f || d.Left > segundosTitileo;
-                float escala = altoDrop / Mathf.Max(0.01f, sr.sprite.bounds.size.y);
+                float alto = esBidon ? altoBidon * (1f + 0.08f * Mathf.Sin(Time.time * 6f)) : altoDrop;
+                float escala = alto / Mathf.Max(0.01f, sr.sprite.bounds.size.y);
                 sr.transform.localScale = Vector3.one * escala;
-                float salto = Mathf.Abs(Mathf.Sin(Time.time * 4f + i)) * rebote;
+                float salto = Mathf.Abs(Mathf.Sin(Time.time * 4f + i)) * rebote * (esBidon ? 2.5f : 1f);
                 float y = run.LaneToWorldY(d.Lane) + salto - sr.sprite.bounds.min.y * escala;
                 sr.transform.position = new Vector3(run.ToWorldX(d.X), y, 0f);
                 sr.sortingOrder = LaneSorting.Order(d.Lane, SortSlot.Item);
@@ -173,6 +158,26 @@ namespace Zombineta.Auxilio
             sr.sortingLayerID = LaneSorting.GameLayerId;
             sr.enabled = false;
             return sr;
+        }
+
+        Sprite SpriteBidon()
+        {
+            if (bidon == null)
+                bidon = Resources.Load<Sprite>("Arsenal/Bidon");
+            if (bidon == null)
+                bidon = Dibujar(24, (x, y) =>
+                {
+                    // Un bidon rojo con tapa amarilla y un asa.
+                    bool cuerpo = x >= 4 && x < 20 && y >= 2 && y < 17;
+                    bool asa = x >= 14 && x < 19 && y >= 17 && y < 21 && (y >= 19 || x >= 17 || x < 16);
+                    bool tapa = x >= 6 && x < 11 && y >= 17 && y < 21;
+                    bool borde = cuerpo && (x == 4 || x == 19 || y == 2 || y == 16);
+                    if (tapa) return new Color(1f, 0.85f, 0.2f, 1f);
+                    if (asa) return new Color(0.3f, 0.3f, 0.3f, 1f);
+                    if (borde) return new Color(0.4f, 0.05f, 0.05f, 1f);
+                    return cuerpo ? new Color(0.85f, 0.15f, 0.12f, 1f) : Color.clear;
+                });
+            return bidon;
         }
 
         Sprite SpriteBotiquin()
@@ -258,8 +263,8 @@ namespace Zombineta.Auxilio
             float paso = camina ? Mathf.Abs(Mathf.Sin(caminata)) * 0.08f : 0f;
 
             // Al empezar la pelea (o al reintentarla) se baja de un salto, en vez de aparecer de golpe.
-            float segundosPelea = run.Config.peleaSegundos - s.PeleaRestante;
-            float bajada = s.Phase == RunPhase.Pelea && !s.FurgonetaEnCamino && segundosBajada > 0f &&
+            float segundosPelea = s.PeleaTiempo;
+            float bajada = s.Phase == RunPhase.Pelea && segundosBajada > 0f &&
                            segundosPelea >= 0f && segundosPelea < segundosBajada
                 ? Mathf.Sin(segundosPelea / segundosBajada * Mathf.PI) * alturaBajada
                 : 0f;
@@ -313,23 +318,6 @@ namespace Zombineta.Auxilio
             ultimaX = s.PeatonX;
             ultimaY = s.PeatonY;
             return Mathf.Sqrt(vx * vx + vy * vy);
-        }
-
-        void DibujarFurgoneta(RunState s)
-        {
-            bool cruza = s.Phase == RunPhase.Pelea && s.FurgonetaEnCamino;
-            van.enabled = cruza;
-            faros.enabled = cruza;
-            if (!cruza)
-                return;
-
-            float x = run.ToWorldX(s.FurgonetaX);
-            float y = run.LaneToWorldY(0f) - 0.3f;
-            van.transform.position = new Vector3(x - van.sprite.bounds.center.x * van.transform.localScale.x,
-                y - van.sprite.bounds.min.y * van.transform.localScale.y, 0f);
-            // Delante de todo lo de los carriles: pasa por encima de los zombies.
-            van.sortingOrder = LaneSorting.Order(-1f, SortSlot.Effect);
-            faros.transform.position = new Vector3(x + altoFurgoneta * 0.9f, y + altoFurgoneta * 0.35f, 0f);
         }
     }
 }

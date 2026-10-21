@@ -230,10 +230,109 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
-        public void MouseClick_Fires()
+        public void TheMouse_NoLongerDoesAnything_InTheRun()
         {
             Press(mouse.leftButton);
-            Assert.IsTrue(reader.Read().Fire);
+            Press(mouse.rightButton);
+            var intent = reader.Read();
+            Assert.IsFalse(intent.Fire);
+            Assert.IsFalse(intent.Golpe);
+        }
+
+        // --- Controles de beat'em up: X y Z cambian de funcion segun el modo --------
+
+        [Test]
+        public void OnTheBike_XFires_AndZThrowsAGrenade()
+        {
+            Press(kb.xKey);
+            var intent = reader.Read(aPie: false);
+            Assert.IsTrue(intent.Fire);
+            Release(kb.xKey);
+
+            Press(kb.zKey);
+            intent = reader.Read(aPie: false);
+            Assert.IsTrue(intent.Granada);
+            Assert.IsFalse(intent.Fire, "Z no dispara en la moto");
+        }
+
+        [Test]
+        public void OnFoot_XStrikes_AndZShoots()
+        {
+            Press(kb.xKey);
+            var intent = reader.Read(aPie: true);
+            Assert.IsTrue(intent.Golpe, "X ataca a pie");
+            Assert.IsFalse(intent.Granada);
+            Release(kb.xKey);
+
+            Press(kb.zKey);
+            intent = reader.Read(aPie: true);
+            Assert.IsTrue(intent.Fire, "Z dispara a pie");
+            Assert.IsFalse(intent.Granada, "a pie no hay granada");
+        }
+
+        [Test]
+        public void Space_IsTheHeadlightOnTheBike_AndTheBombOnFoot()
+        {
+            Press(kb.spaceKey);
+            Assert.IsTrue(reader.Read(aPie: false).ToggleHeadlight);
+            Assert.IsFalse(reader.Read(aPie: false).Bomba);
+            Release(kb.spaceKey);
+
+            Press(kb.spaceKey);
+            var intent = reader.Read(aPie: true);
+            Assert.IsTrue(intent.Bomba);
+            Assert.IsFalse(intent.ToggleHeadlight);
+        }
+
+        [Test]
+        public void TheLeftShoulder_IsTheGrenade_InBothModes()
+        {
+            Press(pad.leftShoulder);
+            Assert.IsTrue(reader.Read(aPie: false).Granada);
+            Assert.IsTrue(reader.Read(aPie: true).Granada);
+            Assert.IsFalse(reader.Read(aPie: true).Bomba, "LB ya no es la bomba");
+        }
+
+        [Test]
+        public void TheNorthButton_IsTheHeadlightOnTheBike_AndTheBombOnFoot()
+        {
+            Press(pad.buttonNorth);
+            Assert.IsTrue(reader.Read(aPie: false).ToggleHeadlight);
+            Assert.IsFalse(reader.Read(aPie: false).Bomba);
+            Release(pad.buttonNorth);
+
+            Press(pad.buttonNorth);
+            var intent = reader.Read(aPie: true);
+            Assert.IsTrue(intent.Bomba);
+            Assert.IsFalse(intent.ToggleHeadlight);
+        }
+
+        [Test]
+        public void OnFoot_CThrowsAGrenade_AndOnTheBikeItDoesNothing()
+        {
+            Press(kb.cKey);
+            Assert.IsTrue(reader.Read(aPie: true).Granada);
+            Assert.IsFalse(reader.Read(aPie: false).Granada, "en la moto la granada es Z");
+        }
+
+        [Test]
+        public void OnTheGamepad_XAndRightShoulderFire_AndAStrikes_InBothModes()
+        {
+            Press(pad.buttonWest);
+            Assert.IsTrue(reader.Read(aPie: false).Fire);
+            Assert.IsTrue(reader.Read(aPie: true).Fire);
+            Release(pad.buttonWest);
+
+            Press(pad.buttonSouth);
+            Assert.IsTrue(reader.Read(aPie: true).Golpe);
+        }
+
+        [Test]
+        public void TheOldKeys_ZAndJ_NoLongerStrike()
+        {
+            Press(kb.jKey);
+            Assert.IsFalse(reader.Read(aPie: true).Golpe);
+            Release(kb.jKey);
         }
 
         [Test]

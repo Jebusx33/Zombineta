@@ -35,8 +35,8 @@ namespace Zombineta.Juego.Levels
                  "de cada pedazo. Vacio = todo parejo, como siempre.")]
         [SerializeField] List<Tramo> tramos = new List<Tramo>();
 
-        [Tooltip("Pedidos de auxilio en este nivel: con nafta en cero se pelea a pie hasta que llega " +
-                 "la furgoneta. 0 = sin auxilio (quedarse sin nafta es perder).")]
+        [Tooltip("Pedidos de auxilio en este nivel: con nafta en cero se pelea a pie hasta vencer a todas " +
+                 "las oleadas; el ultimo zombie suelta un bidon. 0 = sin auxilio (quedarse sin nafta es perder).")]
         [Min(0)] [SerializeField] int ayudas;
 
         [Tooltip("Nafta con la que arranca el nivel (0 = el tanque lleno). Un tanque corto hace que el primer auxilio llegue pronto.")]
@@ -167,6 +167,8 @@ namespace Zombineta.Juego.Levels
                 case LevelEntryKind.ZombieFront: factor = 0.5f; break;
                 case LevelEntryKind.Fuel:
                 case LevelEntryKind.Battery:
+                case LevelEntryKind.Granada:
+                case LevelEntryKind.BombaTemporal:
                 case LevelEntryKind.Ammo: factor = 1f; break;
                 default: return 0f;
             }

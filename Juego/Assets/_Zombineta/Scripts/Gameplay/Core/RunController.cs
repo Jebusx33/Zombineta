@@ -89,7 +89,7 @@ namespace Zombineta.Core
             if (Paused)
                 return;
 
-            var intent = input != null ? input.Read() : PlayerIntent.Idle;
+            var intent = input != null ? input.Read(Sim.State.Phase == RunPhase.Pelea) : PlayerIntent.Idle;
 
             var events = StepSimulation(Sim, Level, intent, Time.deltaTime);
 

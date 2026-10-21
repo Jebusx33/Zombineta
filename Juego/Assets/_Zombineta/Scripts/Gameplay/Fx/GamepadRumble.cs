@@ -27,6 +27,8 @@ namespace Zombineta.Fx
 
         void OnEnable()
         {
+            // Tras recompilar con Play activo, Awake no vuelve a correr y el director (no serializado) queda en null.
+            director ??= new RumbleDirector(config);
             if (run != null)
                 run.Stepped += director.Trigger;
         }

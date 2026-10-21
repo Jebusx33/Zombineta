@@ -34,6 +34,8 @@ namespace Zombineta.Core
         Fuel,
         Battery,
         Ammo,
+        Grenade,
+        Bomb,
     }
 
     /// <summary>
@@ -54,6 +56,22 @@ namespace Zombineta.Core
         public float Fuel;
         public float Battery;
         public int Ammo;
+        /// <summary>Granadas que lleva para lanzar desde la moto (arma secundaria de la pistola).</summary>
+        public int Granadas;
+        /// <summary>Bombas temporizadoras que lleva para la pelea a pie.</summary>
+        public int Bombas;
+        /// <summary>Segundos que le quedan en el aire a la granada lanzada (0 = ninguna), y los metros donde va a caer.</summary>
+        public float GranadaVuelo;
+        public float GranadaX;
+        /// <summary>Hacia donde va la granada: -1 hacia atras (moto), o hacia donde miraba a pie (1 o -1).</summary>
+        public int GranadaDir = -1;
+        /// <summary>A pie: segundos que le quedan a la mecha de la bomba puesta (0 = ninguna) y los metros donde esta.</summary>
+        public float BombaMecha;
+        public float BombaX;
+        /// <summary>Carril (continuo) donde se puso la bomba.</summary>
+        public float BombaY;
+        /// <summary>Zombies que se llevo la ultima explosion (granada, barril o bomba): para la telemetria.</summary>
+        public int UltimaExplosionMuertos;
 
         public bool HeadlightOn;
         public DriveMode Mode;
@@ -103,7 +121,7 @@ namespace Zombineta.Core
         public int VidaMax;
 
         // --- Numeros de la pelea (para la nota, el premio y la telemetria) ---
-        /// <summary>Zombies que mato a golpes o a tiros en la pelea (los que arrolla la furgoneta no cuentan).</summary>
+        /// <summary>Zombies que vencio en la pelea (a golpes, a tiros, con bombas o con barriles).</summary>
         public int PeleaBajas;
         public int PeleaGolpesRecibidos;
         public int PeleaRemates;
@@ -112,7 +130,7 @@ namespace Zombineta.Core
         public int PeleaSaltosAcertados;
         public int PeleaSaltosEsquivados;
         public int PeleaSaltosCortados;
-        /// <summary>Nota de la ultima pelea terminada, y lo que dejo la furgoneta por ella.</summary>
+        /// <summary>Nota de la ultima pelea terminada, y lo que se llevo por ella.</summary>
         public NotaPelea Nota;
         public int PremioBalas;
         /// <summary>Aciertos de disparo seguidos y los segundos que le quedan a la ventana para el retroceso de la horda.</summary>
@@ -129,8 +147,18 @@ namespace Zombineta.Core
         public int DropLlenoKind;
         /// <summary>Golpes que aguanta en la pelea. Solo cuenta mientras pelea.</summary>
         public int Vida;
-        /// <summary>Segundos que faltan para que llegue la furgoneta.</summary>
-        public float PeleaRestante;
+        /// <summary>Segundos que lleva la pelea.</summary>
+        public float PeleaTiempo;
+        /// <summary>Bombas temporizadoras que uso en la pelea.</summary>
+        public int PeleaBombas;
+        /// <summary>Cuantas oleadas tiene la pelea, cuantos zombies tiene la que esta en curso y cuantos faltan vencer.</summary>
+        public int Oleadas;
+        public int OleadaTotal;
+        public int ZombiesRestantes;
+        /// <summary>Segundos hasta que entre la oleada que sigue (0 = la oleada esta en curso).</summary>
+        public float OleadaRespiro;
+        /// <summary>Se vencio la ultima oleada: falta ir a buscar el bidon que solto el ultimo zombie.</summary>
+        public bool BidonEnElPiso;
         /// <summary>Metros: donde esta la protagonista a pie. La moto queda en PlayerX.</summary>
         public float PeatonX;
         /// <summary>
@@ -150,9 +178,6 @@ namespace Zombineta.Core
         public int ComboPaso;
         /// <summary>Segundos que quedan para seguir la cadena con otro golpe; si llega a 0 vuelve a empezar.</summary>
         public float ComboVentana;
-        public bool FurgonetaEnCamino;
-        /// <summary>Metros: donde va la furgoneta mientras cruza.</summary>
-        public float FurgonetaX;
 
         public float Gap => PlayerX - HordeX;
     }

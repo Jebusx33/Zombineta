@@ -40,7 +40,6 @@ namespace Zombineta.Core
         float hitstopLeft;
         float lentaLeft;
         float lentaEscala = 1f;
-        bool lentaDeFurgoneta;
 
         public CameraDirector Director => director;
 
@@ -209,7 +208,6 @@ namespace Zombineta.Core
             {
                 director.AddTrauma(0.3f);
                 CamaraLenta(0.6f, 0.3f);
-                lentaDeFurgoneta = false;
             }
             if ((events & RunEvent.Golpe) != 0)
             {
@@ -230,13 +228,17 @@ namespace Zombineta.Core
                 director.Punch(0f, -0.2f);
                 Hitstop(0.08f);
             }
-            if ((events & RunEvent.AuxilioLlega) != 0)
-                director.AddTrauma(0.2f);
-            // La furgoneta pega contra el primero: camara lenta una sola vez, para que se vea.
-            if ((events & RunEvent.RanOver) != 0 && run.Sim.State.Phase == RunPhase.Pelea && !lentaDeFurgoneta)
+            // Ganar la pelea: el ultimo zombie suelta el bidon.
+            if ((events & RunEvent.PeleaGanada) != 0)
+                director.AddTrauma(0.25f);
+            // Granadas y bombas: la sacudida se siente; la bomba, que se lleva a todos, ademas frena el tiempo un instante.
+            if ((events & RunEvent.GranadaLanzada) != 0)
+                director.AddTrauma(0.08f);
+            if ((events & RunEvent.GranadaExplota) != 0)
+                director.AddTrauma(0.3f);
+            if ((events & RunEvent.BombaExplota) != 0)
             {
-                lentaDeFurgoneta = true;
-                director.AddTrauma(0.5f);
+                director.AddTrauma(0.6f);
                 CamaraLenta(0.5f, 0.35f);
             }
             if ((events & RunEvent.AuxilioTermina) != 0)

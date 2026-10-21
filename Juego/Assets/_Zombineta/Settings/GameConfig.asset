@@ -73,7 +73,6 @@ MonoBehaviour:
   fallFuelPenalty: 10
   aerialPickupTolerance: 1.5
   ayudas: 0
-  peleaSegundos: 25
   vidaPelea: 5
   gapTrasAuxilio: 45
   arenaMedioAncho: 12
@@ -89,8 +88,6 @@ MonoBehaviour:
   zombiePreparacion: 0.5
   zombieEnfriamiento: 1
   invulnerableTrasGolpe: 0.8
-  furgonetaVelocidad: 28
-  furgonetaDesde: 24
   worldUnitsPerMeter: 0.75
   cameraTrailMeters: 18
   jumpHeightToWorld: 2.125

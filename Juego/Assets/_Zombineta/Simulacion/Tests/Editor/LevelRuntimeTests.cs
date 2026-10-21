@@ -465,8 +465,9 @@ namespace Zombineta.Tests
 
             int quitados = level.ClearZone(90f, 130f);
 
-            Assert.AreEqual(4, quitados);
-            Assert.IsTrue(level.Items[0].Consumed && level.Items[1].Consumed && level.Items[2].Consumed && level.Items[3].Consumed);
+            Assert.AreEqual(3, quitados, "el coche, la rampa y el zombie de frente; el barril se queda (a pie explota)");
+            Assert.IsTrue(level.Items[0].Consumed && level.Items[1].Consumed && level.Items[3].Consumed);
+            Assert.IsFalse(level.Items[2].Consumed, "el barril se queda para dispararle a pie");
             Assert.IsFalse(level.Items[4].Consumed, "los recursos se quedan");
             Assert.IsFalse(level.Items[5].Consumed, "lo que esta lejos no se toca");
         }
@@ -593,8 +594,9 @@ namespace Zombineta.Tests
             level.ClearZone(90f, 130f);
 
             Assert.IsTrue(level.Items[0].Despejado, "el coche queda de decorado");
-            Assert.IsTrue(level.Items[1].Despejado, "el barril tambien");
-            Assert.IsTrue(level.Items[2].Despejado, "y la rampa");
+            Assert.IsFalse(level.Items[1].Consumed, "el barril no se despeja: a pie se le dispara");
+            Assert.IsFalse(level.Items[1].Despejado);
+            Assert.IsTrue(level.Items[2].Despejado, "la rampa si");
             Assert.IsTrue(level.Items[3].Consumed);
             Assert.IsFalse(level.Items[3].Despejado, "los zombies de frente no");
             Assert.IsFalse(level.Items[4].Consumed, "el recurso no se despeja");

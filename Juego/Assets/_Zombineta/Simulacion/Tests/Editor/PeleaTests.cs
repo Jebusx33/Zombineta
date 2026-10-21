@@ -31,7 +31,6 @@ namespace Zombineta.Tests
             c.shotRangeMeters = 30f;
 
             c.ayudas = ayudas;
-            c.peleaSegundos = 25f;
             c.vidaPelea = 5;
             c.gapTrasAuxilio = 45f;
             c.arenaMedioAncho = 12f;
@@ -46,8 +45,6 @@ namespace Zombineta.Tests
             c.zombiePreparacion = 0.5f;
             c.zombieEnfriamiento = 1f;
             c.invulnerableTrasGolpe = 0.8f;
-            c.furgonetaVelocidad = 28f;
-            c.furgonetaDesde = 24f;
 
             // Lo de la Fase 4 apagado: estos tests prueban la pelea de siempre. Los de la Fase 4 lo prenden.
             c.paradaSegundos = 0f;
@@ -80,6 +77,47 @@ namespace Zombineta.Tests
             int pasos = Mathf.RoundToInt(segundos / Dt);
             for (int i = 0; i < pasos && sim.State.Phase == RunPhase.Pelea; i++)
                 sim.Tick(intent, Dt);
+        }
+
+        /// <summary>Cae todo zombie que esta peleando ahora (sin pasar por los golpes).</summary>
+        static void CaerTodos(RunSimulation sim)
+        {
+            var us = sim.Horde.Units;
+            for (int i = 0; i < us.Length; i++)
+                if (sim.Pelea.Activo(i) && us[i].Alive)
+                    sim.Horde.Kill(us[i], Zombineta.Enemies.DeathCause.Golpe);
+        }
+
+        /// <summary>Vence a todos, oleada tras oleada, hasta que el ultimo suelta el bidon.</summary>
+        static void VencerTodo(RunSimulation sim)
+        {
+            for (int guarda = 0; guarda < 6000 && sim.State.Phase == RunPhase.Pelea && !sim.State.BidonEnElPiso; guarda++)
+            {
+                sim.State.Vida = Mathf.Max(sim.State.Vida, 1);
+                CaerTodos(sim);
+                sim.Tick(Quieta, Dt);
+            }
+        }
+
+        /// <summary>Camina hasta el bidon que dejo el ultimo zombie y lo agarra.</summary>
+        static RunEvent RecogerElBidon(RunSimulation sim)
+        {
+            foreach (var d in sim.Pelea.Drops)
+            {
+                if (d.Kind != Zombineta.Auxilio.DropKind.Bidon)
+                    continue;
+                sim.State.PeatonX = d.X;
+                sim.State.PeatonY = d.Lane;
+                return sim.Tick(Quieta, Dt);
+            }
+            return RunEvent.None;
+        }
+
+        /// <summary>La pelea ganada de punta a punta: vencer a todos y volver a la moto con el bidon.</summary>
+        static void TerminarPelea(RunSimulation sim)
+        {
+            VencerTodo(sim);
+            RecogerElBidon(sim);
         }
 
         /// <summary>Deja un solo zombie peleando, pegado a ella, y saca a los demas de la arena.</summary>
@@ -309,28 +347,43 @@ namespace Zombineta.Tests
         // --- El auxilio -------------------------------------------------------
 
         [Test]
-        public void WhenTimeIsUp_TheVanRunsThemOver_FillsTheTank_AndTheRunGoesOn()
+        public void WhenTheLastZombieFalls_ItDropsACan_AndPickingItUpFillsTheTankAndTheRunGoesOn()
         {
             var sim = SinNafta(MakeConfig());
             var z = UnoSolo(sim, 4f);
             z.Enfriamiento = 999f;
-            sim.State.PeleaRestante = 0.05f;
 
-            Avanzar(sim, 0.1f, Quieta);
-            Assert.IsTrue(sim.State.FurgonetaEnCamino);
+            VencerTodo(sim);
 
-            // Hasta que la furgoneta pasa por donde estaba el zombie.
-            float donde = z.X;
-            for (int i = 0; i < 600 && sim.State.FurgonetaX < donde + 3f; i++)
-                sim.Tick(Quieta, Dt);
-            Assert.IsFalse(z.Alive, "la furgoneta lo arrollo");
-            Assert.AreEqual(Zombineta.Enemies.DeathCause.RunOver, z.Cause);
+            Assert.IsTrue(sim.State.BidonEnElPiso, "vencio a todos: el ultimo suelta un bidon");
+            Assert.AreEqual(RunPhase.Pelea, sim.State.Phase, "hasta que no lo agarra, sigue en la pelea");
+            int bidones = 0;
+            foreach (var d in sim.Pelea.Drops)
+                if (d.Kind == Zombineta.Auxilio.DropKind.Bidon)
+                    bidones++;
+            Assert.AreEqual(1, bidones);
 
-            Avanzar(sim, 3f, Quieta);
+            var ev = RecogerElBidon(sim);
+            Assert.IsTrue((ev & RunEvent.AuxilioTermina) != 0);
             Assert.AreEqual(RunPhase.Running, sim.State.Phase);
-            Assert.AreEqual(100f, sim.State.Fuel, 0.001f, "tanque lleno");
+            Assert.AreEqual(100f, sim.State.Fuel, 0.001f, "tanque lleno de una");
             Assert.AreEqual(45f, sim.State.Gap, 0.5f, "la horda queda atras");
             Assert.AreEqual(sim.State.PeatonX, sim.State.PlayerX, 0.001f, "sigue desde donde estaba a pie");
+        }
+
+        [Test]
+        public void TheCan_DoesNotDisappearAndTheFightHasNoClock()
+        {
+            var sim = SinNafta(MakeConfig());
+            var z = UnoSolo(sim, 4f);
+            z.Enfriamiento = 999f;
+            VencerTodo(sim);
+
+            Avanzar(sim, 60f, Quieta);   // un minuto sin agarrarlo
+
+            Assert.AreEqual(RunPhase.Pelea, sim.State.Phase);
+            Assert.IsTrue(sim.State.BidonEnElPiso);
+            Assert.AreEqual(1, sim.Pelea.Drops.Count, "el bidon espera");
         }
 
         [Test]
@@ -338,8 +391,7 @@ namespace Zombineta.Tests
         {
             var c = MakeConfig(ayudas: 1);
             var sim = SinNafta(c);
-            sim.State.PeleaRestante = 0f;
-            Avanzar(sim, 5f, Quieta);
+            TerminarPelea(sim);
             Assert.AreEqual(RunPhase.Running, sim.State.Phase);
 
             sim.State.Fuel = 0f;
@@ -724,8 +776,7 @@ namespace Zombineta.Tests
             for (int i = 0; i < 200 && sim.State.Phase == RunPhase.Running; i++)
                 sim.Tick(Quieta, Dt);                 // primero frena y se baja
             Assert.AreEqual(RunPhase.Pelea, sim.State.Phase);
-            sim.State.PeleaRestante = 0f;
-            Avanzar(sim, 5f, Quieta);                 // llega la furgoneta y termina
+            TerminarPelea(sim);
             Assert.AreEqual(RunPhase.Running, sim.State.Phase);
             Assert.Greater(sim.State.ArranqueRestante, 0f);
 
@@ -746,13 +797,64 @@ namespace Zombineta.Tests
             Assert.AreEqual(1, sim.State.AyudasUsadas);
             Assert.AreEqual(c.vidaPelea + 1, sim.State.Vida);
 
-            sim.State.PeleaRestante = 0f;
-            Avanzar(sim, 5f, Quieta);
+            TerminarPelea(sim);
             sim.State.Fuel = 0f;
             sim.Tick(Quieta, Dt);
 
             Assert.AreEqual(2, sim.State.AyudasUsadas);
             Assert.AreEqual(c.vidaPelea, sim.State.Vida, "la segunda pelea ya no tiene el corazon de mas");
+        }
+
+        [Test]
+        public void TheFirstFight_StartsWithAGrenadeAndABomb_TheNextOnesDoNotGiveThemAgain()
+        {
+            var c = Rapido();
+            c.granadasPrimeraPelea = 1;
+            c.bombasPrimeraPelea = 1;
+            var sim = SinNafta(c);
+            Assert.AreEqual(1, sim.State.Granadas, "se baja con una granada");
+            Assert.AreEqual(1, sim.State.Bombas, "y una bomba");
+
+            sim.State.Granadas = 0;
+            sim.State.Bombas = 0;
+            TerminarPelea(sim);
+            sim.State.Fuel = 0f;
+            sim.Tick(Quieta, Dt);
+
+            Assert.AreEqual(2, sim.State.AyudasUsadas);
+            Assert.AreEqual(0, sim.State.Granadas, "la segunda pelea ya no regala");
+            Assert.AreEqual(0, sim.State.Bombas);
+        }
+
+        [Test]
+        public void TheFirstFight_KeepsWhatWasPickedUp_AndNeverPassesTheBagLimit()
+        {
+            var c = Rapido();
+            c.granadasPrimeraPelea = 1;
+            c.bombasPrimeraPelea = 1;
+            c.granadaMax = 3;
+            c.bombaMax = 2;
+            var sim = new RunSimulation(c);
+            sim.State.PlayerX = 500f;
+            sim.Horde.Reset(460f);
+            sim.State.Granadas = 3;
+            sim.State.Bombas = 2;
+            sim.State.Fuel = 0f;
+            sim.Tick(Quieta, Dt);
+            Assert.AreEqual(3, sim.State.Granadas, "las que ya traia, no se pisan");
+            Assert.AreEqual(2, sim.State.Bombas);
+
+            c.granadasPrimeraPelea = 9;
+            c.bombasPrimeraPelea = 9;
+            var otra = SinNafta(c);
+            Assert.AreEqual(3, otra.State.Granadas, "el tope de la mochila manda");
+            Assert.AreEqual(2, otra.State.Bombas);
+        }
+
+        [Test]
+        public void TheGrenadeFlight_IsAWideThrow_NotAQuickFlick()
+        {
+            Assert.GreaterOrEqual(new GameConfig().granadaVuelo, 0.7f);
         }
 
         static GameConfig ConOleadas()
@@ -766,11 +868,11 @@ namespace Zombineta.Tests
             c.hordeCount = 12;
             c.oleadas = new List<OleadaPelea>
             {
-                new OleadaPelea { desdeSegundo = 0f,  zombies = 3, pesos = new[] { 1f, 0f, 0f }, velocidad = 0.5f },
-                new OleadaPelea { desdeSegundo = 10f, zombies = 5, pesos = new[] { 0f, 1f, 0f }, velocidad = 1f },
-                new OleadaPelea { desdeSegundo = 20f, zombies = 6, pesos = new[] { 0f, 0f, 1f }, velocidad = 1f },
+                new OleadaPelea { zombies = 3, simultaneos = 3, pesos = new[] { 1f, 0f, 0f }, velocidad = 0.5f },
+                new OleadaPelea { zombies = 5, simultaneos = 4, pesos = new[] { 0f, 1f, 0f }, velocidad = 1f },
+                new OleadaPelea { zombies = 6, simultaneos = 5, pesos = new[] { 0f, 0f, 1f }, velocidad = 1f },
             };
-            c.peleaSegundos = 30f;
+            c.respiroOleada = 1.5f;
             return c;
         }
 
@@ -810,39 +912,107 @@ namespace Zombineta.Tests
         }
 
         [Test]
-        public void TheWavesGrow_WithMoreZombiesAndNewKinds_AndAnnounceThemselves()
+        public void TheWaveDoesNotAdvanceWithTime_OnlyBeatingEveryoneMakesTheNextOneEnter()
         {
             var sim = SinNafta(ConOleadas());
-            int anuncios = 0;
-            var vistos = new HashSet<int>();
-
-            for (int t = 0; t < 60 * 29 && sim.State.Phase == RunPhase.Pelea; t++)
+            for (int t = 0; t < 60 * 40 && sim.State.Phase == RunPhase.Pelea; t++)
             {
                 sim.State.Vida = 5;                     // no es lo que se prueba aca
-                var ev = sim.Tick(Quieta, Dt);
-                if ((ev & RunEvent.OleadaNueva) != 0) anuncios++;
-                for (int i = 0; i < sim.Horde.Units.Length; i++)
-                    if (sim.Pelea.Activo(i) && sim.Horde.Units[i].Alive)
-                        vistos.Add(sim.Horde.Units[i].Type);
+                sim.Tick(Quieta, Dt);
             }
-
-            Assert.AreEqual(2, anuncios, "dos oleadas nuevas despues de la primera");
-            Assert.AreEqual(2, sim.State.Oleada);
-            Assert.AreEqual(6, Activos(sim), "la ultima oleada trae seis a la vez");
-            CollectionAssert.Contains(vistos, 1);
-            CollectionAssert.Contains(vistos, 2);
+            Assert.AreEqual(0, sim.State.Oleada, "no hay reloj: sigue la primera oleada");
+            Assert.AreEqual(3, sim.State.ZombiesRestantes);
         }
 
         [Test]
-        public void TheWaveCountsKeepGoingEvenWhenZombiesDie()
+        public void BeatingAWave_BringsTheNextOneAfterABreak_WithMoreZombiesAndNewKinds()
         {
             var sim = SinNafta(ConOleadas());
-            for (int t = 0; t < 60 * 11; t++)
+            var anuncios = new List<int>();
+            var tipos = new HashSet<int>();
+
+            for (int t = 0; t < 60 * 30 && sim.State.Oleada < 2; t++)
             {
                 sim.State.Vida = 5;
-                sim.Tick(Quieta, Dt);
+                CaerTodos(sim);
+                var ev = sim.Tick(Quieta, Dt);
+                if ((ev & RunEvent.OleadaNueva) != 0)
+                    anuncios.Add(sim.State.Oleada);
+                for (int i = 0; i < sim.Horde.Units.Length; i++)
+                    if (sim.Pelea.Activo(i) && sim.Horde.Units[i].Alive)
+                        tipos.Add(sim.Horde.Units[i].Type);
             }
-            Assert.AreEqual(5, Activos(sim), "a los 10 s son cinco los que pelean");
+
+            CollectionAssert.AreEqual(new[] { 1, 2 }, anuncios, "dos oleadas nuevas despues de la primera");
+            Assert.AreEqual(2, sim.State.Oleada);
+            Assert.AreEqual(6, sim.State.OleadaTotal);
+            Assert.AreEqual(5, Activos(sim) - MuertosActivos(sim), "de la ultima entran cinco a la vez");
+            Assert.AreEqual(6, sim.State.ZombiesRestantes);
+            CollectionAssert.Contains(tipos, 1);
+            CollectionAssert.Contains(tipos, 2);
+        }
+
+        [Test]
+        public void ThereIsABreakBetweenWaves()
+        {
+            var c = ConOleadas();
+            var sim = SinNafta(c);
+            CaerTodos(sim);
+            sim.Tick(Quieta, Dt);
+
+            Assert.Greater(sim.State.OleadaRespiro, 0f, "respiro");
+            Assert.AreEqual(0, sim.State.Oleada, "todavia no entro la que sigue");
+
+            Avanzar(sim, c.respiroOleada + 0.1f, Quieta);
+            Assert.AreEqual(1, sim.State.Oleada);
+        }
+
+        [Test]
+        public void TheOnesWhoFall_AreNotReplaced_TheWaitingOnesEnterOneByOne()
+        {
+            var sim = SinNafta(ConOleadas());
+            CaerTodos(sim);
+            Avanzar(sim, 1.6f, Quieta);   // entra la segunda: 5 en total, 4 a la vez
+            Assert.AreEqual(1, sim.State.Oleada);
+            Assert.AreEqual(4, Activos(sim) - MuertosActivos(sim));
+            Assert.AreEqual(5, sim.State.ZombiesRestantes);
+
+            // Cae uno: entra el que esperaba afuera, y quedan 4 en total.
+            Zombineta.Enemies.ZombieUnit vivo = null;
+            for (int i = 0; i < sim.Horde.Units.Length; i++)
+                if (sim.Pelea.Activo(i) && sim.Horde.Units[i].Alive) { vivo = sim.Horde.Units[i]; break; }
+            sim.Horde.Kill(vivo, Zombineta.Enemies.DeathCause.Golpe);
+            sim.Tick(Quieta, Dt);
+
+            Assert.AreEqual(4, sim.State.ZombiesRestantes);
+            Assert.AreEqual(4, Activos(sim) - MuertosActivos(sim), "el que esperaba entro");
+            Avanzar(sim, 5f, Quieta);   // el cadaver se va y nadie lo repone
+            Assert.AreEqual(4, sim.State.ZombiesRestantes);
+        }
+
+        static int MuertosActivos(RunSimulation sim)
+        {
+            int n = 0;
+            for (int i = 0; i < sim.Horde.Units.Length; i++)
+                if (sim.Pelea.Activo(i) && !sim.Horde.Units[i].Alive) n++;
+            return n;
+        }
+
+        [Test]
+        public void BeatingTheLastWave_DropsTheCan_AndThePhaseNoLongerHasAnyTimeLimit()
+        {
+            var sim = SinNafta(ConOleadas());
+            var ev = RunEvent.None;
+            for (int t = 0; t < 60 * 60 && sim.State.Phase == RunPhase.Pelea && !sim.State.BidonEnElPiso; t++)
+            {
+                sim.State.Vida = 5;
+                CaerTodos(sim);
+                ev |= sim.Tick(Quieta, Dt);
+            }
+
+            Assert.IsTrue((ev & RunEvent.PeleaGanada) != 0);
+            Assert.AreEqual(2, sim.State.Oleada, "estaba en la ultima oleada");
+            Assert.IsTrue(sim.State.BidonEnElPiso);
         }
 
         [Test]
@@ -854,7 +1024,6 @@ namespace Zombineta.Tests
             var z = Poner(sim, (0.8f, 1));
             sim.State.Vida = 1;
             z[0].Enfriamiento = 0f;
-            float restanteAntes = sim.State.PeleaRestante;
 
             RunEvent ev = RunEvent.None;
             for (int t = 0; t < 120 && (ev & RunEvent.PeleaReintenta) == 0; t++)
@@ -863,7 +1032,8 @@ namespace Zombineta.Tests
             Assert.IsTrue((ev & RunEvent.PeleaReintenta) != 0);
             Assert.AreEqual(RunPhase.Pelea, sim.State.Phase, "no pierde");
             Assert.AreEqual(c.vidaPelea, sim.State.Vida, "vida entera otra vez");
-            Assert.AreEqual(c.peleaSegundos, sim.State.PeleaRestante, 0.001f, "el reloj del auxilio de nuevo");
+            Assert.AreEqual(0, sim.State.Oleada, "otra vez desde la primera oleada");
+            Assert.AreEqual(sim.State.OleadaTotal, sim.State.ZombiesRestantes, "con todos los zombies de nuevo");
             Assert.Greater(sim.State.Invulnerable, 1f, "un respiro para reacomodarse");
             Assert.AreEqual(0, sim.State.ReintentosPelea);
             Assert.AreEqual(1, sim.State.AyudasUsadas, "el reintento no gasta otro auxilio");
@@ -919,19 +1089,14 @@ namespace Zombineta.Tests
         }
 
         [Test]
-        public void EveryZombieSheKills_CountsAsAKill_ButNotTheOnesTheVanRunsOver()
+        public void EveryZombieSheBeats_CountsAsAKill()
         {
             var sim = SinNafta(Rapido());
-            var z = Poner(sim, (5f, 1));
+            var z = Poner(sim, (5f, 1), (9f, 0));
 
             MatarDeUnTiro(sim, z[0]);
-            Assert.IsFalse(z[0].Alive);
-            Assert.AreEqual(1, sim.State.PeleaBajas);
 
-            // La furgoneta arrolla a los demas: no son bajas de ella.
-            var otro = Poner(sim, (3f, 1));
-            sim.State.PeleaRestante = 0f;
-            Avanzar(sim, 5f, Quieta);
+            Assert.IsFalse(z[0].Alive);
             Assert.AreEqual(1, sim.State.PeleaBajas);
         }
 
@@ -942,7 +1107,7 @@ namespace Zombineta.Tests
             c.dropBotiquin = 1f;   // siempre
             c.dropSegundos = 3f;
             var sim = SinNafta(c);
-            var z = Poner(sim, (5f, 1));
+            var z = Poner(sim, (5f, 1), (12f, 0));   // otro zombie vivo: si no, la pelea se gana y suelta el bidon
 
             MatarDeUnTiro(sim, z[0]);
 
@@ -962,7 +1127,7 @@ namespace Zombineta.Tests
             var c = Rapido();
             c.dropBotiquin = 1f;
             var sim = SinNafta(c);
-            var z = Poner(sim, (5f, 1));
+            var z = Poner(sim, (5f, 1), (12f, 0));   // otro zombie vivo: si no, la pelea se gana y suelta el bidon
             MatarDeUnTiro(sim, z[0]);
             var drop = sim.Pelea.Drops[0];
             Assert.AreEqual(5, sim.State.Vida);
@@ -990,7 +1155,7 @@ namespace Zombineta.Tests
             c.dropBalas = 1f;
             c.dropBalasCantidad = 4;
             var sim = SinNafta(c);
-            var z = Poner(sim, (5f, 1));
+            var z = Poner(sim, (5f, 1), (12f, 0));   // otro zombie vivo: si no, la pelea se gana y suelta el bidon
             MatarDeUnTiro(sim, z[0]);
             int balas = sim.State.Ammo;
             var drop = sim.Pelea.Drops[0];
@@ -1012,7 +1177,7 @@ namespace Zombineta.Tests
             c.dropSegundos = 60f;
             c.ammoAtStart = 6;
             var sim = SinNafta(c);
-            var z = Poner(sim, (5f, 1));
+            var z = Poner(sim, (5f, 1), (12f, 0));   // otro zombie vivo: si no, la pelea se gana y suelta el bidon
             for (int i = 0; i < 6; i++)
             {
                 MatarDeUnTiro(sim, z[0]);
@@ -1027,7 +1192,7 @@ namespace Zombineta.Tests
         public void WithoutDrops_NothingIsLeftOnTheFloor()
         {
             var sim = SinNafta(Rapido());   // MakeConfig apaga los drops
-            var z = Poner(sim, (5f, 1));
+            var z = Poner(sim, (5f, 1), (12f, 0));   // otro zombie vivo: si no, la pelea se gana y suelta el bidon
             MatarDeUnTiro(sim, z[0]);
             Assert.AreEqual(0, sim.Pelea.Drops.Count);
         }
@@ -1070,8 +1235,7 @@ namespace Zombineta.Tests
             sim.State.Battery = 10f;
             sim.State.PeleaGolpesRecibidos = 0;   // S
 
-            sim.State.PeleaRestante = 0f;
-            Avanzar(sim, 5f, Quieta);
+            TerminarPelea(sim);
 
             Assert.AreEqual(RunPhase.Running, sim.State.Phase);
             Assert.AreEqual(NotaPelea.S, sim.State.Nota);
@@ -1092,8 +1256,7 @@ namespace Zombineta.Tests
             sim.State.Ammo = 5;
             sim.State.Battery = c.batteryMax - 5f;
 
-            sim.State.PeleaRestante = 0f;
-            Avanzar(sim, 5f, Quieta);
+            TerminarPelea(sim);
 
             Assert.AreEqual(6, sim.State.Ammo);
             Assert.AreEqual(1, sim.State.PremioBalas, "solo lo que entra");
@@ -1111,8 +1274,7 @@ namespace Zombineta.Tests
             int balas = sim.State.Ammo;
             sim.State.PeleaGolpesRecibidos = 6;   // C
 
-            sim.State.PeleaRestante = 0f;
-            Avanzar(sim, 5f, Quieta);
+            TerminarPelea(sim);
 
             Assert.AreEqual(NotaPelea.C, sim.State.Nota);
             Assert.AreEqual(balas, sim.State.Ammo);
@@ -1352,7 +1514,7 @@ namespace Zombineta.Tests
             var c = Rapido();
             c.dropBotiquin = 1f;
             var sim = SinNafta(c);
-            var z = Poner(sim, (5f, 1));
+            var z = Poner(sim, (5f, 1), (12f, 0));
             MatarDeUnTiro(sim, z[0]);
             var drop = sim.Pelea.Drops[0];
 
@@ -1422,8 +1584,7 @@ namespace Zombineta.Tests
             sim.State.Battery = c.batteryMax;
             sim.State.PeleaGolpesRecibidos = 0;   // S
 
-            sim.State.PeleaRestante = 0f;
-            Avanzar(sim, 5f, Quieta);
+            TerminarPelea(sim);
 
             Assert.AreEqual(NotaPelea.S, sim.State.Nota);
             Assert.AreEqual(0, sim.State.PremioBalas);
@@ -1441,8 +1602,7 @@ namespace Zombineta.Tests
             sim.State.Ammo = c.ammoMax;
             sim.State.PeleaGolpesRecibidos = 6;   // C
 
-            sim.State.PeleaRestante = 0f;
-            Avanzar(sim, 5f, Quieta);
+            TerminarPelea(sim);
 
             Assert.IsFalse(sim.State.PremioBalasLleno);
             Assert.IsFalse(sim.State.PremioBateriaLleno);
@@ -1632,7 +1792,7 @@ namespace Zombineta.Tests
             Assert.AreEqual(1, sim.State.PeleaSaltosCortados);
             Assert.AreEqual(1, sim.State.PeleaBajas);
             Avanzar(sim, 1.5f, Quieta);
-            Assert.AreEqual(5, sim.State.Vida, "y no le cae encima");
+            Assert.AreEqual(0, sim.State.PeleaGolpesRecibidos, "y no le cae encima");
         }
 
         [Test]
@@ -1861,6 +2021,237 @@ namespace Zombineta.Tests
 
             z.Type = 0;
             Assert.AreEqual(2f, sim.Pelea.VelocidadDe(z), 0.001f, "sin multiplicador a pie usa el de siempre");
+        }
+
+        // --- La bomba temporizadora y los barriles de la arena --------------------------
+
+        static PlayerIntent PonerBomba => new PlayerIntent { Bomba = true };
+
+        [Test]
+        public void TheBomb_KillsEveryoneFighting_AfterItsFuse()
+        {
+            var c = ConOleadas();
+            c.bombaMecha = 2f;
+            var sim = SinNafta(c);
+            sim.State.Bombas = 1;
+            Assert.AreEqual(3, Activos(sim));
+
+            var ev = sim.Tick(PonerBomba, Dt);
+            Assert.IsTrue((ev & RunEvent.BombaPuesta) != 0);
+            Assert.AreEqual(0, sim.State.Bombas);
+            Assert.Greater(sim.State.BombaMecha, 0f);
+            Assert.AreEqual(3, sim.State.ZombiesRestantes, "todavia no explota");
+
+            ev = RunEvent.None;
+            for (int t = 0; t < 60 * 3; t++)
+            {
+                sim.State.Vida = 5;
+                ev |= sim.Tick(Quieta, Dt);
+            }
+
+            Assert.IsTrue((ev & RunEvent.BombaExplota) != 0);
+            Assert.AreEqual(3, sim.State.UltimaExplosionMuertos);
+            Assert.AreEqual(3, sim.State.PeleaBajas, "cuentan como vencidos");
+            Assert.AreEqual(0, sim.State.ZombiesRestantes);
+        }
+
+        [Test]
+        public void TheBomb_DoesNotStopTheWave_TheOnesStillWaitingKeepEntering()
+        {
+            var c = ConOleadas();
+            var sim = SinNafta(c);
+            CaerTodos(sim);
+            Avanzar(sim, 1.7f, Quieta);                       // entra la oleada de 5: 4 a la vez y 1 esperando
+            Assert.AreEqual(1, sim.State.Oleada);
+            Assert.AreEqual(5, sim.State.ZombiesRestantes);
+
+            sim.State.Bombas = 1;
+            sim.Tick(PonerBomba, Dt);
+            for (int t = 0; t < 60 * 2 + 30; t++)
+            {
+                sim.State.Vida = 5;
+                sim.Tick(Quieta, Dt);
+            }
+
+            Assert.AreEqual(1, sim.State.Oleada, "la oleada sigue");
+            Assert.AreEqual(1, sim.State.ZombiesRestantes, "falta el que todavia no habia entrado");
+            Assert.IsFalse(sim.State.BidonEnElPiso);
+        }
+
+        [Test]
+        public void TheBomb_NeedsOneInTheBag_AndSomeoneToTake_AndOnlyOneAtATime()
+        {
+            var sim = SinNafta(ConOleadas());
+            sim.State.Bombas = 0;
+
+            var ev = sim.Tick(PonerBomba, Dt);
+            Assert.IsTrue((ev & RunEvent.BombaDenegada) != 0, "sin bombas");
+
+            sim.State.Bombas = 2;
+            sim.Tick(PonerBomba, Dt);
+            ev = sim.Tick(PonerBomba, Dt);
+            Assert.IsTrue((ev & RunEvent.BombaDenegada) != 0, "ya hay una puesta");
+            Assert.AreEqual(1, sim.State.Bombas, "la segunda no se gasto");
+
+            var vacia = SinNafta(ConOleadas());
+            CaerTodos(vacia);
+            vacia.Tick(Quieta, Dt);                           // respiro entre oleadas: no hay a quien llevarse
+            vacia.State.Bombas = 1;
+            ev = vacia.Tick(PonerBomba, Dt);
+            Assert.IsTrue((ev & RunEvent.BombaDenegada) != 0, "sin zombies no se gasta");
+            Assert.AreEqual(1, vacia.State.Bombas);
+        }
+
+        static RunSimulation ConBarril(float distanciaDelBarril, out Zombineta.Level.LevelRuntime level)
+        {
+            var sim = SinNafta(Rapido());
+            var def = ScriptableObject.CreateInstance<Zombineta.Level.LevelDefinition>();
+            def.entries.Add(new Zombineta.Level.LevelEntry(sim.State.PeatonX + distanciaDelBarril, 1, Zombineta.Level.LevelEntryKind.Barrel));
+            level = new Zombineta.Level.LevelRuntime(def);
+            sim.Barrels = level;
+            return sim;
+        }
+
+        [Test]
+        public void ABarrelLeftInTheArena_ExplodesWithAShot_AndTakesTheZombiesAroundIt()
+        {
+            var sim = ConBarril(5f, out var level);
+            var z = Poner(sim, (6f, 1), (7f, 0), (16f, 1));
+            foreach (var u in z) u.Enfriamiento = 99f;
+
+            var ev = sim.Tick(new PlayerIntent { Fire = true }, Dt);
+
+            Assert.IsTrue((ev & RunEvent.Explosion) != 0);
+            Assert.IsTrue(level.Items[0].Consumed, "el barril se gasto");
+            Assert.IsFalse(z[0].Alive, "pegado al barril");
+            Assert.IsFalse(z[1].Alive, "en otro carril, la explosion no respeta carriles");
+            Assert.AreEqual(2, sim.State.PeleaBajas, "los que cayeron cuentan como vencidos");
+        }
+
+        [Test]
+        public void TheShot_HitsTheFirstThingInFront_BarrelOrZombie()
+        {
+            var sim = ConBarril(8f, out var level);
+            var z = Poner(sim, (3f, 1), (30f, 0));            // un zombie antes que el barril
+            z[0].Enfriamiento = 99f;
+            z[1].Enfriamiento = 99f;
+
+            var ev = sim.Tick(new PlayerIntent { Fire = true }, Dt);
+
+            Assert.IsTrue((ev & RunEvent.Explosion) == 0, "le pego al zombie, que estaba mas cerca");
+            Assert.IsFalse(level.Items[0].Consumed);
+        }
+
+        [Test]
+        public void ABarrelBehindHer_OrOutsideTheArena_IsNotATarget()
+        {
+            var atras = ConBarril(-5f, out var levelAtras);       // ella mira a la derecha
+            Poner(atras, (20f, 1));
+            var ev = atras.Tick(new PlayerIntent { Fire = true }, Dt);
+            Assert.IsTrue((ev & RunEvent.Explosion) == 0);
+            Assert.IsFalse(levelAtras.Items[0].Consumed);
+
+            var lejos = ConBarril(25f, out var levelLejos);      // fuera de la arena (12 + 6 m)
+            ev = lejos.Tick(new PlayerIntent { Fire = true }, Dt);
+            Assert.IsTrue((ev & RunEvent.Explosion) == 0, "los de lejos son del recorrido, no de la arena");
+            Assert.IsFalse(levelLejos.Items[0].Consumed);
+        }
+
+        // --- La granada a pie ------------------------------------------------------
+
+        static PlayerIntent LanzarGranadaAPie => new PlayerIntent { Granada = true };
+
+        [Test]
+        public void OnFoot_TheGrenade_FliesWhereSheLooks_AndTakesOnlyTheZombiesNearWhereItLands()
+        {
+            var c = Rapido();
+            c.granadaDistanciaAPie = 5f;
+            c.granadaRadioAPie = 4.5f;
+            c.granadaVuelo = 0.45f;
+            var sim = SinNafta(c);
+            sim.State.Granadas = 2;
+            sim.State.Mira = 1;
+            var z = Poner(sim, (5f, 1), (6.5f, 0), (-3f, 1), (13f, 1));
+            foreach (var u in z) u.Enfriamiento = 99f;
+
+            var ev = sim.Tick(LanzarGranadaAPie, Dt);
+            Assert.IsTrue((ev & RunEvent.GranadaLanzada) != 0);
+            Assert.AreEqual(1, sim.State.Granadas);
+            Assert.AreEqual(1, sim.State.GranadaDir, "hacia donde mira");
+            Assert.AreEqual(sim.State.PeatonX + 5f, sim.State.GranadaX, 0.01f);
+
+            ev = RunEvent.None;
+            for (int t = 0; t < 60; t++)
+                ev |= sim.Tick(Quieta, Dt);
+
+            Assert.IsTrue((ev & RunEvent.GranadaExplota) != 0);
+            Assert.IsFalse(z[0].Alive, "justo donde cae");
+            Assert.IsFalse(z[1].Alive, "en otro carril, cerca");
+            Assert.IsTrue(z[2].Alive, "a su espalda");
+            Assert.IsTrue(z[3].Alive, "lejos del punto");
+            Assert.AreEqual(2, sim.State.PeleaBajas, "los que cayeron cuentan");
+            Assert.AreEqual(2, sim.State.UltimaExplosionMuertos);
+        }
+
+        [Test]
+        public void OnFoot_TheGrenadeFacingLeft_GoesLeft()
+        {
+            var sim = SinNafta(Rapido());
+            sim.State.Granadas = 1;
+            sim.State.Mira = -1;
+            var z = Poner(sim, (-5f, 1), (8f, 0));
+            foreach (var u in z) u.Enfriamiento = 99f;
+
+            sim.Tick(LanzarGranadaAPie, Dt);
+            Assert.AreEqual(-1, sim.State.GranadaDir);
+            for (int t = 0; t < 90; t++)
+                sim.Tick(Quieta, Dt);
+
+            Assert.IsFalse(z[0].Alive);
+            Assert.IsTrue(z[1].Alive);
+        }
+
+        [Test]
+        public void OnFoot_TheGrenadeNeedsOneInTheBag_SomeoneToTake_AndOnlyOneInTheAir()
+        {
+            var sim = SinNafta(ConOleadas());
+            sim.State.Granadas = 0;
+
+            var ev = sim.Tick(LanzarGranadaAPie, Dt);
+            Assert.IsTrue((ev & RunEvent.GranadaDenegada) != 0, "sin granadas");
+
+            sim.State.Granadas = 2;
+            sim.Tick(LanzarGranadaAPie, Dt);
+            ev = sim.Tick(LanzarGranadaAPie, Dt);
+            Assert.IsTrue((ev & RunEvent.GranadaDenegada) != 0, "ya hay una en el aire");
+            Assert.AreEqual(1, sim.State.Granadas, "la segunda no se gasto");
+
+            var vacia = SinNafta(ConOleadas());
+            CaerTodos(vacia);
+            vacia.Tick(Quieta, Dt);
+            vacia.State.Granadas = 1;
+            ev = vacia.Tick(LanzarGranadaAPie, Dt);
+            Assert.IsTrue((ev & RunEvent.GranadaDenegada) != 0, "sin zombies no se gasta");
+            Assert.AreEqual(1, vacia.State.Granadas);
+        }
+
+        [Test]
+        public void AGrenadeInTheAir_WhenTheFightStarts_IsCancelled()
+        {
+            var c = Rapido();
+            var sim = new RunSimulation(c);
+            sim.State.PlayerX = 500f;
+            sim.Horde.Reset(460f);
+            sim.State.Granadas = 1;
+            sim.Tick(new PlayerIntent { Granada = true }, Dt);
+            Assert.Greater(sim.State.GranadaVuelo, 0f);
+            Assert.AreEqual(-1, sim.State.GranadaDir, "en la moto: hacia atras");
+
+            sim.State.Fuel = 0f;
+            sim.Tick(Quieta, Dt);
+
+            Assert.AreEqual(RunPhase.Pelea, sim.State.Phase);
+            Assert.AreEqual(0f, sim.State.GranadaVuelo);
         }
 }
 }

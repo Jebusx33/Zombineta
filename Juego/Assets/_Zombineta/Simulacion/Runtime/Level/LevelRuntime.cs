@@ -71,11 +71,11 @@ namespace Zombineta.Level
             config != null && state != null && config.bidonesDesdeAuxilio > state.AyudasUsadas;
 
         /// <summary>
-        /// Despeja un tramo del recorrido (la arena de la pelea a pie): los obstaculos, rampas,
-        /// barriles y zombies de frente desaparecen, como si ya se hubieran pasado, y no vuelven
-        /// cuando la moto retoma. Los recursos se dejan (la vista los esconde mientras se pelea).
-        /// Lo despejado queda marcado: la vista lo conserva de decorado durante la pelea, salvo los
-        /// zombies de frente. Devuelve cuantos despejo.
+        /// Despeja un tramo del recorrido (la arena de la pelea a pie): los obstaculos, rampas y
+        /// zombies de frente desaparecen, como si ya se hubieran pasado, y no vuelven cuando la moto
+        /// retoma. Los barriles se quedan (a pie explotan de un tiro) y los recursos tambien (la vista
+        /// los esconde mientras se pelea). Lo despejado queda marcado: la vista lo conserva de
+        /// decorado durante la pelea, salvo los zombies de frente. Devuelve cuantos despejo.
         /// </summary>
         public int ClearZone(float from, float to)
         {
@@ -91,8 +91,9 @@ namespace Zombineta.Level
                 if (item.Consumed || d < from || d > to)
                     continue;
                 var kind = item.Entry.kind;
+                // Los barriles no se despejan: a pie se les dispara, asi que los que quedaron en la arena sirven.
                 if (kind == LevelEntryKind.Obstacle || kind == LevelEntryKind.Ramp ||
-                    kind == LevelEntryKind.Barrel || kind == LevelEntryKind.ZombieFront)
+                    kind == LevelEntryKind.ZombieFront)
                 {
                     item.Consumed = true;
                     item.Despejado = kind != LevelEntryKind.ZombieFront;
@@ -191,7 +192,8 @@ namespace Zombineta.Level
         }
 
         public static bool EsRecurso(LevelEntryKind kind) =>
-            kind == LevelEntryKind.Fuel || kind == LevelEntryKind.Battery || kind == LevelEntryKind.Ammo;
+            kind == LevelEntryKind.Fuel || kind == LevelEntryKind.Battery || kind == LevelEntryKind.Ammo ||
+            kind == LevelEntryKind.Granada || kind == LevelEntryKind.BombaTemporal;
 
         /// <summary>Diferencia de carril con la que todavia hay encuentro: la de siempre, o mas amplia en los recolectables.</summary>
         public static float ToleranciaDeCarril(LevelEntryKind kind, GameConfig cfg) =>
@@ -208,6 +210,8 @@ namespace Zombineta.Level
                 case LevelEntryKind.ZombieFront: return cfg.medioLargoZombie;
                 case LevelEntryKind.Fuel:
                 case LevelEntryKind.Battery:
+                case LevelEntryKind.Granada:
+                case LevelEntryKind.BombaTemporal:
                 case LevelEntryKind.Ammo: return cfg.medioLargoRecurso;
                 default: return 0f;
             }
@@ -223,32 +227,40 @@ namespace Zombineta.Level
                     return sim.ApplyPickup(PickupKind.Battery);
                 case LevelEntryKind.Ammo:
                     return sim.ApplyPickup(PickupKind.Ammo);
+                case LevelEntryKind.Granada:
+                    return sim.ApplyPickup(PickupKind.Grenade);
+                case LevelEntryKind.BombaTemporal:
+                    return sim.ApplyPickup(PickupKind.Bomb);
                 default:
                     return sim.ApplyCrash();
             }
         }
         // --- IBarrelField: los barriles son del recorrido, la explosion es de la horda ------
 
-        public bool TryNearestBarrel(float fromX, int lane, float range, out float x, out int index)
+        public bool TryNearestBarrelAhead(float fromX, int dir, float lane, float laneTolerance, float range,
+                                          float minX, float maxX, out float x, out int index)
         {
             x = 0f;
             index = -1;
+            float mejor = float.MaxValue;
             for (int i = 0; i < Items.Length; i++)
             {
                 var item = Items[i];
                 if (item.Consumed || item.Entry.kind != LevelEntryKind.Barrel)
                     continue;
-                if (item.Entry.lane != lane)
+                if (Mathf.Abs(item.Entry.lane - lane) > laneTolerance)
                     continue;
 
                 float d = item.Entry.distance;
-                if (d > fromX || d < fromX - range)
+                if (d < minX || d > maxX)
                     continue;
-                if (index < 0 || d > x)
-                {
-                    x = d;
-                    index = i;
-                }
+                float adelante = (d - fromX) * dir;
+                // Pegado a ella y apenas detras tambien cuenta, como en el golpe.
+                if (adelante < -0.3f || adelante > range || adelante >= mejor)
+                    continue;
+                mejor = adelante;
+                x = d;
+                index = i;
             }
             return index >= 0;
         }

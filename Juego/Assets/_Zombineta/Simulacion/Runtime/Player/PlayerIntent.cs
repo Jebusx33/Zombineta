@@ -32,6 +32,12 @@ namespace Zombineta.Player
         /// <summary>A pie: pina hacia donde mira.</summary>
         public bool Golpe;
 
+        /// <summary>En la moto: lanza una granada hacia atras.</summary>
+        public bool Granada;
+
+        /// <summary>A pie: pone una bomba temporizadora.</summary>
+        public bool Bomba;
+
         public static PlayerIntent Idle => new PlayerIntent { Mode = DriveMode.Normal };
     }
 }

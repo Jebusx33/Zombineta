@@ -11,10 +11,11 @@ namespace Zombineta.Core
     [Serializable]
     public sealed class OleadaPelea
     {
-        [Tooltip("Segundos desde que empieza la pelea a partir de los que rige esta oleada.")]
-        public float desdeSegundo;
-        [Tooltip("Zombies peleando a la vez.")]
+        [Tooltip("Zombies que trae la oleada en total: hay que vencerlos a todos para pasar a la que sigue.")]
         [Min(1)] public int zombies = 3;
+        [Tooltip("Cuantos pelean a la vez (los demas esperan afuera y entran de a uno al caer otro). 0 = lo que diga " +
+                 "'maxSimultaneos' de la pelea.")]
+        [Min(0)] public int simultaneos = 0;
         [Tooltip("Peso de cada tipo de zombie, en el orden de Zombies.asset (Comun, Corredor, Pesado).")]
         public float[] pesos = { 1f, 0f, 0f };
         [Tooltip("Multiplica la velocidad con la que caminan.")]
@@ -124,6 +125,32 @@ namespace Zombineta.Core
         [Tooltip("Metros en los que una explosion solo asusta.")]
         public float explosionScareRadius = 16f;
         public float explosionScareSeconds = 1f;
+
+        [Header("Granadas y bombas")]
+        [Tooltip("Granadas que se pueden llevar a la vez. Se lanzan desde la moto, hacia atras.")]
+        [Min(0)] public int granadaMax = 3;
+        [Tooltip("Granadas con las que empieza el nivel.")]
+        [Min(0)] public int granadaInicial = 0;
+        [Tooltip("Metros detras de la moto donde cae y explota la granada. Mata en el radio de un barril ('explosionRadius').")]
+        [Min(0f)] public float granadaDistancia = 10f;
+        [Tooltip("Segundos que la granada vuela hasta caer (un tiro oblicuo, largo, que se pueda seguir con la vista).")]
+        [Min(0.05f)] public float granadaVuelo = 0.85f;
+        [Tooltip("Segundos que la horda no repone a los zombies que cayeron por una granada.")]
+        [Min(0f)] public float hordaSinRegenerar = 5f;
+        [Tooltip("A pie, la granada se lanza hacia donde mira y cae a esta distancia de ella, en metros.")]
+        [Min(0f)] public float granadaDistanciaAPie = 5f;
+        [Tooltip("A pie explota con este radio, en metros, y se lleva a los zombies que peleaban cerca (la bomba se los lleva a todos).")]
+        [Min(0f)] public float granadaRadioAPie = 4.5f;
+        [Tooltip("Bombas temporizadoras que se pueden llevar a la vez. Se usan en la pelea a pie.")]
+        [Min(0)] public int bombaMax = 2;
+        [Tooltip("Bombas con las que empieza el nivel.")]
+        [Min(0)] public int bombaInicial = 0;
+        [Tooltip("Segundos de mecha de la bomba temporizadora: despues explota y cae todo zombie que este peleando.")]
+        [Min(0.1f)] public float bombaMecha = 2f;
+        [Tooltip("Granadas con las que se baja en la PRIMERA pelea (si trae menos, se completan): ahi se aprende a usarlas.")]
+        [Min(0)] public int granadasPrimeraPelea = 1;
+        [Tooltip("Bombas temporizadoras con las que se baja en la PRIMERA pelea (si trae menos, se completan).")]
+        [Min(0)] public int bombasPrimeraPelea = 1;
 
         [Header("Salto de los zombies (primera oleada)")]
         [Tooltip("Los zombies de la primera oleada de la pelea se agachan y saltan sobre ella al acercarse: es la transicion " +
@@ -245,10 +272,15 @@ namespace Zombineta.Core
         [Tooltip("Oleadas de la pelea, de menos a mas. Vacio = siempre 'zombiesEnArena' del tipo que toque.")]
         public List<OleadaPelea> oleadas = new List<OleadaPelea>
         {
-            new OleadaPelea { desdeSegundo = 0f,  zombies = 3, pesos = new[] { 1f, 0f, 0f },      velocidad = 0.85f },
-            new OleadaPelea { desdeSegundo = 10f, zombies = 5, pesos = new[] { 0.7f, 0.3f, 0f },  velocidad = 1f },
-            new OleadaPelea { desdeSegundo = 20f, zombies = 6, pesos = new[] { 0.5f, 0.3f, 0.2f }, velocidad = 1f },
+            new OleadaPelea { zombies = 3, simultaneos = 3, pesos = new[] { 1f, 0f, 0f },        velocidad = 0.85f },
+            new OleadaPelea { zombies = 5, simultaneos = 4, pesos = new[] { 0.7f, 0.3f, 0f },    velocidad = 1f },
+            new OleadaPelea { zombies = 6, simultaneos = 5, pesos = new[] { 0.5f, 0.3f, 0.2f },  velocidad = 1f },
+            new OleadaPelea { zombies = 7, simultaneos = 6, pesos = new[] { 0.4f, 0.3f, 0.3f },  velocidad = 1f },
         };
+        [Tooltip("Cuantos pelean a la vez como maximo en una oleada que no dice otra cosa.")]
+        [Min(1)] public int maxSimultaneos = 6;
+        [Tooltip("Segundos de respiro entre vencer una oleada y que entre la siguiente.")]
+        [Min(0f)] public float respiroOleada = 1.5f;
         [Header("Premios y botiquines de la pelea")]
         [Tooltip("Probabilidad de que un zombie que muere (a golpes o a tiros) deje un botiquin: un corazon.")]
         [Range(0f, 1f)] public float dropBotiquin = 0.15f;
@@ -260,13 +292,11 @@ namespace Zombineta.Core
         public float dropSegundos = 10f;
         [Tooltip("Metros a los que lo recoge al caminar sobre el.")]
         public float dropAlcance = 0.9f;
-        [Tooltip("Balas que deja la furgoneta segun la nota de la pelea, de peor a mejor (C, B, A, S).")]
+        [Tooltip("Balas que se lleva al terminar la pelea segun la nota, de peor a mejor (C, B, A, S).")]
         public int[] premioBalas = { 0, 1, 2, 3 };
         [Tooltip("Bateria que deja la furgoneta segun la nota (en puntos de bateria), de peor a mejor (C, B, A, S).")]
         public float[] premioBateria = { 0f, 0f, 25f, 40f };
 
-        [Tooltip("Segundos que tarda en llegar la furgoneta: lo que dura la pelea.")]
-        [Min(1f)] public float peleaSegundos = 30f;
         [Tooltip("Golpes que aguanta la protagonista a pie.")]
         [Min(1)] public int vidaPelea = 5;
         [Tooltip("Metros de ventaja sobre la horda al volver a la moto.")]
@@ -319,10 +349,6 @@ namespace Zombineta.Core
         public float zombieEnfriamiento = 1f;
         [Tooltip("Segundos sin recibir dano despues de un golpe.")]
         public float invulnerableTrasGolpe = 1f;
-        [Tooltip("Metros por segundo de la furgoneta.")]
-        public float furgonetaVelocidad = 28f;
-        [Tooltip("Metros antes del centro de la arena desde donde entra la furgoneta.")]
-        public float furgonetaDesde = 24f;
 
         [Header("Presentacion")]
         [Tooltip("Unidades de mundo por metro simulado. La simulacion piensa en metros; " +

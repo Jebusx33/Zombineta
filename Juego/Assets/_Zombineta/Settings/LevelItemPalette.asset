@@ -94,3 +94,21 @@ MonoBehaviour:
     shadowWidth: 0.8
     ajusteY: 0
     prefab: {fileID: 0}
+  - kind: 7
+    variant: 0
+    sprite: {fileID: 21300000, guid: 0e7dcc86fe0c4c1c90f2e54a189fb465, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+    scale: {x: 0.5, y: 0.5}
+    sortingOrder: 6
+    shadowWidth: 0.9
+    ajusteY: 0
+    prefab: {fileID: 0}
+  - kind: 8
+    variant: 0
+    sprite: {fileID: 21300000, guid: cf2f71ddf226417180ec13e24dfb58bd, type: 3}
+    color: {r: 1, g: 1, b: 1, a: 1}
+    scale: {x: 0.5, y: 0.5}
+    sortingOrder: 6
+    shadowWidth: 0.9
+    ajusteY: 0
+    prefab: {fileID: 0}

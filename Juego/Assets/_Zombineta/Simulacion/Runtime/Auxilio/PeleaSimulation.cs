@@ -6,15 +6,16 @@ using Zombineta.Player;
 namespace Zombineta.Auxilio
 {
     /// <summary>
-    /// La pelea a pie mientras llega el auxilio. C# plano, como el runner: se le hace Step con
+    /// La pelea a pie cuando se acaba la nafta. C# plano, como el runner: se le hace Step con
     /// un dt fijo y se verifica. Mueve a los mismos zombies de la horda (asi la vista de la
-    /// horda los dibuja tal cual), a la protagonista a pie y, al final, a la furgoneta.
+    /// horda los dibuja tal cual) y a la protagonista a pie. La pelea es por oleadas, sin reloj: se
+    /// sigue hasta vencer a todos, el ultimo suelta un bidon y al recogerlo vuelve a la moto.
     ///
     /// La arena es lo que se ve en pantalla alrededor de donde quedo parada la moto: de un
     /// lado llega la horda, del otro algunos que vienen de frente. Solo pelean unos pocos a la
     /// vez; el resto de la horda queda estacionada fuera de cuadro.
     /// </summary>
-    public enum DropKind { Botiquin, Balas }
+    public enum DropKind { Botiquin, Balas, Bidon }
 
     /// <summary>Algo que solto un zombie al morir: se recoge caminando encima y se va solo si nadie lo agarra.</summary>
     public sealed class Drop
@@ -42,8 +43,6 @@ namespace Zombineta.Auxilio
         /// <summary>Cuanto se multiplica la velocidad base a pie: la de la pelea de su tipo, o la de la horda si no la tiene.</summary>
         static float MultiplicadorAPie(Zombineta.Enemies.ZombieType t) =>
             t.speedMultiplierAPie > 0f ? t.speedMultiplierAPie : t.speedMultiplier;
-        // Media anchura de la furgoneta al arrollar, en metros.
-        const float AnchoFurgoneta = 2.5f;
 
         readonly GameConfig c;
         readonly RunState s;
@@ -62,7 +61,14 @@ namespace Zombineta.Auxilio
         bool[] activo;
         float centro;
         int lado = 1;
-        bool cargo;
+        // Zombies de la oleada en curso que todavia no entraron a la arena.
+        int pendientes;
+
+        /// <summary>Los barriles del recorrido: a pie explotan los que quedaron en la arena. Lo setea RunSimulation.</summary>
+        public IBarrelField Barrels { get; set; }
+
+        /// <summary>La partida a la que pertenece: la explosion de un barril la resuelve ella.</summary>
+        public RunSimulation Run { get; set; }
 
         public PeleaSimulation(GameConfig config, RunState state, HordeSimulation horde, int seed)
         {
@@ -104,13 +110,23 @@ namespace Zombineta.Auxilio
             s.PremioBalasLleno = false;
             s.PremioBateriaLleno = false;
             drops.Clear();
-            s.PeleaRestante = c.peleaSegundos;
+            s.PeleaTiempo = 0f;
+            s.PeleaBombas = 0;
+            s.BombaMecha = 0f;
+            // En la primera pelea se baja con al menos una granada y una bomba: ahi se aprende a usarlas.
+            if (s.AyudasUsadas == 1)
+            {
+                s.Granadas = Mathf.Clamp(Mathf.Max(s.Granadas, c.granadasPrimeraPelea), 0, c.granadaMax);
+                s.Bombas = Mathf.Clamp(Mathf.Max(s.Bombas, c.bombasPrimeraPelea), 0, c.bombaMax);
+            }
+            s.GranadaVuelo = 0f;
+            s.BidonEnElPiso = false;
+            s.OleadaRespiro = 0f;
             s.Invulnerable = 0f;
             s.GolpeEnfriamiento = 0f;
             s.Golpeando = 0f;
             s.ComboPaso = 0;
             s.ComboVentana = 0f;
-            s.FurgonetaEnCamino = false;
             s.HeadlightOn = false;
             s.StunRemaining = 0f;
             s.Mode = DriveMode.Normal;
@@ -122,7 +138,6 @@ namespace Zombineta.Auxilio
 
             centro = s.PlayerX;
             s.PeatonX = centro;
-            cargo = false;
 
             ArmarArena(desdeLaHorda: true);
             return RunEvent.PeleaEmpieza;
@@ -136,7 +151,10 @@ namespace Zombineta.Auxilio
         {
             var units = h.Units;
             activo = new bool[units.Length];
-            int enArena = Mathf.Min(ObjetivoDeZombies(0), units.Length);
+            IniciarOleada(0);
+            int enArena = Mathf.Min(Simultaneos(0), units.Length);
+            pendientes = Mathf.Max(0, s.OleadaTotal - enArena);
+            s.ZombiesRestantes = s.OleadaTotal;
 
             if (c.saltoActivo)
             {
@@ -242,51 +260,254 @@ namespace Zombineta.Auxilio
 
         OleadaPelea OleadaActual => HayOleadas ? c.oleadas[Mathf.Clamp(s.Oleada, 0, c.oleadas.Count - 1)] : null;
 
-        int ObjetivoDeZombies(int oleada) =>
+        int TotalOleadas => HayOleadas ? c.oleadas.Count : 1;
+
+        /// <summary>Zombies que trae esa oleada en total. Sin oleadas configuradas, una sola con 'zombiesEnArena'.</summary>
+        int ZombiesDe(int oleada) =>
             HayOleadas ? c.oleadas[Mathf.Clamp(oleada, 0, c.oleadas.Count - 1)].zombies : c.zombiesEnArena;
 
-        /// <summary>
-        /// La oleada que corresponde a estos segundos de pelea. Cuando sube, entran los zombies
-        /// que faltan para llegar a la cantidad de la oleada nueva, por los costados.
-        /// </summary>
-        RunEvent AvanzarOleadas()
+        /// <summary>Cuantos pelean a la vez en esa oleada (nunca mas de los que trae).</summary>
+        int Simultaneos(int oleada)
         {
-            if (!HayOleadas)
+            int n = HayOleadas ? c.oleadas[Mathf.Clamp(oleada, 0, c.oleadas.Count - 1)].simultaneos : 0;
+            if (n <= 0)
+                n = c.maxSimultaneos;
+            return Mathf.Max(1, Mathf.Min(n, ZombiesDe(oleada)));
+        }
+
+        /// <summary>Empieza esa oleada: todos sus zombies quedan pendientes (los que entran los pone el que llama).</summary>
+        void IniciarOleada(int oleada)
+        {
+            s.Oleada = oleada;
+            s.Oleadas = TotalOleadas;
+            s.OleadaTotal = ZombiesDe(oleada);
+            pendientes = s.OleadaTotal;
+            s.ZombiesRestantes = s.OleadaTotal;
+            s.OleadaRespiro = 0f;
+        }
+
+        int VivosEnArena()
+        {
+            int n = 0;
+            var units = h.Units;
+            for (int i = 0; i < units.Length; i++)
+                if (activo[i] && units[i].Alive)
+                    n++;
+            return n;
+        }
+
+        /// <summary>Una unidad de la horda que no esta peleando (esperando fuera de cuadro), o -1.</summary>
+        int UnidadLibre()
+        {
+            for (int i = 0; i < activo.Length; i++)
+                if (!activo[i])
+                    return i;
+            return -1;
+        }
+
+        /// <summary>
+        /// Las oleadas no tienen reloj ni reponen a los caidos: se vencen todos los zombies de la
+        /// oleada (entran de a poco, hasta la cantidad que pelea a la vez) y recien entonces, tras un
+        /// respiro, entra la que sigue. Al vencer la ultima, el ultimo zombie suelta un bidon.
+        /// </summary>
+        RunEvent AtenderOleadas(float dt)
+        {
+            if (s.BidonEnElPiso)
                 return RunEvent.None;
 
-            float t = c.peleaSegundos - s.PeleaRestante;
-            int idx = 0;
-            for (int i = 0; i < c.oleadas.Count; i++)
-                if (c.oleadas[i].desdeSegundo <= t)
-                    idx = i;
-
             var ev = RunEvent.None;
-            if (idx != s.Oleada)
+
+            // Entre una oleada y otra hay un respiro; despues entra la que sigue.
+            if (s.OleadaRespiro > 0f)
             {
-                s.Oleada = idx;
+                s.OleadaRespiro -= dt;
+                if (s.OleadaRespiro > 0f)
+                    return ev;
+                IniciarOleada(s.Oleada + 1);
                 ev |= RunEvent.OleadaNueva;
             }
 
-            var units = h.Units;
-            int activos = 0;
-            for (int i = 0; i < units.Length; i++)
-                if (activo[i])
-                    activos++;
-
-            int objetivo = Mathf.Min(ObjetivoDeZombies(s.Oleada), units.Length);
-            for (int i = 0; i < units.Length && activos < objetivo; i++)
+            // Entran de a uno, por los costados, mientras haya lugar y falten.
+            int cupo = Simultaneos(s.Oleada) - VivosEnArena();
+            while (cupo > 0 && pendientes > 0)
             {
-                if (activo[i])
-                    continue;
+                int i = UnidadLibre();
+                if (i < 0)
+                    break;
                 activo[i] = true;
-                activos++;
                 lado = -lado;
                 float x = lado < 0
                     ? centro - c.arenaMedioAncho - 2f - (float)rng.NextDouble() * 3f
                     : centro + c.arenaMedioAncho + 2f + (float)rng.NextDouble() * 3f;
                 Preparar(i, x, rng.Next(RunSimulation.LaneCount), nuevo: true);
+                pendientes--;
+                cupo--;
             }
-            return ev;
+
+            s.ZombiesRestantes = pendientes + VivosEnArena();
+            if (s.ZombiesRestantes > 0)
+                return ev;
+
+            // Vencio la oleada.
+            if (s.Oleada + 1 < TotalOleadas)
+            {
+                s.OleadaRespiro = Mathf.Max(0.01f, c.respiroOleada);
+                return ev;
+            }
+            return ev | VencerPelea();
+        }
+
+        /// <summary>Vencio la ultima oleada: el ultimo zombie en caer suelta un bidon que hay que ir a buscar.</summary>
+        RunEvent VencerPelea()
+        {
+            s.BidonEnElPiso = true;
+
+            // El que acaba de caer es el cadaver mas fresco.
+            float x = s.PeatonX;
+            int carril = s.Lane;
+            float masFresco = -1f;
+            var units = h.Units;
+            for (int i = 0; i < units.Length; i++)
+            {
+                if (!activo[i] || units[i].Alive || units[i].CorpseLeft <= masFresco)
+                    continue;
+                masFresco = units[i].CorpseLeft;
+                x = units[i].X;
+                carril = units[i].Lane;
+            }
+            x = Mathf.Clamp(x, centro - c.arenaMedioAncho, centro + c.arenaMedioAncho);
+
+            drops.Add(new Drop { Kind = DropKind.Bidon, X = x, Lane = carril, Left = float.PositiveInfinity, Total = 0f });
+            return RunEvent.PeleaGanada;
+        }
+
+        // --- La granada a pie ----------------------------------------------------
+
+        /// <summary>
+        /// A pie, la granada se lanza hacia donde mira y explota a granadaDistanciaAPie metros de ella: se lleva
+        /// a los zombies que estaban cerca de ahi (la bomba, en cambio, se los lleva a todos). Es la misma
+        /// granada que se recoge para la moto. No la lanza si no tiene, ya hay una en el aire o no hay a quien llevarse.
+        /// </summary>
+        RunEvent LanzarGranada(PlayerIntent intent)
+        {
+            if (!intent.Granada)
+                return RunEvent.None;
+            if (s.Granadas <= 0 || s.GranadaVuelo > 0f || s.BidonEnElPiso || VivosEnArena() == 0)
+                return RunEvent.GranadaDenegada;
+
+            s.Granadas--;
+            s.GranadaVuelo = Mathf.Max(0.01f, c.granadaVuelo);
+            s.GranadaDir = s.Mira;
+            s.GranadaX = Mathf.Clamp(s.PeatonX + s.Mira * c.granadaDistanciaAPie,
+                centro - c.arenaMedioAncho - 2f, centro + c.arenaMedioAncho + 2f);
+            return RunEvent.GranadaLanzada;
+        }
+
+        /// <summary>Al caer explota: cae todo zombie que pelea a granadaRadioAPie metros del punto (en todos los carriles).</summary>
+        RunEvent AtenderGranada(float dt)
+        {
+            if (s.GranadaVuelo <= 0f)
+                return RunEvent.None;
+
+            s.GranadaVuelo -= dt;
+            if (s.GranadaVuelo > 0f)
+                return RunEvent.None;
+            s.GranadaVuelo = 0f;
+
+            int muertos = 0;
+            var units = h.Units;
+            for (int i = 0; i < units.Length; i++)
+            {
+                var u = units[i];
+                if (!activo[i] || !u.Alive || Mathf.Abs(u.X - s.GranadaX) > c.granadaRadioAPie)
+                    continue;
+                h.Kill(u, DeathCause.Explosion);
+                u.SaltoFase = 0;
+                u.Preparando = -1f;
+                muertos++;
+            }
+            s.PeleaBajas += muertos;
+            s.UltimaExplosionMuertos = muertos;
+            h.EventoExplosion(s.GranadaX, s.Lane);
+            return RunEvent.GranadaExplota | RunEvent.Explosion;
+        }
+
+        // --- La bomba temporizadora ----------------------------------------------
+
+        /// <summary>
+        /// A pie, pone una bomba temporizadora donde esta parada: explota a los bombaMecha segundos. No la
+        /// pone si no tiene, ya hay una puesta, ya vencio todo o no hay a quien llevarse.
+        /// </summary>
+        RunEvent PonerBomba(PlayerIntent intent)
+        {
+            if (!intent.Bomba)
+                return RunEvent.None;
+            if (s.Bombas <= 0 || s.BombaMecha > 0f || s.BidonEnElPiso || VivosEnArena() == 0)
+                return RunEvent.BombaDenegada;
+
+            s.Bombas--;
+            s.PeleaBombas++;
+            s.BombaMecha = Mathf.Max(0.05f, c.bombaMecha);
+            s.BombaX = s.PeatonX;
+            s.BombaY = s.PeatonY;
+            return RunEvent.BombaPuesta;
+        }
+
+        /// <summary>
+        /// Cuenta la mecha. Al llegar a cero explota y cae todo zombie que este peleando (tambien los
+        /// que saltan). No frena la oleada: los que todavia no entraron siguen entrando.
+        /// </summary>
+        RunEvent AtenderBomba(float dt)
+        {
+            if (s.BombaMecha <= 0f)
+                return RunEvent.None;
+
+            s.BombaMecha -= dt;
+            if (s.BombaMecha > 0f)
+                return RunEvent.None;
+            s.BombaMecha = 0f;
+
+            int muertos = 0;
+            var units = h.Units;
+            for (int i = 0; i < units.Length; i++)
+            {
+                var u = units[i];
+                if (!activo[i] || !u.Alive)
+                    continue;
+                h.Kill(u, DeathCause.Explosion);
+                u.SaltoFase = 0;
+                u.Preparando = -1f;
+                muertos++;
+            }
+            s.PeleaBajas += muertos;
+            s.UltimaExplosionMuertos = muertos;
+            h.EventoExplosion(s.BombaX, s.Lane);
+            return RunEvent.BombaExplota | RunEvent.Explosion;
+        }
+
+        // --- Los barriles de la arena ----------------------------------------------
+
+        /// <summary>El barril de la arena mas cercano hacia donde mira, si hay uno al alcance del tiro.</summary>
+        bool BarrilAlAlcance(out float x, out int indice)
+        {
+            x = 0f;
+            indice = -1;
+            if (Barrels == null || Run == null)
+                return false;
+            // Solo los de la arena: los que quedaron cerca de donde se vario la moto.
+            float zona = c.arenaMedioAncho + 6f;
+            return Barrels.TryNearestBarrelAhead(s.PeatonX, s.Mira, s.PeatonY, c.toleranciaCarril, c.shotRangeMeters,
+                                                 centro - zona, centro + zona, out x, out indice);
+        }
+
+        RunEvent ExplotarBarril(float x, int indice)
+        {
+            h.Tracer(s.PeatonX, x, s.Lane);
+            int antes = VivosEnArena();
+            Barrels.Detonate(indice, Run);
+            int cayeron = Mathf.Max(0, antes - VivosEnArena());
+            s.PeleaBajas += cayeron;
+            return RunEvent.Shot | RunEvent.Explosion;
         }
 
         /// <summary>El tipo de zombie que toca en la oleada actual, segun sus pesos. Sin oleadas, el que ya tenia.</summary>
@@ -316,12 +537,9 @@ namespace Zombineta.Auxilio
 
         public RunEvent Step(PlayerIntent intent, float dt)
         {
-            if (s.FurgonetaEnCamino)
-                return PasoFurgoneta(dt);
-
             var ev = RunEvent.None;
 
-            s.PeleaRestante = Mathf.Max(0f, s.PeleaRestante - dt);
+            s.PeleaTiempo += dt;
             s.Invulnerable = Mathf.Max(0f, s.Invulnerable - dt);
             s.GolpeEnfriamiento = Mathf.Max(0f, s.GolpeEnfriamiento - dt);
             s.Golpeando = Mathf.Max(0f, s.Golpeando - dt);
@@ -332,20 +550,17 @@ namespace Zombineta.Auxilio
             ev |= MoverProtagonista(intent, dt);
             ev |= Pegar(intent);
             ev |= Disparar(intent);
-            ev |= AvanzarOleadas();
+            ev |= PonerBomba(intent);
+            ev |= AtenderBomba(dt);
+            ev |= LanzarGranada(intent);
+            ev |= AtenderGranada(dt);
+            ev |= AtenderOleadas(dt);
             ev |= MoverZombies(dt);
             ev |= AtenderDrops(dt);
             if (s.Phase != RunPhase.Pelea)
                 return ev; // la derribaron
             Separar();
 
-            if (s.PeleaRestante <= 0f)
-            {
-                s.FurgonetaEnCamino = true;
-                s.FurgonetaX = centro - c.furgonetaDesde;
-                s.Invulnerable = float.MaxValue; // con la furgoneta en camino ya no la lastiman
-                ev |= RunEvent.AuxilioLlega;
-            }
             return ev;
         }
 
@@ -501,6 +716,14 @@ namespace Zombineta.Auxilio
                     continue;
                 }
 
+                // El bidon del ultimo zombie: tanque lleno de una, el premio de la nota y de vuelta a la moto.
+                if (d.Kind == DropKind.Bidon)
+                {
+                    s.Fuel = c.fuelMax;
+                    Premiar();
+                    return ev | RunEvent.PickedUp | Terminar();
+                }
+
                 bool lleno = d.Kind == DropKind.Botiquin ? s.Vida >= s.VidaMax : s.Ammo >= c.ammoMax;
                 if (lleno)
                 {
@@ -576,6 +799,12 @@ namespace Zombineta.Auxilio
 
             s.Ammo--;
             var u = MasCercano(s.PeatonX, s.Mira, c.shotRangeMeters);
+
+            // Pega en lo primero que encuentra hacia donde mira: un barril de la arena o un zombie.
+            if (BarrilAlAlcance(out float barrilX, out int barrilIndice) &&
+                (u == null || Mathf.Abs(barrilX - s.PeatonX) <= Mathf.Abs(u.X - s.PeatonX)))
+                return ExplotarBarril(barrilX, barrilIndice);
+
             if (u != null)
             {
                 if (u.SaltoFase == 2)
@@ -635,6 +864,21 @@ namespace Zombineta.Auxilio
         /// <summary>Si el zombie esta en un carril lo bastante cerca del de ella para pegarse.</summary>
         bool Alineado(ZombieUnit u) => Mathf.Abs(u.Lane - s.PeatonY) <= c.toleranciaCarril;
 
+        /// <summary>El zombie sale de la pelea: queda esperando fuera de cuadro, listo para una oleada nueva.</summary>
+        void Estacionar(int i)
+        {
+            var u = h.Units[i];
+            activo[i] = false;
+            u.Alive = true;
+            u.CorpseLeft = 0f;
+            u.X = centro - Estacionamiento;
+            u.Stagger = 0f;
+            u.Derribado = 0f;
+            u.Preparando = -1f;
+            u.PuedeSaltar = false;
+            u.SaltoFase = 0;
+        }
+
         RunEvent MoverZombies(float dt)
         {
             var ev = RunEvent.None;
@@ -664,16 +908,10 @@ namespace Zombineta.Auxilio
 
                 if (!u.Alive)
                 {
-                    // El cadaver queda un rato y otro entra por un costado.
+                    // El cadaver queda un rato y despues se va. Nadie lo repone: cada oleada trae su cantidad.
                     u.CorpseLeft -= dt;
                     if (u.CorpseLeft <= 0f)
-                    {
-                        lado = -lado;
-                        float x = lado < 0
-                            ? centro - c.arenaMedioAncho - 2f - (float)rng.NextDouble() * 3f
-                            : centro + c.arenaMedioAncho + 2f + (float)rng.NextDouble() * 3f;
-                        Preparar(i, x, rng.Next(RunSimulation.LaneCount), nuevo: true);
-                    }
+                        Estacionar(i);
                     continue;
                 }
 
@@ -913,15 +1151,19 @@ namespace Zombineta.Auxilio
         }
 
         /// <summary>
-        /// Vuelve al principio de la pelea: vida entera, el reloj del auxilio de nuevo y la arena
-        /// rearmada desde la primera oleada. No gasta otro auxilio. Un respiro de 2 s sin dano.
+        /// Vuelve al principio de la pelea: vida entera y la arena rearmada desde la primera oleada.
+        /// No gasta otro auxilio. Un respiro de 2 s sin dano.
         /// </summary>
         RunEvent Reintentar()
         {
             s.ReintentosPelea--;
             s.Vida = c.vidaPelea;
-            s.PeleaRestante = c.peleaSegundos;
             s.Oleada = 0;
+            drops.Clear();
+            s.PeleaTiempo = 0f;
+            s.BombaMecha = 0f;
+            s.GranadaVuelo = 0f;
+            s.BidonEnElPiso = false;
             s.Invulnerable = 2f;
             s.GolpeEnfriamiento = 0f;
             s.Golpeando = 0f;
@@ -1049,45 +1291,14 @@ namespace Zombineta.Auxilio
             }
         }
 
-        // --- La furgoneta ------------------------------------------------------
-
-        RunEvent PasoFurgoneta(float dt)
-        {
-            var ev = RunEvent.None;
-            float antes = s.FurgonetaX;
-            s.FurgonetaX += c.furgonetaVelocidad * dt;
-
-            // Arrolla a todo lo que cruza, en los tres carriles.
-            var units = h.Units;
-            for (int i = 0; i < units.Length; i++)
-            {
-                var u = units[i];
-                if (!activo[i] || !u.Alive)
-                    continue;
-                if (u.X >= antes - AnchoFurgoneta && u.X <= s.FurgonetaX + AnchoFurgoneta)
-                {
-                    h.Kill(u, DeathCause.RunOver);
-                    ev |= RunEvent.RanOver;
-                }
-            }
-
-            // Al pasar por al lado de ella le deja el bidon.
-            if (!cargo && s.FurgonetaX >= s.PeatonX)
-            {
-                cargo = true;
-                s.Fuel = c.fuelMax;
-                Premiar();
-                ev |= RunEvent.PickedUp;
-            }
-
-            if (s.FurgonetaX >= centro + c.furgonetaDesde)
-                ev |= Terminar();
-            return ev;
-        }
+        // --- Volver a la moto ---------------------------------------------------
 
         RunEvent Terminar()
         {
-            s.FurgonetaEnCamino = false;
+            s.BidonEnElPiso = false;
+            s.BombaMecha = 0f;
+            s.GranadaVuelo = 0f;
+            s.OleadaRespiro = 0f;
             s.Invulnerable = 0f;
             s.Phase = RunPhase.Running;
             s.PlayerX = s.PeatonX;

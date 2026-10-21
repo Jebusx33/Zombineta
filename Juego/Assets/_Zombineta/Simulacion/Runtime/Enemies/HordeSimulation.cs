@@ -113,6 +113,12 @@ namespace Zombineta.Enemies
         /// </summary>
         public float RetrocesoVelocidad { get; set; }
 
+        /// <summary>
+        /// Segundos en los que los zombies caidos no vuelven a entrar por el fondo de la masa (lo que pasa
+        /// despues de una granada: la horda queda mas ralita un rato). Se descuenta en cada Step.
+        /// </summary>
+        public float SinRegenerar { get; set; }
+
         /// <summary>Velocidad efectiva del frente en el ultimo Step (m/s). Para el HUD de debug.</summary>
         public float FrontSpeed { get; private set; }
 
@@ -124,6 +130,7 @@ namespace Zombineta.Enemies
             frontX = front;
             FrontSpeed = 0f;
             RetrocesoVelocidad = 0f;
+            SinRegenerar = 0f;
             events.Clear();
 
             for (int i = 0; i < Units.Length; i++)
@@ -175,6 +182,8 @@ namespace Zombineta.Enemies
 
         public void Step(float dt, float speedFactor)
         {
+            if (SinRegenerar > 0f)
+                SinRegenerar = Mathf.Max(0f, SinRegenerar - dt);
             float previousFront = frontX;
             float front = float.NegativeInfinity;
             float frontSpeed = 0f;
@@ -187,6 +196,9 @@ namespace Zombineta.Enemies
                 {
                     u.CorpseLeft -= dt;
                     if (u.CorpseLeft > 0f)
+                        continue;
+                    // Tras una granada nadie repone a los caidos todavia: el cadaver espera.
+                    if (SinRegenerar > 0f)
                         continue;
                     Recycle(u, previousFront);
                 }
@@ -302,7 +314,16 @@ namespace Zombineta.Enemies
             RecomputeFront();
         }
 
-        /// <summary>Explosion de un barril: mata en radio en los tres carriles. Devuelve cuantos.</summary>
+        /// <summary>
+        /// Solo el evento de una explosion (para que las vistas la dibujen), sin matar a nadie. Lo usa la
+        /// bomba temporizadora, que elige a quien se lleva.
+        /// </summary>
+        public void EventoExplosion(float x, int lane)
+        {
+            events.Add(new HordeEvent { Kind = HordeEventKind.Explosion, X = x, Lane = lane });
+        }
+
+        /// <summary>Explosion de un barril o de una granada: mata en radio en los tres carriles. Devuelve cuantos.</summary>
         public int Explode(float x, int lane)
         {
             events.Add(new HordeEvent { Kind = HordeEventKind.Explosion, X = x, Lane = lane });

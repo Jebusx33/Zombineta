@@ -13,6 +13,10 @@ namespace Zombineta.Level
         Ramp,
         Barrel,
         ZombieFront,
+        /// <summary>Recolectable: una granada para lanzar desde la moto (y que explota como un barril).</summary>
+        Granada,
+        /// <summary>Recolectable: una bomba temporizadora para la pelea a pie (mata a todos los que estan peleando).</summary>
+        BombaTemporal,
     }
 
     /// <summary>Una cosa colocada en el recorrido: a tantos metros, en tal carril.</summary>
