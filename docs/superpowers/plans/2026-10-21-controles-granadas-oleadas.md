@@ -68,8 +68,8 @@ verificado fuera de Unity; falta verlo en Play** y regenerar los niveles para qu
 1. **Regenerar los niveles** (botón "Regenerar" de la paleta del nivel) en `Level_01_Auxilio_v2` y
    `Level_02`: así salen las **granadas** (cada ~650 m) y las **bombas** (cada ~1000 m). Sin eso los niveles
    no tienen esos items (en el tutorial sí: arranca con 2 granadas).
-2. **Nivel 2: sigue sin pelea** (`ayudas = 0`): quedarse sin nafta es Game Over. Es lo que vio Jesús; decidir
-   si lleva pelea (Fase 6).
+2. **Todos los niveles se pelean** (Fase 7): `Level_02` ya trae la pelea armada. Si se quiere abrirlo en
+   Unity con la escena cargada, hay que recargarla (el archivo cambió en disco).
 3. Los **íconos** y los sonidos son provisorios. **Sin clips todavía** para: lanzar y explotar la granada,
    mecha y explosión de la bomba, y agarrar el bidón.
 
@@ -96,8 +96,57 @@ verificado fuera de Unity; falta verlo en Play** y regenerar los niveles para qu
 - **Fase 4 — Barriles en la arena ✅** (los que quedaron donde se acabó la nafta).
 - **Fase 5 — Respuesta del combate** *(playtest de Jesús)*: cola de entrada para golpes, ritmo según qué tan
   rápido se aprieta, medir golpes perdidos, balazo determinista. **Pendiente.**
-- **Fase 6 — Encuentros y nivel 2:** tope por carril, ajuste con datos de telemetría y la configuración de
-  nafta/pelea del nivel 2. **Pendiente.**
+- **Fase 6 — Encuentros:** tope por carril y ajuste con datos de telemetría. **Pendiente.**
+- **Fase 7 — Sin límite de auxilios ✅ (21/10).** Se sacó la lógica de auxilios: **cada vez que se acaba la nafta
+  hay que resolver el beat'em up** para seguir, sin tope de peleas, en todos los niveles. Detalle abajo.
+
+## Fase 7 — Cada nivel se resuelve peleando
+
+**Qué cambió**
+- **Fuera:** `GameConfig.ayudas`, `RunState.Ayudas`, el cartel "AUXILIOS: n" del HUD y el límite de pedidos
+  (antes el nivel 1 tenía 3 y el nivel 2 ninguno: sin nafta era Game Over).
+- **Regla nueva:** sin nafta (y en el piso, no en el aire) la moto frena y la protagonista se baja a pelear; al
+  vencer la última oleada el último zombie suelta el bidón, se llena el tanque y se sigue. Pasa **cada vez** que
+  se acaba la nafta, las que sean.
+- **`GameConfig.peleaSinNafta`** (también en `LevelScene`, por nivel; `true` por defecto) enciende o apaga la
+  pelea. Solo el **tutorial** y la plantilla `NivelBase` (que no tienen la pelea armada) la traen apagada: ahí
+  quedarse sin nafta sigue siendo perder.
+- **Se llevan la cuenta de peleas** (`RunState.Peleas`, antes `AyudasUsadas`): la primera de cada nivel trae un
+  corazón de más, una granada y una bomba, y la ayuda de controles. El reintento no cuenta como otra pelea.
+- **Renombres** (los valores de las escenas y los assets se migraron): `bidonesDesdeAuxilio` →
+  `bidonesDesdePelea`, `gapTrasAuxilio` → `gapTrasPelea`, `RunEvent.AuxilioTermina` → `PeleaTermina`. En la
+  telemetría: `sin_nafta` y `pelea_empieza` dicen `peleas=`/`pelea=` y el resumen `peleas=` (antes `auxilios=`).
+  La carpeta y el espacio de nombres `Auxilio` (y `VistaDelAuxilio`) se dejaron como estaban para no romper
+  referencias de las escenas.
+- **El aviso "¡POCA NAFTA!"** ahora sale en todos los niveles con pelea (antes solo con auxilios disponibles).
+- **Nivel 2** (`Level_02.unity`): se le agregó lo que le faltaba para pelear, copiado del nivel 1: `HudPelea` (en el
+  Canvas), `HudMunicionPelea` (en el HUD, apuntando a su marco de las balas y a los marcadores que se esconden) y el
+  objeto `Auxilio` con la `VistaDelAuxilio` (la protagonista a pie). Tiene **1 reintento por pelea**, como el nivel 1.
+- **Tests:** uno nuevo que pelea cinco veces seguidas sin tope, los de "sin pelea = derrota" ahora usan
+  `peleaSinNafta = false`, y `PeleaEnEscenasTests` (corre en Unity) avisa si un nivel con pelea prendida no
+  trae el HUD, la protagonista a pie o el marco de las balas.
+
+**Menos nafta en el nivel 2 (21/10):** se le quitó **1/4 de los bidones** para que haya más peleas: de 39 pasó a
+29 (se sacaron 10 del suelo, los que más amontonaban; los 7 aéreos de las rampas se dejaron). El hueco medio entre
+bidones quedó en ~133 m y el mayor en ~199 m. Se borraron de la escena y se subió `fuelEvery` del generador de 120 a 170,
+así un "Regenerar" futuro deja una cantidad parecida. Con el tanque de 100 (460 m) y +45 por bidón (~207 m), recogiendo
+todos alcanzaría de sobra para los 4000 m; las peleas salen por los que se pierden. Si hacen falta más, se
+quitan más bidones o se achica `fuelMax`.
+
+**Qué no cambió:** `bidonesDesdePelea = 1` en el nivel 1 (no hay nafta en el recorrido hasta la primera pelea),
+`combustibleInicial` y `reintentosPelea` de cada nivel.
+
+**Cosas para decidir** (no se tocaron)
+1. **Dificultad entre peleas:** hoy todas son las mismas 4 oleadas (3 · 5 · 6 · 7). Con varias por nivel
+   se puede repetir; una opción es que cada pelea suba un escalón (más zombies o más tipos pesados).
+2. **Cuánto pesa la nafta:** como cada pelea llena el tanque, los bidones del recorrido valen menos. Se puede
+   bajar la cantidad de bidones o achicar `fuelMax` para que las peleas lleguen más seguido.
+3. **Nivel 2 más largo (4000 m):** puede tener muchas peleas; mirar la telemetría (`peleas=`) antes de balancear.
+4. **El tutorial no enseña el beat'em up:** se aprende en la primera pelea del nivel 1 (ayuda, granada y bomba).
+5. **Escenas viejas:** `Level_01` (el nivel anterior al beat'em up) quedó con la pelea apagada porque no tiene
+   las vistas, y `Level_01_Auxilio` (el prototipo) la tiene prendida con el HUD y la protagonista a pie, pero sin el marco de
+   las balas de la pelea (`HudMunicionPelea`). Ninguna está en la secuencia
+   de niveles del juego (`Niveles.asset`).
 
 ## Preguntas abiertas
 

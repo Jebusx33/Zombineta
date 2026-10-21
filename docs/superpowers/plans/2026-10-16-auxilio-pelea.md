@@ -1,5 +1,9 @@
 # Auxilio y pelea a pie — plan del prototipo
 
+> **Nota (21/10):** el límite de auxilios (`ayudas`) ya no existe: ahora **cada vez que se acaba la nafta se pelea a
+> pie**, en todos los niveles, sin tope. Lo que dice este documento sobre pedidos de auxilio limitados es historia; lo
+> vigente está en `2026-10-21-controles-granadas-oleadas.md` (Fase 7).
+
 **Objetivo:** probar en una copia del nivel 1 un core loop nuevo: quedarse sin nafta con
 ayudas disponibles no es derrota; la protagonista se baja y pelea (beat'em up) hasta que
 llega una furgoneta de auxilio que arrolla a los zombies y le llena el tanque.

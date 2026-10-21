@@ -584,7 +584,12 @@ del equipo y los valores a ajustar están en los planes de `docs/superpowers/pla
 
 **El lazo:** la moto corre → se acaba la nafta → la protagonista se baja y pelea a pie → vence las
 oleadas → el último zombie suelta un **bidón** → lo agarra, el tanque se llena y vuelve a la moto.
-Sigue la nota B/A/S (por golpes recibidos) con premios.
+Sigue la nota B/A/S (por golpes recibidos) con premios. **Desde el 21/10 no hay límite de auxilios: cada
+vez que se acaba la nafta, en cualquier nivel, hay que resolver el beat'em up para seguir.**
+`GameConfig.peleaSinNafta` (y la misma casilla en `LevelScene`) lo enciende o apaga por nivel: solo el
+tutorial y la plantilla `NivelBase`, que no tienen la pelea armada, la traen apagada (ahí sin nafta se
+pierde). Una escena con la pelea prendida tiene que traer `HudPelea`, `HudMunicionPelea` y el objeto
+`Auxilio` (`VistaDelAuxilio`); `PeleaEnEscenasTests` lo verifica. La cuenta de peleas es `RunState.Peleas`.
 
 **Estructura (sin cambios de fondo):** la lógica sigue siendo C# plano en `Simulacion/Runtime` y las
 vistas leen el estado. `RunSimulation` (moto) delega la pelea en `PeleaSimulation`, y la horda
@@ -635,8 +640,7 @@ todos los ensamblados sin errores. **No verificado:** cómo se *siente* en Play 
 
 **Qué sigue** (Fases 5 y 6 del plan vigente): cola de entrada para golpes y ritmo según qué tan rápido se
 aprieta, medir golpes perdidos, balazo determinista; tope de zombies por carril, ajuste con la
-telemetría y decidir si el nivel 2 (`ayudas = 0`: quedarse sin nafta es Game Over) lleva pelea. Íconos y
-sonidos son provisorios (sin clips para granada, bomba y bidón).
+telemetría. Íconos y sonidos son provisorios (sin clips para granada, bomba y bidón).
 
 ---
 
@@ -1576,7 +1580,8 @@ fill y un slicing que escanee el alfa, porque no tienen grilla exacta). (Las ram
 sección 0.)
 
 **21/10:** el trabajo pasó al beat'em up (la pelea a pie): playtests de Axo y Jesús, controles de
-beat'em up, granadas, bombas temporizadoras y peleas por oleadas. Todo lo hecho y lo que falta está en la
+beat'em up, granadas, bombas temporizadoras, peleas por oleadas y, al final, **sin límite de auxilios: todos los
+niveles se resuelven peleando cada vez que se acaba la nafta** (el nivel 2 ya tiene la pelea, y 1/4 menos de bidones: 29 en vez de 39). Todo lo hecho y lo que falta está en la
 sección 0, "Pelea a pie, playtests y arsenal (octubre)", y en `docs/superpowers/plans/2026-10-21-controles-granadas-oleadas.md`.
 Las ramas del equipo se actualizaron todas al mismo commit.
 

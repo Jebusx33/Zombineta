@@ -38,7 +38,7 @@ La dinámica del juego cambió un poco. Lo que quedó:
 | 5 | Z y J (golpe/patada) lejos: no se encadenan combos | Con X como único ataque **desaparece** el problema de teclas lejanas. Queda por definir con Juana lo de los combos alternando A–B | Hay **una sola** acción de golpe (cadena de 3 con remate) |
 | 6 | Las animaciones cuerpo a cuerpo son lentas: leer la frecuencia de pulsación y escalar el ritmo, como en los arcade | De acuerdo; se pidió y **no quedó bien** (Fase 5) | Se subió la velocidad una vez (0,35 → 0,27 s), pero es fija; no depende de qué tan rápido se apriete |
 | 7 | La ambulancia no gusta; debería activarse a mano | **Se saca la ambulancia**; la pelea se gana venciendo a la oleada y hay bomba/granada recolectable. **No** será manual | Hoy: el auxilio llega a los 30 s pase lo que pase; la furgoneta cruza y deja el bidón |
-| 8 | "El tanque se vacía y el avatar no hace la transición" | Faltan assets/animaciones; hoy pasable | **El nivel 2 tiene `ayudas = 0`**: sin nafta no hay pelea, es Game Over. En el nivel 1 también se acaba tras 3 auxilios. Muy probablemente es esto |
+| 8 | "El tanque se vacía y el avatar no hace la transición" | Faltan assets/animaciones; hoy pasable | **El nivel 2 tenía `ayudas = 0`**: sin nafta no había pelea, era Game Over; en el nivel 1 se acababa tras 3 auxilios. Muy probablemente era esto. **Resuelto el 21/10: se sacó el límite y todos los niveles pelean** (Fase 7 del plan de controles) |
 | 9 | Spawn: grupos de 3 a 6, 1–2 por carril | Puede ser, pero Seba lo sintió **fácil**; se ajusta con datos | Oleadas de 3 / 5 / 6 a la vez (ya está en 3–6). No hay tope por carril |
 | 10 | Mejoró, pero "no mucho más divertido" | Las granadas, las bombas y el objetivo de "vencer la oleada" apuntan a eso | Los sonidos de golpe y remate siguen **sin clips** (pendiente de José): pesa mucho en la sensación |
 
@@ -55,5 +55,5 @@ La dinámica del juego cambió un poco. Lo que quedó:
 Todo el trabajo (fases 1 a 6) está en [`2026-10-21-controles-granadas-oleadas.md`](2026-10-21-controles-granadas-oleadas.md).
 **Hecho:** controles nuevos (X, Z, flechas y Espacio), granada y bomba como recursos con HUD, pelea por
 oleadas sin timer (4 oleadas, el último zombie suelta un bidón) y barriles en la arena. **Pendiente:** la
-respuesta del combate (cola de entrada y ritmo según la pulsación), el ajuste de encuentros con datos y la
-pelea del nivel 2.
+respuesta del combate (cola de entrada y ritmo según la pulsación) y el ajuste de encuentros con datos. La pelea
+del nivel 2 ya está (Fase 7: todos los niveles se resuelven peleando).
