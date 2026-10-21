@@ -7,9 +7,9 @@ using Zombineta.Player;
 namespace Zombineta.Auxilio
 {
     /// <summary>
-    /// El HUD de la pelea a pie: vida, cuanto falta para el auxilio y ayudas que quedan, mas los
-    /// carteles grandes ("¡SIN NAFTA!", "¡AUXILIO!") y la vineta roja con poca vida. Va en el
-    /// Canvas del HUD y arma sus propios elementos.
+    /// El HUD de la pelea a pie: vida, oleada en curso y cuantos zombies quedan, mas los carteles grandes
+    /// ("¡SIN NAFTA!", "¡AGUANTÁ!") y la vineta roja con poca vida. Va en el Canvas del HUD y arma sus
+    /// propios elementos.
     /// </summary>
     public sealed class HudPelea : MonoBehaviour
     {
@@ -35,7 +35,7 @@ namespace Zombineta.Auxilio
         [Tooltip("Segundos que queda el aviso de lo recogido del suelo (botiquin, balas).")]
         [SerializeField] float segundosRecogida = 1.1f;
 
-        Text auxilio, vida, ayudas, cartel, controles, combo, pocaNafta, nota, premios, recogida;
+        Text oleadaTexto, vida, cartel, controles, combo, pocaNafta, nota, premios, recogida;
         Image barra, fondoBarra, rojo;
         GameObject panel;
         float cartelRestante;
@@ -64,7 +64,7 @@ namespace Zombineta.Auxilio
             pr.anchoredPosition = new Vector2(0f, -30f);
             pr.sizeDelta = new Vector2(620f, 130f);
 
-            auxilio = NuevoTexto("Auxilio", panel.transform, font, 34, TextAnchor.UpperCenter, new Vector2(0f, 0f), new Vector2(620f, 44f));
+            oleadaTexto = NuevoTexto("Oleada", panel.transform, font, 34, TextAnchor.UpperCenter, new Vector2(0f, 0f), new Vector2(620f, 44f));
             fondoBarra = NuevaImagen("Barra fondo", panel.transform, new Color(0f, 0f, 0f, 0.6f));
             Ubicar(fondoBarra.rectTransform, new Vector2(0f, -48f), new Vector2(520f, 18f));
             barra = NuevaImagen("Barra", fondoBarra.transform, new Color(1f, 0.82f, 0.25f, 1f));
@@ -84,11 +84,6 @@ namespace Zombineta.Auxilio
             comboSombra.effectDistance = new Vector2(3f, -3f);
             combo.enabled = false;
 
-            ayudas = NuevoTexto("Ayudas", transform, font, 26, TextAnchor.UpperRight, Vector2.zero, new Vector2(400f, 40f));
-            var ar = ayudas.rectTransform;
-            ar.anchorMin = ar.anchorMax = ar.pivot = new Vector2(1f, 1f);
-            ar.anchoredPosition = new Vector2(-30f, -260f);
-
             cartel = NuevoTexto("Cartel", transform, font, 110, TextAnchor.MiddleCenter, Vector2.zero, new Vector2(1600f, 200f));
             var cr = cartel.rectTransform;
             cr.anchorMin = cr.anchorMax = cr.pivot = new Vector2(0.5f, 0.5f);
@@ -99,7 +94,7 @@ namespace Zombineta.Auxilio
             sombra.effectDistance = new Vector2(5f, -5f);
             cartel.enabled = false;
 
-            // La nota de la pelea (letra grande) y debajo lo que dejo el auxilio.
+            // La nota de la pelea (letra grande) y debajo lo que dejo.
             nota = NuevoTexto("Nota", transform, font, 150, TextAnchor.MiddleCenter, Vector2.zero, new Vector2(900f, 220f));
             var nr = nota.rectTransform;
             nr.anchorMin = nr.anchorMax = nr.pivot = new Vector2(0.5f, 0.5f);
@@ -131,7 +126,7 @@ namespace Zombineta.Auxilio
             recogidaSombra.effectDistance = new Vector2(3f, -3f);
             recogida.enabled = false;
 
-            // Aviso de poca nafta (solo en niveles con auxilio): debajo del marco del combustible.
+            // Aviso de poca nafta (solo en niveles con pelea): debajo del marco del combustible.
             pocaNafta = NuevoTexto("Poca nafta", transform, font, 30, TextAnchor.UpperLeft, Vector2.zero, new Vector2(420f, 44f));
             var pr2 = pocaNafta.rectTransform;
             pr2.anchorMin = pr2.anchorMax = pr2.pivot = new Vector2(0f, 1f);
@@ -175,7 +170,7 @@ namespace Zombineta.Auxilio
             {
                 Mostrar("¡AGUANTÁ!", new Color(1f, 0.6f, 0.2f));
                 // La primera pelea arranca con una granada y una bomba: se avisa con que tecla se usan.
-                if (run != null && run.Sim != null && run.Sim.State.AyudasUsadas <= 1)
+                if (run != null && run.Sim != null && run.Sim.State.Peleas <= 1)
                 {
                     var esquema = InputDeviceTracker.Shared != null ? InputDeviceTracker.Shared.Current : ControlScheme.KeyboardMouse;
                     MostrarRecogida("¡USÁ LA GRANADA (" + ControlHints.Accion("GranadaPie", esquema) + ") Y LA BOMBA (" +
@@ -192,7 +187,7 @@ namespace Zombineta.Auxilio
             {
                 Mostrar("¡OTRA VEZ!", new Color(1f, 0.5f, 0.5f));
             }
-            if ((ev & RunEvent.AuxilioTermina) != 0)
+            if ((ev & RunEvent.PeleaTermina) != 0)
             {
                 Mostrar("¡A CORRER!", new Color(0.55f, 1f, 0.55f));
                 MostrarNota();
@@ -298,31 +293,27 @@ namespace Zombineta.Auxilio
                 float vencidos;
                 if (s.BidonEnElPiso)
                 {
-                    auxilio.text = "¡AGARRÁ EL BIDÓN!";
+                    oleadaTexto.text = "¡AGARRÁ EL BIDÓN!";
                     vencidos = 1f;
                 }
                 else if (s.OleadaRespiro > 0f)
                 {
-                    auxilio.text = "OLEADA " + (s.Oleada + 1) + "/" + s.Oleadas + " VENCIDA";
+                    oleadaTexto.text = "OLEADA " + (s.Oleada + 1) + "/" + s.Oleadas + " VENCIDA";
                     vencidos = 1f;
                 }
                 else
                 {
-                    auxilio.text = "OLEADA " + (s.Oleada + 1) + "/" + s.Oleadas + "  ·  QUEDAN " + s.ZombiesRestantes;
+                    oleadaTexto.text = "OLEADA " + (s.Oleada + 1) + "/" + s.Oleadas + "  ·  QUEDAN " + s.ZombiesRestantes;
                     vencidos = s.OleadaTotal > 0 ? 1f - (float)s.ZombiesRestantes / s.OleadaTotal : 0f;
                 }
                 barra.rectTransform.sizeDelta = new Vector2(fondoBarra.rectTransform.rect.width * Mathf.Clamp01(vencidos), 0f);
                 vida.text = new string('♥', Mathf.Max(0, s.Vida)) + new string('♡', Mathf.Max(0, c.vidaPelea - s.Vida));
             }
 
-            ayudas.enabled = c.ayudas > 0;
-            if (ayudas.enabled)
-                ayudas.text = "AUXILIOS: " + s.Ayudas;
-
             ActualizarControles(pelea);
 
-            // Poca nafta (en niveles con auxilio y con auxilios todavia): parpadea para que no sorprenda.
-            bool aviso = !pelea && s.Phase == RunPhase.Running && c.ayudas > 0 && s.Ayudas > 0 &&
+            // Poca nafta (en los niveles con pelea): parpadea para que no sorprenda.
+            bool aviso = !pelea && s.Phase == RunPhase.Running && c.peleaSinNafta &&
                          s.Fuel > 0f && c.fuelMax > 0f && s.Fuel / c.fuelMax < 0.25f;
             pocaNafta.enabled = aviso;
             if (aviso)
@@ -413,7 +404,7 @@ namespace Zombineta.Auxilio
         /// </summary>
         void ActualizarControles(bool pelea)
         {
-            bool primera = run.Sim.State.AyudasUsadas <= 1;
+            bool primera = run.Sim.State.Peleas <= 1;
             controles.enabled = pelea && primera && !run.Sim.State.BidonEnElPiso;
             if (!controles.enabled)
                 return;

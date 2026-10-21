@@ -12,7 +12,7 @@ namespace Zombineta.Core
         Running,
         Won,
         Lost,
-        /// <summary>Sin nafta y esperando el auxilio: la protagonista pelea a pie.</summary>
+        /// <summary>Sin nafta: la protagonista pelea a pie hasta vencer las oleadas.</summary>
         Pelea,
     }
 
@@ -25,7 +25,7 @@ namespace Zombineta.Core
         None,
         CaughtByHorde,
         OutOfFuel,
-        /// <summary>Se quedo sin vida peleando a pie mientras esperaba el auxilio.</summary>
+        /// <summary>Se quedo sin vida peleando a pie.</summary>
         Derribada,
     }
 
@@ -99,19 +99,20 @@ namespace Zombineta.Core
         public RunPhase Phase;
         public LossReason Loss;
 
-        // --- Auxilio y pelea a pie ---
-        /// <summary>Pedidos de auxilio que le quedan en el nivel.</summary>
-        public int Ayudas;
-        /// <summary>Auxilios que ya uso: los bidones de algunos niveles aparecen recien despues del primero.</summary>
-        public int AyudasUsadas;
+        // --- Pelea a pie ---
         /// <summary>
-        /// Segundos que le quedan a la moto frenando antes de bajarse a pelear (sin nafta, con ayuda).
+        /// Peleas que empezo en el nivel (la primera trae un corazon de mas y el arsenal; los bidones de algunos
+        /// niveles aparecen recien despues de ella). El reintento de una pelea no cuenta como otra.
+        /// </summary>
+        public int Peleas;
+        /// <summary>
+        /// Segundos que le quedan a la moto frenando antes de bajarse a pelear (sin nafta).
         /// Negativo = no esta frenando.
         /// </summary>
         public float FrenadoRestante = -1f;
         /// <summary>Velocidad que llevaba al quedarse sin nafta: de ahi baja hasta parar.</summary>
         public float VelocidadAlFrenar;
-        /// <summary>Segundos que le quedan al arranque suave despues del auxilio (0 = ya a velocidad normal).</summary>
+        /// <summary>Segundos que le quedan al arranque suave despues de la pelea (0 = ya a velocidad normal).</summary>
         public float ArranqueRestante;
         /// <summary>Oleada de la pelea en curso (0 = la primera).</summary>
         public int Oleada;

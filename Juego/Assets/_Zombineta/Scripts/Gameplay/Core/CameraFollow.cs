@@ -241,7 +241,7 @@ namespace Zombineta.Core
                 director.AddTrauma(0.6f);
                 CamaraLenta(0.5f, 0.35f);
             }
-            if ((events & RunEvent.AuxilioTermina) != 0)
+            if ((events & RunEvent.PeleaTermina) != 0)
             {
                 director.AddTrauma(0.2f);
                 director.Punch(0.4f, 0f);

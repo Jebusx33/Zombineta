@@ -17,6 +17,7 @@ namespace Zombineta.Tests
         static GameConfig MakeConfig()
         {
             var c = ScriptableObject.CreateInstance<GameConfig>();
+            c.peleaSinNafta = false;   // estos tests son de la moto sola: sin nafta se pierde
 
             c.goalDistance = 1000f;
             c.startingGap = 50f;

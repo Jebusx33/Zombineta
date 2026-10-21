@@ -49,10 +49,10 @@ namespace Zombineta.Core
         [Header("Combustible")]
         public float fuelMax = 100f;
         [Tooltip("Nafta con la que se arranca el nivel. 0 o menos = el tanque lleno (fuelMax). Un tanque corto al principio " +
-                 "hace que el primer auxilio llegue pronto, para presentar la mecanica.")]
+                 "hace que la primera pelea llegue pronto, para presentar la mecanica.")]
         public float fuelInicial = 0f;
-        [Tooltip("Los bidones no aparecen (no se ven ni se agarran) hasta haber usado tantos auxilios. 0 = siempre.")]
-        [Min(0)] public int bidonesDesdeAuxilio = 0;
+        [Tooltip("Los bidones no aparecen (no se ven ni se agarran) hasta haber peleado tantas veces. 0 = siempre.")]
+        [Min(0)] public int bidonesDesdePelea = 0;
         [Tooltip("Consumo por segundo en modo Normal.")]
         public float fuelBurnPerSecond = 1.6f;
         public float turboBurnMultiplier = 3f;
@@ -257,13 +257,15 @@ namespace Zombineta.Core
         [Tooltip("Metros de diferencia de altura con que se agarra un pickup en el aire.")]
         public float aerialPickupTolerance = 1.5f;
 
-        [Header("Auxilio y pelea a pie")]
-        [Tooltip("Pedidos de auxilio por nivel. 0 = sin auxilio: quedarse sin nafta es perder, como siempre.")]
-        [Min(0)] public int ayudas = 0;
+        [Header("Pelea a pie")]
+        [Tooltip("Cada vez que se acaba la nafta la protagonista se baja y pelea a pie hasta vencer todas las oleadas; " +
+                 "el bidon que suelta el ultimo zombie llena el tanque y sigue. No hay limite de peleas. " +
+                 "Apagado = quedarse sin nafta es perder (el tutorial y las escenas sin pelea).")]
+        public bool peleaSinNafta = true;
         [Tooltip("Segundos que la moto sigue avanzando, frenando y con el motor tosiendo, entre quedarse sin nafta " +
                  "y bajarse a pelear. 0 = se baja al instante.")]
         public float paradaSegundos = 1.2f;
-        [Tooltip("Segundos que tarda la moto en volver a velocidad normal despues del auxilio.")]
+        [Tooltip("Segundos que tarda la moto en volver a velocidad normal despues de la pelea.")]
         public float arranqueSegundos = 0.9f;
         [Tooltip("Corazones de mas en la primera pelea de la partida: el jugador todavia esta aprendiendo.")]
         [Min(0)] public int vidaExtraPrimeraPelea = 1;
@@ -300,7 +302,7 @@ namespace Zombineta.Core
         [Tooltip("Golpes que aguanta la protagonista a pie.")]
         [Min(1)] public int vidaPelea = 5;
         [Tooltip("Metros de ventaja sobre la horda al volver a la moto.")]
-        public float gapTrasAuxilio = 45f;
+        public float gapTrasPelea = 45f;
         [Tooltip("Metros a cada lado del centro por donde se puede mover a pie.")]
         public float arenaMedioAncho = 12f;
         [Tooltip("Metros por segundo caminando.")]

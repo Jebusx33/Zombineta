@@ -35,16 +35,17 @@ namespace Zombineta.Juego.Levels
                  "de cada pedazo. Vacio = todo parejo, como siempre.")]
         [SerializeField] List<Tramo> tramos = new List<Tramo>();
 
-        [Tooltip("Pedidos de auxilio en este nivel: con nafta en cero se pelea a pie hasta vencer a todas " +
-                 "las oleadas; el ultimo zombie suelta un bidon. 0 = sin auxilio (quedarse sin nafta es perder).")]
-        [Min(0)] [SerializeField] int ayudas;
+        [Tooltip("Con la nafta en cero se pelea a pie hasta vencer a todas las oleadas, cada vez que pase; el ultimo " +
+                 "zombie suelta un bidon que llena el tanque. Apagado = quedarse sin nafta es perder (el tutorial, " +
+                 "o una escena que todavia no tiene la pelea armada: HudPelea, VistaDelAuxilio y HudMunicionPelea).")]
+        [SerializeField] bool peleaSinNafta = true;
 
-        [Tooltip("Nafta con la que arranca el nivel (0 = el tanque lleno). Un tanque corto hace que el primer auxilio llegue pronto.")]
+        [Tooltip("Nafta con la que arranca el nivel (0 = el tanque lleno). Un tanque corto hace que la primera pelea llegue pronto.")]
         [SerializeField] float combustibleInicial;
 
-        [Tooltip("Los bidones de este nivel no se ven ni se agarran hasta haber usado tantos auxilios (0 = siempre). " +
-                 "Con 1: no hay nafta hasta el primer auxilio.")]
-        [Min(0)] [SerializeField] int bidonesDesdeAuxilio;
+        [Tooltip("Los bidones de este nivel no se ven ni se agarran hasta haber peleado tantas veces (0 = siempre). " +
+                 "Con 1: no hay nafta hasta la primera pelea.")]
+        [Min(0)] [SerializeField] int bidonesDesdePelea;
 
         [Tooltip("Veces que la pelea a pie se reinicia si derriban a la protagonista, en vez de perder.")]
         [Min(0)] [SerializeField] int reintentosPelea;
@@ -91,6 +92,9 @@ namespace Zombineta.Juego.Levels
         [SerializeField] PerfilDeLuz perfil;
 
         public GameConfig Config => config;
+
+        /// <summary>Si al quedarse sin nafta se pelea a pie (todos los niveles; el tutorial no).</summary>
+        public bool PeleaSinNafta => peleaSinNafta;
         public LevelItemPalette Palette => palette;
         public float GoalDistance => goalDistance;
         public Transform ItemsRoot => itemsRoot != null ? itemsRoot : transform;
@@ -130,9 +134,9 @@ namespace Zombineta.Juego.Levels
             copy.name = (source != null ? source.name : "GameConfig") + " (" + gameObject.scene.name + ")";
             copy.goalDistance = goalDistance;
             copy.tramos = tramos;
-            copy.ayudas = ayudas;
+            copy.peleaSinNafta = peleaSinNafta;
             copy.fuelInicial = combustibleInicial;
-            copy.bidonesDesdeAuxilio = bidonesDesdeAuxilio;
+            copy.bidonesDesdePelea = bidonesDesdePelea;
             copy.reintentosPelea = reintentosPelea;
             return copy;
         }

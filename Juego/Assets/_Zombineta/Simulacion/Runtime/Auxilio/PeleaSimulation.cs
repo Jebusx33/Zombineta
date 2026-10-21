@@ -85,16 +85,16 @@ namespace Zombineta.Auxilio
         /// <summary>Si el zombie de ese indice esta peleando (los demas esperan fuera de cuadro).</summary>
         public bool Activo(int indice) => activo != null && indice < activo.Length && activo[indice];
 
-        public bool PuedeEmpezar => c.ayudas > 0 && s.Ayudas > 0;
+        /// <summary>Si quedarse sin nafta empieza una pelea (siempre, salvo en el tutorial y las escenas sin pelea).</summary>
+        public bool PuedeEmpezar => c.peleaSinNafta;
 
-        /// <summary>Se gasta un auxilio y la protagonista se baja: la horda la alcanza y la rodea.</summary>
+        /// <summary>La protagonista se baja a pelear: la horda la alcanza y la rodea.</summary>
         public RunEvent Empezar()
         {
-            s.Ayudas--;
-            s.AyudasUsadas++;
+            s.Peleas++;
             s.FrenadoRestante = -1f;
             s.Phase = RunPhase.Pelea;
-            s.Vida = c.vidaPelea + (s.AyudasUsadas == 1 ? c.vidaExtraPrimeraPelea : 0);
+            s.Vida = c.vidaPelea + (s.Peleas == 1 ? c.vidaExtraPrimeraPelea : 0);
             s.Oleada = 0;
             s.ReintentosPelea = c.reintentosPelea;
             s.VidaMax = s.Vida;
@@ -114,7 +114,7 @@ namespace Zombineta.Auxilio
             s.PeleaBombas = 0;
             s.BombaMecha = 0f;
             // En la primera pelea se baja con al menos una granada y una bomba: ahi se aprende a usarlas.
-            if (s.AyudasUsadas == 1)
+            if (s.Peleas == 1)
             {
                 s.Granadas = Mathf.Clamp(Mathf.Max(s.Granadas, c.granadasPrimeraPelea), 0, c.granadaMax);
                 s.Bombas = Mathf.Clamp(Mathf.Max(s.Bombas, c.bombasPrimeraPelea), 0, c.bombaMax);
@@ -1152,7 +1152,7 @@ namespace Zombineta.Auxilio
 
         /// <summary>
         /// Vuelve al principio de la pelea: vida entera y la arena rearmada desde la primera oleada.
-        /// No gasta otro auxilio. Un respiro de 2 s sin dano.
+        /// No cuenta como otra pelea. Un respiro de 2 s sin dano.
         /// </summary>
         RunEvent Reintentar()
         {
@@ -1306,10 +1306,10 @@ namespace Zombineta.Auxilio
             s.Vida = 0;
             s.ArranqueRestante = c.arranqueSegundos;
             drops.Clear();
-            h.Reset(s.PlayerX - c.gapTrasAuxilio);
+            h.Reset(s.PlayerX - c.gapTrasPelea);
             s.HordeX = h.FrontX;
             activo = null;
-            return RunEvent.AuxilioTermina;
+            return RunEvent.PeleaTermina;
         }
     }
 }

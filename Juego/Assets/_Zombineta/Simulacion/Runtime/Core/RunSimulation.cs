@@ -28,7 +28,7 @@ namespace Zombineta.Core
         ShotMissed = 1 << 15,
         RanOver = 1 << 16,
         Explosion = 1 << 17,
-        /// <summary>Sin nafta, con ayudas: empieza la pelea a pie.</summary>
+        /// <summary>Sin nafta: empieza la pelea a pie.</summary>
         PeleaEmpieza = 1 << 18,
         Golpe = 1 << 19,
         GolpeAlAire = 1 << 20,
@@ -37,7 +37,7 @@ namespace Zombineta.Core
         /// <summary>
         /// Recogio el bidon del ultimo zombie y vuelve a la moto con el tanque lleno. (Antes: la furgoneta paso.)
         /// </summary>
-        AuxilioTermina = 1 << 23,
+        PeleaTermina = 1 << 23,
         /// <summary>El tercer golpe de la cadena: derriba a los que la rodean.</summary>
         Remate = 1 << 24,
         /// <summary>Empieza una oleada nueva de la pelea (el numero esta en State.Oleada).</summary>
@@ -86,7 +86,7 @@ namespace Zombineta.Core
         /// <summary>La horda como individuos. El frente sale de aca.</summary>
         public HordeSimulation Horde { get; }
 
-        /// <summary>La pelea a pie mientras llega el auxilio.</summary>
+        /// <summary>La pelea a pie: se arma cada vez que se acaba la nafta.</summary>
         public Zombineta.Auxilio.PeleaSimulation Pelea { get; }
 
         public GameConfig Config => config;
@@ -167,8 +167,7 @@ namespace Zombineta.Core
             State.LaunchSpin = 0f;
             State.BoostRemaining = 0f;
             State.Fallen = false;
-            State.Ayudas = config.ayudas;
-            State.AyudasUsadas = 0;
+            State.Peleas = 0;
             State.FrenadoRestante = -1f;
             State.VelocidadAlFrenar = 0f;
             State.ArranqueRestante = 0f;
@@ -215,7 +214,7 @@ namespace Zombineta.Core
             if (dt <= 0f)
                 return RunEvent.None;
 
-            // A pie, esperando el auxilio: la pelea tiene sus propias reglas.
+            // A pie: la pelea tiene sus propias reglas.
             if (State.Phase == RunPhase.Pelea)
             {
                 Horde.BeginTick();
@@ -439,7 +438,7 @@ namespace Zombineta.Core
             if (State.StunRemaining > 0f)
                 return 0f;
 
-            // Sin nafta la moto se para: la horda hace el resto. Con auxilio disponible no se clava de
+            // Sin nafta la moto se para: la horda hace el resto. Si hay pelea no se clava de
             // golpe: sigue avanzando con el motor tosiendo y va frenando hasta que la protagonista se baja.
             if (State.Fuel <= 0f)
             {
@@ -469,7 +468,7 @@ namespace Zombineta.Core
             if (State.BoostRemaining > 0f && speed > 0f)
                 speed *= config.landingBoostMultiplier;
 
-            // Despues del auxilio arranca de a poco, no a velocidad completa de un cuadro al otro.
+            // Despues de la pelea arranca de a poco, no a velocidad completa de un cuadro al otro.
             if (State.ArranqueRestante > 0f && config.arranqueSegundos > 0f && speed > 0f)
             {
                 float avance = 1f - Mathf.Clamp01(State.ArranqueRestante / config.arranqueSegundos);
@@ -597,7 +596,7 @@ namespace Zombineta.Core
 
         RunEvent CheckEndConditions()
         {
-            // Sin nafta y con ayudas: no se pierde, se pide el auxilio y se pelea a pie. Antes la moto
+            // Sin nafta no se pierde: se baja y se pelea a pie, cada vez que pase. Antes la moto
             // frena de a poco (paradaSegundos): se ve que se queda sin nafta y despues se baja.
             if (State.Fuel <= 0f && !State.Airborne && Pelea.PuedeEmpezar)
             {

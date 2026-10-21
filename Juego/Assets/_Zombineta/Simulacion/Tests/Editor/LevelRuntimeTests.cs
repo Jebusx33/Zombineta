@@ -409,10 +409,10 @@ namespace Zombineta.Tests
         // --- Fase 4: bidones bloqueados y arena despejada ---------------------------
 
         [Test]
-        public void TheFuelCannotBePickedUp_UntilTheFirstAidIsUsed()
+        public void TheFuelCannotBePickedUp_UntilTheFirstFight()
         {
             var c = MakeConfig();
-            c.bidonesDesdeAuxilio = 1;
+            c.bidonesDesdePelea = 1;
             c.fuelInicial = 50f;
             var sim = new RunSimulation(c);
             var level = new LevelRuntime(MakeLevel(new LevelEntry(30f, 1, LevelEntryKind.Fuel)));
@@ -425,12 +425,12 @@ namespace Zombineta.Tests
         }
 
         [Test]
-        public void AfterTheFirstAid_TheFuelIsBackToNormal()
+        public void AfterTheFirstFight_TheFuelIsBackToNormal()
         {
             var c = MakeConfig();
-            c.bidonesDesdeAuxilio = 1;
+            c.bidonesDesdePelea = 1;
             var sim = new RunSimulation(c);
-            sim.State.AyudasUsadas = 1;
+            sim.State.Peleas = 1;
             sim.State.Fuel = 10f;
             var level = new LevelRuntime(MakeLevel(new LevelEntry(30f, 1, LevelEntryKind.Fuel)));
 

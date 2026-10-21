@@ -1980,7 +1980,7 @@ MonoBehaviour:
     frontZombieEvery: 150
     heavyFrontZombieChance: 0.3
   tramos: []
-  ayudas: 0
+  peleaSinNafta: 0
   looks: {fileID: 11400000, guid: 526ce8163bc04b242a6e808590ae5fbe, type: 2}
   lookSeed: 12345
   shadowSprite: {fileID: 21300000, guid: 8c1bb8c15f5a47141b8d044f53482a77, type: 3}

@@ -7744,6 +7744,7 @@ MonoBehaviour:
   config: {fileID: 11400000, guid: 3b1f0a7c9d2e4f5a8b6c1d0e2f3a4b5c, type: 2}
   palette: {fileID: 11400000, guid: c1bf359cdd58274428fac6e9616b9721, type: 2}
   goalDistance: 2000
+  peleaSinNafta: 0
   itemsRoot: {fileID: 475886339}
   generator:
     seed: 1

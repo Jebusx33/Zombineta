@@ -74,9 +74,9 @@ MonoBehaviour:
   fallStunDuration: 1.6
   fallFuelPenalty: 10
   aerialPickupTolerance: 1.5
-  ayudas: 0
+  peleaSinNafta: 0
   vidaPelea: 5
-  gapTrasAuxilio: 45
+  gapTrasPelea: 45
   arenaMedioAncho: 12
   peatonVelocidad: 6
   golpeAlcance: 1.6

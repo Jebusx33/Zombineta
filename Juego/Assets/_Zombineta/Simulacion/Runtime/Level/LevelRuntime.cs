@@ -65,10 +65,10 @@ namespace Zombineta.Level
 
         /// <summary>
         /// Si los bidones todavia no cuentan: algunos niveles (el primero) no tienen nafta hasta
-        /// que se usa el primer auxilio. Mientras tanto no se agarran ni se ven.
+        /// la primera pelea. Mientras tanto no se agarran ni se ven.
         /// </summary>
         public static bool BidonesBloqueados(GameConfig config, RunState state) =>
-            config != null && state != null && config.bidonesDesdeAuxilio > state.AyudasUsadas;
+            config != null && state != null && config.bidonesDesdePelea > state.Peleas;
 
         /// <summary>
         /// Despeja un tramo del recorrido (la arena de la pelea a pie): los obstaculos, rampas y

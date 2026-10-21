@@ -74,7 +74,7 @@ namespace Zombineta.Tests
             s.Nota = NotaPelea.A;
             s.PeleaBajas = 7;
 
-            var filas = sesion.Eventos(5f, s, RunEvent.Crashed | RunEvent.Lastimada | RunEvent.AuxilioTermina);
+            var filas = sesion.Eventos(5f, s, RunEvent.Crashed | RunEvent.Lastimada | RunEvent.PeleaTermina);
 
             Assert.AreEqual(3, filas.Count);
             StringAssert.Contains(";choque;", filas[0]);
@@ -101,7 +101,7 @@ namespace Zombineta.Tests
             StringAssert.Contains(";resumen;", resumen);
             StringAssert.Contains("resultado=ganada", resumen);
             StringAssert.Contains("duracion=60.0", resumen);
-            StringAssert.Contains("auxilios=1", resumen);
+            StringAssert.Contains("peleas=1", resumen);
             StringAssert.Contains("reintentos=1", resumen);
         }
 

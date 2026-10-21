@@ -32,6 +32,7 @@ namespace Zombineta.Juego.Tests
         GameConfig Config()
         {
             var c = ScriptableObject.CreateInstance<GameConfig>();
+            c.peleaSinNafta = false;   // el tutorial no tiene pelea
             c.goalDistance = 650f;
             creados.Add(c);
             return c;

@@ -26,7 +26,7 @@ namespace Zombineta.Telemetria
         public float SegundosPeleando { get; private set; }
         public float MetrosMaximos { get; private set; }
 
-        public int Auxilios { get; private set; }
+        public int Peleas { get; private set; }
         public int Choques { get; private set; }
         public int Caidas { get; private set; }
         public int Bajas { get; private set; }
@@ -76,12 +76,12 @@ namespace Zombineta.Telemetria
 
             if ((ev & RunEvent.Crashed) != 0) { Choques++; filas.Add(Fila(t, s, "choque", "")); }
             if ((ev & RunEvent.Fell) != 0) { Caidas++; filas.Add(Fila(t, s, "caida", "")); }
-            if ((ev & RunEvent.RanOutOfFuel) != 0) filas.Add(Fila(t, s, "sin_nafta", "ayudas=" + s.Ayudas));
+            if ((ev & RunEvent.RanOutOfFuel) != 0) filas.Add(Fila(t, s, "sin_nafta", "peleas=" + s.Peleas));
             if ((ev & RunEvent.Frenando) != 0) filas.Add(Fila(t, s, "frenando", "velocidad=" + N(s.VelocidadAlFrenar)));
             if ((ev & RunEvent.PeleaEmpieza) != 0)
             {
-                Auxilios++;
-                filas.Add(Fila(t, s, "pelea_empieza", "auxilio=" + s.AyudasUsadas + ";vida=" + s.Vida));
+                Peleas++;
+                filas.Add(Fila(t, s, "pelea_empieza", "pelea=" + s.Peleas + ";vida=" + s.Vida));
             }
             if ((ev & RunEvent.OleadaNueva) != 0)
                 filas.Add(Fila(t, s, "oleada", "n=" + (s.Oleada + 1) + ";de=" + s.Oleadas + ";zombies=" + s.OleadaTotal));
@@ -118,7 +118,7 @@ namespace Zombineta.Telemetria
             }
             if ((ev & RunEvent.BombaExplota) != 0) filas.Add(Fila(t, s, "bomba_explota", "muertos=" + s.UltimaExplosionMuertos));
             if ((ev & RunEvent.PeleaGanada) != 0) filas.Add(Fila(t, s, "pelea_ganada", "duracion=" + N(s.PeleaTiempo)));
-            if ((ev & RunEvent.AuxilioTermina) != 0)
+            if ((ev & RunEvent.PeleaTermina) != 0)
             {
                 Bajas += s.PeleaBajas;
                 filas.Add(Fila(t, s, "pelea_termina",
@@ -186,7 +186,7 @@ namespace Zombineta.Telemetria
             Fila(t, s, "resumen",
                 "resultado=" + resultado + ";causa=" + s.Loss + ";duracion=" + N(SegundosTotales) +
                 ";corriendo=" + N(SegundosCorriendo) + ";frenando=" + N(SegundosFrenando) + ";peleando=" + N(SegundosPeleando) +
-                ";metros_max=" + N(MetrosMaximos) + ";auxilios=" + Auxilios + ";reintentos=" + Reintentos +
+                ";metros_max=" + N(MetrosMaximos) + ";peleas=" + Peleas + ";reintentos=" + Reintentos +
                 ";choques=" + Choques + ";caidas=" + Caidas + ";bajas=" + Bajas + ";remates=" + Remates +
                 ";golpes_recibidos=" + GolpesRecibidos + ";botiquines=" + Botiquines +
                 ";items_pasados=" + ItemsPasados + ";granadas_lanzadas=" + GranadasLanzadas + ";bombas_usadas=" + BombasUsadas);

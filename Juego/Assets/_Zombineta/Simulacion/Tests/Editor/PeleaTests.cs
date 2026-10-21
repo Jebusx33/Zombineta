@@ -14,7 +14,7 @@ namespace Zombineta.Tests
     {
         const float Dt = 1f / 60f;
 
-        static GameConfig MakeConfig(int ayudas = 2)
+        static GameConfig MakeConfig()
         {
             var c = ScriptableObject.CreateInstance<GameConfig>();
             c.goalDistance = 2000f;
@@ -30,9 +30,9 @@ namespace Zombineta.Tests
             c.ammoAtStart = 3;
             c.shotRangeMeters = 30f;
 
-            c.ayudas = ayudas;
+            c.peleaSinNafta = true;
             c.vidaPelea = 5;
-            c.gapTrasAuxilio = 45f;
+            c.gapTrasPelea = 45f;
             c.arenaMedioAncho = 12f;
             c.peatonVelocidad = 6f;
             c.golpeAlcance = 1.6f;
@@ -151,24 +151,26 @@ namespace Zombineta.Tests
         // --- Entrada ----------------------------------------------------------
 
         [Test]
-        public void OutOfFuel_WithHelpLeft_StartsTheFight_InsteadOfLosing()
+        public void OutOfFuel_StartsTheFight_InsteadOfLosing()
         {
-            var sim = SinNafta(MakeConfig(ayudas: 2));
+            var sim = SinNafta(MakeConfig());
 
             Assert.AreEqual(RunPhase.Pelea, sim.State.Phase);
-            Assert.AreEqual(1, sim.State.Ayudas, "se gasto una ayuda");
+            Assert.AreEqual(1, sim.State.Peleas, "la primera pelea del nivel");
             Assert.AreEqual(5, sim.State.Vida);
             Assert.AreEqual(500f, sim.State.PeatonX, 0.001f, "se baja donde quedo la moto");
         }
 
         [Test]
-        public void OutOfFuel_WithoutHelp_IsTheSameDefeatAsAlways()
+        public void OutOfFuel_WithTheFightTurnedOff_IsTheSameDefeatAsAlways()
         {
-            var sim = SinNafta(MakeConfig(ayudas: 0));
+            var c = MakeConfig();
+            c.peleaSinNafta = false;   // el tutorial y las escenas sin pelea armada
+            var sim = SinNafta(c);
             Avanzar(sim, 0f, Quieta);
 
             Assert.AreNotEqual(RunPhase.Pelea, sim.State.Phase);
-            // Sin auxilio la moto queda parada y la horda la alcanza.
+            // Sin pelea la moto queda parada y la horda la alcanza.
             for (int i = 0; i < 600 && sim.State.Phase == RunPhase.Running; i++)
                 sim.Tick(Quieta, Dt);
             Assert.AreEqual(RunPhase.Lost, sim.State.Phase);
@@ -364,7 +366,7 @@ namespace Zombineta.Tests
             Assert.AreEqual(1, bidones);
 
             var ev = RecogerElBidon(sim);
-            Assert.IsTrue((ev & RunEvent.AuxilioTermina) != 0);
+            Assert.IsTrue((ev & RunEvent.PeleaTermina) != 0);
             Assert.AreEqual(RunPhase.Running, sim.State.Phase);
             Assert.AreEqual(100f, sim.State.Fuel, 0.001f, "tanque lleno de una");
             Assert.AreEqual(45f, sim.State.Gap, 0.5f, "la horda queda atras");
@@ -387,18 +389,24 @@ namespace Zombineta.Tests
         }
 
         [Test]
-        public void AfterUsingAllTheHelp_TheNextEmptyTankIsADefeat()
+        public void EveryEmptyTank_StartsAnotherFight_WithoutALimit()
         {
-            var c = MakeConfig(ayudas: 1);
-            var sim = SinNafta(c);
-            TerminarPelea(sim);
-            Assert.AreEqual(RunPhase.Running, sim.State.Phase);
+            var sim = SinNafta(MakeConfig());
+            for (int vez = 1; vez <= 5; vez++)
+            {
+                Assert.AreEqual(RunPhase.Pelea, sim.State.Phase, "pelea " + vez);
+                Assert.AreEqual(vez, sim.State.Peleas);
 
-            sim.State.Fuel = 0f;
-            sim.Tick(Quieta, Dt);
+                TerminarPelea(sim);
+                Assert.AreEqual(RunPhase.Running, sim.State.Phase, "vuelve a la moto");
+                Assert.AreEqual(sim.State.Peleas, vez);
 
-            Assert.AreEqual(RunPhase.Running, sim.State.Phase, "sin ayudas no hay pelea");
-            Assert.AreEqual(0, sim.State.Ayudas);
+                sim.State.Fuel = 0f;
+                sim.Tick(Quieta, Dt);
+            }
+
+            Assert.AreEqual(RunPhase.Pelea, sim.State.Phase, "no hay tope: se pelea cada vez que se acaba la nafta");
+            Assert.AreEqual(6, sim.State.Peleas);
         }
 
         // --- Cadena de golpes y remate ---------------------------------------------
@@ -753,10 +761,10 @@ namespace Zombineta.Tests
         }
 
         [Test]
-        public void WithoutHelpLeft_NoBrakingTransition_ItIsTheOldDefeat()
+        public void WithTheFightTurnedOff_NoBrakingTransition_ItIsTheOldDefeat()
         {
             var c = Frenando();
-            c.ayudas = 0;
+            c.peleaSinNafta = false;
             var sim = new RunSimulation(c);
             sim.State.PlayerX = 500f;
             sim.Horde.Reset(460f);
@@ -794,14 +802,14 @@ namespace Zombineta.Tests
             var c = Rapido();
             c.vidaExtraPrimeraPelea = 1;
             var sim = SinNafta(c);
-            Assert.AreEqual(1, sim.State.AyudasUsadas);
+            Assert.AreEqual(1, sim.State.Peleas);
             Assert.AreEqual(c.vidaPelea + 1, sim.State.Vida);
 
             TerminarPelea(sim);
             sim.State.Fuel = 0f;
             sim.Tick(Quieta, Dt);
 
-            Assert.AreEqual(2, sim.State.AyudasUsadas);
+            Assert.AreEqual(2, sim.State.Peleas);
             Assert.AreEqual(c.vidaPelea, sim.State.Vida, "la segunda pelea ya no tiene el corazon de mas");
         }
 
@@ -821,7 +829,7 @@ namespace Zombineta.Tests
             sim.State.Fuel = 0f;
             sim.Tick(Quieta, Dt);
 
-            Assert.AreEqual(2, sim.State.AyudasUsadas);
+            Assert.AreEqual(2, sim.State.Peleas);
             Assert.AreEqual(0, sim.State.Granadas, "la segunda pelea ya no regala");
             Assert.AreEqual(0, sim.State.Bombas);
         }
@@ -1036,7 +1044,7 @@ namespace Zombineta.Tests
             Assert.AreEqual(sim.State.OleadaTotal, sim.State.ZombiesRestantes, "con todos los zombies de nuevo");
             Assert.Greater(sim.State.Invulnerable, 1f, "un respiro para reacomodarse");
             Assert.AreEqual(0, sim.State.ReintentosPelea);
-            Assert.AreEqual(1, sim.State.AyudasUsadas, "el reintento no gasta otro auxilio");
+            Assert.AreEqual(1, sim.State.Peleas, "el reintento no gasta otro auxilio");
         }
 
         [Test]
