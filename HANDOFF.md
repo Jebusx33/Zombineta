@@ -1,6 +1,10 @@
 # Zombineta — Handoff
 
-Última actualización: 24 de septiembre de 2026, tras el tutorial de controles: `Juego/` suma un
+Última actualización: 21 de octubre de 2026. Después del feedback del profe ("aburrido") el juego
+sumó una **pelea a pie tipo beat'em up** cuando se acaba la nafta, y con los playtests de Axo y
+Jesús y la reunión del equipo quedó con controles de beat'em up, granadas y bombas, y peleas por
+oleadas sin ambulancia ni reloj (ver sección 0, "Pelea a pie, playtests y arsenal (octubre)").
+Antes, el 24 de septiembre, tras el tutorial de controles: `Juego/` suma un
 nivel corto y no perdible (`Tutorial.unity`) que enseña turbo/retroceso/carril/salto/recursos/
 disparo/faro antes de la primera partida, con botón propio en el menú principal y "Saltear
 tutorial" en la pausa (ver sección 0, "Tutorial"). Antes, el 21/09: iluminación 2D con URP y
@@ -288,13 +292,24 @@ reconozca como `Gamepad`), sin tocar las reglas: los dos caminos arman el mismo 
 a `Player` y `UI`, que no cambiaron). `PlayerInputReader` ya no lee `Keyboard`/`Mouse`
 directo: lee las acciones de este mapa. **Para cambiar un binding se edita ese mapa.**
 
-| Acción | Teclado / mouse | Joystick |
+**Desde el 21/10 los controles son los de un beat'em up y los botones cambian de función según el
+modo** (moto o a pie). Hay un solo esquema anunciado; **el mouse ya no hace nada** y **WASD sigue
+andando pero no se anuncia en ningún cartel**. Las acciones nuevas viven en el mismo mapa `Moto`
+(`FirePie`, `Granada`, `GranadaPie`, `Bomba`) y `PlayerInputReader.Read(aPie)` elige cuál leer.
+
+| Acción | Teclado | Joystick |
 |---|---|---|
-| Cambiar carril | W/S, ↑/↓ | stick izq. arriba/abajo, D-pad |
-| Turbo (mantener) | D, → | gatillo derecho (RT/R2), desde 0,3 |
-| Retroceso (mantener) | A, ← | gatillo izquierdo (LT/L2), desde 0,3 |
-| Disparar | X, click izquierdo | botón oeste (X/□), hombro derecho (RB/R1) |
+| **Moto** — cambiar carril | ↑/↓ | stick izq. arriba/abajo, D-pad |
+| Turbo (mantener) | → | gatillo derecho (RT/R2), desde 0,3 |
+| Retroceso (mantener) | ← | gatillo izquierdo (LT/L2), desde 0,3 |
+| Disparar | X | botón oeste (X/□), hombro derecho (RB/R1) |
+| Granada (hacia atrás) | Z | hombro izquierdo (LB/L1) |
 | Faro (toggle) | Espacio | botón norte (Y/△) |
+| **A pie** — mover | flechas | stick izq., D-pad |
+| Atacar (3 seguidos = remate) | X | botón sur (A/✕) |
+| Disparo | Z | X/□ o RB/R1 |
+| Granada | C | LB/L1 |
+| Bomba temporizadora | Espacio | Y/△ |
 | Pausa | Esc | Start |
 | Reinicio rápido (Game Over) | R | — (solo teclado, y solo en una escena de nivel suelta sin flujo: `LevelFlowBridge.Start` pone `run.QuickRestartEnabled = false` en cuanto hay flujo, así que en el juego normal R no hace nada) |
 | F2 ganar / F3 perder (editor y builds de desarrollo) | F2 / F3 | Select + RB / Select + LB |
@@ -559,6 +574,72 @@ punta a punta con teclado y con joystick (sección 7).
 
 ---
 
+### Pelea a pie, playtests y arsenal (octubre)
+
+Se hizo por fases sobre `Level_01_Auxilio_v2` y `Level_02`. El detalle de cada decisión, las respuestas
+del equipo y los valores a ajustar están en los planes de `docs/superpowers/plans/`:
+`2026-10-16-auxilio-pelea.md` y `2026-10-18-beatemup-v2.md` (la pelea y su segunda versión),
+`2026-10-20-playtest-axo.md`, `2026-10-22-playtest-jesus.md` y `2026-10-21-controles-granadas-oleadas.md`
+(el último plan, el vigente).
+
+**El lazo:** la moto corre → se acaba la nafta → la protagonista se baja y pelea a pie → vence las
+oleadas → el último zombie suelta un **bidón** → lo agarra, el tanque se llena y vuelve a la moto.
+Sigue la nota B/A/S (por golpes recibidos) con premios.
+
+**Estructura (sin cambios de fondo):** la lógica sigue siendo C# plano en `Simulacion/Runtime` y las
+vistas leen el estado. `RunSimulation` (moto) delega la pelea en `PeleaSimulation`, y la horda
+(`HordeSimulation`) es la misma de la moto. `RunEvent` pasó a `long` (ya pasa los 32 bits).
+
+**Qué hay (todo en `GameConfig`, nada hardcodeado):**
+- **Pelea por oleadas, sin reloj ni ambulancia.** 4 oleadas de 3 · 5 · 6 · 7 zombies (de a 3/4/5/6 a la
+  vez, tope 6), 1,5 s de respiro entre una y otra, sin reposición. Al vencer la última, el último
+  zombie deja un bidón (`DropKind.Bidon`, no desaparece). HUD: "OLEADA n/4 · QUEDAN k".
+- **Zombies que saltan** en la primera oleada: los que se ven en la horda al bajarse conservan lugar,
+  carril y pinta, corren y saltan sobre ella (golpe en el aire mata, balazo saca un golpe, si cae
+  encima quita 1 de vida). Los azules (corredores) a pie van a 1,85× (`speedMultiplierAPie`).
+- **Combo y remate:** 3 golpes seguidos; el barrido llega donde se ve; el empuje por golpe es de 0,35 m
+  (con 2,5 m la cadena no conectaba).
+- **Recolectables más fáciles:** imán de 1 carril y 7 m (`imanCarriles`, `imanMetros`), flotan y se
+  acercan a la moto; la horda retrocede 12 m durante 3 s con 2 aciertos de disparo (enfriamiento 8 s).
+- **Arsenal (nuevo):** *granada* (arma secundaria, se usa en la moto y a pie, hasta 3) y *bomba
+  temporizadora* (a pie, hasta 2; mecha de 2 s, mata a todo el que pelea y **no frena la oleada**).
+  La granada es un **tiro oblicuo de 0,85 s**: en la moto cae 10 m detrás; a pie, 5 m adelante con
+  4,5 m de radio. **La primera pelea arranca con 1 granada y 1 bomba** (`granadasPrimeraPelea`,
+  `bombasPrimeraPelea`) y avisa con qué teclas se usan.
+- **Barriles:** en la moto quedan de adorno; a pie, los que quedaron en la arena explotan con el disparo
+  (encadenan). Se generan granadas cada ~650 m y bombas cada ~1000 m (`LevelGenerator`).
+- **HUD nuevo:** `HudArsenal` (dos filas de íconos con casilleros, a la derecha del marco de las balas)
+  y `VistaDeArsenal` (la granada en vuelo y la bomba con su mecha). **Se crean solas al dar Play**
+  (`RuntimeInitializeOnLoadMethod`), igual que `AvisoDeEspacio` y `TelemetriaDePlaytest`: no hay nada
+  que poner en las escenas. Los íconos salen de `Resources/Arsenal` (provisorios).
+- **Telemetría de playtest:** `Juego/Playtests/sesion_*.csv` (ignorado por git). Filas nuevas para granadas,
+  bombas, oleadas, `item_pasado`, `horda_retrocede`, `drop_lleno` y `pelea_ganada`.
+
+**Para verlo hay que regenerar los niveles** (botón "Regenerar" de la paleta) en `Level_01_Auxilio_v2` y
+`Level_02`: sin eso no salen granadas ni bombas en el recorrido (la primera pelea sí las trae).
+
+**Trampas de esta etapa:**
+- **Recompilar con Play activo rompe el Input System** cuando "Reload Domain" está desactivado al entrar a
+  Play (`EnterPlayModeOptions: 1`, así está el proyecto): queda un `InputActionState` viejo que tira
+  miles de `NullReferenceException`/"Control index out of range" con cada movimiento del mouse. No son
+  errores de compilación. Se arregla **reiniciando Unity** (salir de Play no alcanza); para que no pase:
+  *Preferences → General → Script Changes While Playing → Recompile After Finished Playing*.
+- Los `.inputactions` y los `.asset` se editaron por script (JSON/YAML): con Unity abierto, mejor cerrar Play
+  antes de tocarlos.
+- Los archivos del repo tienen finales de línea mezclados (CRLF/LF): al editar a mano, respetar el del archivo.
+
+**Verificado:** 321 tests de la simulación en verde corriendo fuera de Unity con un runner de prueba (el
+mismo código de `Simulacion/`, compilado con Roslyn) y el ensamblado del juego compila; Unity compiló
+todos los ensamblados sin errores. **No verificado:** cómo se *siente* en Play con teclado y con mando
+(la revisión visual de la granada la hizo el equipo y quedó "espectacular, con cosas para mejorar").
+
+**Qué sigue** (Fases 5 y 6 del plan vigente): cola de entrada para golpes y ritmo según qué tan rápido se
+aprieta, medir golpes perdidos, balazo determinista; tope de zombies por carril, ajuste con la
+telemetría y decidir si el nivel 2 (`ayudas = 0`: quedarse sin nafta es Game Over) lleva pelea. Íconos y
+sonidos son provisorios (sin clips para granada, bomba y bidón).
+
+---
+
 ## 1. Qué es el juego
 
 El equipo tiene el arte avanzado pero **los documentos de diseño (01, 03, 06, 07) siguen
@@ -583,11 +664,13 @@ calle nocturna de tres carriles, administrando tres recursos, hasta llegar a un 
 
 | Acción | Input | Efecto |
 |---|---|---|
-| Cambiar carril | ↑/↓ o W/S | Tween de 0,15 s |
-| Turbo | → o D (mantener) | ×1,8 velocidad, ×3 consumo |
-| Retroceso | ← o A (mantener) | Marcha atrás real (−0,5×), ×0,5 consumo |
+| Cambiar carril | ↑/↓ | Tween de 0,15 s |
+| Turbo | → (mantener) | ×1,8 velocidad, ×3 consumo |
+| Retroceso | ← (mantener) | Marcha atrás real (−0,5×), ×0,5 consumo |
 | Faro | ESPACIO (toggle) | La horda avanza a **×0,5**. Drena batería |
-| Disparar | X o click izq. | Bala por **tu carril**: mata al primero que encuentre (o detona un barril). Munición limitada |
+| Disparar | X | Bala por **tu carril**: mata al primero que encuentre. Munición limitada. **Los barriles ya no explotan desde la moto** |
+| Granada | Z (LB) | Se lanza hacia atrás y explota a 10 m de la moto: mata en 8 m, todos los carriles, y la horda no se repone 5 s |
+| Pelea a pie | (se acaba la nafta) | Ver "Pelea a pie, playtests y arsenal (octubre)" |
 | Saltar | Pasar por una rampa | Lanza según la velocidad. No hay botón de salto |
 | Inclinar en el aire | ← o A (nariz arriba) / → o D (nariz abajo) | Regula el largo; hay que aterrizar nivelada |
 | Menús | W/S elegir, ENTER confirmar, ESC volver | A/D cambia valores en Opciones |
@@ -1491,6 +1574,11 @@ Lo último que se hizo fueron las rampas y el salto (T12). Lo que el usuario ya 
 próximo paso son **las animaciones de spritesheet de la protagonista** (ver Fase 5: las hojas `hf_*.png` necesitan limpiar el fondo blanco con flood
 fill y un slicing que escanee el alfa, porque no tienen grilla exacta). (Las ramas del equipo: ver
 sección 0.)
+
+**21/10:** el trabajo pasó al beat'em up (la pelea a pie): playtests de Axo y Jesús, controles de
+beat'em up, granadas, bombas temporizadoras y peleas por oleadas. Todo lo hecho y lo que falta está en la
+sección 0, "Pelea a pie, playtests y arsenal (octubre)", y en `docs/superpowers/plans/2026-10-21-controles-granadas-oleadas.md`.
+Las ramas del equipo se actualizaron todas al mismo commit.
 
 ### Inmediato
 1. Jugarlo con teclado y anotar qué se siente mal. Es lo único que el simulador no contesta.
