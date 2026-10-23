@@ -51,6 +51,7 @@ namespace Zombineta.Audio
         bool apagandoTension;
         float amenazaObjetivo;
         float velocidadAmenaza;
+        float topeTension = 1f;
 
         object actualClip;
         Coroutine fundidoRoutine;
@@ -116,7 +117,7 @@ namespace Zombineta.Audio
             // SmoothDamp tambien escribiera, competiria con el fundido y la tension no llegaria a 0.
             if (!tensionActiva || apagandoTension)
                 return;
-            fuenteTension.volumenPropio = Mathf.SmoothDamp(fuenteTension.volumenPropio, amenazaObjetivo,
+            fuenteTension.volumenPropio = Mathf.SmoothDamp(fuenteTension.volumenPropio, amenazaObjetivo * topeTension,
                 ref velocidadAmenaza, AudioDirector.Mezcla.suavizadoTension, Mathf.Infinity, Time.unscaledDeltaTime);
         }
 
@@ -239,7 +240,7 @@ namespace Zombineta.Audio
 
         void IniciarTension(AudioDeNivel nivel, double horaInicio)
         {
-            if (nivel.musica != null &&
+            if (nivel.musica != null && !nivel.tensionLibre &&
                 Mathf.Abs(nivel.tension.length - nivel.musica.length) > ToleranciaDuracionTension)
             {
                 Debug.LogWarning("MusicDirector: la tension de '" + nivel.name +
@@ -253,6 +254,7 @@ namespace Zombineta.Audio
             sourceTension.PlayScheduled(horaInicio);
 
             tensionActiva = true;
+            topeTension = Mathf.Clamp01(nivel.volumenTension);
             velocidadAmenaza = 0f;
             amenazaObjetivo = 0f; // que no herede la amenaza del nivel anterior: arranca en 0 y sigue a SetAmenaza.
         }

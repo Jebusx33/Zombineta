@@ -15,6 +15,20 @@ namespace Zombineta.Audio
         public static float Objetivo(float velocidad, float velocidadNormal, bool turbo) =>
             Objetivo(velocidad, velocidadNormal, turbo, Quieta, Normal, Turbo);
 
+        /// <summary>Fraccion de la velocidad normal en la que el ralenti ya se apago del todo.</summary>
+        public const float FinRalenti = 0.4f;
+
+        /// <summary>
+        /// Cuanto suena el ralenti (0-1): todo con la moto quieta y nada desde FinRalenti de la
+        /// velocidad normal; la marcha se lleva el resto. Hacia atras tambien cuenta como andar.
+        /// </summary>
+        public static float Ralenti(float velocidad, float velocidadNormal)
+        {
+            if (velocidadNormal <= 0f)
+                return 1f;
+            return 1f - Mathf.Clamp01(Mathf.Abs(velocidad) / (velocidadNormal * FinRalenti));
+        }
+
         public static float Objetivo(float velocidad, float velocidadNormal, bool turbo,
                                      float tonoQuieta, float tonoNormal, float tonoTurbo)
         {

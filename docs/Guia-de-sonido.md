@@ -78,7 +78,7 @@ que medir lo mismo (ver la sección 7, por qué importa sobre todo en tema/tensi
 | `mus_character_loop.wav` | Selección de personaje |
 | `mus_cinematic_loop.wav` | Cinemática (apertura de cada nivel) |
 | `mus_level1_loop.wav` | Nivel 1 — tema de partida |
-| `mus_level1_tension.wav` | Nivel 1 — capa de tensión (mide exactamente lo mismo que el tema) |
+| `zombie-tribe-loop.wav` | Nivel 1 — capa de tensión (8,3 s). Es un loop **libre** (`Tension Libre` en `Nivel01.asset`): no va a tiempo con el tema, así que puede durar distinto. Sube con la horda hasta `Volumen Tension` (0,3) |
 | `mus_level2_loop.wav` | Nivel 2 — tema de partida |
 | `mus_level2_tension.wav` | Nivel 2 — capa de tensión (ídem) |
 | `mus_levelcomplete_loop.wav` | Nivel completo |
@@ -119,16 +119,18 @@ redondeo de la compresión ADPCM al importar — la diferencia es de a lo sumo ~
 | Victoria | `sfx_stinger_win_01` (0,920 s) / `_02` (0,840 s) | — | Pasar a "Nivel completo" |
 | Derrota | `sfx_stinger_lose_01` (1,200 s) / `_02` (1,120 s) | — | Pasar a "Game Over" |
 | Motor | `sfx_engine_loop_01` (4,001 s) | **loop** | Siempre sonando en la partida; el tono sube con la velocidad y el turbo |
-| Horda | `sfx_horde_loop_01` (4,001 s) | **loop**, posicional | Siempre sonando en la partida; panea y atenúa según la distancia al frente de la horda |
-| ZombieAdelante | `sfx_zombie_groan_01` (1,001 s) / `_02` (0,901 s) | posicional | Un zombie suelto de frente entra en rango |
+| Horda | `zombie_horde` (8,95 s) | **loop**, posicional | Siempre sonando en la partida; panea y atenúa según la distancia al frente de la horda. En la pelea a pie sigue al zombie vivo más cercano a la protagonista. Con la horda cerca, cada 2,5 a 6 s suelta un gemido (ZombieAdelante) desde donde viene |
+| ZombieAdelante | `zombie-sound` (1,48 s) / `zombie-bite` (0,28 s) | posicional | Un zombie suelto de frente entra en rango, y los gemidos sueltos de la horda |
 | UiMover | `sfx_ui_move_01` (0,100 s) | bus UI | Mover la selección en un menú |
 | UiConfirmar | `sfx_ui_confirm_01` (0,321 s) | bus UI | Confirmar (Enter / botón Sur) |
 | UiVolver | `sfx_ui_back_01` (0,341 s) | bus UI | Cancelar / volver (Esc / botón Este) |
-| Golpe1 | **pendiente (sin clip)** | posicional | Pelea a pie: primer golpe de la cadena |
-| Golpe2 | **pendiente (sin clip)** | posicional | Pelea a pie: segundo golpe de la cadena |
-| Remate | **pendiente (sin clip)** | posicional | Pelea a pie: tercer golpe, derriba a los que la rodean (pisa a Golpe1/2) |
-| GolpeAlAire | **pendiente (sin clip)** | posicional | Pelea a pie: golpe que no le pega a nadie |
-| Lastimada | **pendiente (sin clip)** | posicional | Pelea a pie: un zombie le pega a la protagonista |
+| Golpe1 | `player_punch` (0,45 s) | posicional | Pelea a pie: primer golpe de la cadena |
+| Golpe2 | `player_punch` (0,45 s, con el tono un poco más agudo) | posicional | Pelea a pie: segundo golpe de la cadena |
+| Remate | `player_spin` (1,11 s) | posicional | Pelea a pie: tercer golpe, derriba a los que la rodean (pisa a Golpe1/2) |
+| GolpeAlAire | `player_swoosh` (0,27 s) | posicional | Pelea a pie: golpe que no le pega a nadie |
+| Lastimada | `zombie-bite` (0,28 s) | posicional | Pelea a pie: un zombie le pega a la protagonista |
+| MotorRalenti | `moto_iddle` (2,05 s) | **loop** | Motor en capas: suena con la moto quieta y se cruza con Motor (la marcha) al acelerar; a 40 % de la velocidad normal ya suena solo la marcha. Sin clip, Motor suena solo como antes |
+| MotorCambio | **pendiente (sin clip)** | — | Suena una vez al entrar en turbo |
 | (aleatorio de pantalla) Game Over | `sfx_screen_groan_01` (1,401 s) / `_02` (1,501 s) | — | Cada tanto (6 a 14 s), un gemido lejano en Game Over |
 | (aleatorio de pantalla) Ending y Créditos | `sfx_screen_wind_01` (1,501 s) | — | Cada tanto (6 a 14 s), viento en el Final y en Créditos |
 

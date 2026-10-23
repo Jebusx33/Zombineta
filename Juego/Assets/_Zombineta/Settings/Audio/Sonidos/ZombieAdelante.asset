@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: ZombieAdelante
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.Sonido
   clips:
-  - {fileID: 8300000, guid: 8927d83c94c22284f82e7d5e9773c81c, type: 3}
-  - {fileID: 8300000, guid: 75114293312f3b545b470acbd3db8506, type: 3}
+  - {fileID: 8300000, guid: fdd17df451bca1642a28407045d30e22, type: 3}
+  - {fileID: 8300000, guid: 105675166ad5e034eb3c1f42d5dc2f43, type: 3}
   volumen: {x: 0.6, y: 0.8}
   tono: {x: 0.95, y: 1.05}
   bus: 1

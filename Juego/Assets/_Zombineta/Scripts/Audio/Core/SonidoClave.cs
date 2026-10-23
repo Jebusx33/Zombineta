@@ -10,5 +10,7 @@ namespace Zombineta.Audio
         UiMover, UiConfirmar, UiVolver,
         // Pelea a pie: cada golpe de la cadena, el remate, el golpe al aire y recibir un golpe.
         Golpe1, Golpe2, Remate, GolpeAlAire, Lastimada,
+        // Motor en capas: el ralenti (loop, moto quieta) y el cambio (al entrar en turbo).
+        MotorRalenti, MotorCambio,
     }
 }

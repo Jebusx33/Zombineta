@@ -154,6 +154,38 @@ namespace Zombineta.Juego.Tests
             Assert.AreEqual(1.2f, MotorTono.Objetivo(30f, 12f, false), 1e-5f);
         }
 
+        [Test] public void LaHordaSuenaDesdeSuFrenteEnLaCalle()
+        {
+            Assert.AreEqual(-20f, HordaCercana.Dx(false, 100f, 80f, null, null).Value, 1e-5f);
+        }
+
+        [Test] public void EnLaPeleaSuenaElZombieVivoMasCercanoDeCualquierLado()
+        {
+            var units = new[]
+            {
+                new Zombineta.Enemies.ZombieUnit { X = 94f, Alive = true },  // 6 m atras
+                new Zombineta.Enemies.ZombieUnit { X = 103f, Alive = true }, // 3 m adelante
+                new Zombineta.Enemies.ZombieUnit { X = 101f, Alive = false }, // muerto
+                new Zombineta.Enemies.ZombieUnit { X = 99f, Alive = true },  // fuera de la pelea
+            };
+            float? dx = HordaCercana.Dx(true, 100f, 0f, units, i => i != 3);
+            Assert.AreEqual(3f, dx.Value, 1e-5f);
+        }
+
+        [Test] public void UnaPeleaSinZombiesVivosNoSuena()
+        {
+            var units = new[] { new Zombineta.Enemies.ZombieUnit { X = 101f, Alive = false } };
+            Assert.IsFalse(HordaCercana.Dx(true, 100f, 0f, units, i => true).HasValue);
+        }
+
+        [Test] public void ElRalentiSuenaQuietaYSeApagaAlAcelerar()
+        {
+            Assert.AreEqual(1f, MotorTono.Ralenti(0f, 12f), 1e-5f, "quieta: todo ralenti");
+            Assert.AreEqual(0.5f, MotorTono.Ralenti(12f * MotorTono.FinRalenti * 0.5f, 12f), 1e-5f, "a mitad del cruce");
+            Assert.AreEqual(0f, MotorTono.Ralenti(12f, 12f), 1e-5f, "a velocidad normal: solo marcha");
+            Assert.AreEqual(0f, MotorTono.Ralenti(-12f, 12f), 1e-5f, "marcha atras tambien es andar");
+        }
+
         [Test] public void ElMotorApagadoPorUnLostVuelveSiLaPartidaVuelveACorrer()
         {
             // El tutorial deshace un Lost sin Restarted: el motor tiene que volver a sonar.

@@ -59,3 +59,17 @@ MonoBehaviour:
     sonido: {fileID: 11400000, guid: 9c9d19b6020d4e54e983777b8cf0916f, type: 2}
   - clave: 22
     sonido: {fileID: 11400000, guid: ac628bef0fd020f4884d2e07b2035a98, type: 2}
+  - clave: 23
+    sonido: {fileID: 11400000, guid: b39397dea554dff458458b5efbb26ca7, type: 2}
+  - clave: 24
+    sonido: {fileID: 11400000, guid: 69717dea4690d854dbf6e19b3e8e221e, type: 2}
+  - clave: 25
+    sonido: {fileID: 11400000, guid: 73088b34c19f874429771c9fffa0ccf8, type: 2}
+  - clave: 26
+    sonido: {fileID: 11400000, guid: 2bfc177719c06c642b6d2d0759a95c9c, type: 2}
+  - clave: 27
+    sonido: {fileID: 11400000, guid: ffd3522c7eb98f445b3b9a46ac080c70, type: 2}
+  - clave: 28
+    sonido: {fileID: 11400000, guid: 4ce7f1ede350a594d81312cd89a2f64b, type: 2}
+  - clave: 29
+    sonido: {fileID: 11400000, guid: 6c57b990f3057614b8dccc6bac316758, type: 2}

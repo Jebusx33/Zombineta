@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AmbienteNivel1
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.Sonido
   clips:
-  - {fileID: 8300000, guid: fd0981e2710050c42b0aa7ef12c50dad, type: 3}
+  - {fileID: 0}
   volumen: {x: 0.6, y: 0.8}
   tono: {x: 0.95, y: 1.05}
   bus: 2

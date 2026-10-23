@@ -50,12 +50,21 @@ namespace Zombineta.Audio
             var state = run.Sim.State;
 
             var audio = AudioDirector.Instance;
+            // En la pelea a pie se escucha desde la protagonista, no desde la moto estacionada.
+            bool enPelea = state.Phase == RunPhase.Pelea && run.Sim.Pelea != null;
+            float oyente = enPelea ? state.PeatonX : state.PlayerX;
             if (audio != null)
-                audio.PlayerWorldX = run.ToWorldX(state.PlayerX);
+                audio.PlayerWorldX = run.ToWorldX(oyente);
 
+            // La tension sigue a la amenaza: la horda en la calle, el zombie mas cercano a pie.
             var music = MusicDirector.Instance;
             if (music != null)
-                music.SetAmenaza(1f - Mathf.Clamp01(state.Gap / AudioDirector.Mezcla.distanciaAmenaza));
+            {
+                float? dx = HordaCercana.Dx(enPelea, oyente, state.HordeX, run.Sim.Horde.Units,
+                    enPelea ? run.Sim.Pelea.Activo : (System.Func<int, bool>)null);
+                float distancia = dx.HasValue ? Mathf.Abs(dx.Value) : float.MaxValue;
+                music.SetAmenaza(1f - Mathf.Clamp01(distancia / AudioDirector.Mezcla.distanciaAmenaza));
+            }
         }
 
         static BancoDeSonidos BancoDelNivelActual()
