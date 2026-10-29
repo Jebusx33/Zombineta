@@ -1581,7 +1581,10 @@ sección 0.)
 
 **21/10:** el trabajo pasó al beat'em up (la pelea a pie): playtests de Axo y Jesús, controles de
 beat'em up, granadas, bombas temporizadoras, peleas por oleadas y, al final, **sin límite de auxilios: todos los
-niveles se resuelven peleando cada vez que se acaba la nafta** (el nivel 2 ya tiene la pelea, y 1/4 menos de bidones: 29 en vez de 39). Todo lo hecho y lo que falta está en la
+niveles se resuelven peleando cada vez que se acaba la nafta** (el nivel 2 ya tiene la pelea, y 1/4 menos de bidones: 29 en vez de 39). **28/10:** impulso de velocidad al tomar una
+rampa (gratis) con aviso en el piso, la luz vuelve si se pelea en pleno apagón, la bomba lastima de cerca y su explosión
+se ve donde quedó, y los coches de las rampas ya no se encimen con ellas (Fase 8 del plan de controles). Después: **mapa de la ciudad** entre niveles (escena `Mapa`, pantalla `GameScreen.Map`)
+y oleadas 3 y 4 más difíciles (Fase 9). Todo lo hecho y lo que falta está en la
 sección 0, "Pelea a pie, playtests y arsenal (octubre)", y en `docs/superpowers/plans/2026-10-21-controles-granadas-oleadas.md`.
 Las ramas del equipo se actualizaron todas al mismo commit.
 

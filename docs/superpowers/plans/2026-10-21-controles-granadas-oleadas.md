@@ -156,3 +156,65 @@ quitan más bidones o se achica `fuelMax`.
    prefiere que además exploten en la moto, es volver a activar el disparo sobre ellos.
 3. **Oleada 4:** puse 7 zombies con pesados y corredores mezclados (3 · 5 · 6 · 7); si se completa muy rápido
    con las bombas, se sube esa cantidad o se baja el stock.
+
+## Fase 8 — Rampas, apagón y bomba (28/10)
+
+Cuatro tareas del equipo, todas con tests en la simulación.
+
+1. **Impulso de velocidad al tomar una rampa (sin gastar nafta).**
+   - Al saltar, la moto gana `rampBoostMultiplier` (**1,6x**) durante `rampBoostDuration` (**2,2 s**): el vuelo sale
+     más rápido y más largo (de ~5,6 m a ~10,7 m a velocidad normal) y, al aterrizar, sigue empujando lo que queda.
+   - **Es gratis:** el consumo de nafta sigue el modo (normal, turbo), no la velocidad, así que el impulso no gasta de más.
+   - No se suma si se toma otra rampa con el impulso puesto, no pasa de reversa y se corta al bajarse a pelear.
+   - `rampLaunchSlope` del asset subió de 0,35 a **0,42** (la subida del salto) para que el vuelo dé para sobrevolar el coche.
+   - **Aviso en el piso:** `AvisoDeRampa` (se crea sola al dar Play, como `VistaDeArsenal`) pinta dos tandas de flechas
+     amarillas (">>>") en el carril de la rampa, a 15 y 8,5 m antes, que se encienden en cadena hacia ella. El dibujo
+     es **provisorio** (`Resources/Rampa/AvisoRampa.png`); arte lo puede reemplazar sin tocar código.
+2. **Apagón en la pelea.** Si se acaba la nafta en pleno apagón, la luz vuelve para pelear y **sigue prendida hasta que
+   ese apagón termina**; el apagón siguiente se aplica normal (`RunState.ApagonAnulado`, `RunSimulation.Oscuridad`).
+   La luz sube en ~0,5 s (`LightingDirector.velocidadDeApagon`).
+3. **Bomba (C4).** Al explotar le **saca 1 de vida** a la protagonista si está a `bombaRadioPropio` (3 m) o menos y a
+   `bombaCarrilesPropios` (1 carril) o menos; respeta el respiro tras un golpe y cuenta para la nota. **Bug del efecto:**
+   la explosión se dibujaba en el carril de la protagonista; ahora sale **donde quedó la bomba** (el evento lleva el
+   carril exacto: `HordeEvent.LaneY`).
+4. **Coches y rampas.** El coche de cada pieza de rampa estaba a 4,4 m de ella y los dibujos se encimaban (la rampa mide
+   casi 6 m y el coche 4,65). Ahora está a **6,1 m** (`LevelGenerator.RampObstacleAt`): fuera de la huella y todavía
+   dentro del vuelo con el impulso. `LevelValidator.LandingFrom` pasó de 4,5 a 6,5. Se movieron los coches de las
+   **18 piezas** de `Level_01_Auxilio_v2` (4) y `Level_02` (14); no queda ningún solape ni nada nuevo tapado.
+
+**Si se cambia el salto o el impulso** hay que revisar juntos `RampObstacleAt`, `LandingFrom` y
+`RampBoostTests.CocheDeLaPieza`: el test falla si el coche deja de poder sobrevolarse.
+
+## Fase 9 — Mapa entre niveles y balance de las oleadas (28/10)
+
+**Mapa.** Nueva pantalla `GameScreen.Map` (escena `Mapa.unity`, en Build Settings) entre elegir personaje y la cinematica, y
+entre ganar un nivel y la cinematica del siguiente:
+`Nuevo juego → Personaje → (tutorial, la primera vez) → MAPA → Cinematica → Juego → Nivel completo → MAPA → Cinematica…`
+(después del último nivel va directo al final, sin mapa).
+- Resalta el nivel que sigue (punto dorado que late, con su nombre) y marca con una **cruz verde** los ya jugados; el que se
+  acaba de ganar se marca con un sello que cae. El nivel 1 está abajo a la izquierda.
+- Leyenda parpadeante **"PRESIONÁ ENTER PARA CONTINUAR"** (en joystick, "A"); Esc o B vuelve al menú.
+- La imagen es **provisoria** (`Resources/Mapa/MapaCiudad.jpg`) y los puntos de cada nivel se ajustan en el componente
+  `MapScreen` (`nodos`, fracciones del ancho y el alto, en el orden de los niveles; hay 6 cargados sobre el camino).
+  Todo se arma por código: para cambiar el mapa alcanza con reemplazar la imagen y acomodar los puntos.
+- Flujo: `GameFlow.MapContinue()` (mapa → cinematica), `IsLevelCompleted(i)` (los niveles anteriores al que toca); la música
+  sigue con la de elegir personaje.
+
+**Balance de las oleadas.** Las dos primeras quedan como estaban. Las dos últimas aprietan:
+
+| Oleada | Zombies (a la vez) | Tipos (común/corredor/pesado) | Velocidad | Ataque |
+|---|---|---|---|---|
+| 1 | 3 (3) | 100/0/0 | 0,85 | 1 |
+| 2 | 5 (4) | 70/30/0 | 1 | 1 |
+| 3 | **7** (5) | 30/35/35 | **1,1** | **1,6x** |
+| 4 | **9** (6) | 20/40/40 | **1,2** | **2,2x** |
+
+`OleadaPelea.ataque` divide el tiempo que tarda un zombie en preparar el golpe (`zombiePreparacion`) y en repetirlo
+(`zombieEnfriamiento`): con 2,2x tardan 0,23 s en preparar y 0,45 s en repetir (antes, 0,5 s y 1 s). La vista sigue el
+lapso de la oleada en curso (`PeleaSimulation.PreparacionActual`) para que la animación de ataque no se corte.
+Se ajusta en `GameConfig` → `oleadas`, sin tocar código.
+
+**Drops del beat em up con el arte del recorrido.** Las balas y el bidón de nafta que quedan en el piso durante la pelea
+usan los mismos dibujos que los del recorrido (`Art/Items/item_bullets.png` e `item_gas.png`), asignados en la
+`VistaDelAuxilio` de `Level_01_Auxilio_v2` y `Level_02`. Solo el botiquín sigue con el dibujo de prueba (cruz verde): todavía
+no hay arte de botiquín. Los dibujos de prueba y `Resources/Arsenal/Bidon` quedan de respaldo si el campo está vacío.
