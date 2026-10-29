@@ -286,3 +286,18 @@ llegaran), **se devuelve** y vuelve a parpadear: es para aprender, no para falla
 que tiembla falla solo por el ruido Perlin falso del arnés) y el ensamblado del juego compila. **Sin probar en Unity:** cómo se
 ve el parpadeo, si 20 y 24 zombies lentos alcanzan para "forzar" la granada y la bomba, y si la manada de la oleada 3 queda
 a tiro de una sola granada. Hay que recargar `Level_01_Auxilio_v2` (se agregó `peleaDidactica: 1` a su `LevelScene`).
+
+## Fase 12 - Los zombies parados del camino respiran
+
+Los `ZombieFront` (los que esperan quietos en el carril, en todos los niveles de moto) se dibujaban con un solo cuadro de la
+caminata. Ahora tienen una animación de quieto en loop: la hoja `Art/Zombies/ZombieCorredor_quieto.png` (5x5, 25 cuadros de 256 px,
+pivote en los pies como la hoja de caminata).
+
+- `ZombieLook` suma `idle` (los cuadros) e `idleFps` (12). `Settings/ZombieLooks.asset` los carga en los tres tipos (Común, Corredor, Pesado),
+  así que vale para todas las escenas que usan ese set (Tutorial, Level_01, Level_01_Auxilio, Level_01_Auxilio_v2, Level_02).
+- `ZombieQuieto` (nuevo, `Scripts/Gameplay/Enemies`) cambia el sprite del item con el reloj; cada zombie arranca en un cuadro distinto
+  (`índice * 7`) para que una fila no respire toda junta. `LevelScene.Awake` lo agrega en Play; en el editor se ve el primer cuadro del quieto.
+- Un look sin `idle` se comporta como antes (primer cuadro de `walk`). Es solo dibujo: la simulación no cambia.
+
+**Sin probar en Unity:** compila (0 errores), pero falta mirarlo en Play: que los pies queden en el piso (pivote `0.1055`), que la
+sombra proyectada siga bien el sprite que cambia y que el tamaño parezca el mismo que el de antes.

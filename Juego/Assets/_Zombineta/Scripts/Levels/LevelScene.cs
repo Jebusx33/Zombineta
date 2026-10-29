@@ -202,11 +202,48 @@ namespace Zombineta.Juego.Levels
             if (!Application.isPlaying)
                 return;
 
-            foreach (var item in Items)
+            var items = Items;
+            for (int i = 0; i < items.Length; i++)
             {
-                EnsurePlayLook(item);
-                EnsurePlayShadow(item);
+                EnsurePlayLook(items[i]);
+                EnsurePlayShadow(items[i]);
+                AnimarZombieQuieto(items[i], i);
             }
+        }
+
+        /// <summary>
+        /// El zombie parado en el camino respira en loop con los cuadros de quieto de su look. Sin
+        /// cuadros de quieto se queda en el primero de la caminata, como antes. Mismo sorteo de look
+        /// que ApplyVisual (por posicion en Items), asi que es el zombie que se vio en el editor.
+        /// </summary>
+        void AnimarZombieQuieto(LevelItem item, int index)
+        {
+            if (item.kind != LevelEntryKind.ZombieFront)
+                return;
+
+            var zombieLook = LookDeZombie(item, index);
+            if (zombieLook == null || zombieLook.idle == null || zombieLook.idle.Length == 0)
+                return;
+
+            var vista = item.transform.Find(LookChildName);
+            var sr = vista != null ? vista.GetComponent<SpriteRenderer>() : item.GetComponent<SpriteRenderer>();
+            if (sr == null)
+                return;
+
+            var quieto = item.gameObject.GetComponent<ZombieQuieto>();
+            if (quieto == null)
+                quieto = item.gameObject.AddComponent<ZombieQuieto>();
+            quieto.Iniciar(sr, zombieLook.idle, zombieLook.idleFps, index * 7 % zombieLook.idle.Length);
+        }
+
+        /// <summary>El look sorteado para un ZombieFront, o null si no hay looks para su tipo.</summary>
+        ZombieLook LookDeZombie(LevelItem item, int index)
+        {
+            if (looks == null)
+                return null;
+            var pool = looks.For(item.variant);
+            int idx = ZombieLookPicker.Pick(lookSeed, index, 0, pool.Count, -1);
+            return idx >= 0 ? pool[idx] : null;
         }
 
         /// <summary>
@@ -615,17 +652,13 @@ namespace Zombineta.Juego.Levels
 
             if (item.kind == LevelEntryKind.ZombieFront)
             {
-                ZombieLook zombieLook = null;
-                if (looks != null)
-                {
-                    var pool = looks.For(item.variant);
-                    int idx = ZombieLookPicker.Pick(lookSeed, index, 0, pool.Count, -1);
-                    zombieLook = idx >= 0 ? pool[idx] : null;
-                }
+                var zombieLook = LookDeZombie(item, index);
 
-                if (zombieLook != null && zombieLook.walk != null && zombieLook.walk.Length > 0)
+                bool tieneQuieto = zombieLook != null && zombieLook.idle != null && zombieLook.idle.Length > 0;
+                if (tieneQuieto || (zombieLook != null && zombieLook.walk != null && zombieLook.walk.Length > 0))
                 {
-                    sprite = zombieLook.walk[0];
+                    // Parado: en el editor se ve el primer cuadro de su quieto (en juego respira, ver ZombieQuieto).
+                    sprite = tieneQuieto ? zombieLook.idle[0] : zombieLook.walk[0];
                     // Mismo tinte por tipo que en la horda.
                     color = config != null && config.zombies != null ? config.zombies.Get(item.variant).tint : Color.white;
                     if (zombieLook.scale > 0f)

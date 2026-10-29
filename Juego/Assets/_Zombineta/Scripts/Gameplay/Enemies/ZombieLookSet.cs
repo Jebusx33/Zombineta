@@ -60,6 +60,12 @@ namespace Zombineta.Enemies
         public float walkFps = 8f;
         public float deathFps = 10f;
 
+        [Tooltip("Parado quieto en el camino (el zombie de frente de la moto): un ciclo en loop. Vacio: se queda en el primer " +
+                 "cuadro de 'walk'.")]
+        public Sprite[] idle;
+        [Tooltip("Cuadros por segundo del ciclo de 'idle'.")]
+        public float idleFps = 12f;
+
         [Tooltip("Compensa la resolucion de la hoja de origen, no el tamano de juego: las hojas completas " +
                  "(Anciano, HombreRojo) van en 1 y las de Zombies_poses en 2,5 porque sus figuras salen " +
                  "~2,3 veces mas chicas. El tamano en pantalla lo dan HordeView.bodyScale y la escala del tipo. " +

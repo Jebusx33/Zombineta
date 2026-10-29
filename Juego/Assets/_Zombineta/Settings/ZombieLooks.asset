@@ -203,6 +203,33 @@ MonoBehaviour:
       - {fileID: -427779567, guid: d7cdc361275e4eedbc3aad0b8d94a0f3, type: 3}
       - {fileID: 1488565340, guid: d7cdc361275e4eedbc3aad0b8d94a0f3, type: 3}
       - {fileID: -487420646, guid: d7cdc361275e4eedbc3aad0b8d94a0f3, type: 3}
+      idle:
+      - {fileID: 653596304, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 205196885, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -834603840, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 131834434, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -282953217, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 672582635, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -274877232, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 66093544, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 173648180, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 576185337, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 207075181, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -228970086, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -525492980, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 960068339, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 957963882, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -615153267, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -226319254, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 764702755, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 534160845, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -816987512, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -98768009, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 827018781, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -167372127, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -149416456, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -202603087, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      idleFps: 12
       walkFps: 20
       deathFps: 24
       scale: 1
@@ -397,6 +424,33 @@ MonoBehaviour:
       - {fileID: -427779567, guid: d7cdc361275e4eedbc3aad0b8d94a0f3, type: 3}
       - {fileID: 1488565340, guid: d7cdc361275e4eedbc3aad0b8d94a0f3, type: 3}
       - {fileID: -487420646, guid: d7cdc361275e4eedbc3aad0b8d94a0f3, type: 3}
+      idle:
+      - {fileID: 653596304, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 205196885, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -834603840, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 131834434, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -282953217, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 672582635, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -274877232, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 66093544, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 173648180, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 576185337, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 207075181, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -228970086, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -525492980, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 960068339, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 957963882, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -615153267, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -226319254, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 764702755, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 534160845, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -816987512, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -98768009, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 827018781, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -167372127, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -149416456, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -202603087, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      idleFps: 12
       walkFps: 20
       deathFps: 24
       scale: 1
@@ -591,6 +645,33 @@ MonoBehaviour:
       - {fileID: -427779567, guid: d7cdc361275e4eedbc3aad0b8d94a0f3, type: 3}
       - {fileID: 1488565340, guid: d7cdc361275e4eedbc3aad0b8d94a0f3, type: 3}
       - {fileID: -487420646, guid: d7cdc361275e4eedbc3aad0b8d94a0f3, type: 3}
+      idle:
+      - {fileID: 653596304, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 205196885, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -834603840, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 131834434, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -282953217, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 672582635, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -274877232, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 66093544, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 173648180, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 576185337, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 207075181, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -228970086, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -525492980, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 960068339, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 957963882, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -615153267, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -226319254, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 764702755, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 534160845, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -816987512, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -98768009, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: 827018781, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -167372127, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -149416456, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      - {fileID: -202603087, guid: ba753e905bdb4a45bf87e46cc10791e8, type: 3}
+      idleFps: 12
       walkFps: 20
       deathFps: 24
       scale: 1
