@@ -145,13 +145,12 @@ namespace Zombineta.Telemetria
             if (level == null || cfg == null || s.Phase != RunPhase.Running)
                 return filas;
 
-            bool sinBidones = LevelRuntime.BidonesBloqueados(cfg, s);
             for (int i = 0; i < level.Items.Length; i++)
             {
                 var item = level.Items[i];
                 var e = item.Entry;
                 if (item.Consumed || pasados.Contains(i) || !LevelRuntime.EsRecurso(e.kind) ||
-                    (sinBidones && e.kind == LevelEntryKind.Fuel))
+                    (e.kind == LevelEntryKind.Fuel && LevelRuntime.BidonInexistente(cfg, s, e.distance)))
                     continue;
 
                 float medio = LevelRuntime.MedioLargo(e, cfg);

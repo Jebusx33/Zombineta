@@ -74,7 +74,6 @@ namespace Zombineta.Juego.Levels
             }
 
             var estado = run.Sim.State;
-            bool bidonesBloqueados = LevelRuntime.BidonesBloqueados(run.Config, estado);
             int maximo = GameSettings.LightQuality == LightQuality.Baja ? MaxLucesBaja : MaxLuces;
 
             // Los mas cercanos por delante (o recien pasados), ordenados por cercania.
@@ -85,7 +84,8 @@ namespace Zombineta.Juego.Levels
                 var item = items[i];
                 if (item.Consumed || !LevelRuntime.EsRecurso(item.Entry.kind))
                     continue;
-                if (bidonesBloqueados && item.Entry.kind == LevelEntryKind.Fuel)
+                if (item.Entry.kind == LevelEntryKind.Fuel &&
+                    LevelRuntime.BidonInexistente(run.Config, estado, item.Entry.distance))
                     continue;
                 float adelante = item.Entry.distance - estado.PlayerX;
                 if (adelante < -visibleHasta || adelante > visibleDesde)

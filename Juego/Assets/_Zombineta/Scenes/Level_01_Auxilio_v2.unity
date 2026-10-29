@@ -7219,8 +7219,9 @@ MonoBehaviour:
   peleaSinNafta: 1
   combustibleInicial: 45
   bidonesDesdePelea: 1
+  bidonesHastaMetro: 1300
   reintentosPelea: 1
-  peleaDidactica: 1
+  peleaDidactica: 0
   flotarRecolectables: 1
   flotarAltura: 0.1
   flotarVelocidad: 3

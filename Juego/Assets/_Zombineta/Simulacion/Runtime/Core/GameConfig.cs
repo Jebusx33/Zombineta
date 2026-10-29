@@ -88,6 +88,10 @@ namespace Zombineta.Core
         public float fuelInicial = 0f;
         [Tooltip("Los bidones no aparecen (no se ven ni se agarran) hasta haber peleado tantas veces. 0 = siempre.")]
         [Min(0)] public int bidonesDesdePelea = 0;
+        [Tooltip("Los bidones mas alla de este metro no aparecen (no se ven ni se agarran). Asi el tanque, que no pasa de fuelMax, " +
+                 "se vacia hacia el final y hay una ultima pelea al llegar al refugio, en vez de depender de cuantos bidones se juntaron. " +
+                 "0 = sin limite.")]
+        [Min(0f)] public float bidonesHastaMetro = 0f;
         [Tooltip("Consumo por segundo en modo Normal.")]
         public float fuelBurnPerSecond = 1.6f;
         public float turboBurnMultiplier = 3f;

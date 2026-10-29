@@ -20,10 +20,10 @@ MonoBehaviour:
   turboSpeedMultiplier: 1.8
   reverseSpeedMultiplier: 0.35
   fuelMax: 100
-  fuelBurnPerSecond: 2.6
+  fuelBurnPerSecond: 2.2
   turboBurnMultiplier: 3
   reverseBurnMultiplier: 0.5
-  fuelPickupAmount: 45
+  fuelPickupAmount: 60
   batteryMax: 100
   batteryDrainPerSecond: 8
   batteryPickupAmount: 40

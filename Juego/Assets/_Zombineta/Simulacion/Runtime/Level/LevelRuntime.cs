@@ -71,6 +71,14 @@ namespace Zombineta.Level
             config != null && state != null && config.bidonesDesdePelea > state.Peleas;
 
         /// <summary>
+        /// Si el bidon puesto a esa distancia no existe ahora: bloqueado hasta la primera pelea, o mas alla de
+        /// donde el nivel corta la nafta (bidonesHastaMetro). No se ve ni se agarra.
+        /// </summary>
+        public static bool BidonInexistente(GameConfig config, RunState state, float distancia) =>
+            BidonesBloqueados(config, state) ||
+            (config != null && config.bidonesHastaMetro > 0f && distancia > config.bidonesHastaMetro);
+
+        /// <summary>
         /// Despeja un tramo del recorrido (la arena de la pelea a pie): los obstaculos, rampas y
         /// zombies de frente desaparecen, como si ya se hubieran pasado, y no vuelven cuando la moto
         /// retoma. Los barriles se quedan (a pie explotan de un tiro) y los recursos tambien (la vista
@@ -152,7 +160,7 @@ namespace Zombineta.Level
                     continue;
 
                 // Sin nafta en el tramo inicial de algunos niveles: el bidon todavia no existe.
-                if (item.Entry.kind == LevelEntryKind.Fuel && BidonesBloqueados(sim.Config, sim.State))
+                if (item.Entry.kind == LevelEntryKind.Fuel && BidonInexistente(sim.Config, sim.State, d))
                     continue;
 
                 // El estado se consulta en cada entrada: una rampa lanza, y lo que sigue en

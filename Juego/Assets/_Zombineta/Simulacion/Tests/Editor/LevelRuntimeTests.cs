@@ -441,6 +441,35 @@ namespace Zombineta.Tests
         }
 
         [Test]
+        public void TheFuelBeyondTheCutoff_DoesNotExist_ButTheFuelBeforeItDoes()
+        {
+            var c = MakeConfig();
+            c.bidonesHastaMetro = 50f;
+            var sim = new RunSimulation(c);
+            sim.State.Fuel = 10f;
+            var level = new LevelRuntime(MakeLevel(
+                new LevelEntry(30f, 1, LevelEntryKind.Fuel),
+                new LevelEntry(70f, 1, LevelEntryKind.Fuel)));
+
+            Advance(sim, level, 8f, PlayerIntent.Idle);   // pasa por los dos (a 10 m/s)
+
+            Assert.IsTrue(sim.State.PlayerX > 70f);
+            Assert.IsTrue(level.Items[0].Consumed, "el de antes del corte se agarra");
+            Assert.IsFalse(level.Items[1].Consumed, "el de despues del corte no existe");
+            Assert.IsTrue(LevelRuntime.BidonInexistente(c, sim.State, 70f));
+            Assert.IsFalse(LevelRuntime.BidonInexistente(c, sim.State, 30f));
+        }
+
+        [Test]
+        public void WithoutACutoff_TheFuelIsNeverCutOff()
+        {
+            var c = MakeConfig();
+            var sim = new RunSimulation(c);
+
+            Assert.IsFalse(LevelRuntime.BidonInexistente(c, sim.State, 99999f));
+        }
+
+        [Test]
         public void ALevelWithoutTheRule_AlwaysHasFuel()
         {
             var sim = new RunSimulation(MakeConfig());

@@ -301,3 +301,30 @@ pivote en los pies como la hoja de caminata).
 
 **Sin probar en Unity:** compila (0 errores), pero falta mirarlo en Play: que los pies queden en el piso (pivote `0.1055`), que la
 sombra proyectada siga bien el sprite que cambia y que el tamaño parezca el mismo que el de antes.
+
+## Fase 13 - Menos peleas, repartidas: una al principio y otra al final
+
+Devolución del profe: hay muchos beat'em up y abruma.
+
+- **La pelea didáctica del nivel 1 se apaga** (`peleaDidactica: 0` en `Level_01_Auxilio_v2`): vuelve a las oleadas normales del
+  `GameConfig` (3, 5, 9 y 12 zombies), sin la manada de la oleada 3 ni los dos lados de la última. La maquinaria (`oleadasDidacticas`,
+  `ayuda`, el parpadeo del HUD) queda en el código, apagada, por si se quiere reusar en otro nivel.
+- **Nafta más generosa en el medio:** `GameConfig.asset` baja el consumo de 2,6 a 2,2 por segundo y sube el bidón de 45 a 60. Menos peleas
+  por quedarse sin nafta a mitad de nivel (el `TutorialConfig` no se toca).
+- **Corte de nafta al final** (`bidonesHastaMetro`, por nivel, 0 = sin límite): los bidones más allá de ese metro no existen (no se ven ni se
+  agarran; `LevelRuntime.BidonInexistente`). El tanque no pasa de 100, así que a partir del último bidón alcanza para ~545 m: la
+  última pelea es segura antes de llegar al refugio. Nivel 1: corte en el metro **1300** (meta 2000); nivel 2: **3300** (meta 4000).
+- **Cuántas peleas salen** (modelo a velocidad normal, sin turbo; "toma 1 de N" = agarra uno de cada N bidones):
+
+  | | toma todos | 1 de 2 | 1 de 3 | 1 de 4 | ninguno |
+  |---|---|---|---|---|---|
+  | Nivel 1 antes | 2 | 3 | 3 | 3 | 4 |
+  | Nivel 1 ahora | 2 (m 259, 1765) | 2 | 3 | 3 | 4 |
+  | Nivel 2 antes | 0 | 2 | 5 | 6 | 8 |
+  | Nivel 2 ahora | 1 (m ~3780) | 1 | 3 | 5 | 7 |
+
+  Quien junta casi todos los bidones pelea dos veces en el nivel 1 (la del tanque corto del principio y la del final) y una en el 2 (la final);
+  quien deja pasar muchos, más. No hay tope de peleas.
+
+**Verificado:** 375 tests de la simulación en verde fuera de Unity (2 nuevos del corte) y el juego compila. **Sin probar en Unity:** el
+modelo no incluye turbo, caídas ni los bidones aéreos, así que las cifras son una guía; falta jugar los dos niveles.

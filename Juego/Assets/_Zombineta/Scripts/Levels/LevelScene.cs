@@ -47,6 +47,10 @@ namespace Zombineta.Juego.Levels
                  "Con 1: no hay nafta hasta la primera pelea.")]
         [Min(0)] [SerializeField] int bidonesDesdePelea;
 
+        [Tooltip("Los bidones mas alla de este metro no aparecen: el tanque se vacia hacia el final y hay una ultima pelea antes del " +
+                 "refugio (las peleas quedan repartidas: una al principio y otra al final, no una cada tanto). 0 = sin limite.")]
+        [Min(0f)] [SerializeField] float bidonesHastaMetro;
+
         [Tooltip("Veces que la pelea a pie se reinicia si derriban a la protagonista, en vez de perder.")]
         [Min(0)] [SerializeField] int reintentosPelea;
 
@@ -141,6 +145,7 @@ namespace Zombineta.Juego.Levels
             copy.peleaSinNafta = peleaSinNafta;
             copy.fuelInicial = combustibleInicial;
             copy.bidonesDesdePelea = bidonesDesdePelea;
+            copy.bidonesHastaMetro = bidonesHastaMetro;
             copy.reintentosPelea = reintentosPelea;
             copy.peleaDidactica = peleaDidactica;
             return copy;
@@ -526,14 +531,14 @@ namespace Zombineta.Juego.Levels
                     for (int k = 0; k < opacidadAplicada.Length; k++)
                         opacidadAplicada[k] = 1f;
                 }
-                bool sinBidones = LevelRuntime.BidonesBloqueados(run.Config, run.Sim.State);
                 // A pie no hay nafta, baterias ni balas del recorrido que agarrar: no se ven.
                 bool peleando = run.Sim.State.Phase == RunPhase.Pelea;
                 foreach (var (item, index, shadow, look) in bound)
                 {
                     if (item == null)
                         continue;
-                    bool visible = !runtime[index].Consumed && !(sinBidones && item.kind == LevelEntryKind.Fuel) &&
+                    bool visible = !runtime[index].Consumed && !(item.kind == LevelEntryKind.Fuel &&
+                                     LevelRuntime.BidonInexistente(run.Config, run.Sim.State, runtime[index].Entry.distance)) &&
                                    !(peleando && EsRecurso(item.kind));
 
                     // Lo que se despejo para la pelea (coches, barriles, rampas) queda de decorado mientras
