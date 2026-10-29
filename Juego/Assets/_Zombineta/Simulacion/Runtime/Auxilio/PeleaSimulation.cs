@@ -93,6 +93,7 @@ namespace Zombineta.Auxilio
         {
             s.Peleas++;
             s.FrenadoRestante = -1f;
+            s.RampBoostRemaining = 0f;
             s.Phase = RunPhase.Pelea;
             s.Vida = c.vidaPelea + (s.Peleas == 1 ? c.vidaExtraPrimeraPelea : 0);
             s.Oleada = 0;
@@ -257,6 +258,12 @@ namespace Zombineta.Auxilio
         // --- Oleadas -----------------------------------------------------------
 
         bool HayOleadas => c.oleadas != null && c.oleadas.Count > 0;
+
+        /// <summary>Que tan rapido atacan los zombies en la oleada en curso (1 = los tiempos del GameConfig).</summary>
+        float RitmoDeAtaque => OleadaActual != null ? Mathf.Max(0.1f, OleadaActual.ataque) : 1f;
+
+        /// <summary>Segundos que tarda un zombie en preparar el golpe en la oleada en curso (la vista reparte sus cuadros en ese lapso).</summary>
+        public float PreparacionActual => c.zombiePreparacion / RitmoDeAtaque;
 
         OleadaPelea OleadaActual => HayOleadas ? c.oleadas[Mathf.Clamp(s.Oleada, 0, c.oleadas.Count - 1)] : null;
 
@@ -481,8 +488,20 @@ namespace Zombineta.Auxilio
             }
             s.PeleaBajas += muertos;
             s.UltimaExplosionMuertos = muertos;
-            h.EventoExplosion(s.BombaX, s.Lane);
-            return RunEvent.BombaExplota | RunEvent.Explosion;
+            // La explosion se ve donde quedo la bomba (no en el carril de la protagonista, que ya se pudo haber movido).
+            int carrilBomba = Mathf.Clamp(Mathf.RoundToInt(s.BombaY), 0, RunSimulation.LaneCount - 1);
+            h.EventoExplosion(s.BombaX, carrilBomba, s.BombaY);
+            var ev = RunEvent.BombaExplota | RunEvent.Explosion;
+
+            // La bomba tambien lastima: a quien se queda cerca le saca 1 de vida (como un golpe, con su respiro).
+            float dx = s.PeatonX - s.BombaX;
+            bool cerca = Mathf.Abs(dx) <= c.bombaRadioPropio && Mathf.Abs(s.PeatonY - s.BombaY) <= c.bombaCarrilesPropios;
+            if (cerca && s.Invulnerable <= 0f)
+            {
+                int lejos = dx > 0f ? 1 : dx < 0f ? -1 : (s.Mira > 0 ? -1 : 1);
+                ev |= Lastimar(lejos);
+            }
+            return ev;
         }
 
         // --- Los barriles de la arena ----------------------------------------------
@@ -693,7 +712,17 @@ namespace Zombineta.Auxilio
 
             if (drops.Count >= MaxDrops)
                 drops.RemoveAt(0);   // el mas viejo se va para que entre el nuevo
-            drops.Add(new Drop { Kind = kind.Value, X = u.X, Lane = u.Lane, Left = c.dropSegundos, Total = c.dropSegundos });
+            float x = u.X;
+            if (kind.Value == DropKind.Botiquin && c.botiquinSeparacion > 0f && Mathf.Abs(x - s.PeatonX) < c.botiquinSeparacion)
+            {
+                // Que no se levante solo al terminar un combo: cae mas alla, del lado donde estaba el zombie.
+                float lado = x > s.PeatonX ? 1f : x < s.PeatonX ? -1f : (s.Mira > 0 ? 1f : -1f);
+                float izq = centro - c.arenaMedioAncho, der = centro + c.arenaMedioAncho;
+                x = s.PeatonX + lado * c.botiquinSeparacion;
+                if (x < izq || x > der)
+                    x = Mathf.Clamp(s.PeatonX - lado * c.botiquinSeparacion, izq, der);   // contra la pared: del otro lado
+            }
+            drops.Add(new Drop { Kind = kind.Value, X = x, Lane = u.Lane, Left = c.dropSegundos, Total = c.dropSegundos });
         }
 
         /// <summary>Cuenta regresiva de los drops y recogida: ella pasa por encima, en un carril cercano.</summary>
@@ -967,10 +996,10 @@ namespace Zombineta.Auxilio
                 if (u.Preparando >= 0f)
                 {
                     u.Preparando += dt;
-                    if (u.Preparando >= c.zombiePreparacion)
+                    if (u.Preparando >= PreparacionActual)
                     {
                         u.Preparando = -1f;
-                        u.Enfriamiento = c.zombieEnfriamiento;
+                        u.Enfriamiento = c.zombieEnfriamiento / RitmoDeAtaque;
                         if (enRango && s.Invulnerable <= 0f)
                             ev |= Lastimar(System.Math.Sign(dx));
                         if (s.Phase != RunPhase.Pelea)

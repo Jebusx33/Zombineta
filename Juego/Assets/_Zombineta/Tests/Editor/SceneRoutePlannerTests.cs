@@ -152,5 +152,27 @@ namespace Zombineta.Juego.Tests
             Assert.AreEqual(SceneNames.Credits, plan.Active);
             Assert.IsTrue(plan.Fade);
         }
+
+        [Test]
+        public void TheMap_IsABaseScene_BetweenTheCharacterAndTheCinematic()
+        {
+            var p = At(SceneNames.CharacterSelect);
+
+            var alMapa = p.Go(GameScreen.Map, null, false);
+            CollectionAssert.AreEqual(new[] { SceneNames.CharacterSelect }, alMapa.Unload);
+            CollectionAssert.AreEqual(new[] { SceneNames.Map }, alMapa.Load);
+            Assert.AreEqual(SceneNames.Map, alMapa.Active);
+            Assert.IsTrue(alMapa.Fade);
+
+            var alaCinematica = p.Go(GameScreen.Cinematic, null, false);
+            CollectionAssert.AreEqual(new[] { SceneNames.Map }, alaCinematica.Unload);
+            CollectionAssert.AreEqual(new[] { SceneNames.Cinematic }, alaCinematica.Load);
+        }
+
+        [Test]
+        public void TheMapScene_IsCalledMapa()
+        {
+            Assert.AreEqual("Mapa", SceneRoutePlanner.ScreenScene(GameScreen.Map));
+        }
     }
 }

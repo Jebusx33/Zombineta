@@ -95,7 +95,7 @@ namespace Zombineta.Luz
                     continue;
                 if (kind == HordeEventKind.Death && e.Cause != cause)
                     continue;
-                return new Vector2(run.ToWorldX(e.X), run.LaneToWorldY(e.Lane));
+                return new Vector2(run.ToWorldX(e.X), run.LaneToWorldY(e.LaneParaDibujo));
             }
             return fallback;
         }

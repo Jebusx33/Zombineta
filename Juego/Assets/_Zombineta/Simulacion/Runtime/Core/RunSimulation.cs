@@ -117,8 +117,14 @@ namespace Zombineta.Core
         public float Presion =>
             Zombineta.Level.Tramos.PresionAt(config.tramos, State.PlayerX, config.tramoPressureBlendMeters);
 
-        /// <summary>Oscuridad del tramo donde esta la moto: 0 luz normal, 1 apagon.</summary>
-        public float Oscuridad =>
+        /// <summary>
+        /// Oscuridad con que se ve el nivel: 0 luz normal, 1 apagon. Si se acabo la nafta en pleno apagon, la luz
+        /// vuelve (0) hasta que ese apagon termine.
+        /// </summary>
+        public float Oscuridad => State.ApagonAnulado ? 0f : OscuridadDelTramo;
+
+        /// <summary>La oscuridad que tiene el tramo donde esta la moto, sin importar si se apago el apagon.</summary>
+        public float OscuridadDelTramo =>
             Zombineta.Level.Tramos.OscuridadAt(config.tramos, State.PlayerX, config.tramoDarknessFadeMeters);
 
         public float Progress01 =>
@@ -166,6 +172,8 @@ namespace Zombineta.Core
             State.Pitch = 0f;
             State.LaunchSpin = 0f;
             State.BoostRemaining = 0f;
+            State.RampBoostRemaining = 0f;
+            State.ApagonAnulado = false;
             State.Fallen = false;
             State.Peleas = 0;
             State.FrenadoRestante = -1f;
@@ -250,6 +258,12 @@ namespace Zombineta.Core
 
             if (State.BoostRemaining > 0f)
                 State.BoostRemaining = Mathf.Max(0f, State.BoostRemaining - dt);
+            if (State.RampBoostRemaining > 0f)
+                State.RampBoostRemaining = Mathf.Max(0f, State.RampBoostRemaining - dt);
+
+            // Al salir del apagon que se habia apagado, el proximo vuelve a aplicarse normal.
+            if (State.ApagonAnulado && OscuridadDelTramo <= 0.001f)
+                State.ApagonAnulado = false;
 
             if (State.ArranqueRestante > 0f)
                 State.ArranqueRestante = Mathf.Max(0f, State.ArranqueRestante - dt);
@@ -468,6 +482,10 @@ namespace Zombineta.Core
             if (State.BoostRemaining > 0f && speed > 0f)
                 speed *= config.landingBoostMultiplier;
 
+            // El impulso de la rampa tambien: solo hacia adelante, y no cambia lo que gasta el motor.
+            if (State.RampBoostRemaining > 0f && speed > 0f)
+                speed *= config.rampBoostMultiplier;
+
             // Despues de la pelea arranca de a poco, no a velocidad completa de un cuadro al otro.
             if (State.ArranqueRestante > 0f && config.arranqueSegundos > 0f && speed > 0f)
             {
@@ -594,6 +612,17 @@ namespace Zombineta.Core
             return RunEvent.Fell;
         }
 
+        /// <summary>
+        /// Baja a pelear. Si pasa en pleno apagon, se prende la luz: pelear a ciegas no se puede, y sigue asi hasta que
+        /// termine el apagon.
+        /// </summary>
+        RunEvent EmpezarPelea()
+        {
+            if (OscuridadDelTramo > 0.01f)
+                State.ApagonAnulado = true;
+            return Pelea.Empezar();
+        }
+
         RunEvent CheckEndConditions()
         {
             // Sin nafta no se pierde: se baja y se pelea a pie, cada vez que pase. Antes la moto
@@ -601,7 +630,7 @@ namespace Zombineta.Core
             if (State.Fuel <= 0f && !State.Airborne && Pelea.PuedeEmpezar)
             {
                 if (config.paradaSegundos <= 0f)
-                    return Pelea.Empezar();
+                    return EmpezarPelea();
 
                 if (State.FrenadoRestante < 0f)
                 {
@@ -610,7 +639,7 @@ namespace Zombineta.Core
                     return RunEvent.Frenando;
                 }
                 if (State.FrenadoRestante <= 0f)
-                    return Pelea.Empezar();
+                    return EmpezarPelea();
 
                 // Todavia frenando: la horda no la pierde en este rato, pero si la inercia la lleva a la meta, gana.
                 if (State.PlayerX >= config.goalDistance)
@@ -686,13 +715,21 @@ namespace Zombineta.Core
 
             State.Airborne = true;
             State.Height = 0f;
-            State.AirSpeed = PlayerSpeed;
-            State.VerticalSpeed = config.rampLaunchSlope * PlayerSpeed;
+            // El impulso arranca con el salto: la subida se calcula con la velocidad con que se llega, y el vuelo
+            // avanza mas rapido (el salto sale mas largo).
+            // Si ya traia el impulso de otra rampa no se suma dos veces: se parte de la velocidad sin el.
+            bool conImpulso = config.rampBoostDuration > 0f;
+            float velocidadBase = State.RampBoostRemaining > 0f && config.rampBoostMultiplier > 0f
+                ? PlayerSpeed / config.rampBoostMultiplier
+                : PlayerSpeed;
+            State.AirSpeed = velocidadBase * (conImpulso ? config.rampBoostMultiplier : 1f);
+            State.RampBoostRemaining = config.rampBoostDuration;
+            State.VerticalSpeed = config.rampLaunchSlope * velocidadBase;
             if (config.maxLaunchVerticalSpeed > 0f)
                 State.VerticalSpeed = Mathf.Min(State.VerticalSpeed, config.maxLaunchVerticalSpeed);
             State.Pitch = config.launchPitch;
             State.LaunchSpin = config.launchSpinPerExcessSpeed *
-                               Mathf.Max(0f, PlayerSpeed - config.normalSpeed);
+                               Mathf.Max(0f, velocidadBase - config.normalSpeed);
             return RunEvent.Launched;
         }
 

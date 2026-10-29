@@ -17,6 +17,7 @@ namespace Zombineta.Juego.Flow
         public const string Ending = "Ending";
         public const string Pause = "Pause";
         public const string Credits = "Credits";
+        public const string Map = "Mapa";
     }
 
     /// <summary>Lo que hay que hacer para pasar de una pantalla a otra.</summary>
@@ -132,6 +133,7 @@ namespace Zombineta.Juego.Flow
                 case GameScreen.Ending: return SceneNames.Ending;
                 case GameScreen.Paused: return SceneNames.Pause;
                 case GameScreen.Credits: return SceneNames.Credits;
+                case GameScreen.Map: return SceneNames.Map;
                 default: return null;
             }
         }

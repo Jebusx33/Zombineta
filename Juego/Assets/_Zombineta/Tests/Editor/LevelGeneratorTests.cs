@@ -166,6 +166,26 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
+        public void TheCarOfEachRampPiece_DoesNotOverlapTheRamp()
+        {
+            var entries = LevelGenerator.Generate(Settings(), Length);
+            int piezas = 0;
+            foreach (var r in entries)
+            {
+                if (r.kind != LevelEntryKind.Ramp) continue;
+                var coche = entries.Find(e => e.kind == LevelEntryKind.Obstacle && e.lane == r.lane &&
+                                              e.distance > r.distance && e.distance <= r.distance + LevelValidator.LandingFrom);
+                Assert.IsNotNull(coche, "rampa de " + r.distance + " m");
+                float minimo = LevelFootprint.MinDistance(LevelEntryKind.Ramp, LevelEntryKind.Obstacle, 0f);
+                Assert.GreaterOrEqual(coche.distance - r.distance, minimo,
+                                      "el coche se encima con la rampa de " + r.distance + " m");
+                piezas++;
+            }
+            Assert.Greater(piezas, 5);
+            Assert.GreaterOrEqual(LevelGenerator.RampObstacleAt, LevelFootprint.MinDistance(LevelEntryKind.Ramp, LevelEntryKind.Obstacle, 0f));
+        }
+
+        [Test]
         public void Footprints_AreSymmetricAndRespectTheFloor()
         {
             Assert.AreEqual(LevelFootprint.MinDistance(LevelEntryKind.Obstacle, LevelEntryKind.Fuel, 2f),

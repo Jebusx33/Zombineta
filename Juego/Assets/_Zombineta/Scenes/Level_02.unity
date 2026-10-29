@@ -2844,7 +2844,7 @@ GameObject:
   - component: {fileID: 349406739}
   - component: {fileID: 349406738}
   m_Layer: 0
-  m_Name: Obstacle 314m C2
+  m_Name: Obstacle 316m C2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2859,7 +2859,7 @@ Transform:
   m_GameObject: {fileID: 349406736}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 235.79999, y: 0.99, z: 0}
+  m_LocalPosition: {x: 237.075, y: 0.99, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2943,7 +2943,7 @@ MonoBehaviour:
   height: 0
   generated: 1
   pinned: 0
-  generatedMeters: 314.4
+  generatedMeters: 316.1
   generatedLane: 2
   generatedKind: 0
   generatedVariant: 0
@@ -3076,7 +3076,7 @@ GameObject:
   - component: {fileID: 358625925}
   - component: {fileID: 358625924}
   m_Layer: 0
-  m_Name: Obstacle 2814m C2
+  m_Name: Obstacle 2816m C2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3091,7 +3091,7 @@ Transform:
   m_GameObject: {fileID: 358625922}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2110.7998, y: 0.99, z: 0}
+  m_LocalPosition: {x: 2112.075, y: 0.99, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3175,7 +3175,7 @@ MonoBehaviour:
   height: 0
   generated: 1
   pinned: 0
-  generatedMeters: 2814.3997
+  generatedMeters: 2816.1
   generatedLane: 2
   generatedKind: 0
   generatedVariant: 0
@@ -4738,7 +4738,7 @@ GameObject:
   - component: {fileID: 449474212}
   - component: {fileID: 449474211}
   m_Layer: 0
-  m_Name: Obstacle 2064m C1
+  m_Name: Obstacle 2066m C1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4753,7 +4753,7 @@ Transform:
   m_GameObject: {fileID: 449474209}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1548.2999, y: 0, z: 0}
+  m_LocalPosition: {x: 1549.575, y: 0, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4837,7 +4837,7 @@ MonoBehaviour:
   height: 0
   generated: 1
   pinned: 0
-  generatedMeters: 2064.4
+  generatedMeters: 2066.1
   generatedLane: 1
   generatedKind: 0
   generatedVariant: 0
@@ -5362,7 +5362,7 @@ GameObject:
   - component: {fileID: 497992811}
   - component: {fileID: 497992810}
   m_Layer: 0
-  m_Name: Obstacle 2314m C0
+  m_Name: Obstacle 2316m C0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5377,7 +5377,7 @@ Transform:
   m_GameObject: {fileID: 497992808}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1735.7999, y: -0.99, z: 0}
+  m_LocalPosition: {x: 1737.075, y: -0.99, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5461,7 +5461,7 @@ MonoBehaviour:
   height: 0
   generated: 1
   pinned: 0
-  generatedMeters: 2314.4
+  generatedMeters: 2316.1
   generatedLane: 0
   generatedKind: 0
   generatedVariant: 0
@@ -7503,7 +7503,7 @@ GameObject:
   - component: {fileID: 685524706}
   - component: {fileID: 685524705}
   m_Layer: 0
-  m_Name: Obstacle 564m C1
+  m_Name: Obstacle 566m C1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7518,7 +7518,7 @@ Transform:
   m_GameObject: {fileID: 685524703}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 423.30002, y: 0, z: 0}
+  m_LocalPosition: {x: 424.575, y: 0, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7602,7 +7602,7 @@ MonoBehaviour:
   height: 0
   generated: 1
   pinned: 0
-  generatedMeters: 564.4
+  generatedMeters: 566.1
   generatedLane: 1
   generatedKind: 0
   generatedVariant: 0
@@ -7810,7 +7810,7 @@ GameObject:
   - component: {fileID: 693156572}
   - component: {fileID: 693156571}
   m_Layer: 0
-  m_Name: Obstacle 3314m C0
+  m_Name: Obstacle 3316m C0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7825,7 +7825,7 @@ Transform:
   m_GameObject: {fileID: 693156569}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2485.7998, y: -0.99, z: 0}
+  m_LocalPosition: {x: 2487.075, y: -0.99, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7909,7 +7909,7 @@ MonoBehaviour:
   height: 0
   generated: 1
   pinned: 0
-  generatedMeters: 3314.3997
+  generatedMeters: 3316.1
   generatedLane: 0
   generatedKind: 0
   generatedVariant: 0
@@ -8390,7 +8390,7 @@ GameObject:
   - component: {fileID: 752452544}
   - component: {fileID: 752452543}
   m_Layer: 0
-  m_Name: Obstacle 3564m C1
+  m_Name: Obstacle 3566m C1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8405,7 +8405,7 @@ Transform:
   m_GameObject: {fileID: 752452541}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2673.2998, y: 0, z: 0}
+  m_LocalPosition: {x: 2674.575, y: 0, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8489,7 +8489,7 @@ MonoBehaviour:
   height: 0
   generated: 1
   pinned: 0
-  generatedMeters: 3564.3997
+  generatedMeters: 3566.1
   generatedLane: 1
   generatedKind: 0
   generatedVariant: 0
@@ -9446,7 +9446,7 @@ GameObject:
   - component: {fileID: 810530637}
   - component: {fileID: 810530636}
   m_Layer: 0
-  m_Name: Obstacle 1814m C2
+  m_Name: Obstacle 1816m C2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9461,7 +9461,7 @@ Transform:
   m_GameObject: {fileID: 810530634}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1360.8, y: 0.99, z: 0}
+  m_LocalPosition: {x: 1362.075, y: 0.99, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9545,7 +9545,7 @@ MonoBehaviour:
   height: 0
   generated: 1
   pinned: 0
-  generatedMeters: 1814.4
+  generatedMeters: 1816.1
   generatedLane: 2
   generatedKind: 0
   generatedVariant: 0
@@ -11314,7 +11314,7 @@ GameObject:
   - component: {fileID: 923773339}
   - component: {fileID: 923773338}
   m_Layer: 0
-  m_Name: Obstacle 1314m C0
+  m_Name: Obstacle 1316m C0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11329,7 +11329,7 @@ Transform:
   m_GameObject: {fileID: 923773336}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 985.80005, y: -0.99, z: 0}
+  m_LocalPosition: {x: 987.075, y: -0.99, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11413,7 +11413,7 @@ MonoBehaviour:
   height: 0
   generated: 1
   pinned: 0
-  generatedMeters: 1314.4
+  generatedMeters: 1316.1
   generatedLane: 0
   generatedKind: 0
   generatedVariant: 0
@@ -12276,7 +12276,7 @@ GameObject:
   - component: {fileID: 1002278317}
   - component: {fileID: 1002278316}
   m_Layer: 0
-  m_Name: Obstacle 1564m C0
+  m_Name: Obstacle 1566m C0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12291,7 +12291,7 @@ Transform:
   m_GameObject: {fileID: 1002278314}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1173.3, y: -0.99, z: 0}
+  m_LocalPosition: {x: 1174.575, y: -0.99, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12375,7 +12375,7 @@ MonoBehaviour:
   height: 0
   generated: 1
   pinned: 0
-  generatedMeters: 1564.4
+  generatedMeters: 1566.1
   generatedLane: 0
   generatedKind: 0
   generatedVariant: 0
@@ -13998,7 +13998,7 @@ GameObject:
   - component: {fileID: 1148528171}
   - component: {fileID: 1148528170}
   m_Layer: 0
-  m_Name: Obstacle 1064m C2
+  m_Name: Obstacle 1066m C2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14013,7 +14013,7 @@ Transform:
   m_GameObject: {fileID: 1148528168}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 798.30005, y: 0.99, z: 0}
+  m_LocalPosition: {x: 799.575, y: 0.99, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14097,7 +14097,7 @@ MonoBehaviour:
   height: 0
   generated: 1
   pinned: 0
-  generatedMeters: 1064.4
+  generatedMeters: 1066.1
   generatedLane: 2
   generatedKind: 0
   generatedVariant: 0
@@ -14114,7 +14114,7 @@ GameObject:
   - component: {fileID: 1148621120}
   - component: {fileID: 1148621119}
   m_Layer: 0
-  m_Name: Obstacle 814m C0
+  m_Name: Obstacle 816m C0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14129,7 +14129,7 @@ Transform:
   m_GameObject: {fileID: 1148621117}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 610.80005, y: -0.99, z: 0}
+  m_LocalPosition: {x: 612.075, y: -0.99, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14213,7 +14213,7 @@ MonoBehaviour:
   height: 0
   generated: 1
   pinned: 0
-  generatedMeters: 814.4001
+  generatedMeters: 816.1
   generatedLane: 0
   generatedKind: 0
   generatedVariant: 0
@@ -16507,7 +16507,7 @@ GameObject:
   - component: {fileID: 1342221769}
   - component: {fileID: 1342221768}
   m_Layer: 0
-  m_Name: Obstacle 2564m C0
+  m_Name: Obstacle 2566m C0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16522,7 +16522,7 @@ Transform:
   m_GameObject: {fileID: 1342221766}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1923.2999, y: -0.99, z: 0}
+  m_LocalPosition: {x: 1924.575, y: -0.99, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16606,7 +16606,7 @@ MonoBehaviour:
   height: 0
   generated: 1
   pinned: 0
-  generatedMeters: 2564.4
+  generatedMeters: 2566.1
   generatedLane: 0
   generatedKind: 0
   generatedVariant: 0
@@ -20500,7 +20500,7 @@ GameObject:
   - component: {fileID: 1691504497}
   - component: {fileID: 1691504496}
   m_Layer: 0
-  m_Name: Obstacle 3064m C0
+  m_Name: Obstacle 3066m C0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20515,7 +20515,7 @@ Transform:
   m_GameObject: {fileID: 1691504494}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2298.2998, y: -0.99, z: 0}
+  m_LocalPosition: {x: 2299.575, y: -0.99, z: 0}
   m_LocalScale: {x: 0.75, y: 0.75, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20599,7 +20599,7 @@ MonoBehaviour:
   height: 0
   generated: 1
   pinned: 0
-  generatedMeters: 3064.3997
+  generatedMeters: 3066.1
   generatedLane: 0
   generatedKind: 0
   generatedVariant: 0
@@ -25509,8 +25509,8 @@ MonoBehaviour:
   alturaBajada: 0.55
   retrocesoDisparo: 0.22
   botiquin: {fileID: 0}
-  balas: {fileID: 0}
-  bidon: {fileID: 0}
+  balas: {fileID: 21300000, guid: 7fdd527898f310144af87c937c8921bf, type: 3}
+  bidon: {fileID: 21300000, guid: 6cbe090b926af1f459c7aa0d1a1cca3c, type: 3}
   altoBidon: 1.1
   altoDrop: 0.7
   segundosTitileo: 3

@@ -57,7 +57,7 @@ MonoBehaviour:
   medioLargoZombie: 0.4
   crashStunDuration: 0.05
   crashFuelPenalty: 1
-  rampLaunchSlope: 0.35
+  rampLaunchSlope: 0.42
   jumpGravity: 18
   leanLift: 0
   launchPitch: 15

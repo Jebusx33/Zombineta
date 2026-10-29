@@ -151,7 +151,7 @@ namespace Zombineta.Fx
 
         void Play(HordeEvent e, bool gore)
         {
-            Vector3 at = new Vector3(run.ToWorldX(e.X), run.LaneToWorldY(e.Lane) + effectHeight, 0f);
+            Vector3 at = new Vector3(run.ToWorldX(e.X), run.LaneToWorldY(e.LaneParaDibujo) + effectHeight, 0f);
             // Sin sangre alta, la sangre sale como polvo gris; el resto conserva sus colores.
             Color? tinte = gore ? (Color?)null : dustColor;
 
@@ -179,7 +179,7 @@ namespace Zombineta.Fx
                 case HordeEventKind.Explosion:
                     Emit(explosions, at, null, e.Lane, 0, Izquierda);
                     if (scorchSprite != null)
-                        Stain(new Vector3(at.x, run.LaneToWorldY(e.Lane), 0f), e.Lane, scorchSprite, scorchColor, scorchScale);
+                        Stain(new Vector3(at.x, run.LaneToWorldY(e.LaneParaDibujo), 0f), e.Lane, scorchSprite, scorchColor, scorchScale);
                     break;
 
                 case HordeEventKind.Miss:

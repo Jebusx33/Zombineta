@@ -74,12 +74,13 @@ namespace Zombineta.Juego.Levels
         const float RampZoneBefore = 5f;
         const float RampZoneAfter = 50f;
 
-        // La pieza de rampa, en metros desde la rampa. Con el salto de GameConfig.asset (unos 5,5 m
-        // de vuelo a velocidad normal, 0,5 m de alto) el obstaculo queda dentro del vuelo y el
-        // bidon aereo cerca del punto mas alto. Es uno solo: con dos coches a 2 m de distancia se
-        // encimaban entre ellos y con la rampa. Si cambia el salto, revisar este numero y
-        // LevelValidator.LandingFrom (el obstaculo tiene que quedar antes).
-        const float RampObstacleAt = 4.4f;
+        // La pieza de rampa, en metros desde la rampa. El coche tiene que quedar (1) lejos de la rampa para que
+        // no se encimen los dibujos (la rampa mide casi 6 m y el coche 4,65: sus centros, a mas de 5,8 m) y
+        // (2) dentro del vuelo: con el impulso de la rampa (rampBoostMultiplier 1,6) y la subida de
+        // GameConfig.asset el salto sale de unos 10,7 m a velocidad normal, y el coche se sobrevuela hasta
+        // unos 6,9 m (RampBoostTests lo mide). Es uno solo. Si cambia el salto o el impulso, revisar este numero,
+        // LevelValidator.LandingFrom (el coche tiene que quedar antes) y RampBoostTests.CocheDeLaPieza.
+        public const float RampObstacleAt = 6.1f;
         const float RampFuelAt = 3f;
         const float RampFuelHeight = 1f;
 

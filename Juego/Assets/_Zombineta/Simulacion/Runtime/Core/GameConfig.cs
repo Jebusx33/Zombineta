@@ -20,6 +20,9 @@ namespace Zombineta.Core
         public float[] pesos = { 1f, 0f, 0f };
         [Tooltip("Multiplica la velocidad con la que caminan.")]
         public float velocidad = 1f;
+        [Tooltip("Multiplica la rapidez de sus ataques: prepararse y volver a atacar tardan 1/ataque (2 = el doble de " +
+                 "rapido). 1 = los tiempos de 'zombiePreparacion' y 'zombieEnfriamiento'.")]
+        [Min(0.1f)] public float ataque = 1f;
     }
 
     /// <summary>
@@ -147,6 +150,10 @@ namespace Zombineta.Core
         [Min(0)] public int bombaInicial = 0;
         [Tooltip("Segundos de mecha de la bomba temporizadora: despues explota y cae todo zombie que este peleando.")]
         [Min(0.1f)] public float bombaMecha = 2f;
+        [Tooltip("Al explotar la bomba, la protagonista pierde 1 de vida si esta a esta distancia (metros) o menos de ella.")]
+        [Min(0f)] public float bombaRadioPropio = 3f;
+        [Tooltip("...y a esta distancia o menos en carriles (a pie camina entre carriles). 1 = el suyo y el de al lado.")]
+        [Min(0f)] public float bombaCarrilesPropios = 1f;
         [Tooltip("Granadas con las que se baja en la PRIMERA pelea (si trae menos, se completan): ahi se aprende a usarlas.")]
         [Min(0)] public int granadasPrimeraPelea = 1;
         [Tooltip("Bombas temporizadoras con las que se baja en la PRIMERA pelea (si trae menos, se completan).")]
@@ -250,6 +257,11 @@ namespace Zombineta.Core
         [Tooltip("Aterrizar con mas inclinacion que esta tira la moto al piso.")]
         public float safeLandingAngle = 25f;
         public float landingBoostMultiplier = 1.25f;
+        [Tooltip("Impulso de velocidad al tomar una rampa: multiplica la velocidad del salto y la de la moto despues, " +
+                 "mientras dura. Es gratis: el consumo de nafta sigue el modo (normal, turbo), no la velocidad.")]
+        [Min(1f)] public float rampBoostMultiplier = 1.6f;
+        [Tooltip("Segundos que dura el impulso de la rampa (cuenta desde que sale volando).")]
+        [Min(0f)] public float rampBoostDuration = 2.2f;
         public float landingBoostDuration = 1.5f;
         [Tooltip("Segundos tirada en el piso tras aterrizar mal. Mas que un choque.")]
         public float fallStunDuration = 1.6f;
@@ -274,10 +286,12 @@ namespace Zombineta.Core
         [Tooltip("Oleadas de la pelea, de menos a mas. Vacio = siempre 'zombiesEnArena' del tipo que toque.")]
         public List<OleadaPelea> oleadas = new List<OleadaPelea>
         {
+            // Las dos primeras, como estaban (la dificultad esta bien); las dos ultimas aprietan: mas zombies, mas
+            // pesados y corredores, que caminan mas rapido y atacan mas rapido (tardan menos en preparar y en repetir el golpe).
             new OleadaPelea { zombies = 3, simultaneos = 3, pesos = new[] { 1f, 0f, 0f },        velocidad = 0.85f },
             new OleadaPelea { zombies = 5, simultaneos = 4, pesos = new[] { 0.7f, 0.3f, 0f },    velocidad = 1f },
-            new OleadaPelea { zombies = 6, simultaneos = 5, pesos = new[] { 0.5f, 0.3f, 0.2f },  velocidad = 1f },
-            new OleadaPelea { zombies = 7, simultaneos = 6, pesos = new[] { 0.4f, 0.3f, 0.3f },  velocidad = 1f },
+            new OleadaPelea { zombies = 7, simultaneos = 5, pesos = new[] { 0.3f, 0.35f, 0.35f }, velocidad = 1.1f, ataque = 1.6f },
+            new OleadaPelea { zombies = 9, simultaneos = 6, pesos = new[] { 0.2f, 0.4f, 0.4f },  velocidad = 1.2f, ataque = 2.2f },
         };
         [Tooltip("Cuantos pelean a la vez como maximo en una oleada que no dice otra cosa.")]
         [Min(1)] public int maxSimultaneos = 6;
@@ -286,6 +300,9 @@ namespace Zombineta.Core
         [Header("Premios y botiquines de la pelea")]
         [Tooltip("Probabilidad de que un zombie que muere (a golpes o a tiros) deje un botiquin: un corazon.")]
         [Range(0f, 1f)] public float dropBotiquin = 0.15f;
+        [Tooltip("Un botiquin que cae mas cerca que esto de la protagonista (al vencer a alguien a golpes, cuerpo a cuerpo) se " +
+                 "corre hasta esta distancia, en metros: hay que ir a buscarlo, no se levanta solo al terminar un combo. 0 = donde cae.")]
+        [Min(0f)] public float botiquinSeparacion = 2.4f;
         [Tooltip("Probabilidad de que deje balas (se suma a la del botiquin: nunca sueltan las dos).")]
         [Range(0f, 1f)] public float dropBalas = 0.10f;
         [Tooltip("Balas que da cada drop de balas.")]

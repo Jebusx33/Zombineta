@@ -16,6 +16,8 @@ namespace Zombineta.Flow
         Paused,
         // Nuevo al final: cambio aditivo, no rompe lo ya serializado (el prototipo no la usa).
         Credits,
+        /// <summary>El mapa de la ciudad entre niveles: marca los que ya se jugaron y el que sigue.</summary>
+        Map,
     }
 
     /// <summary>
@@ -25,8 +27,8 @@ namespace Zombineta.Flow
     ///
     ///   Menu <-> Opciones <-> Pausa
     ///   Menu <-> Creditos
-    ///   Menu -> Personaje -> Cinematica -> Nivel <-> Pausa
-    ///   Nivel gano   -> Nivel completo -> Cinematica del siguiente (o Final si era el ultimo)
+    ///   Menu -> Personaje -> Mapa -> Cinematica -> Nivel <-> Pausa
+    ///   Nivel gano   -> Nivel completo -> Mapa -> Cinematica del siguiente (o Final si era el ultimo)
     ///   Nivel perdio -> Game Over -> Reintentar (mismo nivel) o Menu
     ///   Final -> Creditos -> Menu
     ///
@@ -94,12 +96,12 @@ namespace Zombineta.Flow
             return Switch(GameScreen.Options);
         }
 
-        /// <summary>Volver: desde Opciones a donde se abrio; desde el personaje, al menu.</summary>
+        /// <summary>Volver: desde Opciones a donde se abrio; desde el personaje y el mapa, al menu.</summary>
         public bool Back()
         {
             if (Current == GameScreen.Options)
                 return Switch(optionsReturn);
-            if (Current == GameScreen.CharacterSelect)
+            if (Current == GameScreen.CharacterSelect || Current == GameScreen.Map)
                 return Switch(GameScreen.MainMenu);
             return false;
         }
@@ -125,8 +127,14 @@ namespace Zombineta.Flow
                 return Switch(GameScreen.Playing);
             }
 
-            return Switch(GameScreen.Cinematic);
+            return Switch(GameScreen.Map);
         }
+
+        /// <summary>Un nivel ya jugado (y ganado): los anteriores al que toca. Lo usa el mapa para marcarlos.</summary>
+        public bool IsLevelCompleted(int index) => index >= 0 && index < LevelIndex;
+
+        /// <summary>Del mapa a la cinematica del nivel que toca.</summary>
+        public bool MapContinue() => Go(GameScreen.Map, GameScreen.Cinematic);
 
         public bool CinematicFinished()
         {
@@ -171,7 +179,7 @@ namespace Zombineta.Flow
             TutorialDesdeMenu = false;
             TutorialTerminado?.Invoke();
 
-            return Switch(desdeMenu ? GameScreen.MainMenu : GameScreen.Cinematic);
+            return Switch(desdeMenu ? GameScreen.MainMenu : GameScreen.Map);
         }
 
         /// <summary>Saltear desde la pausa, dentro del tutorial: equivale a terminarlo.</summary>
@@ -199,7 +207,7 @@ namespace Zombineta.Flow
 
         public bool Resume() => Go(GameScreen.Paused, GameScreen.Playing);
 
-        /// <summary>Despues de ganar: la cinematica del siguiente nivel, o el final.</summary>
+        /// <summary>Despues de ganar: el mapa (con el nivel ganado marcado y el que sigue), o el final.</summary>
         public bool Continue()
         {
             if (Current != GameScreen.LevelComplete)
@@ -209,7 +217,7 @@ namespace Zombineta.Flow
                 return Switch(GameScreen.Ending);
 
             LevelIndex++;
-            return Switch(GameScreen.Cinematic);
+            return Switch(GameScreen.Map);
         }
 
         /// <summary>

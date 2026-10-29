@@ -93,6 +93,13 @@ namespace Zombineta.Core
         public float LaunchSpin;
         /// <summary>Segundos que quedan del impulso por aterrizaje perfecto.</summary>
         public float BoostRemaining;
+        /// <summary>
+        /// Se quedo sin nafta en pleno apagon: la luz vuelve para pelear y sigue prendida hasta que termine ese apagon
+        /// (se apaga la marca al salir de el, y el proximo apagon se aplica normal).
+        /// </summary>
+        public bool ApagonAnulado;
+        /// <summary>Segundos que le quedan al impulso gratis de haber tomado una rampa (0 = sin impulso).</summary>
+        public float RampBoostRemaining;
         /// <summary>Tirada en el piso tras aterrizar mal. Dura lo que el aturdimiento.</summary>
         public bool Fallen;
 

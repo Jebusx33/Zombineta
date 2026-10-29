@@ -46,6 +46,7 @@ namespace Zombineta.Tests
             c.fallStunDuration = 1.6f;
             c.fallFuelPenalty = 10f;
             c.aerialPickupTolerance = 1.5f;
+            c.rampBoostMultiplier = 1f;   // estos tests miden el salto solo; el impulso tiene los suyos (RampBoostTests)
             return c;
         }
 

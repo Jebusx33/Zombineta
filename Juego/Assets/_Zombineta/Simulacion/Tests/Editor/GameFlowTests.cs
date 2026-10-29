@@ -11,12 +11,12 @@ namespace Zombineta.Tests
             var f = new GameFlow(levels);
             f.Play();
             f.ChooseCharacter(0);
-            f.CinematicFinished();
+            f.MapContinue(); f.CinematicFinished();
             for (int i = 0; i < level; i++)
             {
                 f.LevelWon();
                 f.Continue();
-                f.CinematicFinished();
+                f.MapContinue(); f.CinematicFinished();
             }
             return f;
         }
@@ -48,9 +48,11 @@ namespace Zombineta.Tests
 
             f.Play();
             f.ChooseCharacter(1);
+            f.MapContinue();
             f.CinematicFinished();
             f.LevelWon();
-            f.Continue();          // nivel 1 -> cinematica del nivel 2
+            f.Continue();          // nivel 1 -> el mapa (con el 1 marcado) -> cinematica del nivel 2
+            f.MapContinue();
             f.CinematicFinished();
             f.LevelWon();
             f.Continue();          // era el ultimo -> final
@@ -58,8 +60,8 @@ namespace Zombineta.Tests
 
             CollectionAssert.AreEqual(new[]
             {
-                GameScreen.MainMenu, GameScreen.CharacterSelect, GameScreen.Cinematic,
-                GameScreen.Playing, GameScreen.LevelComplete, GameScreen.Cinematic,
+                GameScreen.MainMenu, GameScreen.CharacterSelect, GameScreen.Map, GameScreen.Cinematic,
+                GameScreen.Playing, GameScreen.LevelComplete, GameScreen.Map, GameScreen.Cinematic,
                 GameScreen.Playing, GameScreen.LevelComplete, GameScreen.Ending,
                 GameScreen.MainMenu,
             }, seen);
@@ -74,7 +76,7 @@ namespace Zombineta.Tests
 
             Assert.AreEqual(1, f.CharacterIndex);
             Assert.AreEqual(0, f.LevelIndex);
-            Assert.AreEqual(GameScreen.Cinematic, f.Current);
+            Assert.AreEqual(GameScreen.Map, f.Current);
         }
 
         [Test]
@@ -84,7 +86,7 @@ namespace Zombineta.Tests
             f.LevelWon();
             f.Continue();
 
-            Assert.AreEqual(GameScreen.Cinematic, f.Current);
+            Assert.AreEqual(GameScreen.Map, f.Current);
             Assert.AreEqual(1, f.LevelIndex);
         }
 
@@ -321,9 +323,10 @@ namespace Zombineta.Tests
         }
 
         [Test]
-        public void CreditsEsElUltimoDelEnum()
+        public void MapEsElUltimoDelEnum_YCreditsSigueDondeEstaba()
         {
-            Assert.AreEqual((int)GameScreen.Credits, System.Enum.GetValues(typeof(GameScreen)).Length - 1);
+            Assert.AreEqual((int)GameScreen.Map, System.Enum.GetValues(typeof(GameScreen)).Length - 1);
+            Assert.AreEqual((int)GameScreen.Credits, System.Enum.GetValues(typeof(GameScreen)).Length - 2, "Credits ya no es el ultimo: el mapa se agrego despues");
         }
 
         // --- Tutorial ----------------------------------------------------------
@@ -352,7 +355,7 @@ namespace Zombineta.Tests
 
             Assert.IsTrue(f.ChooseCharacter(0));
 
-            Assert.AreEqual(GameScreen.Cinematic, f.Current);
+            Assert.AreEqual(GameScreen.Map, f.Current);
             Assert.IsFalse(f.EnTutorial);
         }
 
@@ -369,7 +372,7 @@ namespace Zombineta.Tests
 
             Assert.IsTrue(f.TutorialFinished());
 
-            Assert.AreEqual(GameScreen.Cinematic, f.Current);
+            Assert.AreEqual(GameScreen.Map, f.Current);
             Assert.AreEqual(1, terminados);
             Assert.IsFalse(f.TutorialPendiente);
             Assert.IsFalse(f.EnTutorial);
@@ -413,7 +416,7 @@ namespace Zombineta.Tests
 
             Assert.IsTrue(f.SkipTutorial());
 
-            Assert.AreEqual(GameScreen.Cinematic, f.Current);
+            Assert.AreEqual(GameScreen.Map, f.Current);
             Assert.AreEqual(1, terminados);
             Assert.IsFalse(f.TutorialPendiente);
             Assert.IsFalse(f.EnTutorial);
@@ -493,6 +496,71 @@ namespace Zombineta.Tests
             Assert.AreEqual(0, terminados);
             Assert.IsFalse(f.EnTutorial);
             Assert.IsTrue(f.TutorialPendiente, "no lo termino, asi que sigue pendiente");
+        }
+
+        // --- El mapa ------------------------------------------------------------------
+
+        [Test]
+        public void TheMap_ComesBeforeEveryCinematic_AndEnterLeadsToIt()
+        {
+            var f = new GameFlow(2);
+            f.Play();
+            f.ChooseCharacter(0);
+
+            Assert.AreEqual(GameScreen.Map, f.Current);
+            Assert.AreEqual(0, f.LevelIndex, "el primer nivel (abajo a la izquierda)");
+            Assert.IsTrue(f.MapContinue());
+            Assert.AreEqual(GameScreen.Cinematic, f.Current);
+            Assert.IsFalse(f.MapContinue(), "ya no esta en el mapa");
+        }
+
+        [Test]
+        public void TheMap_MarksTheLevelsAlreadyPlayed()
+        {
+            var f = InLevel(levels: 3, level: 0);
+            Assert.IsFalse(f.IsLevelCompleted(0));
+
+            f.LevelWon();
+            f.Continue();
+
+            Assert.AreEqual(GameScreen.Map, f.Current);
+            Assert.AreEqual(1, f.LevelIndex, "el que sigue");
+            Assert.IsTrue(f.IsLevelCompleted(0), "el primero ya se jugo");
+            Assert.IsFalse(f.IsLevelCompleted(1));
+            Assert.IsFalse(f.IsLevelCompleted(-1));
+        }
+
+        [Test]
+        public void TheMap_CanGoBackToTheMainMenu_AndAnEnterThatArrivesLateDoesNothingElse()
+        {
+            var f = new GameFlow(2);
+            f.Play();
+            f.ChooseCharacter(0);
+
+            Assert.IsTrue(f.Back());
+            Assert.AreEqual(GameScreen.MainMenu, f.Current);
+            Assert.IsFalse(f.MapContinue());
+        }
+
+        [Test]
+        public void TheTutorial_AlsoLeadsToTheMap()
+        {
+            var f = new GameFlow(2) { TutorialPendiente = true };
+            f.Play();
+            f.ChooseCharacter(0);
+            f.TutorialFinished();
+
+            Assert.AreEqual(GameScreen.Map, f.Current);
+        }
+
+        [Test]
+        public void TheLastLevel_GoesToTheEndingWithoutAMap()
+        {
+            var f = InLevel(levels: 2, level: 1);
+            f.LevelWon();
+            f.Continue();
+
+            Assert.AreEqual(GameScreen.Ending, f.Current);
         }
     }
 }

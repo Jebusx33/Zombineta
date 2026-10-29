@@ -318,8 +318,9 @@ namespace Zombineta.Enemies
 
                 float angulo = lit ? litLeanDegrees : 0f;
                 float estocada = 0f;
-                bool preparando = pelea && u.Alive && u.Preparando >= 0f && run.Config.zombiePreparacion > 0f;
-                float avance = preparando ? Mathf.Clamp01(u.Preparando / run.Config.zombiePreparacion) : 0f;
+                float preparacion = run.Sim.Pelea.PreparacionActual;   // cambia con la oleada: las ultimas atacan mas rapido
+                bool preparando = pelea && u.Alive && u.Preparando >= 0f && preparacion > 0f;
+                float avance = preparando ? Mathf.Clamp01(u.Preparando / preparacion) : 0f;
 
                 // Con cuadros dibujados de ataque o de derribo, el cuerpo no se inclina ni rota por codigo.
                 var lookActual = currentLook[i];

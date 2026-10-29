@@ -76,6 +76,7 @@ namespace Zombineta.Juego.Tests
             Assert.AreEqual(m.gameOver, m.Para(GameScreen.GameOver));
             Assert.AreEqual(m.ending, m.Para(GameScreen.Ending));
             Assert.AreEqual(m.creditos, m.Para(GameScreen.Credits));
+            Assert.AreEqual(m.personaje, m.Para(GameScreen.Map), "el mapa sigue con el tema de elegir personaje");
         }
 
         [Test] public void ParaPlayingYPausedDevuelveNull()

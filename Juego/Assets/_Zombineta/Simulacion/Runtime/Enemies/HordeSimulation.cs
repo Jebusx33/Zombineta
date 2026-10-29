@@ -15,6 +15,11 @@ namespace Zombineta.Enemies
         public float FromX;   // metros: de donde salio el disparo (solo Tracer)
         public float X;       // metros
         public int Lane;
+        /// <summary>Posicion exacta en carriles, si el evento la tiene (a pie se camina entre carriles).</summary>
+        public float LaneY;
+        public bool ConLaneY;
+        /// <summary>El carril (continuo) donde se dibuja: el exacto si lo hay, el entero si no.</summary>
+        public float LaneParaDibujo => ConLaneY ? LaneY : Lane;
         public int Type;
         public DeathCause Cause;
         /// <summary>Hacia donde iba el golpe o la bala: 1 derecha, -1 izquierda, 0 sin direccion conocida.</summary>
@@ -318,9 +323,13 @@ namespace Zombineta.Enemies
         /// Solo el evento de una explosion (para que las vistas la dibujen), sin matar a nadie. Lo usa la
         /// bomba temporizadora, que elige a quien se lleva.
         /// </summary>
-        public void EventoExplosion(float x, int lane)
+        public void EventoExplosion(float x, int lane, float laneExacto = -1f)
         {
-            events.Add(new HordeEvent { Kind = HordeEventKind.Explosion, X = x, Lane = lane });
+            events.Add(new HordeEvent
+            {
+                Kind = HordeEventKind.Explosion, X = x, Lane = lane,
+                LaneY = laneExacto, ConLaneY = laneExacto >= 0f,
+            });
         }
 
         /// <summary>Explosion de un barril o de una granada: mata en radio en los tres carriles. Devuelve cuantos.</summary>

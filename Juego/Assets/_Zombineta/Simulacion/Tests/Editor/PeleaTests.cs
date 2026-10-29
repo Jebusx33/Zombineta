@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
@@ -2110,6 +2111,105 @@ namespace Zombineta.Tests
             Assert.AreEqual(1, vacia.State.Bombas);
         }
 
+        /// <summary>
+        /// Pone la bomba y avanza hasta justo antes de que explote. "alPonerla" prepara a la protagonista antes de ponerla y
+        /// "antesDeExplotar" justo antes del cuadro en que explota (para alejarla, por ejemplo).
+        /// </summary>
+        static RunSimulation BombaPorExplotar(Action<RunSimulation> antesDeExplotar = null, Action<RunSimulation> alPonerla = null)
+        {
+            var sim = SinNafta(ConOleadas());
+            sim.State.Bombas = 1;
+            alPonerla?.Invoke(sim);
+            sim.Tick(PonerBomba, Dt);
+            while (sim.State.BombaMecha > Dt * 1.01f)
+            {
+                sim.State.Vida = 5;
+                sim.Tick(Quieta, Dt);
+            }
+            sim.State.Vida = 5;
+            sim.State.Invulnerable = 0f;
+            antesDeExplotar?.Invoke(sim);
+            return sim;
+        }
+
+        /// <summary>El cuadro (o dos, por el redondeo de los segundos) en que explota la bomba. Devuelve sus eventos.</summary>
+        static RunEvent Explotar(RunSimulation sim)
+        {
+            var ev = RunEvent.None;
+            for (int i = 0; i < 3 && (ev & RunEvent.BombaExplota) == 0; i++)
+                ev |= sim.Tick(Quieta, Dt);
+            return ev;
+        }
+
+        [Test]
+        public void TheBomb_HurtsWhoStaysNearIt_ForOneHeart()
+        {
+            var sim = BombaPorExplotar();
+            int golpes = sim.State.PeleaGolpesRecibidos;
+
+            var ev = Explotar(sim);
+
+            Assert.IsTrue((ev & RunEvent.BombaExplota) != 0);
+            Assert.IsTrue((ev & RunEvent.Lastimada) != 0, "la bomba lastima");
+            Assert.AreEqual(4, sim.State.Vida, "1 de vida");
+            Assert.AreEqual(golpes + 1, sim.State.PeleaGolpesRecibidos, "cuenta para la nota");
+        }
+
+        [Test]
+        public void TheBomb_DoesNotHurtWhoRunsAway()
+        {
+            var sim = BombaPorExplotar(s => s.State.PeatonX = s.State.BombaX + 8f);
+
+            var ev = Explotar(sim);
+
+            Assert.IsTrue((ev & RunEvent.BombaExplota) != 0);
+            Assert.IsTrue((ev & RunEvent.Lastimada) == 0);
+            Assert.AreEqual(5, sim.State.Vida);
+        }
+
+        [Test]
+        public void TheBomb_DoesNotHurtWhoIsTwoLanesAway()
+        {
+            var sim = BombaPorExplotar(s => s.State.PeatonY = 2f, s => s.State.PeatonY = 0f);   // la pone abajo y se va arriba
+            Assert.AreEqual(2f, sim.State.PeatonY - sim.State.BombaY, 0.01f);
+
+            Explotar(sim);
+
+            Assert.AreEqual(5, sim.State.Vida);
+        }
+
+        [Test]
+        public void TheBomb_RespectsTheBreathingRoomAfterAHit()
+        {
+            var sim = BombaPorExplotar(s => s.State.Invulnerable = 1f);
+
+            Explotar(sim);
+
+            Assert.AreEqual(5, sim.State.Vida, "acaba de recibir un golpe: no se acumula");
+        }
+
+        [Test]
+        public void TheBombExplosion_IsSeenWhereTheBombWas_NotWhereSheIsNow()
+        {
+            var sim = BombaPorExplotar(s =>
+            {
+                s.State.PeatonX = s.State.BombaX + 8f;
+                s.State.PeatonY = 2f;
+            }, s => s.State.PeatonY = 0f);
+            float bx = sim.State.BombaX, by = sim.State.BombaY;
+
+            Explotar(sim);
+
+            Zombineta.Enemies.HordeEvent explosion = default;
+            bool hay = false;
+            foreach (var e in sim.Horde.Events)
+                if (e.Kind == Zombineta.Enemies.HordeEventKind.Explosion) { explosion = e; hay = true; }
+            Assert.IsTrue(hay, "hay un evento de explosion");
+            Assert.AreEqual(bx, explosion.X, 0.001f);
+            Assert.AreEqual(by, explosion.LaneParaDibujo, 0.001f, "en el lugar exacto de la bomba");
+            Assert.AreEqual(Mathf.RoundToInt(by), explosion.Lane);
+        }
+
         static RunSimulation ConBarril(float distanciaDelBarril, out Zombineta.Level.LevelRuntime level)
         {
             var sim = SinNafta(Rapido());
@@ -2261,5 +2361,113 @@ namespace Zombineta.Tests
             Assert.AreEqual(RunPhase.Pelea, sim.State.Phase);
             Assert.AreEqual(0f, sim.State.GranadaVuelo);
         }
-}
+
+        // --- Balance de las oleadas ---------------------------------------------------
+
+        [Test]
+        public void TheLastTwoWaves_AreHarderThanTheFirstTwo_ByDefault()
+        {
+            var o = new GameConfig().oleadas;
+            Assert.AreEqual(4, o.Count);
+
+            // Las dos primeras, como siempre: los tiempos de ataque del GameConfig.
+            Assert.AreEqual(1f, o[0].ataque);
+            Assert.AreEqual(1f, o[1].ataque);
+
+            // Las dos ultimas aprietan, y la ultima mas que la anterior: atacan mas rapido.
+            Assert.Greater(o[2].ataque, 1.2f);
+            Assert.Greater(o[3].ataque, o[2].ataque);
+            Assert.Greater(o[2].zombies, o[1].zombies);
+            Assert.Greater(o[3].zombies, o[2].zombies);
+            Assert.Greater(o[3].velocidad, o[1].velocidad);
+        }
+
+        static int GolpesEnDiezSegundos(float ataque)
+        {
+            var c = ConOleadas();
+            c.oleadas = new List<OleadaPelea>
+            {
+                new OleadaPelea { zombies = 3, simultaneos = 3, pesos = new[] { 1f, 0f, 0f }, velocidad = 1f, ataque = ataque },
+            };
+            c.zombiePreparacion = 0.5f;
+            c.zombieEnfriamiento = 1f;
+            c.maxAtacantes = 1;
+            c.invulnerableTrasGolpe = 0f;
+            var sim = SinNafta(c);
+            for (int t = 0; t < 600; t++)
+            {
+                sim.State.Vida = 5;            // se mide cuantos golpes salen, no cuando cae
+                sim.State.Invulnerable = 0f;
+                sim.Tick(Quieta, Dt);
+            }
+            return sim.State.PeleaGolpesRecibidos;
+        }
+
+        [Test]
+        public void AFasterWave_HitsMoreOften()
+        {
+            int normal = GolpesEnDiezSegundos(1f);
+            int rapida = GolpesEnDiezSegundos(2f);
+
+            Assert.Greater(normal, 0, "alguien pega");
+            Assert.Greater(rapida, normal, "atacar mas rapido pega mas seguido");
+        }
+
+        [Test]
+        public void TheWindUp_FollowsTheCurrentWave_ForTheView()
+        {
+            var c = ConOleadas();
+            c.zombiePreparacion = 0.6f;
+            c.oleadas = new List<OleadaPelea>
+            {
+                new OleadaPelea { zombies = 3, simultaneos = 3, pesos = new[] { 1f, 0f, 0f }, ataque = 1f },
+                new OleadaPelea { zombies = 3, simultaneos = 3, pesos = new[] { 1f, 0f, 0f }, ataque = 2f },
+            };
+            var sim = SinNafta(c);
+
+            Assert.AreEqual(0.6f, sim.Pelea.PreparacionActual, 0.001f);
+            sim.State.Oleada = 1;
+            Assert.AreEqual(0.3f, sim.Pelea.PreparacionActual, 0.001f, "la segunda ataca al doble de velocidad");
+        }
+
+        // --- Botiquines ------------------------------------------------------------------
+
+        [Test]
+        public void ABotiquin_DroppedByAKillAtHerFeet_LandsAwayFromHer_SoItIsNotPickedUpBySkippingAComboFinisher()
+        {
+            var c = ConOleadas();
+            c.dropBotiquin = 1f;
+            c.botiquinSeparacion = 2.4f;
+            var sim = SinNafta(c);
+            var z = UnoSolo(sim, 1f);
+            sim.State.Mira = 1;
+            sim.State.Vida = 3;
+            z.Enfriamiento = 5f;
+
+            sim.Tick(new PlayerIntent { Fire = true }, Dt);
+
+            Assert.IsFalse(z.Alive);
+            Assert.AreEqual(1, sim.Pelea.Drops.Count);
+            Assert.GreaterOrEqual(Mathf.Abs(sim.Pelea.Drops[0].X - sim.State.PeatonX), 2.39f, "hay que ir a buscarlo");
+            Assert.AreEqual(3, sim.State.Vida, "matar no cura: solo lo cura levantar el botiquin");
+        }
+
+        [Test]
+        public void ABotiquin_ThatFallsFar_StaysWhereItFell()
+        {
+            var c = ConOleadas();
+            c.dropBotiquin = 1f;
+            c.botiquinSeparacion = 2.4f;
+            var sim = SinNafta(c);
+            var z = UnoSolo(sim, 5f);
+            sim.State.Mira = 1;
+            z.Enfriamiento = 5f;
+            float x = z.X;
+
+            sim.Tick(new PlayerIntent { Fire = true }, Dt);
+
+            Assert.AreEqual(1, sim.Pelea.Drops.Count);
+            Assert.AreEqual(x, sim.Pelea.Drops[0].X, 0.5f, "mas lejos que la separacion: donde cae");
+        }
+    }
 }

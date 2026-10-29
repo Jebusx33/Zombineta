@@ -52,7 +52,6 @@ namespace Zombineta.UI
                 return;
             }
 
-            // El marco primero: las balas se dibujan encima.
             marcoCopia = Instantiate(marco, marco.parent);
             marcoCopia.name = "Ammo (pelea)";
             marcoCopia.anchoredPosition = posicion;
@@ -69,6 +68,10 @@ namespace Zombineta.UI
                 copias[i] = copia;
                 copiasImagen[i] = copia.GetComponent<Image>();
             }
+
+            // Como en el HUD de la moto (donde el marco es el ultimo de la lista): el marco va ADELANTE y las balas
+            // por detras, asi no tapan el dibujo del marco.
+            marcoCopia.SetAsLastSibling();
 
             Mostrar(false, true);
             inicializado = true;

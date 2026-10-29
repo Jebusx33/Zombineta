@@ -27,6 +27,7 @@ namespace Zombineta.Audio
                 case GameScreen.MainMenu: return menu;
                 case GameScreen.Options: return opciones;
                 case GameScreen.CharacterSelect: return personaje;
+                case GameScreen.Map: return personaje;   // el mapa sigue con el tema de elegir personaje (si hay)
                 case GameScreen.Cinematic: return cinematica;
                 case GameScreen.LevelComplete: return nivelCompleto;
                 case GameScreen.GameOver: return gameOver;

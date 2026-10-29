@@ -31,10 +31,15 @@ namespace Zombineta.Luz
             set => perfil = value;
         }
 
+        [Tooltip("Cuanto puede cambiar la oscuridad por segundo. Los apagones del recorrido ya entran y salen de a poco; " +
+                 "esto suaviza el salto de prender la luz de golpe cuando se pelea en pleno apagon.")]
+        [Min(0.1f)] [SerializeField] float velocidadDeApagon = 2f;
+
         readonly List<GameObject> hijos = new List<GameObject>();
         readonly List<(Light2D luz, Color color, string capa)> luces = new List<(Light2D, Color, string)>();
         RunController run;
         float oscuridadAplicada;
+        float oscuridadSuave;
         LevelScene escena;
         bool escenaBuscada;
         PerfilDeLuz perfilConstruido;
@@ -63,7 +68,9 @@ namespace Zombineta.Luz
             if (perfil != perfilConstruido || Version(perfil) != versionConstruida)
                 Rebuild();
 
-            AplicarApagon(OscuridadActual());
+            // La luz sigue a la oscuridad de la simulacion sin saltos: al pelear en pleno apagon se prende en medio segundo.
+            oscuridadSuave = Mathf.MoveTowards(oscuridadSuave, OscuridadActual(), velocidadDeApagon * Time.unscaledDeltaTime);
+            AplicarApagon(oscuridadSuave);
         }
 
         /// <summary>La oscuridad del tramo donde esta la moto. Fuera de juego, o sin tramos, 0.</summary>
