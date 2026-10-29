@@ -14700,7 +14700,55 @@ MonoBehaviour:
     barrelEvery: 200
     frontZombieEvery: 150
     heavyFrontZombieChance: 0.3
-  tramos: []
+  tramos:
+  - nombre: Largada
+    hasta: 300
+    presionHorda: 1.1
+    oscuridad: 0
+    obstaculos: 1
+    recursos: 1
+    piezas: 1
+    nafta: 1
+  - nombre: Calle
+    hasta: 1100
+    presionHorda: 1.15
+    oscuridad: 0
+    obstaculos: 1
+    recursos: 1
+    piezas: 1
+    nafta: 1
+  - nombre: Apreton
+    hasta: 1900
+    presionHorda: 1.2
+    oscuridad: 0
+    obstaculos: 1
+    recursos: 1
+    piezas: 1
+    nafta: 1
+  - nombre: Cruce
+    hasta: 2700
+    presionHorda: 1.25
+    oscuridad: 0
+    obstaculos: 1
+    recursos: 1
+    piezas: 1
+    nafta: 1
+  - nombre: Persecucion
+    hasta: 3500
+    presionHorda: 1.3
+    oscuridad: 0
+    obstaculos: 1
+    recursos: 1
+    piezas: 1
+    nafta: 1
+  - nombre: Recta final
+    hasta: 4000
+    presionHorda: 1.3
+    oscuridad: 0
+    obstaculos: 1
+    recursos: 1
+    piezas: 1
+    nafta: 1
   peleaSinNafta: 1
   combustibleInicial: 0
   bidonesDesdePelea: 0

@@ -73,3 +73,7 @@ MonoBehaviour:
     sonido: {fileID: 11400000, guid: 4ce7f1ede350a594d81312cd89a2f64b, type: 2}
   - clave: 29
     sonido: {fileID: 11400000, guid: 6c57b990f3057614b8dccc6bac316758, type: 2}
+  - clave: 30
+    sonido: {fileID: 11400000, guid: f53db49303784f65be2b8c091b4b27b0, type: 2}
+  - clave: 31
+    sonido: {fileID: 11400000, guid: 9c9a387fdbc24a7d8e55e2ea8c0ebac6, type: 2}

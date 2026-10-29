@@ -35,6 +35,7 @@ namespace Zombineta.Audio
 
         int lastHordeEpoch = -1;
         float prevFuel, prevBattery, prevAmmo;
+        int prevGranadas, prevBombas;
         GameFlow flujo;
 
         void Awake()
@@ -83,6 +84,8 @@ namespace Zombineta.Audio
             prevFuel = s.Fuel;
             prevBattery = s.Battery;
             prevAmmo = s.Ammo;
+            prevGranadas = s.Granadas;
+            prevBombas = s.Bombas;
         }
 
         void LateUpdate()
@@ -97,6 +100,8 @@ namespace Zombineta.Audio
             prevFuel = s.Fuel;
             prevBattery = s.Battery;
             prevAmmo = s.Ammo;
+            prevGranadas = s.Granadas;
+            prevBombas = s.Bombas;
         }
 
         void OnStepped(RunEvent events)
@@ -136,6 +141,8 @@ namespace Zombineta.Audio
             if (state.Fuel > prevFuel + EpsilonRecurso) audio.Play(SonidoClave.PickupNafta);
             if (state.Battery > prevBattery + EpsilonRecurso) audio.Play(SonidoClave.PickupBateria);
             if (state.Ammo > prevAmmo + EpsilonRecurso) audio.Play(SonidoClave.PickupMunicion);
+            if (state.Granadas > prevGranadas) audio.Play(SonidoClave.PickupGranada);
+            if (state.Bombas > prevBombas) audio.Play(SonidoClave.PickupBomba);
         }
 
         void EscanearZombiesAdelante()

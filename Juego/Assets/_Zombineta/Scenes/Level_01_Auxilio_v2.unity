@@ -7219,6 +7219,7 @@ MonoBehaviour:
   combustibleInicial: 45
   bidonesDesdePelea: 1
   reintentosPelea: 1
+  peleaDidactica: 1
   flotarRecolectables: 1
   flotarAltura: 0.1
   flotarVelocidad: 3

@@ -87,7 +87,7 @@ namespace Zombineta.Juego.Screens
             string granada = Resaltar(Accion("GranadaPie", scheme), colorArsenal);
             string bomba = Resaltar(Accion("Bomba", scheme), colorArsenal);
             return "Mover: " + Accion("Mover", scheme) + "   ·   Atacar: " + golpe +
-                   " (3 seguidos = remate)   ·   Disparo: " + disparo +
+                   "   ·   Disparo: " + disparo +
                    "   ·   Granada: " + granada + "   ·   Bomba: " + bomba;
         }
 

@@ -12,5 +12,7 @@ namespace Zombineta.Audio
         Golpe1, Golpe2, Remate, GolpeAlAire, Lastimada,
         // Motor en capas: el ralenti (loop, moto quieta) y el cambio (al entrar en turbo).
         MotorRalenti, MotorCambio,
+        // Recoger una granada o una bomba temporizadora (el arsenal que se lleva a la pelea).
+        PickupGranada, PickupBomba,
     }
 }

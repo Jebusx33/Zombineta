@@ -63,6 +63,10 @@ namespace Zombineta.Auxilio
         int lado = 1;
         // Zombies de la oleada en curso que todavia no entraron a la arena.
         int pendientes;
+        // La oleada didactica en curso ya consiguio lo que pedia (el arma se uso y se llevo a varios).
+        bool ayudaUsada;
+        // Cuantos zombies tiene que llevarse el arma de una oleada didactica para que cuente como usada.
+        const int MuertosParaAprender = 4;
 
         /// <summary>Los barriles del recorrido: a pie explotan los que quedaron en la arena. Lo setea RunSimulation.</summary>
         public IBarrelField Barrels { get; set; }
@@ -117,7 +121,8 @@ namespace Zombineta.Auxilio
             // En la primera pelea se baja con al menos una granada y una bomba: ahi se aprende a usarlas.
             if (s.Peleas == 1)
             {
-                s.Granadas = Mathf.Clamp(Mathf.Max(s.Granadas, c.granadasPrimeraPelea), 0, c.granadaMax);
+                int granadas = Mathf.Max(c.granadasPrimeraPelea, c.peleaDidactica ? c.granadasPeleaDidactica : 0);
+                s.Granadas = Mathf.Clamp(Mathf.Max(s.Granadas, granadas), 0, c.granadaMax);
                 s.Bombas = Mathf.Clamp(Mathf.Max(s.Bombas, c.bombasPrimeraPelea), 0, c.bombaMax);
             }
             s.GranadaVuelo = 0f;
@@ -257,7 +262,13 @@ namespace Zombineta.Auxilio
 
         // --- Oleadas -----------------------------------------------------------
 
-        bool HayOleadas => c.oleadas != null && c.oleadas.Count > 0;
+        // Las oleadas de esta pelea: en la primera pelea de un nivel con 'peleaDidactica' son las didacticas.
+        System.Collections.Generic.List<OleadaPelea> Oleadas =>
+            c.peleaDidactica && s.Peleas == 1 && c.oleadasDidacticas != null && c.oleadasDidacticas.Count > 0
+                ? c.oleadasDidacticas
+                : c.oleadas;
+
+        bool HayOleadas => Oleadas != null && Oleadas.Count > 0;
 
         /// <summary>Que tan rapido atacan los zombies en la oleada en curso (1 = los tiempos del GameConfig).</summary>
         float RitmoDeAtaque => OleadaActual != null ? Mathf.Max(0.1f, OleadaActual.ataque) : 1f;
@@ -265,18 +276,18 @@ namespace Zombineta.Auxilio
         /// <summary>Segundos que tarda un zombie en preparar el golpe en la oleada en curso (la vista reparte sus cuadros en ese lapso).</summary>
         public float PreparacionActual => c.zombiePreparacion / RitmoDeAtaque;
 
-        OleadaPelea OleadaActual => HayOleadas ? c.oleadas[Mathf.Clamp(s.Oleada, 0, c.oleadas.Count - 1)] : null;
+        OleadaPelea OleadaActual => HayOleadas ? Oleadas[Mathf.Clamp(s.Oleada, 0, Oleadas.Count - 1)] : null;
 
-        int TotalOleadas => HayOleadas ? c.oleadas.Count : 1;
+        int TotalOleadas => HayOleadas ? Oleadas.Count : 1;
 
         /// <summary>Zombies que trae esa oleada en total. Sin oleadas configuradas, una sola con 'zombiesEnArena'.</summary>
         int ZombiesDe(int oleada) =>
-            HayOleadas ? c.oleadas[Mathf.Clamp(oleada, 0, c.oleadas.Count - 1)].zombies : c.zombiesEnArena;
+            HayOleadas ? Oleadas[Mathf.Clamp(oleada, 0, Oleadas.Count - 1)].zombies : c.zombiesEnArena;
 
         /// <summary>Cuantos pelean a la vez en esa oleada (nunca mas de los que trae).</summary>
         int Simultaneos(int oleada)
         {
-            int n = HayOleadas ? c.oleadas[Mathf.Clamp(oleada, 0, c.oleadas.Count - 1)].simultaneos : 0;
+            int n = HayOleadas ? Oleadas[Mathf.Clamp(oleada, 0, Oleadas.Count - 1)].simultaneos : 0;
             if (n <= 0)
                 n = c.maxSimultaneos;
             return Mathf.Max(1, Mathf.Min(n, ZombiesDe(oleada)));
@@ -291,6 +302,50 @@ namespace Zombineta.Auxilio
             pendientes = s.OleadaTotal;
             s.ZombiesRestantes = s.OleadaTotal;
             s.OleadaRespiro = 0f;
+
+            // Una oleada didactica pide un arma: se asegura que se tenga (por si se gasto en las anteriores).
+            ayudaUsada = false;
+            switch (OleadaActual != null ? OleadaActual.ayuda : AyudaDeOleada.Ninguna)
+            {
+                case AyudaDeOleada.Granada:
+                    s.Granadas = Mathf.Clamp(Mathf.Max(s.Granadas, OleadaActual.cantidadAsegurada), 0, c.granadaMax);
+                    break;
+                case AyudaDeOleada.Bomba:
+                    s.Bombas = Mathf.Clamp(Mathf.Max(s.Bombas, OleadaActual.cantidadAsegurada), 0, c.bombaMax);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Mientras una oleada didactica este en curso y el arma que pide no se haya usado, el HUD la hace parpadear.
+        /// </summary>
+        void ActualizarAyuda()
+        {
+            var o = OleadaActual;
+            bool enCurso = o != null && o.ayuda != AyudaDeOleada.Ninguna && !ayudaUsada &&
+                           !s.BidonEnElPiso && s.OleadaRespiro <= 0f && s.ZombiesRestantes > 0 &&
+                           // Ya la tiro (esta en el aire o con la mecha prendida): deja de parpadear.
+                           (o.ayuda == AyudaDeOleada.Granada ? s.GranadaVuelo <= 0f : s.BombaMecha <= 0f);
+            s.Ayuda = enCurso ? o.ayuda : AyudaDeOleada.Ninguna;
+        }
+
+        /// <summary>
+        /// En una oleada didactica, un arma usada que casi no se llevo a nadie (se tiro de mas lejos, o antes de que
+        /// llegaran) se devuelve y la ayuda vuelve a parpadear: esta oleada es para aprender, no para fallar una vez.
+        /// </summary>
+        void DevolverSiSeDesperdicio(AyudaDeOleada arma, int muertos)
+        {
+            if (OleadaActual == null || OleadaActual.ayuda != arma)
+                return;
+            if (muertos >= MuertosParaAprender)
+            {
+                ayudaUsada = true;
+                return;
+            }
+            if (arma == AyudaDeOleada.Granada)
+                s.Granadas = Mathf.Min(c.granadaMax, s.Granadas + 1);
+            else
+                s.Bombas = Mathf.Min(c.bombaMax, s.Bombas + 1);
         }
 
         int VivosEnArena()
@@ -342,8 +397,19 @@ namespace Zombineta.Auxilio
                 if (i < 0)
                     break;
                 activo[i] = true;
-                lado = -lado;
-                float x = lado < 0
+                // Un lado y el otro, salvo que la oleada pida entrar toda por el mismo.
+                var entrada = OleadaActual != null ? OleadaActual.entrada : EntradaDeOleada.Alternada;
+                int porDonde;
+                if (entrada == EntradaDeOleada.Izquierda)
+                    porDonde = -1;
+                else if (entrada == EntradaDeOleada.Derecha)
+                    porDonde = 1;
+                else
+                {
+                    lado = -lado;
+                    porDonde = lado;
+                }
+                float x = porDonde < 0
                     ? centro - c.arenaMedioAncho - 2f - (float)rng.NextDouble() * 3f
                     : centro + c.arenaMedioAncho + 2f + (float)rng.NextDouble() * 3f;
                 Preparar(i, x, rng.Next(RunSimulation.LaneCount), nuevo: true);
@@ -435,6 +501,7 @@ namespace Zombineta.Auxilio
             }
             s.PeleaBajas += muertos;
             s.UltimaExplosionMuertos = muertos;
+            DevolverSiSeDesperdicio(AyudaDeOleada.Granada, muertos);
             h.EventoExplosion(s.GranadaX, s.Lane);
             return RunEvent.GranadaExplota | RunEvent.Explosion;
         }
@@ -488,6 +555,7 @@ namespace Zombineta.Auxilio
             }
             s.PeleaBajas += muertos;
             s.UltimaExplosionMuertos = muertos;
+            DevolverSiSeDesperdicio(AyudaDeOleada.Bomba, muertos);
             // La explosion se ve donde quedo la bomba (no en el carril de la protagonista, que ya se pudo haber movido).
             int carrilBomba = Mathf.Clamp(Mathf.RoundToInt(s.BombaY), 0, RunSimulation.LaneCount - 1);
             h.EventoExplosion(s.BombaX, carrilBomba, s.BombaY);
@@ -577,7 +645,11 @@ namespace Zombineta.Auxilio
             ev |= MoverZombies(dt);
             ev |= AtenderDrops(dt);
             if (s.Phase != RunPhase.Pelea)
+            {
+                s.Ayuda = AyudaDeOleada.Ninguna;
                 return ev; // la derribaron
+            }
+            ActualizarAyuda();
             Separar();
 
             return ev;
@@ -1164,7 +1236,7 @@ namespace Zombineta.Auxilio
         {
             s.Vida--;
             s.PeleaGolpesRecibidos++;
-            s.Invulnerable = c.invulnerableTrasGolpe;
+            s.Invulnerable = c.invulnerableTrasGolpe * (OleadaActual != null ? OleadaActual.invulnerable : 1f);
             // El golpe la corre un poco, alejandola del que pego.
             s.PeatonX = Mathf.Clamp(s.PeatonX + desde * 0.8f, centro - c.arenaMedioAncho, centro + c.arenaMedioAncho);
             if (s.Vida > 0)
@@ -1328,6 +1400,7 @@ namespace Zombineta.Auxilio
             s.BombaMecha = 0f;
             s.GranadaVuelo = 0f;
             s.OleadaRespiro = 0f;
+            s.Ayuda = AyudaDeOleada.Ninguna;
             s.Invulnerable = 0f;
             s.Phase = RunPhase.Running;
             s.PlayerX = s.PeatonX;

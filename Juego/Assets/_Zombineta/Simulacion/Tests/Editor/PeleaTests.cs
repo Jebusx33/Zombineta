@@ -2380,6 +2380,40 @@ namespace Zombineta.Tests
             Assert.Greater(o[2].zombies, o[1].zombies);
             Assert.Greater(o[3].zombies, o[2].zombies);
             Assert.Greater(o[3].velocidad, o[1].velocidad);
+
+            // Y dejan menos respiro entre golpe y golpe; las dos primeras, el de siempre.
+            Assert.AreEqual(1f, o[0].invulnerable);
+            Assert.AreEqual(1f, o[1].invulnerable);
+            Assert.Less(o[2].invulnerable, 1f);
+            Assert.Less(o[3].invulnerable, o[2].invulnerable);
+            Assert.GreaterOrEqual(o[3].zombies, o[1].zombies * 2, "la ultima trae el doble de zombies que la segunda, o mas");
+        }
+
+        [Test]
+        public void AHitOnALaterWave_LeavesLessInvulnerability()
+        {
+            var c = ConOleadas();
+            c.invulnerableTrasGolpe = 1f;
+            c.oleadas = new List<OleadaPelea>
+            {
+                new OleadaPelea { zombies = 3, simultaneos = 3, pesos = new[] { 1f, 0f, 0f }, invulnerable = 1f },
+                new OleadaPelea { zombies = 3, simultaneos = 3, pesos = new[] { 1f, 0f, 0f }, invulnerable = 0.5f },
+            };
+            var sim = SinNafta(c);
+            var z = UnoSolo(sim, 0.5f);
+            z.Enfriamiento = 0f;
+
+            for (int t = 0; t < 300 && sim.State.Vida == c.vidaPelea; t++)
+                sim.Tick(Quieta, Dt);
+            Assert.AreEqual(1f, sim.State.Invulnerable, 0.05f, "la primera oleada, la invulnerabilidad de siempre");
+
+            sim = SinNafta(c);
+            sim.State.Oleada = 1;
+            z = UnoSolo(sim, 0.5f);
+            z.Enfriamiento = 0f;
+            for (int t = 0; t < 300 && sim.State.Vida == c.vidaPelea; t++)
+                sim.Tick(Quieta, Dt);
+            Assert.AreEqual(0.5f, sim.State.Invulnerable, 0.05f, "la segunda, la mitad");
         }
 
         static int GolpesEnDiezSegundos(float ataque)
@@ -2468,6 +2502,212 @@ namespace Zombineta.Tests
 
             Assert.AreEqual(1, sim.Pelea.Drops.Count);
             Assert.AreEqual(x, sim.Pelea.Drops[0].X, 0.5f, "mas lejos que la separacion: donde cae");
+        }
+
+        // --- La pelea didactica del primer nivel ---------------------------------------------
+
+        /// <summary>Tres oleadas: una comun, una manada lenta por la izquierda (granada) y una de los dos lados (bomba).</summary>
+        static GameConfig Didactica()
+        {
+            var c = ConOleadas();
+            c.hordeCount = 24;
+            c.vidaPelea = 99;
+            c.peleaDidactica = true;
+            c.oleadasDidacticas = new List<OleadaPelea>
+            {
+                new OleadaPelea { zombies = 1, simultaneos = 1, pesos = new[] { 1f, 0f, 0f } },
+                new OleadaPelea { zombies = 20, simultaneos = 20, pesos = new[] { 1f, 0f, 0f }, velocidad = 0.55f,
+                                  entrada = EntradaDeOleada.Izquierda, ayuda = AyudaDeOleada.Granada, cantidadAsegurada = 2 },
+                new OleadaPelea { zombies = 24, simultaneos = 24, pesos = new[] { 1f, 0f, 0f }, velocidad = 0.6f,
+                                  ayuda = AyudaDeOleada.Bomba },
+            };
+            return c;
+        }
+
+        /// <summary>Vence la oleada en curso y espera el respiro: entra la que sigue.</summary>
+        static void PasarDeOleada(RunSimulation sim)
+        {
+            int antes = sim.State.Oleada;
+            CaerTodos(sim);
+            for (int t = 0; t < 300 && sim.State.Oleada == antes; t++)
+                sim.Tick(Quieta, Dt);
+        }
+
+        static void ContarLados(RunSimulation sim, out int izquierda, out int derecha)
+        {
+            izquierda = derecha = 0;
+            var us = sim.Horde.Units;
+            for (int i = 0; i < us.Length; i++)
+            {
+                if (!sim.Pelea.Activo(i) || !us[i].Alive)
+                    continue;
+                if (us[i].X < sim.Pelea.Centro)
+                    izquierda++;
+                else
+                    derecha++;
+            }
+        }
+
+        [Test]
+        public void TheDidacticFight_ByDefault_ForcesTheGrenadeOnTheThirdWaveAndTheBombOnTheFourth()
+        {
+            var normal = new GameConfig();
+            var d = normal.oleadasDidacticas;
+            Assert.IsFalse(normal.peleaDidactica, "solo el primer nivel la prende");
+            Assert.AreEqual(4, d.Count);
+            foreach (var o in normal.oleadas)
+                Assert.AreEqual(AyudaDeOleada.Ninguna, o.ayuda, "las oleadas comunes no piden nada");
+
+            // Las dos primeras, las de siempre.
+            for (int i = 0; i < 2; i++)
+            {
+                Assert.AreEqual(normal.oleadas[i].zombies, d[i].zombies);
+                Assert.AreEqual(normal.oleadas[i].velocidad, d[i].velocidad);
+                Assert.AreEqual(AyudaDeOleada.Ninguna, d[i].ayuda);
+                Assert.AreEqual(EntradaDeOleada.Alternada, d[i].entrada);
+            }
+
+            // La tercera: muchos comunes lentos, todos por la izquierda: la granada.
+            Assert.AreEqual(AyudaDeOleada.Granada, d[2].ayuda);
+            Assert.AreEqual(EntradaDeOleada.Izquierda, d[2].entrada);
+            Assert.AreEqual(2, d[2].cantidadAsegurada, "dos granadas para llevarse a casi toda la manada");
+            Assert.AreEqual(2, normal.granadasPeleaDidactica, "y se baja con dos");
+            Assert.GreaterOrEqual(d[2].zombies, 15);
+            Assert.Less(d[2].velocidad, 1f, "lentos, para que de tiempo a pensar");
+            Assert.AreEqual(0f, d[2].pesos[1]);
+            Assert.AreEqual(0f, d[2].pesos[2]);
+
+            // La cuarta: todavia mas, de los dos lados: la bomba. No pueden ser mas que la horda.
+            Assert.AreEqual(AyudaDeOleada.Bomba, d[3].ayuda);
+            Assert.AreEqual(EntradaDeOleada.Alternada, d[3].entrada);
+            Assert.GreaterOrEqual(d[3].zombies, d[2].zombies);
+            Assert.LessOrEqual(d[3].zombies, normal.hordeCount);
+        }
+
+        [Test]
+        public void TheDidacticWaves_OnlyApplyWhenTheLevelTurnsThemOn()
+        {
+            var c = Didactica();
+            c.peleaDidactica = false;
+            var sim = SinNafta(c);
+            Assert.AreEqual(3, sim.State.OleadaTotal, "la primera oleada de siempre (ConOleadas), no la didactica");
+
+            sim = SinNafta(Didactica());
+            Assert.AreEqual(1, sim.State.OleadaTotal, "la primera oleada didactica");
+        }
+
+        [Test]
+        public void TheDidacticFight_StartsWithTwoGrenades_AndTheCommonOneWithTheUsualAmount()
+        {
+            var sim = SinNafta(Didactica());
+            Assert.AreEqual(2, sim.State.Granadas);
+            Assert.AreEqual(1, sim.State.Bombas);
+
+            var c = Didactica();
+            c.peleaDidactica = false;
+            sim = SinNafta(c);
+            Assert.AreEqual(c.granadasPrimeraPelea, sim.State.Granadas, "sin la didactica, lo de siempre");
+        }
+
+        [Test]
+        public void TheDidacticWaves_OnlyApplyToTheFirstFightOfTheLevel()
+        {
+            var sim = SinNafta(Didactica());
+            TerminarPelea(sim);
+            Assert.AreEqual(RunPhase.Running, sim.State.Phase);
+            Assert.AreEqual(AyudaDeOleada.Ninguna, sim.State.Ayuda);
+
+            sim.State.Fuel = 0f;
+            for (int t = 0; t < 10 && sim.State.Phase != RunPhase.Pelea; t++)
+                sim.Tick(Quieta, Dt);
+
+            Assert.AreEqual(2, sim.State.Peleas);
+            Assert.AreEqual(3, sim.State.OleadaTotal, "la segunda pelea ya es la comun");
+        }
+
+        [Test]
+        public void TheGrenadeWave_BringsAHerdFromTheLeft_AssuresOneGrenade_AndAsksForIt()
+        {
+            var sim = SinNafta(Didactica());
+            Assert.AreEqual(AyudaDeOleada.Ninguna, sim.State.Ayuda, "la primera oleada es comun");
+
+            sim.State.Granadas = 0;   // la gasto en las anteriores
+            PasarDeOleada(sim);
+
+            Assert.AreEqual(1, sim.State.Oleada);
+            Assert.AreEqual(20, sim.State.OleadaTotal);
+            Assert.AreEqual(2, sim.State.Granadas, "se aseguran dos granadas");
+            Assert.AreEqual(AyudaDeOleada.Granada, sim.State.Ayuda);
+            ContarLados(sim, out int izquierda, out int derecha);
+            Assert.AreEqual(20, izquierda, "todos entran por la izquierda");
+            Assert.AreEqual(0, derecha);
+        }
+
+        [Test]
+        public void TheGrenadeWave_StopsAsking_OnceTheGrenadeTakesAHerdWithIt()
+        {
+            var sim = SinNafta(Didactica());
+            PasarDeOleada(sim);
+            sim.State.Mira = -1;
+            var z = Poner(sim, (-3f, 1), (-4f, 0), (-5f, 1), (-6f, 2), (-4.5f, 1));
+            foreach (var u in z) u.Enfriamiento = 99f;
+
+            sim.Tick(LanzarGranadaAPie, Dt);
+            Assert.AreEqual(AyudaDeOleada.Ninguna, sim.State.Ayuda, "ya la tiro: deja de parpadear");
+            for (int t = 0; t < 120; t++)
+                sim.Tick(Quieta, Dt);
+
+            Assert.GreaterOrEqual(sim.State.UltimaExplosionMuertos, 4);
+            Assert.AreEqual(1, sim.State.Granadas, "se uso bien: no se devuelve (queda la otra)");
+            Assert.AreEqual(AyudaDeOleada.Ninguna, sim.State.Ayuda, "ya la uso: no vuelve a pedirla");
+        }
+
+        [Test]
+        public void TheGrenadeWave_GivesTheGrenadeBack_IfItWasThrownBeforeTheyArrived()
+        {
+            var sim = SinNafta(Didactica());
+            PasarDeOleada(sim);
+            sim.State.Mira = -1;
+
+            sim.Tick(LanzarGranadaAPie, Dt);
+            Assert.AreEqual(1, sim.State.Granadas, "tenia 2: queda 1 mientras vuela");
+            for (int t = 0; t < 120; t++)
+                sim.Tick(Quieta, Dt);
+
+            Assert.Less(sim.State.UltimaExplosionMuertos, 4, "los zombies todavia estaban lejos");
+            Assert.AreEqual(2, sim.State.Granadas, "la oleada es para aprender: se la devuelve");
+            Assert.AreEqual(AyudaDeOleada.Granada, sim.State.Ayuda, "y vuelve a parpadear");
+        }
+
+        [Test]
+        public void TheBombWave_SurroundsHerFromBothSides_AssuresOneBomb_AndTheBombTakesThemAll()
+        {
+            var c = Didactica();
+            c.bombaMecha = 1f;
+            var sim = SinNafta(c);
+            PasarDeOleada(sim);
+            Assert.AreEqual(AyudaDeOleada.Granada, sim.State.Ayuda);
+            sim.State.Bombas = 0;
+            PasarDeOleada(sim);
+
+            Assert.AreEqual(2, sim.State.Oleada);
+            Assert.AreEqual(1, sim.State.Bombas, "se asegura una bomba");
+            Assert.AreEqual(AyudaDeOleada.Bomba, sim.State.Ayuda);
+            ContarLados(sim, out int izquierda, out int derecha);
+            Assert.GreaterOrEqual(izquierda, 10, "de los dos lados");
+            Assert.GreaterOrEqual(derecha, 10);
+            Assert.AreEqual(24, izquierda + derecha);
+
+            var ev = sim.Tick(new PlayerIntent { Bomba = true }, Dt);
+            Assert.IsTrue((ev & RunEvent.BombaPuesta) != 0);
+            Assert.AreEqual(AyudaDeOleada.Ninguna, sim.State.Ayuda, "ya la puso: deja de parpadear");
+            ev = RunEvent.None;
+            for (int t = 0; t < 90; t++)
+                ev |= sim.Tick(Quieta, Dt);
+
+            Assert.IsTrue((ev & RunEvent.BombaExplota) != 0);
+            Assert.AreEqual(24, sim.State.UltimaExplosionMuertos, "la bomba se lleva a todos");
+            Assert.AreEqual(0, sim.State.Bombas, "se uso bien: no se devuelve");
         }
     }
 }

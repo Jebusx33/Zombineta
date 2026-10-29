@@ -1584,7 +1584,8 @@ beat'em up, granadas, bombas temporizadoras, peleas por oleadas y, al final, **s
 niveles se resuelven peleando cada vez que se acaba la nafta** (el nivel 2 ya tiene la pelea, y 1/4 menos de bidones: 29 en vez de 39). **28/10:** impulso de velocidad al tomar una
 rampa (gratis) con aviso en el piso, la luz vuelve si se pelea en pleno apagón, la bomba lastima de cerca y su explosión
 se ve donde quedó, y los coches de las rampas ya no se encimen con ellas (Fase 8 del plan de controles). Después: **mapa de la ciudad** entre niveles (escena `Mapa`, pantalla `GameScreen.Map`)
-y oleadas 3 y 4 más difíciles (Fase 9). Todo lo hecho y lo que falta está en la
+y oleadas 3 y 4 más difíciles (Fase 9). **29/10:** sonidos de recoger granada y bomba, resplandor de color sobre todo lo que se agarra en la moto (se ve en los apagones),
+oleadas 3 y 4 todavía más duras (más zombies y menos invulnerabilidad tras un golpe) y el nivel 2 con tramos de presión de horda creciente (Fase 10). Después: la pelea del nivel 1 es **didáctica** (oleada 3 = manada lenta por la izquierda para la granada, oleada 4 = de los dos lados para la bomba, con el ícono parpadeando; se quitaron la barra de progreso, el aviso de controles y el "3 seguidos = remate") (Fase 11). Todo lo hecho y lo que falta está en la
 sección 0, "Pelea a pie, playtests y arsenal (octubre)", y en `docs/superpowers/plans/2026-10-21-controles-granadas-oleadas.md`.
 Las ramas del equipo se actualizaron todas al mismo commit.
 

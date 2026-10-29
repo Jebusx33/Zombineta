@@ -180,6 +180,7 @@ namespace Zombineta.Core
             State.VelocidadAlFrenar = 0f;
             State.ArranqueRestante = 0f;
             State.Oleada = 0;
+            State.Ayuda = AyudaDeOleada.Ninguna;
             State.ReintentosPelea = 0;
             State.VidaMax = 0;
             State.PeleaBajas = 0;

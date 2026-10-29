@@ -33,8 +33,8 @@ verificado fuera de Unity; falta verlo en Play** y regenerar los niveles para qu
     diferencia de la bomba que se los lleva a todos. No se gasta si no hay a quién llevarse.
   - Se llevan **hasta 3**, y es el mismo contador en los dos modos.
 - **La primera pelea arranca con 1 granada y 1 bomba** (si no traía, se completan: `granadasPrimeraPelea` /
-  `bombasPrimeraPelea`) para que se aprendan ahí: sale un aviso "¡USÁ LA GRANADA (C) Y LA BOMBA (ESPACIO)!" y la
-  ayuda de abajo resalta esas dos teclas en amarillo. A pie la granada es **C** (la Z es el disparo).
+  `bombasPrimeraPelea`) para que se aprendan ahí: la
+  ayuda de abajo resalta esas dos teclas en amarillo (el aviso "¡USÁ LA GRANADA…!" se quitó en la Fase 11: ahora lo enseñan las oleadas didácticas). A pie la granada es **C** (la Z es el disparo).
 - **Bomba temporizadora** (recolectable): se usa **a pie**. Se pone donde está parada, tiene una **mecha
   de 2 s** (`bombaMecha`) y al explotar **elimina a todo zombie que esté peleando** (también los que saltan).
   **No frena la oleada**: los que todavía no entraron siguen entrando. Se llevan hasta 2.
@@ -209,6 +209,8 @@ entre ganar un nivel y la cinematica del siguiente:
 | 3 | **7** (5) | 30/35/35 | **1,1** | **1,6x** |
 | 4 | **9** (6) | 20/40/40 | **1,2** | **2,2x** |
 
+(Tabla de la Fase 9; la Fase 10 la volvió a subir. Los valores vigentes están en la Fase 10.)
+
 `OleadaPelea.ataque` divide el tiempo que tarda un zombie en preparar el golpe (`zombiePreparacion`) y en repetirlo
 (`zombieEnfriamiento`): con 2,2x tardan 0,23 s en preparar y 0,45 s en repetir (antes, 0,5 s y 1 s). La vista sigue el
 lapso de la oleada en curso (`PeleaSimulation.PreparacionActual`) para que la animación de ataque no se corte.
@@ -218,3 +220,69 @@ Se ajusta en `GameConfig` → `oleadas`, sin tocar código.
 usan los mismos dibujos que los del recorrido (`Art/Items/item_bullets.png` e `item_gas.png`), asignados en la
 `VistaDelAuxilio` de `Level_01_Auxilio_v2` y `Level_02`. Solo el botiquín sigue con el dibujo de prueba (cruz verde): todavía
 no hay arte de botiquín. Los dibujos de prueba y `Resources/Arsenal/Bidon` quedan de respaldo si el campo está vacío.
+
+## Fase 10 — Sonidos de recogida, brillo de recursos y más dificultad (29/10)
+
+**Sonidos de recoger granada y bomba.** `SonidoClave.PickupGranada` y `PickupBomba` (claves 30 y 31 de `SonidosGlobales`):
+`SfxDirector` los dispara cuando sube `Granadas` o `Bombas` en un paso con `PickedUp`. Los clips son de prueba
+(`sfx_pickup_grenade_01/02.wav`, un tintineo metálico, y `sfx_pickup_bomb_01/02.wav`, dos pitidos electrónicos), con sus assets
+`Settings/Audio/Sonidos/PickupGranada` y `PickupBomba`; `PlaceholderAudioGenerator` también los genera. Para reemplazarlos
+alcanza con cambiar los clips de esos dos assets.
+
+**Brillo de lo que se agarra en la moto.** Nuevo `ResplandorDeRecursos` (se crea solo al dar Play, como `AvisoDeRampa`): una
+luz puntual Multiply (como las de los prefabs; la aditiva lavaba el sprite) del color de cada recurso (nafta naranja, batería celeste, balas amarillas, granada verde, bomba roja)
+sobre los 8 más cercanos por delante, que crece y se hace más fuerte con la oscuridad del tramo y late despacio. Antes dependían
+de la luz de adorno de los prefabs, que compite por un presupuesto de 12 luces y en calidad Baja se apaga; la granada y la
+bomba ni siquiera tenían luz. En calidad Baja quedan 3 luces. Se ajusta en el componente (radio, intensidad, distancia).
+
+**Balance de las oleadas.** Atacar más rápido casi no cambiaba nada: el tope real de golpes era la invulnerabilidad de 1 s
+tras recibir uno. Nueva palanca `OleadaPelea.invulnerable` (multiplica `invulnerableTrasGolpe`) y una tabla más dura:
+
+| Oleada | Zombies (a la vez) | Tipos (común/corredor/pesado) | Velocidad | Ataque | Invulnerable |
+|---|---|---|---|---|---|
+| 1 | 3 (3) | 100/0/0 | 0,85 | 1 | 1 |
+| 2 | 5 (4) | 70/30/0 | 1 | 1 | 1 |
+| 3 | **9** (6) | 25/35/40 | **1,2** | **2x** | **0,8** |
+| 4 | **12** (7) | 15/40/45 | **1,35** | **3x** | **0,6** |
+
+**Nivel 2 más duro.** `Level_02` tenía los tramos vacíos (presión de horda 1 todo el recorrido). Ahora tiene 6 tramos con
+`presionHorda` creciente: 1,1 / 1,15 / 1,2 / 1,25 / 1,3 / 1,3 (la horda corre un 10 a 30 % más rápido que en el nivel 1; el
+faro la sigue frenando a la mitad). Densidades en 1: el recorrido ya colocado no cambia. Para endurecerlo o aflojarlo se edita
+`presionHorda` de cada tramo en el `LevelScene`; `gapTrasPelea` (45 m) es global y también aprieta si se baja.
+
+**Verificado:** 350 tests en verde fuera de Unity y el ensamblado del juego compila. **Sin probar en Unity:** cómo suenan los
+clips nuevos, cuánto se ve el brillo en los apagones y si el nivel 2 quedó justo (tramos con presión > 1,3 son casi inalcanzables
+sin turbo).
+
+## Fase 11 - La pelea del primer nivel enseña el arsenal
+
+**Pedido:** limpiar el HUD de la pelea y, solo en el primer beat'em up, forzar a usar la granada (oleada 3) y la C4 (oleada 4).
+
+**HUD de la pelea.** Se quitó la barra de progreso de la oleada (no mostraba nada útil), el aviso "¡USÁ LA GRANADA (C) Y LA BOMBA
+(Espacio)!" y la aclaración "(3 seguidos = remate)" de la ayuda de abajo. Los corazones y el combo subieron para ocupar el hueco.
+El cartel "¡ÚLTIMA OLEADA!" ahora sale de `State.Oleadas` (con oleadas distintas por pelea, `Config.oleadas.Count` ya no sirve).
+
+**Oleadas didácticas.** `GameConfig.peleaDidactica` (lo pone `LevelScene.peleaDidactica`, prendido solo en `Level_01_Auxilio_v2`) hace que
+la **primera pelea del nivel** use `oleadasDidacticas` en vez de `oleadas`. Las peleas siguientes y el nivel 2 siguen con las comunes.
+`OleadaPelea` tiene dos campos nuevos: `entrada` (Alternada / Izquierda / Derecha) y `ayuda` (Ninguna / Granada / Bomba).
+
+| Oleada | Zombies (a la vez) | Tipos | Velocidad | Entrada | Ayuda |
+|---|---|---|---|---|---|
+| 1 | 3 (3) | comunes | 0,85 | alternada | - |
+| 2 | 5 (4) | 70 % comunes, 30 % corredores | 1 | alternada | - |
+| 3 | **20 (20)** | solo comunes | **0,55** (lentos) | **izquierda** | **granada** |
+| 4 | **24 (24)** | solo comunes | **0,6** | **los dos lados** | **bomba** |
+
+Entran todos juntos y hacen fila: pegarles de a uno es una tortura (la horda tiene 24 zombies, la cuarta usa casi todos). Una
+granada tirada hacia la izquierda se lleva a los que quedan en su radio; la bomba se los lleva a todos.
+
+**Ayuda.** `RunState.Ayuda` dice qué arma pide la oleada en curso mientras no se haya usado. `HudArsenal` hace parpadear esa fila (luz
+verde para las granadas, roja para las bombas, detrás de los íconos, con los íconos latiendo). Al empezar la oleada se asegura
+que haya al menos `cantidadAsegurada` de esa arma (2 granadas en la oleada 3, 1 bomba en la 4; si se gastaron en las anteriores). La pelea
+didáctica además baja con **2 granadas** (`granadasPeleaDidactica`) en vez de 1, para que sea más fácil llevarse a toda la manada. Si se usa y cae casi nadie (menos de 4: se tiró antes de que
+llegaran), **se devuelve** y vuelve a parpadear: es para aprender, no para fallar una vez. Al usarla bien deja de parpadear.
+
+**Verificado:** 373 tests de la simulación en verde fuera de Unity (8 nuevos de las oleadas didácticas; la prueba de la cámara
+que tiembla falla solo por el ruido Perlin falso del arnés) y el ensamblado del juego compila. **Sin probar en Unity:** cómo se
+ve el parpadeo, si 20 y 24 zombies lentos alcanzan para "forzar" la granada y la bomba, y si la manada de la oleada 3 queda
+a tiro de una sola granada. Hay que recargar `Level_01_Auxilio_v2` (se agregó `peleaDidactica: 1` a su `LevelScene`).

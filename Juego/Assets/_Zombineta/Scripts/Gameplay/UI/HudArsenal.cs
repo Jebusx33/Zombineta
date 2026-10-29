@@ -21,6 +21,10 @@ namespace Zombineta.UI
         const float Hueco = 4f;
         const float SegundosBusqueda = 0.5f;
         const float SegundosPop = 0.3f;
+        // Radianes por segundo del parpadeo de la ayuda: unos dos latidos por segundo.
+        const float VelocidadParpadeo = 12f;
+        static readonly Color ColorGranada = new Color(0.55f, 1f, 0.45f);
+        static readonly Color ColorBomba = new Color(1f, 0.45f, 0.3f);
 
         static HudArsenal instancia;
 
@@ -45,6 +49,8 @@ namespace Zombineta.UI
             public int indicePop = -1;
             public RectTransform padre;
             public int maximo;
+            /// <summary>La luz que parpadea detras de la fila cuando una oleada didactica pide esa arma.</summary>
+            public Image halo;
         }
 
         RunController run;
@@ -107,8 +113,9 @@ namespace Zombineta.UI
 
             Posicionar();
             // Las granadas sirven en la moto y a pie; las bombas, solo a pie (en la moto la fila queda apagada).
-            Dibujar(granadas, s.Granadas, 1f);
-            Dibujar(bombas, s.Bombas, pelea ? 1f : 0.35f);
+            // Una oleada didactica pide una de las dos armas: su fila parpadea hasta que se usa.
+            Dibujar(granadas, s.Granadas, 1f, pelea && s.Ayuda == AyudaDeOleada.Granada, ColorGranada);
+            Dibujar(bombas, s.Bombas, pelea ? 1f : 0.35f, pelea && s.Ayuda == AyudaDeOleada.Bomba, ColorBomba);
         }
 
         /// <summary>Arma las dos filas segun cuantas granadas y bombas se pueden llevar.</summary>
@@ -128,6 +135,16 @@ namespace Zombineta.UI
             padre.anchorMin = padre.anchorMax = padre.pivot = new Vector2(0.5f, 0.5f);
             padre.sizeDelta = new Vector2(Lado, Lado);
             f.padre = padre;
+
+            // Detras de los iconos: un recuadro de luz, apagado hasta que una oleada pida esa arma.
+            var luz = new GameObject(nombre + " luz", typeof(RectTransform), typeof(Image));
+            luz.transform.SetParent(padre, false);
+            f.halo = luz.GetComponent<Image>();
+            f.halo.raycastTarget = false;
+            f.halo.color = Color.clear;
+            var lr = (RectTransform)luz.transform;
+            lr.sizeDelta = new Vector2(maximo * (Lado + Hueco) + 8f, Lado + 10f);
+            lr.anchoredPosition = new Vector2((maximo - 1) * (Lado + Hueco) * 0.5f, 0f);
 
             for (int i = 0; i < maximo; i++)
             {
@@ -198,8 +215,14 @@ namespace Zombineta.UI
             return RectTransformUtility.ScreenPointToLocalPointInRectangle(raiz, pantalla, null, out local);
         }
 
-        void Dibujar(Fila f, int cantidad, float alfaActiva)
+        void Dibujar(Fila f, int cantidad, float alfaActiva, bool parpadea, Color luz)
         {
+            // Parpadeo: la luz de atras late y los iconos llenos se agrandan un poco al ritmo de la luz.
+            float latido = parpadea ? 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * VelocidadParpadeo) : 0f;
+            var halo = luz;
+            halo.a = parpadea ? Mathf.Lerp(0.15f, 0.6f, latido) : 0f;
+            f.halo.color = halo;
+
             // Un casillero que se llena (o se vacia) salta un momento.
             if (f.antes >= 0 && cantidad != f.antes)
             {
@@ -219,7 +242,8 @@ namespace Zombineta.UI
                 c.a = (lleno ? 1f : 0.35f) * alfaActiva;
                 im.color = c;
                 // Salta el casillero que se acaba de llenar o de vaciar.
-                im.rectTransform.localScale = Vector3.one * (i == f.indicePop ? escala : 1f);
+                float pulso = lleno ? 1f + 0.18f * latido : 1f;
+                im.rectTransform.localScale = Vector3.one * (i == f.indicePop ? escala : pulso);
             }
         }
 

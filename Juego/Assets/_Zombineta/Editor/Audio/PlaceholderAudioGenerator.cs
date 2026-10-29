@@ -191,6 +191,11 @@ namespace Zombineta.Juego.EditorTools.Audio
             Escribir(Sfx + "sfx_pickup_battery_02.wav", ArpegioCorto(new[] { 560f, 840f }, 0.09f, 24f));
             Escribir(Sfx + "sfx_pickup_ammo_01.wav", ArpegioCorto(new[] { 392f, 587f }, 0.10f, 22f));
             Escribir(Sfx + "sfx_pickup_ammo_02.wav", ArpegioCorto(new[] { 420f, 630f }, 0.09f, 24f));
+            // Granada: un tintineo metalico; bomba: dos pitidos electronicos.
+            Escribir(Sfx + "sfx_pickup_grenade_01.wav", Campana(1650f, 0.22f, 3, 14f));
+            Escribir(Sfx + "sfx_pickup_grenade_02.wav", Campana(1800f, 0.20f, 3, 15f));
+            Escribir(Sfx + "sfx_pickup_bomb_01.wav", Arpegio(new[] { 1100f, 1100f }, 0.07f, 28f, 0.12f));
+            Escribir(Sfx + "sfx_pickup_bomb_02.wav", Arpegio(new[] { 1200f, 1200f }, 0.065f, 30f, 0.12f));
 
             // Faros: barrido subiendo (on) o bajando (off).
             Escribir(Sfx + "sfx_headlight_on_01.wav", Barrido(300f, 900f, 0.12f, false));

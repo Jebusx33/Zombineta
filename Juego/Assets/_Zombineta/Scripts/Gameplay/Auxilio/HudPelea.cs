@@ -28,15 +28,13 @@ namespace Zombineta.Auxilio
         [SerializeField] Color colorTeclasClave = new Color(1f, 0.3f, 0.25f);
         [Tooltip("Color de las teclas de la granada y la bomba en la ayuda de controles.")]
         [SerializeField] Color colorTeclasArsenal = new Color(1f, 0.82f, 0.25f);
-        [Tooltip("Segundos que queda el aviso de que se baja con granada y bomba (solo la primera pelea).")]
-        [SerializeField] float segundosAvisoArsenal = 4f;
         [Tooltip("Segundos que queda en pantalla la nota de la pelea con sus premios.")]
         [SerializeField] float segundosNota = 3f;
         [Tooltip("Segundos que queda el aviso de lo recogido del suelo (botiquin, balas).")]
         [SerializeField] float segundosRecogida = 1.1f;
 
         Text oleadaTexto, vida, cartel, controles, combo, pocaNafta, nota, premios, recogida;
-        Image barra, fondoBarra, rojo;
+        Image rojo;
         GameObject panel;
         float cartelRestante;
         float comboRestante;
@@ -65,19 +63,12 @@ namespace Zombineta.Auxilio
             pr.sizeDelta = new Vector2(620f, 130f);
 
             oleadaTexto = NuevoTexto("Oleada", panel.transform, font, 34, TextAnchor.UpperCenter, new Vector2(0f, 0f), new Vector2(620f, 44f));
-            fondoBarra = NuevaImagen("Barra fondo", panel.transform, new Color(0f, 0f, 0f, 0.6f));
-            Ubicar(fondoBarra.rectTransform, new Vector2(0f, -48f), new Vector2(520f, 18f));
-            barra = NuevaImagen("Barra", fondoBarra.transform, new Color(1f, 0.82f, 0.25f, 1f));
-            barra.rectTransform.anchorMin = new Vector2(0f, 0f);
-            barra.rectTransform.anchorMax = new Vector2(0f, 1f);
-            barra.rectTransform.pivot = new Vector2(0f, 0.5f);
-            barra.rectTransform.anchoredPosition = Vector2.zero;
-            vida = NuevoTexto("Vida", panel.transform, font, 40, TextAnchor.UpperCenter, new Vector2(0f, -72f), new Vector2(620f, 50f));
+            vida = NuevoTexto("Vida", panel.transform, font, 40, TextAnchor.UpperCenter, new Vector2(0f, -48f), new Vector2(620f, 50f));
             vida.color = new Color(1f, 0.3f, 0.35f);
             vidaPosicion = vida.rectTransform.anchoredPosition;
 
             // El contador de la cadena de golpes, debajo de la vida.
-            combo = NuevoTexto("Combo", panel.transform, font, 46, TextAnchor.UpperCenter, new Vector2(0f, -122f), new Vector2(620f, 60f));
+            combo = NuevoTexto("Combo", panel.transform, font, 46, TextAnchor.UpperCenter, new Vector2(0f, -98f), new Vector2(620f, 60f));
             combo.fontStyle = FontStyle.Bold;
             var comboSombra = combo.gameObject.AddComponent<Outline>();
             comboSombra.effectColor = Color.black;
@@ -169,18 +160,11 @@ namespace Zombineta.Auxilio
             if ((ev & RunEvent.PeleaEmpieza) != 0)
             {
                 Mostrar("¡AGUANTÁ!", new Color(1f, 0.6f, 0.2f));
-                // La primera pelea arranca con una granada y una bomba: se avisa con que tecla se usan.
-                if (run != null && run.Sim != null && run.Sim.State.Peleas <= 1)
-                {
-                    var esquema = InputDeviceTracker.Shared != null ? InputDeviceTracker.Shared.Current : ControlScheme.KeyboardMouse;
-                    MostrarRecogida("¡USÁ LA GRANADA (" + ControlHints.Accion("GranadaPie", esquema) + ") Y LA BOMBA (" +
-                                    ControlHints.Accion("Bomba", esquema) + ")!", new Color(1f, 0.82f, 0.25f), segundosAvisoArsenal);
-                }
             }
             if ((ev & RunEvent.OleadaNueva) != 0 && run != null && run.Sim != null)
             {
                 int n = run.Sim.State.Oleada + 1;
-                bool ultima = run.Config.oleadas != null && n >= run.Config.oleadas.Count;
+                bool ultima = n >= run.Sim.State.Oleadas;
                 Mostrar(ultima ? "¡ÚLTIMA OLEADA!" : "OLEADA " + n, ultima ? new Color(1f, 0.4f, 0.3f) : Color.white);
             }
             if ((ev & RunEvent.PeleaReintenta) != 0)
@@ -289,24 +273,13 @@ namespace Zombineta.Auxilio
             panel.SetActive(pelea);
             if (pelea)
             {
-                // Sin reloj: se pelea por oleadas. La barra es lo que se lleva vencido de la oleada en curso.
-                float vencidos;
+                // Sin reloj: se pelea por oleadas.
                 if (s.BidonEnElPiso)
-                {
                     oleadaTexto.text = "¡AGARRÁ EL BIDÓN!";
-                    vencidos = 1f;
-                }
                 else if (s.OleadaRespiro > 0f)
-                {
                     oleadaTexto.text = "OLEADA " + (s.Oleada + 1) + "/" + s.Oleadas + " VENCIDA";
-                    vencidos = 1f;
-                }
                 else
-                {
                     oleadaTexto.text = "OLEADA " + (s.Oleada + 1) + "/" + s.Oleadas + "  ·  QUEDAN " + s.ZombiesRestantes;
-                    vencidos = s.OleadaTotal > 0 ? 1f - (float)s.ZombiesRestantes / s.OleadaTotal : 0f;
-                }
-                barra.rectTransform.sizeDelta = new Vector2(fondoBarra.rectTransform.rect.width * Mathf.Clamp01(vencidos), 0f);
                 vida.text = new string('♥', Mathf.Max(0, s.Vida)) + new string('♡', Mathf.Max(0, c.vidaPelea - s.Vida));
             }
 

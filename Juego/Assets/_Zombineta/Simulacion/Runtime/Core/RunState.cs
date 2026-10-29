@@ -123,6 +123,11 @@ namespace Zombineta.Core
         public float ArranqueRestante;
         /// <summary>Oleada de la pelea en curso (0 = la primera).</summary>
         public int Oleada;
+        /// <summary>
+        /// El arma que la oleada didactica en curso pide usar y todavia no se uso (el HUD hace parpadear su icono).
+        /// Ninguna en las oleadas comunes, entre oleadas y una vez usada.
+        /// </summary>
+        public AyudaDeOleada Ayuda;
         /// <summary>Veces que todavia puede reintentar esta pelea si la derriban.</summary>
         public int ReintentosPelea;
         /// <summary>Corazones con los que empezo la pelea: el tope al que llegan los botiquines.</summary>

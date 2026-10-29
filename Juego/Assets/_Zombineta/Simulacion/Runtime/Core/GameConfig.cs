@@ -4,6 +4,28 @@ using UnityEngine;
 
 namespace Zombineta.Core
 {
+    /// <summary>Por donde entran los zombies de una oleada a la arena.</summary>
+    public enum EntradaDeOleada
+    {
+        /// <summary>De a uno, un lado y el otro (lo de siempre).</summary>
+        Alternada = 0,
+        /// <summary>Todos por la izquierda: se juntan en fila de un solo lado.</summary>
+        Izquierda = 1,
+        /// <summary>Todos por la derecha.</summary>
+        Derecha = 2,
+    }
+
+    /// <summary>
+    /// Que arma del arsenal pide una oleada didactica: mientras dura, el HUD hace parpadear su icono
+    /// y la oleada le asegura al jugador al menos una.
+    /// </summary>
+    public enum AyudaDeOleada
+    {
+        Ninguna = 0,
+        Granada = 1,
+        Bomba = 2,
+    }
+
     /// <summary>
     /// Una oleada de la pelea a pie: desde cuantos segundos de pelea rige, cuantos zombies hay a la
     /// vez y de que tipos (un peso por tipo, en el orden de Zombies.asset: Comun, Corredor, Pesado).
@@ -23,6 +45,16 @@ namespace Zombineta.Core
         [Tooltip("Multiplica la rapidez de sus ataques: prepararse y volver a atacar tardan 1/ataque (2 = el doble de " +
                  "rapido). 1 = los tiempos de 'zombiePreparacion' y 'zombieEnfriamiento'.")]
         [Min(0.1f)] public float ataque = 1f;
+        [Tooltip("Multiplica los segundos de invulnerabilidad tras recibir un golpe ('invulnerableTrasGolpe'): con menos de 1 se " +
+                 "puede golpear a la protagonista mas seguido, y atacar mas rapido si importa. 1 = lo de siempre.")]
+        [Min(0f)] public float invulnerable = 1f;
+        [Tooltip("Por donde entran: Alternada = un lado y el otro; Izquierda o Derecha = todos del mismo lado.")]
+        public EntradaDeOleada entrada = EntradaDeOleada.Alternada;
+        [Tooltip("Oleada didactica: hace parpadear en el HUD el icono de esta arma mientras dura y asegura que se tenga una. " +
+                 "Si se usa y casi no cae nadie, se devuelve (no se aprende con una sola oportunidad).")]
+        public AyudaDeOleada ayuda = AyudaDeOleada.Ninguna;
+        [Tooltip("Cuantas unidades del arma de 'ayuda' se aseguran al empezar la oleada (si trae menos, se completan).")]
+        [Min(1)] public int cantidadAsegurada = 1;
     }
 
     /// <summary>
@@ -286,12 +318,33 @@ namespace Zombineta.Core
         [Tooltip("Oleadas de la pelea, de menos a mas. Vacio = siempre 'zombiesEnArena' del tipo que toque.")]
         public List<OleadaPelea> oleadas = new List<OleadaPelea>
         {
-            // Las dos primeras, como estaban (la dificultad esta bien); las dos ultimas aprietan: mas zombies, mas
-            // pesados y corredores, que caminan mas rapido y atacan mas rapido (tardan menos en preparar y en repetir el golpe).
-            new OleadaPelea { zombies = 3, simultaneos = 3, pesos = new[] { 1f, 0f, 0f },        velocidad = 0.85f },
-            new OleadaPelea { zombies = 5, simultaneos = 4, pesos = new[] { 0.7f, 0.3f, 0f },    velocidad = 1f },
-            new OleadaPelea { zombies = 7, simultaneos = 5, pesos = new[] { 0.3f, 0.35f, 0.35f }, velocidad = 1.1f, ataque = 1.6f },
-            new OleadaPelea { zombies = 9, simultaneos = 6, pesos = new[] { 0.2f, 0.4f, 0.4f },  velocidad = 1.2f, ataque = 2.2f },
+            // Las dos primeras, como estaban (la dificultad esta bien); las dos ultimas aprietan: muchos mas zombies,
+            // mas pesados y corredores, que caminan mas rapido, atacan mas rapido (tardan menos en preparar y en repetir
+            // el golpe) y dejan menos respiro entre golpe y golpe (menos invulnerabilidad tras recibir uno).
+            new OleadaPelea { zombies = 3,  simultaneos = 3, pesos = new[] { 1f, 0f, 0f },          velocidad = 0.85f },
+            new OleadaPelea { zombies = 5,  simultaneos = 4, pesos = new[] { 0.7f, 0.3f, 0f },      velocidad = 1f },
+            new OleadaPelea { zombies = 9,  simultaneos = 6, pesos = new[] { 0.25f, 0.35f, 0.4f },  velocidad = 1.2f,  ataque = 2f, invulnerable = 0.8f },
+            new OleadaPelea { zombies = 12, simultaneos = 7, pesos = new[] { 0.15f, 0.4f, 0.45f },  velocidad = 1.35f, ataque = 3f, invulnerable = 0.6f },
+        };
+        [Tooltip("Pelea didactica: la PRIMERA pelea del nivel usa 'oleadasDidacticas' en vez de 'oleadas'. Solo el nivel que " +
+                 "presenta el arsenal (el primero) la prende; lo pone LevelScene.")]
+        public bool peleaDidactica = false;
+        [Tooltip("Granadas con las que se baja en la pelea didactica (si trae menos, se completan).")]
+        [Min(0)] public int granadasPeleaDidactica = 2;
+        [Tooltip("Las oleadas de la primera pelea cuando 'peleaDidactica' esta prendida. Las dos primeras, las de siempre; " +
+                 "la tercera obliga a usar la granada (una manada lenta de un solo lado) y la cuarta la bomba (muchos de los dos lados).")]
+        public List<OleadaPelea> oleadasDidacticas = new List<OleadaPelea>
+        {
+            new OleadaPelea { zombies = 3,  simultaneos = 3,  pesos = new[] { 1f, 0f, 0f }, velocidad = 0.85f },
+            new OleadaPelea { zombies = 5,  simultaneos = 4,  pesos = new[] { 0.7f, 0.3f, 0f }, velocidad = 1f },
+            // Granada: una manada de comunes, lentos para darle tiempo de pensar, toda por la izquierda. Entran todos juntos
+            // y hacen fila: pegarles uno por uno es una tortura; una granada se lleva a los que quedan en su radio.
+            // Con 2 granadas (la 2.ª por si la primera no alcanza a todos) se pueden llevar a casi toda la manada.
+            new OleadaPelea { zombies = 20, simultaneos = 20, pesos = new[] { 1f, 0f, 0f }, velocidad = 0.55f,
+                              entrada = EntradaDeOleada.Izquierda, ayuda = AyudaDeOleada.Granada, cantidadAsegurada = 2 },
+            // Bomba: casi todos los zombies que hay (la horda tiene 24), de los dos lados a la vez: rodean. La bomba se los lleva a todos.
+            new OleadaPelea { zombies = 24, simultaneos = 24, pesos = new[] { 1f, 0f, 0f }, velocidad = 0.6f,
+                              entrada = EntradaDeOleada.Alternada, ayuda = AyudaDeOleada.Bomba },
         };
         [Tooltip("Cuantos pelean a la vez como maximo en una oleada que no dice otra cosa.")]
         [Min(1)] public int maxSimultaneos = 6;

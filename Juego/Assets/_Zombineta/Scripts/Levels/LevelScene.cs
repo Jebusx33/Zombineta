@@ -50,6 +50,10 @@ namespace Zombineta.Juego.Levels
         [Tooltip("Veces que la pelea a pie se reinicia si derriban a la protagonista, en vez de perder.")]
         [Min(0)] [SerializeField] int reintentosPelea;
 
+        [Tooltip("Primera pelea didactica: sus oleadas son las de 'oleadasDidacticas' del GameConfig (la 3.ª obliga a usar " +
+                 "la granada y la 4.ª la bomba, con el icono parpadeando en el HUD). Solo el primer nivel, donde se presenta el arsenal.")]
+        [SerializeField] bool peleaDidactica;
+
         [Header("Recolectables")]
         [Tooltip("Los recolectables (nafta, bateria, municion) flotan: suben y bajan despacio.")]
         [SerializeField] bool flotarRecolectables = true;
@@ -138,6 +142,7 @@ namespace Zombineta.Juego.Levels
             copy.fuelInicial = combustibleInicial;
             copy.bidonesDesdePelea = bidonesDesdePelea;
             copy.reintentosPelea = reintentosPelea;
+            copy.peleaDidactica = peleaDidactica;
             return copy;
         }
 
