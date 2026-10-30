@@ -26,21 +26,22 @@ que ves en el Editor, avisale a programación antes de seguir.
 
 ## 2. Cómo está armado el escenario
 
-El fondo tiene cinco capas de dibujo (de atrás para adelante): **Cielo, Fondo, Calle, Juego,
-Frente**. Cada tile del escenario (un edificio, un árbol, un cartel) vive en una de esas capas
+El fondo tiene seis capas de dibujo (de atrás para adelante): **Cielo, Fondo, Arboles, Calle,
+Juego, Frente**. Cada tile del escenario (un edificio, un árbol, un cartel) vive en una de esas capas
 según dónde tiene que aparecer:
 
 | Capa | Qué va ahí |
 |---|---|
 | Cielo | El fondo del cielo |
-| Fondo | Edificios, árboles |
-| Calle | Cordón, asfalto, vereda |
+| Fondo | Edificios |
+| Arboles | Los árboles del Nivel 1. Van aparte para que no les pegue la luz con forma de ventana de los edificios ni el cono de la moto |
+| Calle | Cordón, asfalto, vereda, las dos partes de la bocacalle |
 | Juego | La moto, la horda, los items del recorrido, sombras de piso, efectos |
 | Frente | Postes, carteles y árboles en primer plano, delante de todo |
 
 Ojo con **`Default`**: es una capa vieja de Unity que **no recibe luz de ambiente a propósito**.
 Si un sprite tuyo queda en `Default` se va a ver completamente negro de noche. Todo lo que arte
-toca tiene que ir en una de las cinco capas de arriba.
+toca tiene que ir en una de las seis capas de arriba.
 
 **El escenario se arma solo, tile por tile, mientras la cámara avanza** (no es una imagen fija ni
 un tilemap pintado a mano). Por eso **un tile tiene que empalmar consigo mismo en los dos bordes**
@@ -161,12 +162,9 @@ Pasos, sobre el prefab de tu asset (abrilo en modo prefab, doble click):
 3. Ajustá color, intensidad y radio a ojo, mirándolo en el taller (sección 7) con el ambiente de
    noche real puesto. Dejá el **Inner Radius** bastante más chico que el **Outer Radius** (por
    ejemplo un cuarto): si son casi iguales, la luz se ve como un disco de borde duro.
-4. **Apagá "Shadows" en la `Light2D` de adorno.** Un brillo de adorno no necesita proyectar
-   sombras, y si el mismo prefab tiene un `ShadowCaster2D` (sección 5), la luz queda adentro de
-   esa silueta: la tapa en todas las direcciones y solo se ilumina el propio objeto (se ve
-   "recortada"). Además, con Shadows prendido, cada zombie que pasa cerca proyecta una sombra
-   dura que se mueve con él. Las sombras las proyecta el faro de la moto, que es el que las
-   necesita.
+4. **Apagá "Shadows" en la `Light2D`.** Ninguna luz del juego las usa, tampoco el faro de la moto:
+   recortan la luz en el plano de la pantalla, y cada zombie cortaba el haz con un borde duro sobre
+   el piso y sobre lo que venía atrás. Las sombras en el piso las dibuja `SombraProyectada`, sola.
 
 **Cuándo usar un sprite "prendido" en vez de una luz real**: si lo que querés es una ventana con
 la persiana iluminada o un cartel que se ve "encendido" sin que en verdad ilumine nada alrededor,
@@ -183,6 +181,25 @@ que tiene el `Light2D` un componente **`Flicker`**. Tiene cuatro campos:
   semilla titilan exactamente igual, sincronizadas, y se nota artificial; con semillas distintas
   cada una tira para su lado.
 
+**Luces de la ciudad (`LuzDeCiudad`)**: lo que depende de la red eléctrica (ventanas, faroles, el
+kiosco) lleva este componente en el mismo GameObject que la `Light2D`. La luz se va con el apagón y
+vuelve con él. No le agregues `DecorLight`: el presupuesto la volvería a prender en pleno apagón.
+Una luz con batería propia, como el faro roto de los autos, no lo lleva y sigue prendida.
+
+**Faro roto (`FaroRoto`)**: sale en una parte de los autos, al azar (campo **`Probabilidad`**, hoy
+20%). Prende fijo y cada tanto falla unos instantes. Son tres piezas en `Obstaculo_Auto.prefab`: un
+destello sobre cada óptica (sprites sin luz, porque una `Light2D` sobre el auto ilumina la chapa y no
+la óptica) y un haz corto en el piso, que alcanza solo a **Calle**. Los tiempos de la falla se
+ajustan en el mismo componente.
+
+**Ventanas de un edificio**: una sola `Light2D` de tipo **Sprite** por tile, hija de la raíz en
+`(0, 0)`. Su sprite es una máscara del mismo tamaño que el dibujo, con negro donde no hay luz (las
+del Nivel 1 están en `Art/Tileset/Level1/Luces/`, a mitad de resolución y con el mismo pivot). Tiene
+que alcanzar solo a **Fondo**; si le llegara a otra capa, lo que pase por delante se pintaría con la
+forma de la ventana. El brillo de cada ventana se ajusta en la máscara y el de todo el edificio en
+la intensidad de la luz. El reflejo sobre la vereda son luces **Point** aparte, a **Arboles**,
+**Calle** y **Juego**.
+
 Así se ve una luz de adorno ya andando (el barril, en el taller), con el resplandor cálido de su
 propio `Light2D` marcándose contra el fondo oscuro:
 
@@ -191,6 +208,10 @@ propio `Light2D` marcándose contra el fondo oscuro:
 ---
 
 ## 5. Sombras
+
+> **Hoy un `ShadowCaster2D` no se nota:** ninguna luz tiene "Shadows" prendido (sección 4). Las
+> sombras que se ven en el piso son de `SombraProyectada`. Lo que sigue sirve solo si alguna luz
+> vuelve a usarlas.
 
 Agregale un **`ShadowCaster2D`** (hijo del mismo GameObject que tiene el `Sprite Renderer`, o de
 la raíz) a lo que esté **cerca de la calle y sea sólido**: faroles, carteles, vallas, obstáculos,
@@ -310,10 +331,10 @@ casos:
 |---|---|
 | ![Iluminación en calidad Alta](img/luz/calidad_alta.png) | ![Iluminación en calidad Baja](img/luz/calidad_baja.png) |
 
-La diferencia principal se nota en el cono del faro: en Alta corta con sombras duras (cables,
-ramas) recortadas encima del asfalto; en Baja es un parche de luz más parejo, sin esas sombras. Es
-la diferencia que hay que tener en la cabeza al ajustar una escena: lo que ves en Alta (con todas
-las sombras y adornos) es el techo; en Baja tiene que seguir siendo legible sin todo eso.
+Las imágenes son de antes de sacar las sombras del faro: hoy el cono se ve igual en las dos
+calidades. La diferencia que queda son las luces de adorno. Lo que ves en Alta es el techo; en Baja
+tiene que seguir siendo legible sin ellas. Las `LuzDeCiudad` no pasan por el presupuesto y siguen
+prendidas en Baja.
 
 ---
 

@@ -47,6 +47,9 @@ TagManager:
   - name: Fondo
     uniqueID: 2
     locked: 0
+  - name: Arboles
+    uniqueID: 6
+    locked: 0
   - name: Calle
     uniqueID: 3
     locked: 0

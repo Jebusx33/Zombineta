@@ -4,6 +4,8 @@
     "references": [
         "Zombineta.Juego",
         "Zombineta.Simulacion",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Universal.2D.Runtime",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Unity.InputSystem",

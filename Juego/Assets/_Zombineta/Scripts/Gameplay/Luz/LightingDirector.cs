@@ -21,6 +21,14 @@ namespace Zombineta.Luz
     {
         const string ChildPrefix = "Luz Global ";
 
+        /// <summary>La oscuridad que se esta viendo ahora (ya suavizada). La leen las luces de la
+        /// ciudad (LuzDeCiudad), que nacen y se reciclan con el escenario.</summary>
+        public static float Oscuridad { get; private set; }
+
+        // Sin recarga de dominio en este proyecto: el estatico sobrevive entre sesiones de Play.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ReiniciarEstatico() => Oscuridad = 0f;
+
         [Tooltip("Solo para escenas sin LevelScene (por ejemplo el taller). Si este GameObject " +
                  "tiene un LevelScene, su Perfil manda siempre y este campo se pisa.")]
         [SerializeField] PerfilDeLuz perfil;
@@ -70,6 +78,7 @@ namespace Zombineta.Luz
 
             // La luz sigue a la oscuridad de la simulacion sin saltos: al pelear en pleno apagon se prende en medio segundo.
             oscuridadSuave = Mathf.MoveTowards(oscuridadSuave, OscuridadActual(), velocidadDeApagon * Time.unscaledDeltaTime);
+            Oscuridad = oscuridadSuave;
             AplicarApagon(oscuridadSuave);
         }
 
@@ -216,6 +225,7 @@ namespace Zombineta.Luz
 
         void OnDisable()
         {
+            Oscuridad = 0f;
             DestruirHijos();
         }
     }

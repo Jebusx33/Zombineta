@@ -28,6 +28,7 @@ MonoBehaviour:
     tint: {r: 1, g: 1, b: 1, a: 1}
     huecosPara: 
     huecoLimpio: 0
+    tilesEntreAcompanantes: 1
     proyectaSombra: 0
     material: {fileID: 0}
     variants:
@@ -58,6 +59,7 @@ MonoBehaviour:
     tint: {r: 1, g: 1, b: 1, a: 1}
     huecosPara: Calle
     huecoLimpio: 0
+    tilesEntreAcompanantes: 1
     proyectaSombra: 0
     material: {fileID: 0}
     variants:
@@ -67,7 +69,7 @@ MonoBehaviour:
       weight: 3
       heightScale: 1
       yOffset: 0
-      avancePx: 0
+      avancePx: 856
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
@@ -79,7 +81,7 @@ MonoBehaviour:
       weight: 3
       heightScale: 1
       yOffset: 0
-      avancePx: 0
+      avancePx: 851
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
@@ -91,7 +93,7 @@ MonoBehaviour:
       weight: 3
       heightScale: 1
       yOffset: 0
-      avancePx: 0
+      avancePx: 840
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
@@ -101,7 +103,7 @@ MonoBehaviour:
     enabled: 1
     parallax: 1
     sortingOrder: -40
-    sortingLayer: Fondo
+    sortingLayer: Arboles
     baselineY: 1.4024222
     height: 6.7
     gapChance: 0.55
@@ -109,9 +111,10 @@ MonoBehaviour:
     gapMax: 10
     noImmediateRepeat: 1
     seed: 41
-    tint: {r: 0.55, g: 0.5, b: 0.7, a: 1}
+    tint: {r: 0.8, g: 0.74, b: 0.95, a: 1}
     huecosPara: Calle
     huecoLimpio: 1
+    tilesEntreAcompanantes: 1
     proyectaSombra: 1
     material: {fileID: 0}
     variants:
@@ -142,6 +145,7 @@ MonoBehaviour:
     tint: {r: 1, g: 1, b: 1, a: 1}
     huecosPara: 
     huecoLimpio: 0
+    tilesEntreAcompanantes: 1
     proyectaSombra: 0
     material: {fileID: 0}
     variants:
@@ -167,7 +171,7 @@ MonoBehaviour:
       ordenExtra: 1
       acompanante: {fileID: 3718877821837324326, guid: 537d060dde40b674ea36df476cbf5f4b, type: 3}
       acompananteOffsetPx: {x: 1169, y: 1124}
-      acompananteCapa: Fondo
+      acompananteCapa: Calle
       acompananteOrden: -49
   - name: Vereda de abajo
     enabled: 1
@@ -184,6 +188,7 @@ MonoBehaviour:
     tint: {r: 0.21, g: 0.21, b: 0.235, a: 1}
     huecosPara: 
     huecoLimpio: 0
+    tilesEntreAcompanantes: 1
     proyectaSombra: 0
     material: {fileID: 0}
     variants:
@@ -214,6 +219,7 @@ MonoBehaviour:
     tint: {r: 0.16, g: 0.13, b: 0.2, a: 0.55}
     huecosPara: 
     huecoLimpio: 0
+    tilesEntreAcompanantes: 1
     proyectaSombra: 0
     material: {fileID: 0}
     variants:
@@ -268,6 +274,7 @@ MonoBehaviour:
     tint: {r: 0.18, g: 0.14, b: 0.26, a: 0.55}
     huecosPara: 
     huecoLimpio: 0
+    tilesEntreAcompanantes: 1
     proyectaSombra: 0
     material: {fileID: 0}
     variants:

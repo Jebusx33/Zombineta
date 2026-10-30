@@ -29,11 +29,21 @@ namespace Zombineta.Player
         [Tooltip("Intensidad del haz delantero en un apagon total, como fraccion de la del faro.")]
         [SerializeField] float frontIntensity = 1f;
 
+        [Tooltip("Radio del resplandor que rodea a la moto en un apagon. Solo alcanza a los sprites, no al piso.")]
+        [SerializeField] float haloRadius = 8f;
+
+        [Tooltip("Intensidad de ese resplandor en un apagon total, como fraccion de la del faro.")]
+        [SerializeField] float haloIntensity = 0.45f;
+
         Light2D light2d;
 
         // El faro apunta hacia atras, a la horda. En un apagon tambien hace falta ver la calle:
         // este segundo haz, igual al primero pero hacia adelante, solo se prende ahi.
         Light2D front;
+
+        // El borde del cono parte en dos a lo que esta pegado a la moto: a oscuras se ven las
+        // piernas de un zombie y el torso no. Este resplandor redondo le da cuerpo entero.
+        Light2D halo;
 
         void Awake()
         {
@@ -49,14 +59,13 @@ namespace Zombineta.Player
                 SortingLayer.NameToID("Juego"),
             };
 
-            // La moto no le hace sombra a su propio faro: la luz nace adentro de su silueta y el
-            // caster cortaba el haz en seco (quedaba un parche quemado pegado a la cola y el resto
-            // oscurecido). castsShadows y no enabled: ShadowCasterQuality maneja enabled.
-            if (transform.parent != null)
-                foreach (var caster in transform.parent.GetComponentsInChildren<ShadowCaster2D>(true))
-                    caster.castsShadows = false;
+            // Sin sombras de URP: recortan la luz en el plano de la pantalla, asi que cada zombie
+            // y cada auto cortaban el haz en seco, sobre el piso y sobre lo que venia atras. Las
+            // sombras de piso las dibuja SombraProyectada.
+            light2d.shadowsEnabled = false;
 
             front = CrearHazDelantero();
+            halo = CrearHalo();
         }
 
         Light2D CrearHazDelantero()
@@ -81,6 +90,23 @@ namespace Zombineta.Player
             return haz;
         }
 
+        Light2D CrearHalo()
+        {
+            var go = new GameObject("Halo del apagon");
+            go.transform.SetParent(transform, false);
+
+            var resplandor = go.AddComponent<Light2D>();
+            resplandor.lightType = Light2D.LightType.Point;
+            resplandor.blendStyleIndex = light2d.blendStyleIndex;
+            resplandor.color = light2d.color;
+            resplandor.pointLightInnerRadius = 0f;
+            resplandor.pointLightOuterRadius = haloRadius;
+            resplandor.shadowsEnabled = false;
+            resplandor.targetSortingLayers = new[] { SortingLayer.NameToID("Juego") };
+            resplandor.enabled = false;
+            return resplandor;
+        }
+
         void LateUpdate()
         {
             if (run == null || run.Sim == null || light2d == null)
@@ -91,6 +117,7 @@ namespace Zombineta.Player
             {
                 light2d.enabled = false;
                 front.enabled = false;
+                halo.enabled = false;
                 return;
             }
 
@@ -114,10 +141,12 @@ namespace Zombineta.Player
             // Fuera de un apagon el haz delantero no existe: la luz del nivel queda como siempre.
             float oscuridad = run.Sim.Oscuridad;
             front.enabled = oscuridad > 0.01f;
+            halo.enabled = front.enabled;
             if (front.enabled)
             {
                 front.intensity = intensity * frontIntensity * oscuridad;
                 front.transform.position = transform.position + Vector3.right * frontOffset;
+                halo.intensity = intensity * haloIntensity * oscuridad;
             }
         }
     }
