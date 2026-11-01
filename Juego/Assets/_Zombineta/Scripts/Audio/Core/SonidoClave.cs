@@ -16,5 +16,7 @@ namespace Zombineta.Audio
         PickupGranada, PickupBomba,
         // Las armas: la explosion de la granada, los pitidos de la bomba puesta y su explosion.
         GranadaExplota, BombaPuesta, BombaExplota,
+        // Avisos del HUD: la nafta o la bateria entran en el tramo bajo.
+        HudNaftaBaja, HudBateriaBaja,
     }
 }

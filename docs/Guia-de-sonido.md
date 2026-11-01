@@ -126,6 +126,8 @@ redondeo de la compresión ADPCM al importar — la diferencia es de a lo sumo ~
 | Motor | `sfx_engine_loop_01` (4,001 s) | **loop** | Siempre sonando en la partida; el tono sube con la velocidad y el turbo |
 | Horda | `zombie_horde` (8,95 s) | **loop**, posicional | Siempre sonando en la partida; panea y atenúa según la distancia al frente de la horda. En la pelea a pie sigue al zombie vivo más cercano a la protagonista. Con la horda cerca, cada 2,5 a 6 s suelta un gemido (ZombieAdelante) desde donde viene |
 | ZombieAdelante | `zombie-sound` (1,48 s) / `zombie-bite` (0,28 s) | posicional | Un zombie suelto de frente entra en rango, y los gemidos sueltos de la horda |
+| HudNaftaBaja | `sfx_hud_low_fuel_01` (0,36 s, placeholder) | — | La nafta entra en el último 20 % y cada 5 s mientras se gasta |
+| HudBateriaBaja | `sfx_hud_low_battery_01` (0,35 s, placeholder) | — | La batería entra en el último 20 % y cada 5 s mientras se gasta |
 | UiMover | `sfx_ui_move_01` (0,100 s) | bus UI | Mover la selección en un menú |
 | UiConfirmar | `sfx_ui_confirm_01` (0,321 s) | bus UI | Confirmar (Enter / botón Sur) |
 | UiVolver | `sfx_ui_back_01` (0,341 s) | bus UI | Cancelar / volver (Esc / botón Este) |

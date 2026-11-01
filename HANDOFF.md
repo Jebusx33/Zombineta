@@ -588,7 +588,7 @@ Sigue la nota B/A/S (por golpes recibidos) con premios. **Desde el 21/10 no hay 
 vez que se acaba la nafta, en cualquier nivel, hay que resolver el beat'em up para seguir.**
 `GameConfig.peleaSinNafta` (y la misma casilla en `LevelScene`) lo enciende o apaga por nivel: solo el
 tutorial y la plantilla `NivelBase`, que no tienen la pelea armada, la traen apagada (ahí sin nafta se
-pierde). Una escena con la pelea prendida tiene que traer `HudPelea`, `HudMunicionPelea` y el objeto
+pierde). Una escena con la pelea prendida tiene que traer `HudPelea`, el prefab `HudPartida` y el objeto
 `Auxilio` (`VistaDelAuxilio`); `PeleaEnEscenasTests` lo verifica. La cuenta de peleas es `RunState.Peleas`.
 
 **Animaciones de la protagonista a pie (bocetos, 01/11):** los cuadros viven en `Art/Player/APie/<animación>/`
@@ -596,6 +596,13 @@ y se listan en `Settings/AnimacionesAPie.asset`, junto con su ritmo. El 1.º y 2
 remate, `punch_high`. Para cambiar un dibujo, se reemplaza el PNG con el mismo nombre y el importador conserva el
 pivote en los pies. Son lienzos de 540 × 384; un cuadro nuevo tiene que mantener a la protagonista en el mismo lugar del
 lienzo. No hay poses de disparo, granada ni bomba: al disparar, el cuerpo solo retrocede un poco.
+
+**HUD de la partida (01/11):** todos los niveles usan `Prefabs/HudPartida.prefab` (`HudPaneles`), con el
+arte en `Art/HUD/Partida/`: se ajusta en un solo lugar. Reemplaza a `HudArsenal` y `HudMunicionPelea`. Los
+colores y el titileo salen de `IndicadorDeRecurso` (el tramo bajo es el último 20 %) y el aviso sonoro, de
+`AlertaDeRecurso`. A pie se esconden los recursos y la barra, y el armamento sube. El sensor de la horda está
+oculto por decisión del equipo: se recupera con la casilla `Mostrar Sensor` de `HudView` en cada escena. Los
+textos y los números son imágenes hechas con Comic Sans Bold, provisorias hasta que haya tipografía definitiva.
 
 **Estructura (sin cambios de fondo):** la lógica sigue siendo C# plano en `Simulacion/Runtime` y las
 vistas leen el estado. `RunSimulation` (moto) delega la pelea en `PeleaSimulation`, y la horda
@@ -619,7 +626,7 @@ vistas leen el estado. `RunSimulation` (moto) delega la pelea en `PeleaSimulatio
   `bombasPrimeraPelea`) y avisa con qué teclas se usan.
 - **Barriles:** en la moto quedan de adorno; a pie, los que quedaron en la arena explotan con el disparo
   (encadenan). Se generan granadas cada ~650 m y bombas cada ~1000 m (`LevelGenerator`).
-- **HUD nuevo:** `HudArsenal` (dos filas de íconos con casilleros, a la derecha del marco de las balas)
+- **HUD de arsenal (reemplazado el 01/11 por `HudPartida`):** `HudArsenal` (dos filas de íconos con casilleros, a la derecha del marco de las balas)
   y `VistaDeArsenal` (la granada en vuelo y la bomba con su mecha). **Se crean solas al dar Play**
   (`RuntimeInitializeOnLoadMethod`), igual que `AvisoDeEspacio` y `TelemetriaDePlaytest`: no hay nada
   que poner en las escenas. Los íconos salen de `Resources/Arsenal` (provisorios).

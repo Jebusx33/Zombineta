@@ -37,7 +37,7 @@ namespace Zombineta.Juego.Levels
 
         [Tooltip("Con la nafta en cero se pelea a pie hasta vencer a todas las oleadas, cada vez que pase; el ultimo " +
                  "zombie suelta un bidon que llena el tanque. Apagado = quedarse sin nafta es perder (el tutorial, " +
-                 "o una escena que todavia no tiene la pelea armada: HudPelea, VistaDelAuxilio y HudMunicionPelea).")]
+                 "o una escena que todavia no tiene la pelea armada: HudPelea y VistaDelAuxilio).")]
         [SerializeField] bool peleaSinNafta = true;
 
         [Tooltip("Nafta con la que arranca el nivel (0 = el tanque lleno). Un tanque corto hace que la primera pelea llegue pronto.")]

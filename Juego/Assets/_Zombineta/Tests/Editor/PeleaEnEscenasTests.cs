@@ -64,7 +64,9 @@ namespace Zombineta.Juego.Tests
                 var vista = Buscar<VistaDelAuxilio>(escena);
                 Assert.IsNotNull(vista, nombre + ": falta la VistaDelAuxilio (la protagonista a pie)");
                 Assert.IsNotNull(vista.Animaciones, nombre + ": la VistaDelAuxilio no tiene las animaciones a pie");
-                Assert.IsNotNull(Buscar<HudMunicionPelea>(escena), nombre + ": falta el HudMunicionPelea (el marco de las balas)");
+                var hud = Buscar<HudView>(escena);
+                Assert.IsNotNull(hud, nombre + ": falta el HudView");
+                Assert.IsNotNull(hud.Paneles, nombre + ": el HudView no tiene el prefab HudPartida");
             });
         }
 

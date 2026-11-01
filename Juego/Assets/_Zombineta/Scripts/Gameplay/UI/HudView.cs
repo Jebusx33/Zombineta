@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,23 +6,23 @@ using Zombineta.Core;
 namespace Zombineta.UI
 {
     /// <summary>
-    /// HUD de barras, sin numeros. En un juego de reaccion nadie lee cifras: lo
-    /// que importa es cuanto queda y cuan cerca esta la horda, y eso se lee mejor
-    /// como longitud y color. Los numeros crudos siguen disponibles en
+    /// El HUD de la partida. Los paneles de recursos, armamento y avance estan en HudPaneles; aca queda
+    /// el sensor de la horda, que no es parte del prefab. Los numeros crudos siguen disponibles en
     /// DebugHudView para balancear.
     /// </summary>
     public sealed class HudView : MonoBehaviour
     {
         [SerializeField] RunController run;
 
-        [Header("Barras (Image en modo Filled)")]
-        [SerializeField] Image fuelFill;
-        [SerializeField] Image batteryFill;
-        [SerializeField] Image progressFill;
+        [Tooltip("El prefab HudPartida de la escena.")]
+        [SerializeField] HudPaneles paneles;
 
-        [Tooltip("La cara de la protagonista sobre la barra de progreso: avanza con ella de " +
-                 "Partida a Destino, apoyada sobre el borde de arriba de la barra.")]
-        [SerializeField] RectTransform progressMarker;
+        [Header("Sensor de la horda")]
+        [Tooltip("El equipo decidio no usarlo por ahora: con esto apagado no se ve en ningun momento.")]
+        [SerializeField] bool mostrarSensor;
+
+        [Tooltip("Se esconde en la pelea a pie: ahi no hay horda que perseguir.")]
+        [SerializeField] GameObject sensor;
 
         [Tooltip("Se llena a medida que la horda se acerca: lleno = encima tuyo.")]
         [SerializeField] Image threatFill;
@@ -31,13 +30,7 @@ namespace Zombineta.UI
         [Tooltip("Texto que muestra la distancia de la horda al jugador en metros (ej. '99m'). Llega a 0 cuando la horda alcanza al jugador.")]
         [SerializeField] TMP_Text threatDistance;
 
-        [Header("Balas")]
-        [Tooltip("Un objeto por bala. Se apagan a medida que se gastan.")]
-        [SerializeField] Image[] ammoPips;
-
         [Header("Colores")]
-        [SerializeField] Color fuelOk = new Color(1f, 0.65f, 0.15f);
-        [SerializeField] Color fuelLow = new Color(0.95f, 0.25f, 0.2f);
         [SerializeField] Color threatFar = new Color(0.4f, 0.8f, 0.4f);
         [SerializeField] Color threatNear = new Color(0.95f, 0.2f, 0.2f);
 
@@ -47,70 +40,23 @@ namespace Zombineta.UI
         [Tooltip("Distancia en metros por debajo de la cual el texto de amenaza se pone rojo.")]
         [SerializeField] float dangerTextMeters = 10f;
 
+        public HudPaneles Paneles => paneles;
+
         // --- Accesores de solo lectura: el TutorialDirector los usa para el marco que resalta
-        // la barra del paso actual, sin duplicar referencias a las mismas Image en la escena. ---
-        // Nota: se devuelve el RectTransform del fill (no su padre) porque en este HUD las barras
-        // son hijos directos del contenedor raiz (1920x1080). Usar BackgroundOf (el padre) daba
-        // un rect de pantalla completa como objetivo del resaltado.
+        // la parte del HUD del paso actual, sin duplicar referencias en la escena. ---
 
-        /// <summary>El RectTransform de la barra de nafta, o null si no esta asignada.</summary>
-        public RectTransform FuelBarRect => fuelFill != null ? fuelFill.rectTransform : null;
+        /// <summary>El indicador de nafta, o null si no hay paneles.</summary>
+        public RectTransform FuelBarRect => paneles != null ? paneles.NaftaRect : null;
 
-        /// <summary>El RectTransform de la barra de bateria, o null si no esta asignada.</summary>
-        public RectTransform BatteryBarRect => batteryFill != null ? batteryFill.rectTransform : null;
+        /// <summary>El indicador de bateria, o null si no hay paneles.</summary>
+        public RectTransform BatteryBarRect => paneles != null ? paneles.BateriaRect : null;
 
-        /// <summary>El RectTransform de la barra de amenaza (horda), o null si no esta asignada.</summary>
-        public RectTransform ThreatBarRect => threatFill != null ? threatFill.rectTransform : null;
+        /// <summary>El RectTransform de la barra de amenaza (horda), o null si el sensor no se muestra.</summary>
+        public RectTransform ThreatBarRect => mostrarSensor && threatFill != null ? threatFill.rectTransform : null;
 
-        /// <summary>Las balas (pips), para resaltarlas todas juntas. Nunca null; puede estar vacio.</summary>
-        public RectTransform[] AmmoPipRects
-        {
-            get
-            {
-                if (ammoPips == null)
-                    return System.Array.Empty<RectTransform>();
-
-                var list = new List<RectTransform>(ammoPips.Length);
-                foreach (var pip in ammoPips)
-                    if (pip != null)
-                        list.Add(pip.rectTransform);
-                return list.ToArray();
-            }
-        }
-
-        readonly Vector3[] corners = new Vector3[4];
-
-        // La barra de distancia (marco, relleno y marcador) se esconde mientras se pelea a pie: no
-        // hay recorrido que mostrar y su lugar lo usa la ayuda de controles de la pelea.
-        [Tooltip("Opcional: el marco de la barra de distancia. Sin asignar se busca un hermano llamado 'Progress'.")]
-        [SerializeField] GameObject progressFrame;
-        GameObject[] distanceBar;
-        bool distanceBarShown = true;
-
-        void SetDistanceBarVisible(bool visible)
-        {
-            if (visible == distanceBarShown)
-                return;
-
-            if (distanceBar == null)
-            {
-                var list = new List<GameObject>();
-                var frame = progressFrame;
-                if (frame == null && progressFill != null && progressFill.transform.parent != null)
-                {
-                    var found = progressFill.transform.parent.Find("Progress");
-                    frame = found != null ? found.gameObject : null;
-                }
-                if (frame != null) list.Add(frame);
-                if (progressFill != null) list.Add(progressFill.gameObject);
-                if (progressMarker != null) list.Add(progressMarker.gameObject);
-                distanceBar = list.ToArray();
-            }
-
-            foreach (var go in distanceBar)
-                go.SetActive(visible);
-            distanceBarShown = visible;
-        }
+        /// <summary>El contador de balas, para resaltarlo. Nunca null; puede estar vacio.</summary>
+        public RectTransform[] AmmoPipRects =>
+            paneles != null ? new[] { paneles.BalasRect } : System.Array.Empty<RectTransform>();
 
         void LateUpdate()
         {
@@ -120,30 +66,14 @@ namespace Zombineta.UI
             var s = run.Sim.State;
             var cfg = run.Config;
 
-            SetDistanceBarVisible(s.Phase != RunPhase.Pelea);
+            if (paneles != null)
+                paneles.Dibujar(s, cfg, run.Sim.Progress01);
 
-            if (fuelFill != null)
+            if (sensor != null)
             {
-                float f = cfg.fuelMax <= 0f ? 0f : s.Fuel / cfg.fuelMax;
-                fuelFill.fillAmount = f;
-                fuelFill.color = Color.Lerp(fuelLow, fuelOk, Mathf.InverseLerp(0f, 0.3f, f));
-            }
-
-            if (batteryFill != null)
-                batteryFill.fillAmount =
-                    cfg.batteryMax <= 0f ? 0f : s.Battery / cfg.batteryMax;
-
-            if (progressFill != null)
-                progressFill.fillAmount = run.Sim.Progress01;
-
-            if (progressMarker != null && progressFill != null)
-            {
-                // De la punta izquierda a la derecha de la barra, apoyada sobre su borde de arriba
-                // (el pivot del marcador va abajo al centro). Todo en mundo: vale para cualquier
-                // anclaje del Canvas.
-                progressFill.rectTransform.GetWorldCorners(corners);
-                float x = Mathf.Lerp(corners[0].x, corners[3].x, run.Sim.Progress01);
-                progressMarker.position = new Vector3(x, corners[1].y, corners[1].z);
+                bool verSensor = mostrarSensor && s.Phase != RunPhase.Pelea;
+                if (sensor.activeSelf != verSensor)
+                    sensor.SetActive(verSensor);
             }
 
             if (threatFill != null)
@@ -160,11 +90,6 @@ namespace Zombineta.UI
                 threatDistance.text = Mathf.RoundToInt(gap) + "m";
                 threatDistance.color = gap < dangerTextMeters ? threatNear : threatFar;
             }
-
-            if (ammoPips != null)
-                for (int i = 0; i < ammoPips.Length; i++)
-                    if (ammoPips[i] != null)
-                        ammoPips[i].enabled = i < s.Ammo;
         }
     }
 }

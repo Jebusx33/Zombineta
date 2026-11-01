@@ -62,7 +62,7 @@ Testeada con ~280+ tests EditMode.
 | `GameRoot` | Singleton en `Boot`. Crea `GameFlow`, ejecuta planes de escena, gestiona fundidos. |
 | `Bootstrapper` | Carga `Boot` si no está cargada al entrar en Play desde cualquier escena. |
 | `SceneRoutePlanner` | C# puro: calcula qué escenas cargar/descargar para cada transición. |
-| `HudView` | HUD con barras filled (`fuelFill`, `batteryFill`, `progressFill`, `threatFill`) y pips de balas. Lee de `RunController.Sim.State` en `LateUpdate`. |
+| `HudView` | Le pasa el estado a `HudPaneles` (prefab `HudPartida`: recursos, armamento y barra de avance) y maneja el sensor de la horda, oculto por ahora. |
 | `DebugHudView` | HUD de texto (`OnGUI`) para balanceo. Toggle con F1. |
 | `CameraFollow` | Sigue al jugador con lerp. |
 | `HordeView` | Dibuja los zombies de la horda. |
@@ -86,15 +86,16 @@ Boot (siempre cargada)
 
 ## HUD (`HudView`)
 
-Barras en modo `Image.Filled`. Todas las referencias son `[SerializeField]`:
+El prefab `Prefabs/HudPartida.prefab` se usa en todos los niveles y se edita en un solo lugar:
 
-| Campo | Qué muestra |
+| Campo de `HudPaneles` | Qué muestra |
 |---|---|
-| `fuelFill` | Nafta. Color: naranja → rojo al bajar del 30 % |
-| `batteryFill` | Batería |
-| `progressFill` | Avance hacia la meta |
-| `threatFill` | Amenaza de la horda (invertida: lleno = encima) |
-| `ammoPips` | Array de `Image`; se deshabilitan a medida que se gastan las balas |
+| `nafta`, `bateria` | Anillos. Cambian de color desde el 50 % y titilan en el último 20 % |
+| `balas`, `balasMaximo` | Balas actuales y máximas, con dígitos en imagen |
+| `granadas`, `bombas` | Icono y cantidad. A pie, una oleada didáctica hace latir el arma pedida |
+| `progreso`, `nodos`, `marcador` | Barra de avance: se pintan los puntos que se pasan |
+
+`threatFill` y `threatDistance` siguen en `HudView`. El sensor se muestra con `mostrarSensor`.
 
 **Requisito crítico:** el campo `run` (tipo `RunController`) debe estar asignado en el
 Inspector. Si es null, `LateUpdate` sale inmediatamente y las barras no se actualizan.

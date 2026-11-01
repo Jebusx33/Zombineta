@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using Zombineta.Core;
 using Zombineta.Juego.Screens;
 using Zombineta.Player;
+using Zombineta.UI;
 
 namespace Zombineta.Auxilio
 {
@@ -117,11 +118,11 @@ namespace Zombineta.Auxilio
             recogidaSombra.effectDistance = new Vector2(3f, -3f);
             recogida.enabled = false;
 
-            // Aviso de poca nafta (solo en niveles con pelea): debajo del marco del combustible.
+            // Aviso de poca nafta (solo en niveles con pelea): a la derecha del panel de recursos.
             pocaNafta = NuevoTexto("Poca nafta", transform, font, 30, TextAnchor.UpperLeft, Vector2.zero, new Vector2(420f, 44f));
             var pr2 = pocaNafta.rectTransform;
             pr2.anchorMin = pr2.anchorMax = pr2.pivot = new Vector2(0f, 1f);
-            pr2.anchoredPosition = new Vector2(48f, -124f);
+            pr2.anchoredPosition = new Vector2(358f, -80f);
             pocaNafta.fontStyle = FontStyle.Bold;
             pocaNafta.color = new Color(1f, 0.35f, 0.25f);
             var ps2 = pocaNafta.gameObject.AddComponent<Outline>();
@@ -287,7 +288,7 @@ namespace Zombineta.Auxilio
 
             // Poca nafta (en los niveles con pelea): parpadea para que no sorprenda.
             bool aviso = !pelea && s.Phase == RunPhase.Running && c.peleaSinNafta &&
-                         s.Fuel > 0f && c.fuelMax > 0f && s.Fuel / c.fuelMax < 0.25f;
+                         s.Fuel > 0f && c.fuelMax > 0f && IndicadorDeRecurso.EstaBajo(s.Fuel / c.fuelMax);
             pocaNafta.enabled = aviso;
             if (aviso)
             {

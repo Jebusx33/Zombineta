@@ -71,7 +71,7 @@ cada tabla traen el nombre sin la extensión.
 | 6 | Salto y GolpeAlAire usan el mismo `player_swoosh` | Se confunden entre sí | Un sonido propio para el salto de la rampa: `moto_salto` |
 | 7 | `level_start.wav` y `Pinky Swings.mp3` están en el proyecto pero **no se usan** | — | Definir dónde van (ver secciones 5 y 9) |
 | 8 | El popup de radio de los apagones tiene el **campo de sonido vacío** | Aparece en silencio | Cargar los mensajes de radio (sección 7) |
-| 9 | 19 efectos siguen siendo placeholders sintetizados | El juego suena "de prototipo" | Reemplazarlos (marcados 🟡 abajo) |
+| 9 | 21 efectos siguen siendo placeholders sintetizados | El juego suena "de prototipo" | Reemplazarlos (marcados 🟡 abajo) |
 
 ---
 
@@ -206,9 +206,9 @@ cada tabla traen el nombre sin la extensión.
 | Sonido | Archivo | Cuándo suena | Estado | Prio | Prog. | Nota |
 |---|---|---|---|---|---|---|
 | Aviso de obstáculo en carril | `hud_lane_warning` | Aparece el icono de alerta del carril | ❌ | A | Sí | Pitido corto; tono distinto por carril ayuda a ubicarlo |
-| Poca nafta | `hud_low_fuel` | "¡POCA NAFTA!" parpadea (< 25 %) | ❌ | A | Sí | Pitido de reserva, no molesto |
-| Sensor de zombies | `hud_sensor_ping` | El radar del HUD con la distancia | ❌ | M | Sí | "Ping" que se acelera con la cercanía (como sensor de estacionamiento) |
-| Batería baja | `hud_low_battery` | Barra de batería en rojo | ❌ | B | Sí |  |
+| Poca nafta | `hud_low_fuel` | La nafta entra en el último 20 % y cada 5 s mientras se gasta | 🟡 | A | No | Pitido de reserva, no molesto |
+| Sensor de zombies | `hud_sensor_ping` | El radar del HUD con la distancia | ❌ | M | Sí | Por ahora no hace falta: el sensor está oculto |
+| Batería baja | `hud_low_battery` | La batería entra en el último 20 % y cada 5 s mientras se gasta | 🟡 | B | No | |
 | Popup de radio: apagón | `radio_blackout_01` a `_03` | El popup de radio, 5–10 s antes del apagón | ⚠️ | A | No | Campo listo, sin audio (problema 8) |
 | Popup de radio: otros avisos | Ver sección 7 | Puente, auxilio, poca nafta (sección 7) | ❌ | M | Sí |  |
 | Mitad del recorrido / hito | `hud_milestone` | La barra de progreso pasa un hito | ❌ | B | Sí |  |
@@ -292,11 +292,11 @@ conversación del 21/10.
 | Pelea: zombies (3.2) | 6 | 0 | 0 | 0 | 6 |
 | Pelea: drops (3.3) | 6 | 0 | 0 | 0 | 6 |
 | Pelea: refuerzo (3.4) | 9 | 0 | 0 | 0 | 9 |
-| HUD (4) | 8 | 0 | 1 | 1 | 6 |
+| HUD (4) | 8 | 0 | 3 | 1 | 4 |
 | Transiciones (5) | 10 | 1 | 2 | 0 | 7 |
 | Menús y pantallas (6) | 17 | 0 | 5 | 0 | 12 |
 | Radio (7) | 6 | 0 | 0 | 0 | 6 |
-| **Total** | **119** | **18** | **19** | **8** | **74** |
+| **Total** | **119** | **18** | **21** | **8** | **72** |
 
 **Por dónde empezar (prioridad A, en este orden):**
 1. Reexportar los tres audios de la moto (el motor está mudo).
@@ -306,7 +306,7 @@ conversación del 21/10.
 5. Bala que impacta, zombie que muere por bala y horda que retrocede.
 6. Corte de luz del apagón y el mensaje de radio.
 7. Inicio de nivel (`level_start.wav`, ya está), oleada nueva, pelea ganada.
-8. Avisos del HUD: obstáculo en carril, poca nafta.
+8. Aviso del HUD de obstáculo en carril.
 9. Reemplazar los placeholders 🟡 de choque, pickups, UI y stingers.
 
 ---

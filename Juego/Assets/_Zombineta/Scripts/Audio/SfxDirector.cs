@@ -5,6 +5,7 @@ using Zombineta.Enemies;
 using Zombineta.Flow;
 using Zombineta.Juego.Flow;
 using Zombineta.Level;
+using Zombineta.UI;
 
 namespace Zombineta.Audio
 {
@@ -23,6 +24,7 @@ namespace Zombineta.Audio
     public sealed class SfxDirector : MonoBehaviour
     {
         const float EpsilonRecurso = 0.0001f;
+        const float SegundosEntreAvisos = 5f;
 
         [SerializeField] RunController run;
 
@@ -31,6 +33,8 @@ namespace Zombineta.Audio
                  "da 0).")]
         [SerializeField] float distanciaAvisoZombie = 12f;
 
+        readonly AlertaDeRecurso alertaNafta = new AlertaDeRecurso(IndicadorDeRecurso.Bajo, SegundosEntreAvisos);
+        readonly AlertaDeRecurso alertaBateria = new AlertaDeRecurso(IndicadorDeRecurso.Bajo, SegundosEntreAvisos);
         readonly HashSet<LevelRuntime.Item> zombieAdelanteSonado = new HashSet<LevelRuntime.Item>();
 
         int lastHordeEpoch = -1;
@@ -87,6 +91,21 @@ namespace Zombineta.Audio
             prevAmmo = s.Ammo;
             prevGranadas = s.Granadas;
             prevBombas = s.Bombas;
+            alertaNafta.Reiniciar(Fraccion(s.Fuel, run.Config.fuelMax));
+            alertaBateria.Reiniciar(Fraccion(s.Battery, run.Config.batteryMax));
+        }
+
+        static float Fraccion(float valor, float maximo) => maximo <= 0f ? 0f : valor / maximo;
+
+        void AvisarRecursosBajos(RunState s)
+        {
+            var audio = AudioDirector.Instance;
+            if (audio == null || s.Phase != RunPhase.Running)
+                return;
+            if (alertaNafta.Avanzar(Fraccion(s.Fuel, run.Config.fuelMax), Time.deltaTime))
+                audio.Play(SonidoClave.HudNaftaBaja);
+            if (alertaBateria.Avanzar(Fraccion(s.Battery, run.Config.batteryMax), Time.deltaTime))
+                audio.Play(SonidoClave.HudBateriaBaja);
         }
 
         void LateUpdate()
@@ -99,6 +118,7 @@ namespace Zombineta.Audio
             explotoUnArma = false;
 
             var s = run.Sim.State;
+            AvisarRecursosBajos(s);
             prevFuel = s.Fuel;
             prevBattery = s.Battery;
             prevAmmo = s.Ammo;
