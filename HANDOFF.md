@@ -313,6 +313,7 @@ andando pero no se anuncia en ningún cartel**. Las acciones nuevas viven en el 
 | Pausa | Esc | Start |
 | Reinicio rápido (Game Over) | R | — (solo teclado, y solo en una escena de nivel suelta sin flujo: `LevelFlowBridge.Start` pone `run.QuickRestartEnabled = false` en cuanto hay flujo, así que en el juego normal R no hace nada) |
 | F2 ganar / F3 perder (editor y builds de desarrollo) | F2 / F3 | Select + RB / Select + LB |
+| Saltar al jefe del nivel (editor y builds de desarrollo) | F5 | — |
 
 Los dos juntos (turbo + retroceso) dan Normal, igual que D+A hoy. El stick de carril usa punto
 de presión 0,5 y libera por debajo de ≈0,375 (default del Input System): un empujón sostenido
@@ -596,6 +597,22 @@ y se listan en `Settings/AnimacionesAPie.asset`, junto con su ritmo. El 1.º y 2
 remate, `punch_high`. Para cambiar un dibujo, se reemplaza el PNG con el mismo nombre y el importador conserva el
 pivote en los pies. Son lienzos de 540 × 384; un cuadro nuevo tiene que mantener a la protagonista en el mismo lugar del
 lienzo. No hay poses de disparo, granada ni bomba: al disparar, el cuerpo solo retrocede un poco.
+
+**Jefe del Nivel 2 (01/11):** sale de `Game Design/Jefe_Nivel_2_Propuesta_v01.md`, con las decisiones de José
+sobre lo que estaba abierto. Es un duelo en moto en la Recta final: entra en el metro 3500, la horda se queda
+atrás y el camino se despeja. La moto tiene 3 corazones, la nafta no baja y sin corazones es Game Over. Reintentar
+vuelve al inicio del nivel. Se lo lastima solo aturdido y en su carril: bala 1, granada 3 sin importar el carril, sobre 12
+de vida. El disparo frontal recorre el carril fijado y el elevado cae como mortero sobre ese carril, junto a la moto.
+"Sobrecalentamiento" pasó a "Aturdido", porque el arte final es orgánico. Con 6 de vida o menos entra la
+embestida. Cada ciclo aparecen en el camino una caja de 4 balas y una granada, las que no estén al tope, y hay que ir a
+recogerlas: lo que se pasa de largo se pierde hasta el ciclo siguiente. La meta no cuenta con el jefe
+vivo: al vencerlo, el refugio aparece 60 m adelante. Los números están en `Settings/JefeNivel2.asset` y sin ese
+asset el nivel se juega como antes. F5 lleva directo al jefe. El HUD del duelo y los sonidos son provisorios.
+
+**Luces del Nivel 2 (01/11):** la autopista usa las mismas `LuzDeCiudad` que el Nivel 1. `tile_edificio_4`
+y `tile_edificio_5` tienen ventanas con máscara (`Art/Tileset/Level2/Luces/`) y los paredones 1 a 3 llevan
+un farol cálido que alumbra paredón y calle. Árboles y paredón pasaron a la capa `Arboles`: en `Fondo` los
+pintaba la luz de las ventanas. Hoy el Nivel 2 no tiene apagones, pero si se agrega uno estas luces se cortan solas.
 
 **HUD de la partida (01/11):** todos los niveles usan `Prefabs/HudPartida.prefab` (`HudPaneles`), con el
 arte en `Art/HUD/Partida/`: se ajusta en un solo lugar. Reemplaza a `HudArsenal` y `HudMunicionPelea`. Los

@@ -83,9 +83,10 @@ namespace Zombineta.Level
         /// zombies de frente desaparecen, como si ya se hubieran pasado, y no vuelven cuando la moto
         /// retoma. Los barriles se quedan (a pie explotan de un tiro) y los recursos tambien (la vista
         /// los esconde mientras se pelea). Lo despejado queda marcado: la vista lo conserva de
-        /// decorado durante la pelea, salvo los zombies de frente. Devuelve cuantos despejo.
+        /// decorado durante la pelea, salvo los zombies de frente. Con barriles, tambien se van ellos:
+        /// en el duelo con el jefe no sirven y tapan el carril. Devuelve cuantos despejo.
         /// </summary>
-        public int ClearZone(float from, float to)
+        public int ClearZone(float from, float to, bool barriles = false)
         {
             int cleared = 0;
             // Solo cuenta lo despejado en esta pelea.
@@ -101,7 +102,7 @@ namespace Zombineta.Level
                 var kind = item.Entry.kind;
                 // Los barriles no se despejan: a pie se les dispara, asi que los que quedaron en la arena sirven.
                 if (kind == LevelEntryKind.Obstacle || kind == LevelEntryKind.Ramp ||
-                    kind == LevelEntryKind.ZombieFront)
+                    kind == LevelEntryKind.ZombieFront || (barriles && kind == LevelEntryKind.Barrel))
                 {
                     item.Consumed = true;
                     item.Despejado = kind != LevelEntryKind.ZombieFront;

@@ -150,6 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta::Zombineta.UI.HudView
   run: {fileID: 1170739137}
   paneles: {fileID: 1851425114}
+  mostrarSensor: 0
   sensor: {fileID: 428659204}
   threatFill: {fileID: 0}
   threatDistance: {fileID: 1755319823}
@@ -527,6 +528,66 @@ MonoBehaviour:
   generatedKind: 6
   generatedVariant: 2
   generatedHeight: 0
+--- !u!1 &46085022
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 46085024}
+  - component: {fileID: 46085023}
+  m_Layer: 0
+  m_Name: Jefe
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &46085023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 46085022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75148e07105d7b749a15803f7aabfe0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Jefe.VistaDelJefe
+  run: {fileID: 1170739137}
+  animaciones: {fileID: 11400000, guid: 3363d7beee9687c44932b461a56179c2, type: 2}
+  material: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  escala: 1
+  escalaProyectil: 1.5
+  apoyoBajoElCarril: 0.3
+  alturaDeContacto: 0.8
+  alturaDelArco: 5
+  colorAviso: {r: 1, g: 0.15, b: 0.1, a: 0.55}
+  pulsoAviso: 3
+  anchoMarcaElevado: 2.6
+  colorAturdido: {r: 1, g: 0.82, b: 0.45, a: 1}
+  colorDano: {r: 1, g: 0.35, b: 0.3, a: 1}
+  cajaDeBalas: {fileID: 21300000, guid: 7fdd527898f310144af87c937c8921bf, type: 3}
+  granadaSuelta: {fileID: 21300000, guid: 0e7dcc86fe0c4c1c90f2e54a189fb465, type: 3}
+  altoRecolectable: 0.8
+--- !u!4 &46085024
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 46085022}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &53059454
 GameObject:
   m_ObjectHideFlags: 0
@@ -14128,9 +14189,10 @@ MonoBehaviour:
   peleaSinNafta: 1
   combustibleInicial: 0
   bidonesDesdePelea: 0
-  bidonesHastaMetro: 3300
+  bidonesHastaMetro: 3500
   reintentosPelea: 1
   peleaDidactica: 0
+  jefe: {fileID: 11400000, guid: cd077d558ab6e114c9c03c13dafcdcb9, type: 2}
   flotarRecolectables: 1
   flotarAltura: 0.1
   flotarVelocidad: 3
@@ -15544,6 +15606,7 @@ GameObject:
   - component: {fileID: 1317142481}
   - component: {fileID: 1317142485}
   - component: {fileID: 2141000001}
+  - component: {fileID: 2141000002}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -24523,6 +24586,22 @@ MonoBehaviour:
   colorTeclasArsenal: {r: 1, g: 0.82, b: 0.25, a: 1}
   segundosNota: 3
   segundosRecogida: 1.1
+--- !u!114 &2141000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1317142479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80afcc5f7219bd64883d218282752f71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Jefe.HudJefe
+  run: {fileID: 1170739137}
+  colorVida: {r: 0.86, g: 0.13, b: 0.1, a: 1}
+  colorVulnerable: {r: 1, g: 0.82, b: 0.25, a: 1}
+  colorCorazones: {r: 1, g: 0.3, b: 0.35, a: 1}
 --- !u!1 &2141000003
 GameObject:
   m_ObjectHideFlags: 0
@@ -24599,3 +24678,4 @@ SceneRoots:
   - {fileID: 1103504528}
   - {fileID: 1526355567}
   - {fileID: 2141000004}
+  - {fileID: 46085024}

@@ -48,7 +48,7 @@ namespace Zombineta.UI
             GUILayout.Label($"BALAS     {s.Ammo}", style);
             GUILayout.Label($"HORDA a   {s.Gap,6:0.0} m", style);
             GUILayout.Label(
-                $"AVANCE    {s.PlayerX,7:0} / {run.Config.goalDistance:0} m " +
+                $"AVANCE    {s.PlayerX,7:0} / {run.Sim.Meta:0} m " +
                 $"({run.Sim.Progress01 * 100f:0}%)", style);
             GUILayout.Label(
                 $"MODO      {s.Mode}   carril {s.Lane}   " +

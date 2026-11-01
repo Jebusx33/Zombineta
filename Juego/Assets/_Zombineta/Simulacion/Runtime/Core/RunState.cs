@@ -27,6 +27,8 @@ namespace Zombineta.Core
         OutOfFuel,
         /// <summary>Se quedo sin vida peleando a pie.</summary>
         Derribada,
+        /// <summary>El jefe le saco todos los corazones a la moto.</summary>
+        AlcanzadaPorJefe,
     }
 
     public enum PickupKind

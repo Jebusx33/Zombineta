@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65af1735310b6024fba6c9e06b4f48a2, type: 3}
+  m_Name: JefeNivel2
+  m_EditorClassIdentifier: Zombineta.Simulacion::Zombineta.Jefe.JefeConfig
+  metroEntrada: 3500
+  segundosEntrada: 2.5
+  separacionEntrada: 30
+  despejarDesde: 35
+  hordaEnDuelo: 0.5
+  vida: 12
+  vidaSegundaMitad: 6
+  danoBala: 1
+  danoGranada: 3
+  corazones: 3
+  invulnerable: 2
+  frenoPorGolpe: 0.4
+  separacion: 11
+  velocidadCarril: 4
+  pausaEntreAcciones: 0.6
+  patronPrimeraMitad: 000000000100000003000000i
+  patronSegundaMitad: 000000000200000003000000010000000200000003000000i
+  anticipacion: 0.95
+  disparoFrontal: 0.5
+  disparoElevado: 0.6
+  emisionElevado: 0.18
+  bocaFrontal: 3.4
+  bocaElevado: 2.2
+  velocidadProyectil: 13
+  vueloElevado: 1.1
+  radioProyectil: 0.2
+  salidaProyectil: 22
+  vidaProyectil: 4
+  impacto: 0.28
+  avisoEmbestida: 1.2
+  avanceEmbestida: 0.44
+  separacionEmbestida: -2
+  frente: 3
+  regresoEmbestida: 1.5
+  segundosAturdido: 3.5
+  dano: 0.33
+  balasPorCaja: 4
+  cajaAdelante: 40
+  granadaAdelante: 52
+  caidaEnPantalla: 2.4
+  metrosAlRefugio: 60

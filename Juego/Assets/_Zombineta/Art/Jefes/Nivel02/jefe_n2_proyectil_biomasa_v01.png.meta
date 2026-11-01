@@ -1,0 +1,352 @@
+fileFormatVersion: 2
+guid: bf442791cc83ef400f17b1c245a7f0d2
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 21300001
+    second: jefe_n2_proyectil_vuelo_01
+  - first:
+      213: 21300002
+    second: jefe_n2_proyectil_vuelo_02
+  - first:
+      213: 21300003
+    second: jefe_n2_proyectil_vuelo_03
+  - first:
+      213: 21300004
+    second: jefe_n2_proyectil_vuelo_04
+  - first:
+      213: 21300005
+    second: jefe_n2_proyectil_impacto_01
+  - first:
+      213: 21300006
+    second: jefe_n2_proyectil_impacto_02
+  - first:
+      213: 21300007
+    second: jefe_n2_proyectil_impacto_03
+  - first:
+      213: 21300008
+    second: jefe_n2_proyectil_impacto_04
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 400
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 0
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: jefe_n2_proyectil_vuelo_01
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 552
+        width: 360
+        height: 172
+      alignment: 9
+      pivot: {x: 0.673043, y: 0.494704}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df8454c684bb21b6a7895ccbab4bddd9
+      internalID: 21300001
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jefe_n2_proyectil_vuelo_02
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 550
+        width: 349
+        height: 175
+      alignment: 9
+      pivot: {x: 0.670321, y: 0.4852}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b9d7d3377a5d761fc387bc21d139e204
+      internalID: 21300002
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jefe_n2_proyectil_vuelo_03
+      rect:
+        serializedVersion: 2
+        x: 946
+        y: 548
+        width: 348
+        height: 177
+      alignment: 9
+      pivot: {x: 0.662012, y: 0.484513}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af62a02017bf00748915aa864d9eda11
+      internalID: 21300003
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jefe_n2_proyectil_vuelo_04
+      rect:
+        serializedVersion: 2
+        x: 1377
+        y: 552
+        width: 353
+        height: 171
+      alignment: 9
+      pivot: {x: 0.684968, y: 0.495617}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 800c5047b1630a4c4eec52df580be78a
+      internalID: 21300004
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jefe_n2_proyectil_impacto_01
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 131
+        width: 332
+        height: 180
+      alignment: 9
+      pivot: {x: 0.990964, y: 0.502778}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec78279675bfb0752d445047626ffd4f
+      internalID: 21300005
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jefe_n2_proyectil_impacto_02
+      rect:
+        serializedVersion: 2
+        x: 522
+        y: 89
+        width: 322
+        height: 289
+      alignment: 9
+      pivot: {x: 0.990683, y: 0.50173}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1fe6e452cbaaccd7175f91dfa8647de6
+      internalID: 21300006
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jefe_n2_proyectil_impacto_03
+      rect:
+        serializedVersion: 2
+        x: 983
+        y: 103
+        width: 294
+        height: 230
+      alignment: 9
+      pivot: {x: 0.989796, y: 0.502174}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97812e42222326002c3607625dacc271
+      internalID: 21300007
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jefe_n2_proyectil_impacto_04
+      rect:
+        serializedVersion: 2
+        x: 1472
+        y: 126
+        width: 237
+        height: 200
+      alignment: 9
+      pivot: {x: 0.987342, y: 0.5025}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7888d6329b8533d8dddcde8d80570eb7
+      internalID: 21300008
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID: 3e4d25d6238b3f521edc43c243e3ed72
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      jefe_n2_proyectil_vuelo_01: 21300001
+      jefe_n2_proyectil_vuelo_02: 21300002
+      jefe_n2_proyectil_vuelo_03: 21300003
+      jefe_n2_proyectil_vuelo_04: 21300004
+      jefe_n2_proyectil_impacto_01: 21300005
+      jefe_n2_proyectil_impacto_02: 21300006
+      jefe_n2_proyectil_impacto_03: 21300007
+      jefe_n2_proyectil_impacto_04: 21300008
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

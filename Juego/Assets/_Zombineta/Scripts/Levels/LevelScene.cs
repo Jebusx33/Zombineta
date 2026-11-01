@@ -58,6 +58,9 @@ namespace Zombineta.Juego.Levels
                  "la granada y la 4.ª la bomba, con el icono parpadeando en el HUD). Solo el primer nivel, donde se presenta el arsenal.")]
         [SerializeField] bool peleaDidactica;
 
+        [Tooltip("El jefe del nivel. Vacio = sin jefe.")]
+        [SerializeField] Zombineta.Jefe.JefeConfig jefe;
+
         [Header("Recolectables")]
         [Tooltip("Los recolectables (nafta, bateria, municion) flotan: suben y bajan despacio.")]
         [SerializeField] bool flotarRecolectables = true;
@@ -148,6 +151,7 @@ namespace Zombineta.Juego.Levels
             copy.bidonesHastaMetro = bidonesHastaMetro;
             copy.reintentosPelea = reintentosPelea;
             copy.peleaDidactica = peleaDidactica;
+            copy.jefe = jefe;
             return copy;
         }
 

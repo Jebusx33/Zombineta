@@ -159,6 +159,15 @@ namespace Zombineta.Audio
 
             if ((events & RunEvent.PickedUp) != 0)
                 SonarPickups(audio, state);
+
+            // El jefe, con sonidos prestados hasta que tenga los suyos (ver Audio-lista-de-sonidos.md).
+            if ((events & RunEvent.JefeApunta) != 0) audio.Play(SonidoClave.HudBateriaBaja);
+            if ((events & RunEvent.JefeDispara) != 0) audio.Play(SonidoClave.Atropello);
+            if ((events & RunEvent.JefeImpacto) != 0) audio.Play(SonidoClave.ExplosionBarril);
+            if ((events & RunEvent.JefeEmbiste) != 0) audio.Play(SonidoClave.ZombieAdelante);
+            if ((events & RunEvent.JefeHerido) != 0) audio.Play(SonidoClave.Golpe1);
+            if ((events & RunEvent.JefeRebota) != 0) audio.Play(SonidoClave.GolpeAlAire);
+            if ((events & RunEvent.JefeDerrotado) != 0) audio.Play(SonidoClave.BombaExplota);
         }
 
         /// <summary>

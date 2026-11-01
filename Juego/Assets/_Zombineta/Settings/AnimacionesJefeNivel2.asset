@@ -1,0 +1,185 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33460def3246d7b41b348e6001da3321, type: 3}
+  m_Name: AnimacionesJefeNivel2
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Jefe.AnimacionesJefe
+  quieto:
+    cuadros:
+    - {fileID: 21300004, guid: 62d7c40d02a8f48ad5e00eb8af764fdc, type: 3}
+    segundos:
+    - 0.3
+    escala:
+    - 1.026966
+    enBucle: 0
+  anticipacion:
+    cuadros:
+    - {fileID: 21300001, guid: 120e8ebb773860630ccd33191fc43ae8, type: 3}
+    - {fileID: 21300002, guid: 120e8ebb773860630ccd33191fc43ae8, type: 3}
+    - {fileID: 21300003, guid: 120e8ebb773860630ccd33191fc43ae8, type: 3}
+    - {fileID: 21300004, guid: 120e8ebb773860630ccd33191fc43ae8, type: 3}
+    segundos:
+    - 0.15
+    - 0.2
+    - 0.25
+    - 0.35
+    escala:
+    - 1.010129
+    - 1.000912
+    - 0.969081
+    - 0.999089
+    enBucle: 0
+  ataqueFrontal:
+    cuadros:
+    - {fileID: 21300001, guid: 62d7c40d02a8f48ad5e00eb8af764fdc, type: 3}
+    - {fileID: 21300002, guid: 62d7c40d02a8f48ad5e00eb8af764fdc, type: 3}
+    - {fileID: 21300003, guid: 62d7c40d02a8f48ad5e00eb8af764fdc, type: 3}
+    - {fileID: 21300004, guid: 62d7c40d02a8f48ad5e00eb8af764fdc, type: 3}
+    segundos:
+    - 0.09
+    - 0.12
+    - 0.14
+    - 0.15
+    escala:
+    - 1.002193
+    - 0.997817
+    - 0.989177
+    - 1.026966
+    enBucle: 0
+  ataqueElevado:
+    cuadros:
+    - {fileID: 21300001, guid: 5ad3071a94713a7666828f22902a7cae, type: 3}
+    - {fileID: 21300002, guid: 5ad3071a94713a7666828f22902a7cae, type: 3}
+    - {fileID: 21300003, guid: 5ad3071a94713a7666828f22902a7cae, type: 3}
+    - {fileID: 21300004, guid: 5ad3071a94713a7666828f22902a7cae, type: 3}
+    segundos:
+    - 0.18
+    - 0.1
+    - 0.16
+    - 0.16
+    escala:
+    - 1.00625
+    - 1.000888
+    - 0.981707
+    - 0.999113
+    enBucle: 0
+  embestida:
+    cuadros:
+    - {fileID: 21300001, guid: 6e2cd350bbb6b3b79e8ab5a472cb2175, type: 3}
+    - {fileID: 21300002, guid: 6e2cd350bbb6b3b79e8ab5a472cb2175, type: 3}
+    - {fileID: 21300003, guid: 6e2cd350bbb6b3b79e8ab5a472cb2175, type: 3}
+    - {fileID: 21300004, guid: 6e2cd350bbb6b3b79e8ab5a472cb2175, type: 3}
+    segundos:
+    - 0.35
+    - 0.14
+    - 0.3
+    - 0.2
+    escala:
+    - 0.998221
+    - 1.008993
+    - 0.960616
+    - 1.001786
+    enBucle: 0
+  aturdido:
+    cuadros:
+    - {fileID: 21300001, guid: 930672704fbbe20f17d8b2d3ea8a5454, type: 3}
+    - {fileID: 21300002, guid: 930672704fbbe20f17d8b2d3ea8a5454, type: 3}
+    - {fileID: 21300004, guid: 930672704fbbe20f17d8b2d3ea8a5454, type: 3}
+    - {fileID: 21300002, guid: 930672704fbbe20f17d8b2d3ea8a5454, type: 3}
+    segundos:
+    - 0.2
+    - 0.22
+    - 0.2
+    - 0.22
+    escala:
+    - 0.96543
+    - 1.046618
+    - 1.029676
+    - 1.046618
+    enBucle: 1
+  recuperacion:
+    cuadros:
+    - {fileID: 21300003, guid: 930672704fbbe20f17d8b2d3ea8a5454, type: 3}
+    segundos:
+    - 0.3
+    escala:
+    - 0.971986
+    enBucle: 0
+  dano:
+    cuadros:
+    - {fileID: 21300001, guid: 6978fadac1d1073a8fe4a921bab1f79b, type: 3}
+    - {fileID: 21300002, guid: 6978fadac1d1073a8fe4a921bab1f79b, type: 3}
+    - {fileID: 21300003, guid: 6978fadac1d1073a8fe4a921bab1f79b, type: 3}
+    - {fileID: 21300004, guid: 6978fadac1d1073a8fe4a921bab1f79b, type: 3}
+    segundos:
+    - 0.05
+    - 0.08
+    - 0.08
+    - 0.12
+    escala:
+    - 0.996522
+    - 1.008803
+    - 0.998258
+    - 1.001748
+    enBucle: 0
+  muerte:
+    cuadros:
+    - {fileID: 21300001, guid: 2e9b5b5e0ac1fc1e29f754c2b3e1cf98, type: 3}
+    - {fileID: 21300002, guid: 2e9b5b5e0ac1fc1e29f754c2b3e1cf98, type: 3}
+    - {fileID: 21300003, guid: 2e9b5b5e0ac1fc1e29f754c2b3e1cf98, type: 3}
+    - {fileID: 21300004, guid: 2e9b5b5e0ac1fc1e29f754c2b3e1cf98, type: 3}
+    segundos:
+    - 0.15
+    - 0.25
+    - 0.35
+    - 0.8
+    escala:
+    - 0.994746
+    - 1.00531
+    - 0.982699
+    - 1.012478
+    enBucle: 0
+  proyectilVuelo:
+    cuadros:
+    - {fileID: 21300001, guid: bf442791cc83ef400f17b1c245a7f0d2, type: 3}
+    - {fileID: 21300002, guid: bf442791cc83ef400f17b1c245a7f0d2, type: 3}
+    - {fileID: 21300003, guid: bf442791cc83ef400f17b1c245a7f0d2, type: 3}
+    - {fileID: 21300004, guid: bf442791cc83ef400f17b1c245a7f0d2, type: 3}
+    segundos:
+    - 0.08
+    - 0.08
+    - 0.08
+    - 0.08
+    escala:
+    - 1
+    - 1
+    - 1
+    - 1
+    enBucle: 1
+  proyectilImpacto:
+    cuadros:
+    - {fileID: 21300005, guid: bf442791cc83ef400f17b1c245a7f0d2, type: 3}
+    - {fileID: 21300006, guid: bf442791cc83ef400f17b1c245a7f0d2, type: 3}
+    - {fileID: 21300007, guid: bf442791cc83ef400f17b1c245a7f0d2, type: 3}
+    - {fileID: 21300008, guid: bf442791cc83ef400f17b1c245a7f0d2, type: 3}
+    segundos:
+    - 0.04
+    - 0.06
+    - 0.08
+    - 0.1
+    escala:
+    - 1
+    - 1
+    - 1
+    - 1
+    enBucle: 0
+  bocaFrontal: {x: 2.58, y: 1.83}
+  bocaElevado: {x: 1.68, y: 3.23}

@@ -153,6 +153,9 @@ namespace Zombineta.Core
         /// (LevelScene.RuntimeConfig) en su copia. Sin tramos, todo se comporta como siempre.</summary>
         [System.NonSerialized] public System.Collections.Generic.List<Zombineta.Level.Tramo> tramos;
 
+        /// <summary>El jefe del nivel en curso. Lo pone el nivel en su copia, como los tramos. Null = sin jefe.</summary>
+        [System.NonSerialized] public Zombineta.Jefe.JefeConfig jefe;
+
         [Header("Disparo y explosiones")]
         [Tooltip("Alcance de la bala hacia atras, en metros.")]
         public float shotRangeMeters = 60f;

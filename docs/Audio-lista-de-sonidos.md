@@ -71,7 +71,7 @@ cada tabla traen el nombre sin la extensión.
 | 6 | Salto y GolpeAlAire usan el mismo `player_swoosh` | Se confunden entre sí | Un sonido propio para el salto de la rampa: `moto_salto` |
 | 7 | `level_start.wav` y `Pinky Swings.mp3` están en el proyecto pero **no se usan** | — | Definir dónde van (ver secciones 5 y 9) |
 | 8 | El popup de radio de los apagones tiene el **campo de sonido vacío** | Aparece en silencio | Cargar los mensajes de radio (sección 7) |
-| 9 | 21 efectos siguen siendo placeholders sintetizados | El juego suena "de prototipo" | Reemplazarlos (marcados 🟡 abajo) |
+| 9 | 28 efectos siguen siendo placeholders sintetizados | El juego suena "de prototipo" | Reemplazarlos (marcados 🟡 abajo) |
 
 ---
 
@@ -138,6 +138,20 @@ cada tabla traen el nombre sin la extensión.
 | Postes que titilan | `world_pole_flicker` | Faroles del escenario que parpadean | ❌ | B | Sí | Chisporroteo posicional |
 | Autos abandonados (Nivel 2) | `world_car_alarm_01` a `_03` | Al pasar junto a autos del embotellamiento | ❌ | M | Sí | Alarmas de auto, bocinas trabadas, radios encendidas |
 | Lluvia (si se suma al nivel) | `amb_rain` | Loop | ❌ | B | Sí | Solo si el arte suma lluvia |
+
+### 2.5 Jefe del Nivel 2 — diegético
+
+Hoy usa sonidos prestados de otras acciones. Cada uno necesita su archivo y una clave nueva en `SonidoClave`.
+
+| Sonido | Archivo | Cuándo suena | Estado | Prio | Prog. | Nota |
+|---|---|---|---|---|---|---|
+| Fija el carril | `boss_aim` | Empieza el aviso de un ataque | 🟡 | A | Sí | Es la señal para esquivar. Hoy suena el aviso de batería baja |
+| Disparo orgánico | `boss_shot` | Suelta el proyectil, frontal o elevado | 🟡 | A | Sí | Húmedo y pesado, sin metal. Hoy suena el atropello |
+| Impacto en el piso | `boss_impact` | Cae el proyectil elevado | 🟡 | A | Sí | Hoy suena la explosión del barril |
+| Embestida | `boss_charge` | Se lanza por el carril | 🟡 | A | Sí | Orugas aceleradas y un rugido. Hoy suena el zombie de frente |
+| Recibe daño | `boss_hurt` | Le dan estando aturdido | 🟡 | M | Sí | Hoy suena el primer golpe de la pelea |
+| Rebote | `boss_bounce` | Le dan cuando no se lo puede lastimar | 🟡 | M | Sí | Tiene que sonar a tiro inútil. Hoy suena el golpe al aire |
+| Derrota | `boss_death` | Se le acaba la vida | 🟡 | A | Sí | Un quejido largo y las orugas que se paran. Hoy suena la explosión de la bomba |
 
 ---
 
@@ -288,6 +302,7 @@ conversación del 21/10.
 | Recolectables (2.2) | 6 | 0 | 5 | 0 | 1 |
 | Zombies y horda (2.3) | 10 | 3 | 2 | 0 | 5 |
 | Mundo y ambiente (2.4) | 7 | 0 | 0 | 2 | 5 |
+| Jefe del Nivel 2 (2.5) | 7 | 0 | 7 | 0 | 0 |
 | Pelea: protagonista (3.1) | 15 | 8 | 0 | 1 | 6 |
 | Pelea: zombies (3.2) | 6 | 0 | 0 | 0 | 6 |
 | Pelea: drops (3.3) | 6 | 0 | 0 | 0 | 6 |
@@ -296,7 +311,7 @@ conversación del 21/10.
 | Transiciones (5) | 10 | 1 | 2 | 0 | 7 |
 | Menús y pantallas (6) | 17 | 0 | 5 | 0 | 12 |
 | Radio (7) | 6 | 0 | 0 | 0 | 6 |
-| **Total** | **119** | **18** | **21** | **8** | **72** |
+| **Total** | **126** | **18** | **28** | **8** | **72** |
 
 **Por dónde empezar (prioridad A, en este orden):**
 1. Reexportar los tres audios de la moto (el motor está mudo).

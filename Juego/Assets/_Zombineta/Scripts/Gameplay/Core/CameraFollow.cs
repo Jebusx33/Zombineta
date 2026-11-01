@@ -153,7 +153,7 @@ namespace Zombineta.Core
                     PlayerX = run.ToWorldX(run.Sim.Pelea.Centro) - config.lookAhead + mitad,
                     PlayerY = run.LaneToWorldY(1f),
                     GapMeters = 15f,
-                    GoalX = run.ToWorldX(run.Config.goalDistance),
+                    GoalX = run.ToWorldX(run.Sim.Meta),
                 };
             }
 
@@ -165,7 +165,7 @@ namespace Zombineta.Core
                 // Turbo "de verdad": apretar D sin nafta, aturdida o en el aire no acelera.
                 Turbo = s.Mode == DriveMode.Turbo && s.Fuel > 0f && s.StunRemaining <= 0f && !s.Airborne,
                 JumpHeight = s.Airborne ? run.HeightToWorld(s.Height) : 0f,
-                GoalX = run.ToWorldX(run.Config.goalDistance),
+                GoalX = run.ToWorldX(run.Sim.Meta),
             };
         }
 
@@ -227,6 +227,18 @@ namespace Zombineta.Core
                 director.AddTrauma(0.4f);
                 director.Punch(0f, -0.2f);
                 Hitstop(0.08f);
+            }
+            // El jefe: entra pesado, cada herida se siente y al caer frena el tiempo un instante.
+            if ((events & RunEvent.JefeEntra) != 0)
+                director.AddTrauma(0.3f);
+            if ((events & RunEvent.JefeEmbiste) != 0)
+                director.AddTrauma(0.2f);
+            if ((events & RunEvent.JefeHerido) != 0)
+                director.AddTrauma(0.12f);
+            if ((events & RunEvent.JefeDerrotado) != 0)
+            {
+                director.AddTrauma(0.6f);
+                CamaraLenta(0.7f, 0.35f);
             }
             // Ganar la pelea: el ultimo zombie suelta el bidon.
             if ((events & RunEvent.PeleaGanada) != 0)

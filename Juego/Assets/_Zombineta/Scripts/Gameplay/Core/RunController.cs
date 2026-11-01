@@ -121,6 +121,10 @@ namespace Zombineta.Core
                 level.ClearZone(centro - ancho, centro + ancho);
             }
 
+            // El duelo necesita el camino libre. Lo que ya se ve queda: se lo pasa durante la entrada del jefe.
+            if (level != null && (events & RunEvent.JefeEntra) != 0)
+                level.ClearZone(sim.State.PlayerX + sim.Config.jefe.despejarDesde, float.MaxValue, true);
+
             return events;
         }
 

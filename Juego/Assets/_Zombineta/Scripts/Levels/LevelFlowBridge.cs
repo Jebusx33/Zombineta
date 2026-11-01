@@ -118,6 +118,13 @@ namespace Zombineta.Juego.Levels
                     state.Phase = RunPhase.Lost;
                     state.Loss = LossReason.CaughtByHorde;
                 }
+                else if (Keyboard.current != null && Keyboard.current.f5Key.wasPressedThisFrame)
+                {
+                    // Directo al jefe del nivel, sin recorrerlo. Sin jefe no hace nada.
+                    run.Sim.SaltarAlJefe();
+                    if (cameraRig != null)
+                        cameraRig.SnapNextFrame();
+                }
             }
 #endif
 

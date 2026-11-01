@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Zombineta.Enemies;
+using Zombineta.Jefe;
 using Zombineta.Player;
 
 namespace Zombineta.Core
@@ -68,6 +69,25 @@ namespace Zombineta.Core
         BombaDenegada = 1L << 37,
         /// <summary>Vencio la ultima oleada: el ultimo zombie suelta un bidon y hay que ir a buscarlo.</summary>
         PeleaGanada = 1L << 38,
+        /// <summary>Empieza el duelo con el jefe.</summary>
+        JefeEntra = 1L << 39,
+        /// <summary>El jefe fijo un carril: empieza el aviso de un ataque.</summary>
+        JefeApunta = 1L << 40,
+        /// <summary>El jefe solto el proyectil.</summary>
+        JefeDispara = 1L << 41,
+        /// <summary>El proyectil elevado cayo al piso.</summary>
+        JefeImpacto = 1L << 42,
+        /// <summary>El jefe se lanza en la embestida.</summary>
+        JefeEmbiste = 1L << 43,
+        /// <summary>Le saco un corazon a la moto.</summary>
+        JefeGolpea = 1L << 44,
+        /// <summary>Quedo aturdido: se lo puede lastimar.</summary>
+        JefeAturdido = 1L << 45,
+        /// <summary>Le dieron estando aturdido.</summary>
+        JefeHerido = 1L << 46,
+        /// <summary>Le dieron cuando no se lo puede lastimar.</summary>
+        JefeRebota = 1L << 47,
+        JefeDerrotado = 1L << 48,
     }
 
     /// <summary>
@@ -88,6 +108,20 @@ namespace Zombineta.Core
 
         /// <summary>La pelea a pie: se arma cada vez que se acaba la nafta.</summary>
         public Zombineta.Auxilio.PeleaSimulation Pelea { get; }
+
+        /// <summary>El duelo con el jefe. Sin jefe en el nivel no hace nada.</summary>
+        public JefeSimulation Jefe { get; }
+
+        float meta;
+
+        /// <summary>
+        /// Los metros del refugio. Con el jefe vivo queda siempre por delante: el duelo dura lo que
+        /// dure, sin cruzar la meta. Al derrotarlo aparece a poca distancia de donde cayo.
+        /// </summary>
+        public float Meta => Jefe.Peleando ? Mathf.Max(config.goalDistance, State.PlayerX + 100f) : meta;
+
+        /// <summary>El jefe cayo: el refugio queda a esos metros. Lo llama JefeSimulation.</summary>
+        public void FijarMeta(float metros) => meta = metros;
 
         public GameConfig Config => config;
 
@@ -127,8 +161,14 @@ namespace Zombineta.Core
         public float OscuridadDelTramo =>
             Zombineta.Level.Tramos.OscuridadAt(config.tramos, State.PlayerX, config.tramoDarknessFadeMeters);
 
-        public float Progress01 =>
-            config.goalDistance <= 0f ? 0f : Mathf.Clamp01(State.PlayerX / config.goalDistance);
+        public float Progress01
+        {
+            get
+            {
+                float hasta = Jefe.Peleando ? config.goalDistance : meta;
+                return hasta <= 0f ? 0f : Mathf.Clamp01(State.PlayerX / hasta);
+            }
+        }
 
         public RunSimulation(GameConfig config)
         {
@@ -138,12 +178,15 @@ namespace Zombineta.Core
             Horde = new HordeSimulation(this.config, this.config.zombies, this.config.hordeSeed);
             Pelea = new Zombineta.Auxilio.PeleaSimulation(this.config, State, Horde, this.config.hordeSeed + 1);
             Pelea.Run = this;
+            Jefe = new JefeSimulation(this.config, this);
             Reset();
         }
 
         public void Reset()
         {
             State.PlayerX = 0f;
+            meta = config.goalDistance;
+            Jefe.Reset();
             Horde.Reset(-config.startingGap);
             State.HordeX = Horde.FrontX;
             State.Lane = 1;
@@ -292,6 +335,7 @@ namespace Zombineta.Core
 
             State.PlayerX = Mathf.Max(0f, State.PlayerX + PlayerSpeed * dt);
             events |= AvanzarGranada(dt);
+            events |= Jefe.Step(dt);
 
             Horde.RetrocesoVelocidad = State.RetrocesoRestante > 0f && config.retrocesoSegundos > 0f
                 ? config.retrocesoMetros / config.retrocesoSegundos
@@ -301,6 +345,9 @@ namespace Zombineta.Core
             if (State.FrenadoRestante > 0f && config.frenadoGapHorda > 0f && config.hordeBaseSpeed > 0f &&
                 State.Gap < config.frenadoGapHorda + 4f)
                 factorHorda = Mathf.Min(factorHorda, PlayerSpeed / config.hordeBaseSpeed);
+            // En el duelo la horda se queda atras: la persecucion es del jefe.
+            if (Jefe.EnDuelo)
+                factorHorda = config.jefe.hordaEnDuelo;
             Horde.Step(dt, factorHorda);
             State.HordeX = Horde.FrontX;
             HordeSpeed = Horde.FrontSpeed;
@@ -414,7 +461,7 @@ namespace Zombineta.Core
                 return RunEvent.None;
 
             State.GranadaVuelo = 0f;
-            var ev = Explode(State.GranadaX, State.Lane) | RunEvent.GranadaExplota;
+            var ev = Explode(State.GranadaX, State.Lane) | RunEvent.GranadaExplota | Jefe.RecibirExplosion(State.GranadaX);
             Horde.SinRegenerar = Mathf.Max(Horde.SinRegenerar, config.hordaSinRegenerar);
             return ev;
         }
@@ -432,6 +479,12 @@ namespace Zombineta.Core
             float from = State.PlayerX;
             int lane = State.Lane;
             float range = config.shotRangeMeters;
+
+            if (Jefe.RecibirBala(lane, range, out var contraElJefe))
+            {
+                Horde.Tracer(from, Jefe.X, lane);
+                return RunEvent.Shot | contraElJefe;
+            }
 
             // Pega en el primer zombie que encuentra hacia atras. (Los barriles ya no explotan en la moto:
             // solo en la pelea a pie.)
@@ -499,7 +552,8 @@ namespace Zombineta.Core
 
         void BurnFuel(float dt)
         {
-            if (State.Fuel <= 0f || State.StunRemaining > 0f)
+            // En el duelo no se gasta: lo que se juega son los corazones de la moto.
+            if (State.Fuel <= 0f || State.StunRemaining > 0f || Jefe.EnDuelo)
                 return;
 
             float multiplier;
@@ -626,6 +680,9 @@ namespace Zombineta.Core
 
         RunEvent CheckEndConditions()
         {
+            if (State.Phase != RunPhase.Running)
+                return RunEvent.None;
+
             // Sin nafta no se pierde: se baja y se pelea a pie, cada vez que pase. Antes la moto
             // frena de a poco (paradaSegundos): se ve que se queda sin nafta y despues se baja.
             if (State.Fuel <= 0f && !State.Airborne && Pelea.PuedeEmpezar)
@@ -643,7 +700,7 @@ namespace Zombineta.Core
                     return EmpezarPelea();
 
                 // Todavia frenando: la horda no la pierde en este rato, pero si la inercia la lleva a la meta, gana.
-                if (State.PlayerX >= config.goalDistance)
+                if (LlegoAlRefugio)
                 {
                     State.FrenadoRestante = -1f;
                     State.Phase = RunPhase.Won;
@@ -654,14 +711,14 @@ namespace Zombineta.Core
             if (State.FrenadoRestante >= 0f && State.Fuel > 0f)
                 State.FrenadoRestante = -1f;   // llego a un bidon a tiempo
 
-            if (State.HordeX >= State.PlayerX)
+            if (State.HordeX >= State.PlayerX && !Jefe.EnDuelo)
             {
                 State.Phase = RunPhase.Lost;
                 State.Loss = State.Fuel <= 0f ? LossReason.OutOfFuel : LossReason.CaughtByHorde;
                 return RunEvent.Lost;
             }
 
-            if (State.PlayerX >= config.goalDistance)
+            if (LlegoAlRefugio)
             {
                 State.Phase = RunPhase.Won;
                 return RunEvent.Won;
@@ -669,6 +726,9 @@ namespace Zombineta.Core
 
             return RunEvent.None;
         }
+
+        // Con un jefe por vencer, el refugio todavia no cuenta.
+        bool LlegoAlRefugio => !Jefe.Pendiente && State.PlayerX >= meta;
 
         // --- Eventos disparados por triggers de la escena --------------------
 
@@ -732,6 +792,16 @@ namespace Zombineta.Core
             State.LaunchSpin = config.launchSpinPerExcessSpeed *
                                Mathf.Max(0f, velocidadBase - config.normalSpeed);
             return RunEvent.Launched;
+        }
+
+        /// <summary>Pruebas: deja la moto justo antes del duelo, con la horda a la distancia de la largada.</summary>
+        public void SaltarAlJefe()
+        {
+            if (config.jefe == null)
+                return;
+            State.PlayerX = Mathf.Max(0f, config.jefe.metroEntrada - 15f);
+            Horde.Reset(State.PlayerX - config.startingGap);
+            State.HordeX = Horde.FrontX;
         }
 
         /// <summary>Si la moto esta volando a esa altura (con la tolerancia de los pickups aereos).</summary>

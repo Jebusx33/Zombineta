@@ -53,6 +53,8 @@ Testeada con ~280+ tests EditMode.
 | `HordeSimulation` | Horda como colección de individuos con posición y carril |
 | `LevelRuntime` | Recorre el `LevelDefinition` y detecta colisiones con pickups/barriles/rampas |
 | `LevelDefinition` | ScriptableObject que describe el recorrido (generado o a mano) |
+| `JefeSimulation` | El duelo en moto con el jefe: patrón, ataques, vida y corazones |
+| `JefeConfig` | ScriptableObject con los números del duelo. El nivel que lo asigna tiene jefe |
 
 ### Capa Unity (`Scripts/`, namespace `Zombineta.Core` / `Zombineta.UI` / etc.)
 
@@ -112,6 +114,10 @@ escena. `LevelScene` (componente en la escena) construye el `LevelDefinition` y 
 `RunController` en `Awake`.
 
 El editor `Zombineta > Nivel` provee paleta de objetos y acciones de nivel.
+
+El jefe se activa con el campo `Jefe` de `LevelScene`. Hoy solo lo usa `Level_02`, con
+`Settings/JefeNivel2.asset`. Lo que se ve está en `VistaDelJefe` y `HudJefe`, y los dibujos en
+`Settings/AnimacionesJefeNivel2.asset`.
 
 ---
 

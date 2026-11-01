@@ -19,6 +19,18 @@ namespace Zombineta.Level
         // configuracion actual), para que la moto y la horda siempre lo tapen al cruzarlo.
         const int SortingOrder = 500;
 
+        // Con un jefe vivo el refugio no se ve, y al vencerlo aparece adelante de la moto.
+        void LateUpdate()
+        {
+            if (run == null || gate == null || run.Sim == null)
+                return;
+
+            bool visible = !run.Sim.Jefe.Peleando;
+            if (gate.gameObject.activeSelf != visible)
+                gate.gameObject.SetActive(visible);
+            gate.position = new Vector3(run.ToWorldX(run.Sim.Meta), 0f, 0f);
+        }
+
         void Start()
         {
             if (run == null || gate == null || run.Config == null)
