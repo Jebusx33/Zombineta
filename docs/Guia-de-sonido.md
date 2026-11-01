@@ -49,6 +49,8 @@ programación antes de seguir.
 
 - **Archivos de audio:** `Juego/Assets/_Zombineta/Audio/`, en tres carpetas: `Musica/`, `Sfx/` y
   `Ambiente/`.
+- **Cómo se llama cada archivo:** la regla y el nombre de cada sonido están en
+  [`Audio-lista-de-sonidos.md`](Audio-lista-de-sonidos.md). El prefijo `sfx_` marca los placeholders.
 - **Qué volumen/tono/variantes tiene cada efecto:** `Juego/Assets/_Zombineta/Settings/Audio/Sonidos/`
   — un asset `Sonido` por efecto (por ejemplo `Disparo.asset`).
 - **Qué tema le toca a cada pantalla:** `Juego/Assets/_Zombineta/Settings/Audio/Musica.asset`.
@@ -100,8 +102,8 @@ redondeo de la compresión ADPCM al importar — la diferencia es de a lo sumo ~
 
 | Clave (`Sonido`) | Archivo(s) y duración | Loop / posicional | Qué lo dispara |
 |---|---|---|---|
-| Disparo | `sfx_player_shot_01` (0,151 s) / `_02` (0,131 s) | — | Disparar con munición |
-| SinBalas | `sfx_player_noammo_01` (0,121 s) / `_02` (0,100 s) | — | Disparar sin munición |
+| Disparo | `player_pistol_shot` (1,48 s) | — | Disparar con munición |
+| SinBalas | `player_empty_gun` (0,49 s) | — | Disparar sin munición, o usar una granada o bomba sin tener ninguna |
 | CambioCarril | `sfx_player_lane_01` (0,151 s) / `_02` (0,131 s) | — | Cambiar de carril |
 | Choque | `sfx_player_crash_01` (0,601 s) / `_02` (0,550 s) | posicional | Chocar contra un obstáculo |
 | Atropello | `sfx_zombie_runover_01` (0,300 s) / `_02` (0,280 s) | posicional | Arrollar un zombie |
@@ -112,7 +114,10 @@ redondeo de la compresión ADPCM al importar — la diferencia es de a lo sumo ~
 | PickupMunicion | `sfx_pickup_ammo_01` (0,401 s) / `_02` (0,380 s) | — | Agarrar una caja de balas |
 | FaroOn | `sfx_headlight_on_01` (0,121 s) / `_02` (0,110 s) | — | Prender el faro (Espacio) |
 | FaroOff | `sfx_headlight_off_01` (0,121 s) / `_02` (0,110 s) | — | Apagar el faro |
-| SinNafta | `sfx_player_nofuel_01` (0,501 s) / `_02` (0,451 s) | — | Quedarse sin nafta |
+| SinNafta | `moto_apaga_motor` (1,40 s) | — | Quedarse sin nafta |
+| GranadaExplota | `player_granade` (1,50 s) | — | Explota la granada. Reemplaza a ExplosionBarril |
+| BombaPuesta | `player_c4_mecha` (2,00 s, tono fijo) | — | Plantar la bomba. Dura lo mismo que `bombaMecha` |
+| BombaExplota | `player_c4_explosion` (2,97 s) | — | Explota la bomba. Reemplaza a ExplosionBarril |
 | Salto | `sfx_player_jump_01` (0,200 s) / `_02` (0,181 s) | — | Pasar por una rampa |
 | Aterrizaje | `sfx_player_land_01` (0,151 s) / `_02` (0,131 s) | — | Aterrizar sin ángulo perfecto |
 | AterrizajePerfecto | `sfx_player_landperfect_01` (0,251 s) / `_02` (0,221 s) | — | Aterrizar con ángulo perfecto (pisa a "Aterrizaje" si coinciden) |
