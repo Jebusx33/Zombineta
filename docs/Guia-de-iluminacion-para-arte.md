@@ -34,7 +34,7 @@ según dónde tiene que aparecer:
 |---|---|
 | Cielo | El fondo del cielo |
 | Fondo | Edificios |
-| Arboles | Los árboles del Nivel 1. Van aparte para que no les pegue la luz con forma de ventana de los edificios ni el cono de la moto |
+| Arboles | Los árboles y el paredón del Nivel 2. Van aparte para que no les pegue la luz con forma de ventana de los edificios ni el cono de la moto |
 | Calle | Cordón, asfalto, vereda, las dos partes de la bocacalle |
 | Juego | La moto, la horda, los items del recorrido, sombras de piso, efectos |
 | Frente | Postes, carteles y árboles en primer plano, delante de todo |
@@ -194,11 +194,18 @@ ajustan en el mismo componente.
 
 **Ventanas de un edificio**: una sola `Light2D` de tipo **Sprite** por tile, hija de la raíz en
 `(0, 0)`. Su sprite es una máscara del mismo tamaño que el dibujo, con negro donde no hay luz (las
-del Nivel 1 están en `Art/Tileset/Level1/Luces/`, a mitad de resolución y con el mismo pivot). Tiene
+del Nivel 1 están en `Art/Tileset/Level1/Luces/` y las del Nivel 2 en `Art/Tileset/Level2/Luces/`, a
+mitad de resolución y con el mismo pivot). En el Nivel 2 el dibujo es gris y el vidrio no está pintado:
+el color de cada ventana sale de la máscara y la intensidad es casi el doble. Tiene
 que alcanzar solo a **Fondo**; si le llegara a otra capa, lo que pase por delante se pintaría con la
 forma de la ventana. El brillo de cada ventana se ajusta en la máscara y el de todo el edificio en
 la intensidad de la luz. El reflejo sobre la vereda son luces **Point** aparte, a **Arboles**,
 **Calle** y **Juego**.
+
+**Faroles de la autopista**: en el Nivel 2 el paredón tapa la vereda, así que no hay reflejo de
+ventanas. Cada tile de paredón, menos `tile_paredon_4`, lleva una luz **Point** cálida en su base (hijo
+`Luz ciudad farol`), a **Arboles**, **Calle** y **Juego**. Van en el paredón y no en los edificios
+porque avanzan a la misma velocidad que la calle. El de `tile_paredon_3` falla con un `Flicker`.
 
 Así se ve una luz de adorno ya andando (el barril, en el taller), con el resplandor cálido de su
 propio `Light2D` marcándose contra el fondo oscuro:

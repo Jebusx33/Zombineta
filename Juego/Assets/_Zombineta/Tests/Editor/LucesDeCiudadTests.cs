@@ -9,14 +9,16 @@ namespace Zombineta.Juego.Tests
 {
     public class LucesDeCiudadTests
     {
-        const string Prefabs = "Assets/_Zombineta/Art/Tileset/Level1/Prefabs/";
+        const string Tiles = "Assets/_Zombineta/Art/Tileset/";
 
-        [TestCase("tile_edificio_1")]
-        [TestCase("tile_edificio_2")]
-        [TestCase("tile_edificio_3")]
+        [TestCase("Level1/Prefabs/tile_edificio_1")]
+        [TestCase("Level1/Prefabs/tile_edificio_2")]
+        [TestCase("Level1/Prefabs/tile_edificio_3")]
+        [TestCase("Level2/Prefabs/tile_edificio_4")]
+        [TestCase("Level2/Prefabs/tile_edificio_5")]
         public void LaLuzDeLasVentanasSoloLeLlegaAlFondoYSeVaConElApagon(string tile)
         {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Prefabs + tile + ".prefab");
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Tiles + tile + ".prefab");
             Light2D ventanas = null;
             foreach (var luz in prefab.GetComponentsInChildren<Light2D>(true))
                 if (luz.lightType == Light2D.LightType.Sprite)
@@ -29,13 +31,32 @@ namespace Zombineta.Juego.Tests
         }
 
         // La mascara tiene forma de ventana: lo que se dibuje delante en esa capa se pinta con ella.
-        [Test]
-        public void EnElNivel1SoloLosEdificiosVanEnLaCapaFondo()
+        [TestCase("Escenario")]
+        [TestCase("Escenario_Nivel2")]
+        public void SoloLosEdificiosVanEnLaCapaFondo(string escenario)
         {
-            var tileset = AssetDatabase.LoadAssetAtPath<SceneryTileset>("Assets/_Zombineta/Settings/Escenario.asset");
+            var tileset = AssetDatabase.LoadAssetAtPath<SceneryTileset>("Assets/_Zombineta/Settings/" + escenario + ".asset");
             foreach (var capa in tileset.layers)
                 if (capa.name != "Edificios")
                     Assert.AreNotEqual("Fondo", capa.sortingLayer, capa.name);
+        }
+
+        // Van en el paredon y no en los edificios: avanzan con la calle que tienen que alumbrar.
+        [TestCase("tile_paredon_1")]
+        [TestCase("tile_paredon_2")]
+        [TestCase("tile_paredon_3")]
+        public void LosFarolesDeLaAutopistaAlumbranElParedonYLaCalleYSeVanConElApagon(string tile)
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Tiles + "Level2/Prefabs/" + tile + ".prefab");
+            var farol = prefab.GetComponentInChildren<Light2D>(true);
+
+            Assert.IsNotNull(farol, "el paredon no tiene farol");
+            Assert.AreEqual(Light2D.LightType.Point, farol.lightType);
+            Assert.AreEqual(
+                new[] { SortingLayer.NameToID("Arboles"), SortingLayer.NameToID("Calle"), SortingLayer.NameToID("Juego") },
+                farol.targetSortingLayers);
+            Assert.IsFalse(farol.shadowsEnabled);
+            Assert.IsNotNull(farol.GetComponent<LuzDeCiudad>());
         }
 
         // Es lo mismo que la calle de abajo: en otra capa no empalman y le pega la luz de las ventanas.
