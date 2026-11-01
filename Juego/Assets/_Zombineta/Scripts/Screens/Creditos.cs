@@ -14,6 +14,8 @@ namespace Zombineta.Juego.Screens
         public string titulo = "";
         [Tooltip("Titulo grande, sin subrayado: el nombre del juego al principio, el saludo al final.")]
         public bool portada;
+        [Tooltip("Dibujo que reemplaza al titulo de una portada, como el logo del juego. Vacio: se escribe el titulo.")]
+        public Sprite imagen;
         public string[] lineas = new string[0];
     }
 

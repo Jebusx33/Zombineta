@@ -310,8 +310,8 @@ namespace Zombineta.Juego.EditorTools
                 ("Créditos", screen.OpenCredits),
                 ("Salir", screen.Quit));
 
-            AddText(canvas.transform, "Pie", "Esqueleto del juego definitivo - pantallas placeholder", 26,
-                new Vector2(0f, -470f), new Vector2(1600f, 60f));
+            AddText(canvas.transform, "Pie", TextoDeVersion.Version, 26,
+                new Vector2(0f, -470f), new Vector2(1600f, 60f)).gameObject.AddComponent<TextoDeVersion>();
             Set(screen, "firstSelected", buttons[0]);
             Save(scene, SceneNames.MainMenu);
         }

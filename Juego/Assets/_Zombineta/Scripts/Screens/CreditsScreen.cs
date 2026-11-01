@@ -30,6 +30,7 @@ namespace Zombineta.Juego.Screens
         [Header("Medidas")]
         [SerializeField] float espacioSeccion = 70f;
         [SerializeField] float altoPortada = 110f;
+        [SerializeField] float altoImagenPortada = 340f;
         [SerializeField] float altoTitulo = 64f;
         [SerializeField] float altoLinea = 42f;
         [SerializeField] int tamanioPortada = 84;
@@ -75,7 +76,12 @@ namespace Zombineta.Juego.Screens
                 if (seccion == null)
                     continue;
 
-                if (!string.IsNullOrEmpty(seccion.titulo))
+                if (seccion.portada && seccion.imagen != null)
+                {
+                    AgregarImagen(seccion.imagen, y);
+                    y -= altoImagenPortada;
+                }
+                else if (!string.IsNullOrEmpty(seccion.titulo))
                 {
                     if (seccion.portada)
                     {
@@ -157,6 +163,22 @@ namespace Zombineta.Juego.Screens
             rt.pivot = new Vector2(0.5f, 1f);
             rt.sizeDelta = new Vector2(ancho, alto);
             rt.anchoredPosition = new Vector2(x, y);
+        }
+
+        void AgregarImagen(Sprite sprite, float y)
+        {
+            var go = new GameObject("Imagen de portada", typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(contenedor, false);
+            var image = go.GetComponent<Image>();
+            image.sprite = sprite;
+            image.preserveAspect = true;
+            image.raycastTarget = false;
+
+            var rt = image.rectTransform;
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
+            rt.pivot = new Vector2(0.5f, 1f);
+            rt.sizeDelta = new Vector2(altoImagenPortada * sprite.rect.width / sprite.rect.height, altoImagenPortada);
+            rt.anchoredPosition = new Vector2(0f, y);
         }
 
         void AgregarSubrayado(float y)

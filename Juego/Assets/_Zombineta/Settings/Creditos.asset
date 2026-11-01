@@ -13,47 +13,55 @@ MonoBehaviour:
   m_Name: Creditos
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Juego.Screens.Creditos
   secciones:
-  - titulo: "DeadLivery"
+  - titulo: DeadLivery
     portada: 1
+    imagen: {fileID: 21300000, guid: f745f1b5ffc82444a9b5556f43e4ef5c, type: 3}
     lineas:
-    - "Un juego de UCHAR"
-  - titulo: "Equipo"
+    - Un juego de UCHAR
+  - titulo: Equipo
     portada: 0
+    imagen: {fileID: 0}
     lineas:
-    - "José Luis Ressia | Desarrollo · Sonido"
-    - "Jesús Gabriel Arias | Desarrollo · Testing"
-    - "Sebastian Ariel Capurro | Desarrollo · Producción"
-    - "Juana Urzua Montelpare | Ilustración · Level Design"
-    - "Germán Heuer | Ilustración · Level Design"
-  - titulo: "Game Design"
+    - "Jos\xE9 Luis Ressia | Desarrollo \xB7 Sonido"
+    - "Jes\xFAs Gabriel Arias | Desarrollo \xB7 Testing"
+    - "Sebastian Ariel Capurro | Desarrollo \xB7 Producci\xF3n"
+    - "Juana Urzua Montelpare | Ilustraci\xF3n \xB7 Level Design"
+    - "Germ\xE1n Heuer | Ilustraci\xF3n \xB7 Level Design"
+  - titulo: Game Design
     portada: 0
+    imagen: {fileID: 0}
     lineas:
-    - "Todo el equipo"
-  - titulo: "Herramientas"
+    - Todo el equipo
+  - titulo: Herramientas
     portada: 0
+    imagen: {fileID: 0}
     lineas:
-    - "Motor | Unity 6 (URP 2D)"
-    - "Ilustración | Krita · PaintTool SAI"
-  - titulo: "Herramientas de IA"
+    - Motor | Unity 6 (URP 2D)
+    - "Ilustraci\xF3n | Krita \xB7 PaintTool SAI"
+  - titulo: Herramientas de IA
     portada: 0
+    imagen: {fileID: 0}
     lineas:
-    - "Programación | Claude Code"
-    - "Música y sonidos | Suno"
-  - titulo: "Recursos de terceros"
+    - "Programaci\xF3n | Claude Code"
+    - "M\xFAsica y sonidos | Suno"
+  - titulo: Recursos de terceros
     portada: 0
+    imagen: {fileID: 0}
     lineas:
-    - "Particle Pack | Kenney (kenney.nl) · CC0"
-  - titulo: "Agradecimientos"
+    - "Particle Pack | Kenney (kenney.nl) \xB7 CC0"
+  - titulo: Agradecimientos
     portada: 0
+    imagen: {fileID: 0}
     lineas:
-    - "Universidad de la Ciudad de Buenos Aires"
-    - "Taller de Proyecto Integral · 212"
-    - ""
-    - "Doc. Producción | Martin Romero"
-    - "Doc. Taller de Proyecto Integral | Nicolas Matias Crescenzi"
-  - titulo: "¡Gracias por jugar!"
+    - Universidad de la Ciudad de Buenos Aires
+    - "Taller de Proyecto Integral \xB7 212"
+    - 
+    - "Doc. Producci\xF3n | Martin Romero"
+    - Doc. Taller de Proyecto Integral | Nicolas Matias Crescenzi
+  - titulo: "\xA1Gracias por jugar!"
     portada: 1
+    imagen: {fileID: 0}
     lineas:
-    - "Sin vos, la horda no tendría a quién perseguir."
+    - "Sin vos, la horda no tendr\xEDa a qui\xE9n perseguir."
   velocidad: 70
   pausaFinal: 3
