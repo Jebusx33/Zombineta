@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: Disparo
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.Sonido
   clips:
-  - {fileID: 8300000, guid: f364453a975343048a4b6f30d9d82afa, type: 3}
-  - {fileID: 8300000, guid: 48fddc6a3f5c80d46a86cb9ea3758e87, type: 3}
-  volumen: {x: 0.6, y: 0.8}
+  - {fileID: 8300000, guid: 5c1aa677024328a4a9515847e769dde4, type: 3}
+  volumen: {x: 0.4, y: 0.5}
   tono: {x: 0.95, y: 1.05}
   bus: 1
   posicional: 0

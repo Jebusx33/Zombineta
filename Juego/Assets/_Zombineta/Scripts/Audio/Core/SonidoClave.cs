@@ -14,5 +14,7 @@ namespace Zombineta.Audio
         MotorRalenti, MotorCambio,
         // Recoger una granada o una bomba temporizadora (el arsenal que se lleva a la pelea).
         PickupGranada, PickupBomba,
+        // Las armas: la explosion de la granada, los pitidos de la bomba puesta y su explosion.
+        GranadaExplota, BombaPuesta, BombaExplota,
     }
 }

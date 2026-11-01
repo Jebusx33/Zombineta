@@ -36,6 +36,7 @@ namespace Zombineta.Audio
         int lastHordeEpoch = -1;
         float prevFuel, prevBattery, prevAmmo;
         int prevGranadas, prevBombas;
+        bool explotoUnArma;
         GameFlow flujo;
 
         void Awake()
@@ -95,6 +96,7 @@ namespace Zombineta.Audio
 
             EscanearZombiesAdelante();
             EscanearEventosDeHorda();
+            explotoUnArma = false;
 
             var s = run.Sim.State;
             prevFuel = s.Fuel;
@@ -112,7 +114,11 @@ namespace Zombineta.Audio
             var state = run.Sim.State;
 
             if ((events & RunEvent.Shot) != 0) audio.Play(SonidoClave.Disparo);
-            if ((events & RunEvent.ShotDenied) != 0) audio.Play(SonidoClave.SinBalas);
+            if (SinMunicion(events, state.Granadas, state.Bombas)) audio.Play(SonidoClave.SinBalas);
+            if ((events & RunEvent.GranadaExplota) != 0) audio.Play(SonidoClave.GranadaExplota);
+            if ((events & RunEvent.BombaPuesta) != 0) audio.Play(SonidoClave.BombaPuesta);
+            if ((events & RunEvent.BombaExplota) != 0) audio.Play(SonidoClave.BombaExplota);
+            explotoUnArma |= (events & (RunEvent.GranadaExplota | RunEvent.BombaExplota)) != 0;
             if ((events & RunEvent.LaneChanged) != 0) audio.Play(SonidoClave.CambioCarril);
             if ((events & RunEvent.Crashed) != 0) audio.Play(SonidoClave.Choque, run.ToWorldX(state.PlayerX));
             if ((events & RunEvent.HeadlightOn) != 0) audio.Play(SonidoClave.FaroOn);
@@ -134,6 +140,16 @@ namespace Zombineta.Audio
             if ((events & RunEvent.PickedUp) != 0)
                 SonarPickups(audio, state);
         }
+
+        /// <summary>
+        /// Regla pura del gatillo vacio: sin balas, o sin granadas ni bombas de ese tipo. Una granada o
+        /// bomba tambien se niega por otras razones (ya hay una en camino, no queda a quien explotar) y
+        /// ahi no suena: no estaba vacio.
+        /// </summary>
+        public static bool SinMunicion(RunEvent events, int granadas, int bombas) =>
+            (events & RunEvent.ShotDenied) != 0 ||
+            ((events & RunEvent.GranadaDenegada) != 0 && granadas <= 0) ||
+            ((events & RunEvent.BombaDenegada) != 0 && bombas <= 0);
 
         /// <summary>Que recurso subio respecto del paso anterior: uno por cada uno que haya subido.</summary>
         void SonarPickups(AudioDirector audio, RunState state)
@@ -194,7 +210,7 @@ namespace Zombineta.Audio
                 var e = horde.Events[i];
                 if (e.Kind == HordeEventKind.Death && e.Cause == DeathCause.RunOver)
                     audio.Play(SonidoClave.Atropello, run.ToWorldX(e.X));
-                else if (e.Kind == HordeEventKind.Explosion)
+                else if (e.Kind == HordeEventKind.Explosion && !explotoUnArma)
                     audio.Play(SonidoClave.ExplosionBarril, run.ToWorldX(e.X));
             }
         }
