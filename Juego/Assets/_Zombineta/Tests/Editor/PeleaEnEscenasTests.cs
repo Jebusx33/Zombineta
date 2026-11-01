@@ -61,7 +61,9 @@ namespace Zombineta.Juego.Tests
                 Assert.IsNotNull(nivel, nombre + ": falta el LevelScene");
                 Assert.IsTrue(nivel.PeleaSinNafta, nombre + ": todos los niveles se resuelven peleando cuando se acaba la nafta");
                 Assert.IsNotNull(Buscar<HudPelea>(escena), nombre + ": falta el HudPelea (carteles, vida y oleadas)");
-                Assert.IsNotNull(Buscar<VistaDelAuxilio>(escena), nombre + ": falta la VistaDelAuxilio (la protagonista a pie)");
+                var vista = Buscar<VistaDelAuxilio>(escena);
+                Assert.IsNotNull(vista, nombre + ": falta la VistaDelAuxilio (la protagonista a pie)");
+                Assert.IsNotNull(vista.Animaciones, nombre + ": la VistaDelAuxilio no tiene las animaciones a pie");
                 Assert.IsNotNull(Buscar<HudMunicionPelea>(escena), nombre + ": falta el HudMunicionPelea (el marco de las balas)");
             });
         }

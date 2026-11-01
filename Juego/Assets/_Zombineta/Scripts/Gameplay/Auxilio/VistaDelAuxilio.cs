@@ -17,12 +17,10 @@ namespace Zombineta.Auxilio
         [SerializeField] RunController run;
 
         [Header("Protagonista a pie")]
-        [SerializeField] Sprite peaton;
-        [Tooltip("Alto de la protagonista a pie, en unidades de mundo.")]
-        [SerializeField] float altoPeaton = 2.3f;
+        [SerializeField] AnimacionesAPie animaciones;
+        [Tooltip("Alto de la protagonista a pie, en unidades de mundo. Va en proporcion con el dibujo de la moto.")]
+        [SerializeField] float altoPeaton = 1.85f;
         [SerializeField] Sprite swoosh;
-        [Tooltip("Cuanto se adelanta el cuerpo al pegar, en unidades.")]
-        [SerializeField] float estocada = 0.35f;
         [SerializeField] Color colorLastimada = new Color(1f, 0.35f, 0.35f);
         [Tooltip("Metros por segundo con que la vista alcanza a la posicion de la simulacion: mas que lo que camina, " +
                  "asi el empujon de un golpe recibido se desliza en vez de teletransportarla.")]
@@ -52,12 +50,14 @@ namespace Zombineta.Auxilio
         readonly System.Collections.Generic.List<SpriteRenderer> drops = new System.Collections.Generic.List<SpriteRenderer>();
         Renderer[] moto;
         bool motoEscondida;
-        float caminata;
+        ReproductorAPie reproductor;
         Vector3 golpeEscalaBase = Vector3.one;
         float xVisual;
         bool xListo;
         float disparoRestante;
         const float DuracionDisparo = 0.12f;
+
+        public AnimacionesAPie Animaciones => animaciones;
 
         void OnEnable()
         {
@@ -81,6 +81,11 @@ namespace Zombineta.Auxilio
             else if ((ev & RunEvent.GolpeAlAire) != 0)
                 golpeConecto = false;
 
+            if ((ev & (RunEvent.Golpe | RunEvent.GolpeAlAire)) != 0)
+                reproductor?.Golpear(run.Sim.State.ComboPaso == 3);
+            if ((ev & RunEvent.Lastimada) != 0)
+                reproductor?.Lastimar();
+
             if ((ev & RunEvent.Shot) != 0 && run.Sim != null && run.Sim.State.Phase == RunPhase.Pelea)
                 disparoRestante = DuracionDisparo;
         }
@@ -90,7 +95,16 @@ namespace Zombineta.Auxilio
             if (run == null)
                 run = FindAnyObjectByType<RunController>();
 
-            cuerpo = Crear("Protagonista a pie", peaton, altoPeaton, out _);
+            if (animaciones == null)
+            {
+                Debug.LogError("VistaDelAuxilio sin AnimacionesAPie: no se dibuja la protagonista a pie.", this);
+                enabled = false;
+                return;
+            }
+
+            reproductor = new ReproductorAPie(animaciones);
+            cuerpo = Crear("Protagonista a pie", reproductor.Cuadro, altoPeaton, out var peaton);
+            peaton.transform.localScale = Vector3.one * (altoPeaton / (animaciones.pixelesDeAlto / cuerpo.sprite.pixelsPerUnit));
             SombraProyectada.Poner(cuerpo.gameObject, cuerpo, "", 0, true);
             golpe = Crear("Golpe", swoosh, 1.1f, out _);
             golpe.transform.SetParent(cuerpo.transform, true);
@@ -246,21 +260,20 @@ namespace Zombineta.Auxilio
             if (!aPie)
             {
                 xListo = false;
+                reproductor.Reiniciar();
                 return;
             }
 
             var c = run.Config;
             float t = c.golpeDuracion > 0f ? s.Golpeando / c.golpeDuracion : 0f;
-            // La pina: el cuerpo se adelanta y vuelve.
-            float adelanto = Mathf.Sin(t * Mathf.PI) * estocada * s.Mira;
 
             // El tiro la echa un poco hacia atras: la direccion en que dispara se nota en el cuerpo.
             disparoRestante = Mathf.Max(0f, disparoRestante - Time.deltaTime);
-            adelanto -= (disparoRestante / DuracionDisparo) * retrocesoDisparo * s.Mira;
+            float adelanto = -(disparoRestante / DuracionDisparo) * retrocesoDisparo * s.Mira;
 
             bool camina = run.Sim.State.Phase == RunPhase.Pelea && Mathf.Abs(VelocidadAPie()) > 0.1f;
-            caminata = camina ? caminata + Time.deltaTime * 11f : 0f;
-            float paso = camina ? Mathf.Abs(Mathf.Sin(caminata)) * 0.08f : 0f;
+            reproductor.Avanzar(Time.deltaTime, camina, s.Phase == RunPhase.Lost);
+            cuerpo.sprite = reproductor.Cuadro;
 
             // Al empezar la pelea (o al reintentarla) se baja de un salto, en vez de aparecer de golpe.
             float segundosPelea = s.PeleaTiempo;
@@ -273,18 +286,14 @@ namespace Zombineta.Auxilio
             xVisual = xListo ? Mathf.MoveTowards(xVisual, xMundo, velocidadVisual * Time.deltaTime) : xMundo;
             xListo = true;
             float x = xVisual + adelanto;
-            float y = run.LaneToWorldY(s.LaneVisual) + paso + bajada;
-            cuerpo.transform.position = new Vector3(x, y - cuerpo.sprite.bounds.min.y * cuerpo.transform.localScale.y, 0f);
+            float y = run.LaneToWorldY(s.LaneVisual) + bajada;
+            cuerpo.transform.position = new Vector3(x, y, 0f);
             cuerpo.flipX = s.Mira < 0;
             cuerpo.sortingOrder = LaneSorting.Order(s.LaneVisual, SortSlot.Player);
 
             // Recien golpeada: titila y se pone roja.
             bool titila = s.Invulnerable > 0f && s.Invulnerable < 100f && Mathf.Repeat(Time.time * 14f, 1f) < 0.5f;
             cuerpo.color = s.Invulnerable > 0f && s.Invulnerable < 100f ? (titila ? colorLastimada : Color.white) : Color.white;
-            if (s.Phase == RunPhase.Lost)
-                cuerpo.transform.rotation = Quaternion.Euler(0f, 0f, s.Mira * 80f); // derribada
-            else
-                cuerpo.transform.rotation = Quaternion.identity;
 
             if (golpe.enabled)
             {

@@ -591,6 +591,12 @@ tutorial y la plantilla `NivelBase`, que no tienen la pelea armada, la traen apa
 pierde). Una escena con la pelea prendida tiene que traer `HudPelea`, `HudMunicionPelea` y el objeto
 `Auxilio` (`VistaDelAuxilio`); `PeleaEnEscenasTests` lo verifica. La cuenta de peleas es `RunState.Peleas`.
 
+**Animaciones de la protagonista a pie (bocetos, 01/11):** los cuadros viven en `Art/Player/APie/<animación>/`
+y se listan en `Settings/AnimacionesAPie.asset`, junto con su ritmo. El 1.º y 2.º golpe usan `punch_low` y el
+remate, `punch_high`. Para cambiar un dibujo, se reemplaza el PNG con el mismo nombre y el importador conserva el
+pivote en los pies. Son lienzos de 540 × 384; un cuadro nuevo tiene que mantener a la protagonista en el mismo lugar del
+lienzo. No hay poses de disparo, granada ni bomba: al disparar, el cuerpo solo retrocede un poco.
+
 **Estructura (sin cambios de fondo):** la lógica sigue siendo C# plano en `Simulacion/Runtime` y las
 vistas leen el estado. `RunSimulation` (moto) delega la pelea en `PeleaSimulation`, y la horda
 (`HordeSimulation`) es la misma de la moto. `RunEvent` pasó a `long` (ya pasa los 32 bits).

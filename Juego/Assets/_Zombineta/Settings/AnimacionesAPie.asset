@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bee88c94c9cef654fbf6123154ce161c, type: 3}
+  m_Name: AnimacionesAPie
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Auxilio.AnimacionesAPie
+  pixelesDeAlto: 308
+  quieta:
+    cuadros:
+    - {fileID: 21300000, guid: ebe4428f45850504fb2823e34ce739e1, type: 3}
+    - {fileID: 21300000, guid: 80b229d13619ba54d9eff69825450dfe, type: 3}
+    - {fileID: 21300000, guid: 923bbcadf5a6d4a4587129b3ddbffb84, type: 3}
+    - {fileID: 21300000, guid: 757036fec0bfad745be51770d5b0edc7, type: 3}
+    cuadrosPorSegundo: 6
+    enBucle: 1
+  camina:
+    cuadros:
+    - {fileID: 21300000, guid: 39c27a8709dabfc468e1c80a0a400aba, type: 3}
+    - {fileID: 21300000, guid: 4c0eca9178807cf46875725a10e83466, type: 3}
+    - {fileID: 21300000, guid: c41ef23dd8d2f7b4b9f9710c10d16e79, type: 3}
+    - {fileID: 21300000, guid: a1ecb103dc75bfd47baf8225998ecab4, type: 3}
+    - {fileID: 21300000, guid: 9e51e5eda94201a49b17146b5b34b800, type: 3}
+    - {fileID: 21300000, guid: b24fd6d15a2b9ec44aaaca77c9a3207b, type: 3}
+    - {fileID: 21300000, guid: 650c1b88e71cc554ca0f8ee793389742, type: 3}
+    cuadrosPorSegundo: 12
+    enBucle: 1
+  golpeBajo:
+    cuadros:
+    - {fileID: 21300000, guid: 2a14fa8dde4d3f548936d284d30b0b9c, type: 3}
+    - {fileID: 21300000, guid: 78e2413bcdedb5449af0b15feee0b981, type: 3}
+    - {fileID: 21300000, guid: 8ca6c2fb6a3932247abe768946eb794b, type: 3}
+    cuadrosPorSegundo: 18
+    enBucle: 0
+  golpeAlto:
+    cuadros:
+    - {fileID: 21300000, guid: 4e0dad4f267ecdc4c9ef2becd4b7fd6e, type: 3}
+    - {fileID: 21300000, guid: 8728ec5a1f648dd4d9f4a0cd3dbc509e, type: 3}
+    - {fileID: 21300000, guid: 3045d8a62a8ad0340839aa8dcd53f73d, type: 3}
+    - {fileID: 21300000, guid: 3d2feaf53a3c8654b874ea50648ef34e, type: 3}
+    - {fileID: 21300000, guid: b71f8182ca2b1a4438df552cf3680dcc, type: 3}
+    - {fileID: 21300000, guid: 033bcf5f77f02894c8c719c5220b2ce0, type: 3}
+    cuadrosPorSegundo: 20
+    enBucle: 0
+  lastimada:
+    cuadros:
+    - {fileID: 21300000, guid: 319da8f07b2631e418623820402bfca9, type: 3}
+    - {fileID: 21300000, guid: 9513e5f362b757848b58a51f50fb973f, type: 3}
+    - {fileID: 21300000, guid: e7454c08a7b5e1641a4b3d7101e5f08c, type: 3}
+    cuadrosPorSegundo: 12
+    enBucle: 0
+  derribada:
+    cuadros:
+    - {fileID: 21300000, guid: 21a903c91f91de64cb14400108d63fd9, type: 3}
+    - {fileID: 21300000, guid: fa21b9fbd9139ff45b64c2c9e0052db8, type: 3}
+    - {fileID: 21300000, guid: c089412c1548ddc4782ca62de70525a3, type: 3}
+    - {fileID: 21300000, guid: ef1763bd71dcc4f42987f0f309effa46, type: 3}
+    - {fileID: 21300000, guid: 7cf92cca5da58d24dab0bc249dd9e2d2, type: 3}
+    cuadrosPorSegundo: 10
+    enBucle: 0

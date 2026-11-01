@@ -1481,7 +1481,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 4
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 900
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 8c1bb8c15f5a47141b8d044f53482a77, type: 3}
@@ -1806,7 +1806,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 4
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 910
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1499591369, guid: 45a6128dc3024cf7a67d51c69d9fb80f, type: 3}
@@ -1950,14 +1950,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Auxilio.VistaDelAuxilio
   run: {fileID: 1170739137}
-  peaton: {fileID: 21300000, guid: 7c370f60f1950984384b0bf6040746d6, type: 3}
-  altoPeaton: 2.3
+  animaciones: {fileID: 11400000, guid: 85144806da3fc7643801ad3f7d696ef3, type: 2}
+  altoPeaton: 1.85
   swoosh: {fileID: 21300000, guid: 933fac3fd31d15e4a940185131a4c61e, type: 3}
-  estocada: 0.35
   colorLastimada: {r: 1, g: 0.35, b: 0.35, a: 1}
-  furgoneta: {fileID: 21300000, guid: 3c186f727e2b4aa4abc0b2a66bd7093b, type: 3}
-  altoFurgoneta: 3.6
-  colorFaros: {r: 1, g: 0.92, b: 0.7, a: 1}
+  velocidadVisual: 9
+  segundosBajada: 0.4
+  alturaBajada: 0.55
+  retrocesoDisparo: 0.22
+  botiquin: {fileID: 0}
+  balas: {fileID: 0}
+  bidon: {fileID: 0}
+  altoBidon: 1.1
+  altoDrop: 0.7
+  segundosTitileo: 3
+  rebote: 0.08
 --- !u!4 &270512939
 Transform:
   m_ObjectHideFlags: 0
@@ -2400,7 +2407,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 4
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 810
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1499591369, guid: 45a6128dc3024cf7a67d51c69d9fb80f, type: 3}
@@ -3457,7 +3464,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 4
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 9
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 8980e7801dce3bc43b98519ceb377bb0, type: 3}
@@ -5290,7 +5297,7 @@ LineRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 4
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 25
   m_MaskInteraction: 0
   m_Positions:
@@ -5682,7 +5689,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 4
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 3554f799b0091d3429b3d345b29869a4, type: 3}
@@ -6466,7 +6473,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 4
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 910
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1499591369, guid: 45a6128dc3024cf7a67d51c69d9fb80f, type: 3}
@@ -6765,7 +6772,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 4
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 1010
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1499591369, guid: 45a6128dc3024cf7a67d51c69d9fb80f, type: 3}
@@ -6853,6 +6860,8 @@ MonoBehaviour:
   flickerSpeed: 18
   frontOffset: 2
   frontIntensity: 1
+  haloRadius: 8
+  haloIntensity: 0.45
 --- !u!114 &1049661740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7054,6 +7063,7 @@ MonoBehaviour:
   alto: 0.22
   margen: {x: 24, y: 24}
   transicion: 0.35
+  oscuridadParaAvisar: 0.35
 --- !u!114 &1050203066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7070,6 +7080,13 @@ MonoBehaviour:
   vineta: {fileID: 21300000, guid: b0045ab2028ab5544a3932b1cbe79127, type: 3}
   vidaCritica: 2
   segundosCartel: 1.4
+  segundosCombo: 0.9
+  segundosGolpeRecibido: 0.35
+  tamanoAyuda: 38
+  colorTeclasClave: {r: 1, g: 0.3, b: 0.25, a: 1}
+  colorTeclasArsenal: {r: 1, g: 0.82, b: 0.25, a: 1}
+  segundosNota: 3
+  segundosRecogida: 1.1
 --- !u!1 &1057334924
 GameObject:
   m_ObjectHideFlags: 0
@@ -7942,6 +7959,8 @@ MonoBehaviour:
     fuelEvery: 120
     batteryEvery: 450
     ammoEvery: 380
+    granadaEvery: 650
+    bombaEvery: 1000
     rampEvery: 250
     barrelEvery: 200
     frontZombieEvery: 150
@@ -7954,6 +7973,7 @@ MonoBehaviour:
     obstaculos: 0.4
     recursos: 1.2
     piezas: 0.4
+    nafta: 1
   - nombre: Desarrollar
     hasta: 750
     presionHorda: 1
@@ -7961,6 +7981,7 @@ MonoBehaviour:
     obstaculos: 1
     recursos: 1
     piezas: 1
+    nafta: 1
   - nombre: Aviso de apagon
     hasta: 830
     presionHorda: 1
@@ -7968,6 +7989,7 @@ MonoBehaviour:
     obstaculos: 0
     recursos: 0
     piezas: 0
+    nafta: 1
   - nombre: Desarrollar II
     hasta: 1050
     presionHorda: 1
@@ -7975,6 +7997,7 @@ MonoBehaviour:
     obstaculos: 1.3
     recursos: 1
     piezas: 1.2
+    nafta: 1
   - nombre: Respiro
     hasta: 1150
     presionHorda: 0.9
@@ -7982,6 +8005,7 @@ MonoBehaviour:
     obstaculos: 0
     recursos: 2
     piezas: 0
+    nafta: 1
   - nombre: Apagon I
     hasta: 1350
     presionHorda: 1.05
@@ -7989,6 +8013,7 @@ MonoBehaviour:
     obstaculos: 1.2
     recursos: 1
     piezas: 0.5
+    nafta: 1
   - nombre: Claro
     hasta: 1430
     presionHorda: 1
@@ -7996,6 +8021,7 @@ MonoBehaviour:
     obstaculos: 0.3
     recursos: 2
     piezas: 0
+    nafta: 1
   - nombre: Apagon II
     hasta: 1630
     presionHorda: 1.05
@@ -8003,6 +8029,7 @@ MonoBehaviour:
     obstaculos: 1.4
     recursos: 1
     piezas: 0.5
+    nafta: 1
   - nombre: Examen
     hasta: 1800
     presionHorda: 1.1
@@ -8010,6 +8037,7 @@ MonoBehaviour:
     obstaculos: 1.6
     recursos: 1
     piezas: 1.3
+    nafta: 1
   - nombre: Recta final
     hasta: 2000
     presionHorda: 0.9
@@ -8017,7 +8045,21 @@ MonoBehaviour:
     obstaculos: 0.2
     recursos: 1.5
     piezas: 0
+    nafta: 1
   peleaSinNafta: 1
+  combustibleInicial: 0
+  bidonesDesdePelea: 0
+  bidonesHastaMetro: 0
+  reintentosPelea: 0
+  peleaDidactica: 0
+  flotarRecolectables: 1
+  flotarAltura: 0.1
+  flotarVelocidad: 3
+  flotarElevacion: 0.15
+  acercarRecolectables: 1
+  alturaDeLlegada: 0.5
+  conservarDecoradoEnPelea: 1
+  segundosDesvanecer: 0.5
   looks: {fileID: 11400000, guid: 526ce8163bc04b242a6e808590ae5fbe, type: 2}
   lookSeed: 12345
   shadowSprite: {fileID: 21300000, guid: 8c1bb8c15f5a47141b8d044f53482a77, type: 3}
@@ -8090,6 +8132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Luz.LightingDirector
   perfil: {fileID: 11400000, guid: 4d1ab6a5e1baa0a4488968a8390a2194, type: 2}
+  velocidadDeApagon: 2
 --- !u!114 &1171654553
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8327,7 +8370,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 4
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 1010
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1499591369, guid: 45a6128dc3024cf7a67d51c69d9fb80f, type: 3}
@@ -8866,7 +8909,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 4
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 910
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1499591369, guid: 45a6128dc3024cf7a67d51c69d9fb80f, type: 3}
@@ -9173,7 +9216,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 4
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 810
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1499591369, guid: 45a6128dc3024cf7a67d51c69d9fb80f, type: 3}
@@ -10312,6 +10355,7 @@ MonoBehaviour:
   tracer: {fileID: 811297639}
   tracerSeconds: 0.09
   tracerHeight: 1.045
+  tracerHeightPelea: 1.25
   effectHeight: 0.95
   decalPrefab: {fileID: 7390958764050753839, guid: 3404861897ec6374cb60f52f5e516452, type: 3}
   decalCount: 30
@@ -11459,7 +11503,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 4
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 4
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 34ecad7966b14874d8f90643e4f60aba, type: 3}
@@ -12105,7 +12149,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 4
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 1000
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 8c1bb8c15f5a47141b8d044f53482a77, type: 3}
@@ -13535,6 +13579,7 @@ MonoBehaviour:
   threatNear: {r: 0.95, g: 0.2, b: 0.2, a: 1}
   dangerGapMeters: 45
   dangerTextMeters: 10
+  progressFrame: {fileID: 0}
 --- !u!21 &2089321098
 Material:
   serializedVersion: 8
@@ -13886,6 +13931,11 @@ MonoBehaviour:
   looks: {fileID: 11400000, guid: 526ce8163bc04b242a6e808590ae5fbe, type: 2}
   lookSeed: 12345
   avisoDeAtaque: {r: 1, g: 0.25, b: 0.2, a: 1}
+  inclinacionAviso: 16
+  estocadaAviso: 0.4
+  colorAro: {r: 1, g: 0.2, b: 0.15, a: 0.85}
+  anguloDerribado: 85
+  laneChangeSpeed: 4
   overrunMeters: 12
   litTint: {r: 1.25, g: 1.2, b: 1.1, a: 1}
   litLeanDegrees: -12
