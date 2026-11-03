@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>DeadLivery — TP2 Diseño UI/UX en videojuegos</title>
+<style>
+@page{size:A4;margin:16mm 17mm 18mm 17mm;
+  @bottom-left{content:"DeadLivery · TP2 Diseño UI/UX";font:8pt "Segoe UI",sans-serif;color:#7a6e96}
+  @bottom-right{content:"Pág. " counter(page) " de " counter(pages);font:8pt "Segoe UI",sans-serif;color:#7a6e96}}
+:root{--ink:#14081e;--mag:#d4149f;--vio:#2a1b4d;--soft:#f4f0fa;--line:#d9d0ea}
+*{box-sizing:border-box}
+html{font:9.6pt/1.42 "Segoe UI",system-ui,sans-serif;color:var(--ink)}
+body{margin:0}
+h1,h2,h3{font-family:"Segoe UI",sans-serif;line-height:1.15;margin:0}
+h1{font-size:25pt;letter-spacing:-.01em}
+h2{font-size:14pt;margin:15pt 0 5pt;padding-bottom:3pt;border-bottom:2pt solid var(--mag);break-after:avoid}
+h2 .n{color:var(--mag)}
+h3{font-size:10.6pt;margin:10pt 0 3pt;color:var(--vio);break-after:avoid}
+p{margin:0 0 5.5pt;text-align:left}
+ul,ol{margin:2pt 0 6pt;padding-left:15pt}
+li{margin:0 0 2.2pt}
+.cover{background:linear-gradient(120deg,#2a1b4d,#14081e);color:#fff;border-radius:6pt;padding:13pt 17pt;margin-bottom:10pt;display:flex;gap:16pt;align-items:center}
+.cover .t{flex:1}
+.cover .k{font-size:8.6pt;letter-spacing:.16em;color:#ff7ad9;font-weight:700}
+.cover p{color:#d9d0ea;margin:3pt 0 0;font-size:9pt}
+.cover img{width:128pt;border-radius:4pt}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:2pt 16pt;font-size:8.8pt;margin:0 0 8pt;color:#4a3d63}
+.meta b{color:var(--ink)}
+table{border-collapse:collapse;width:100%;margin:4pt 0 8pt;font-size:8.8pt;break-inside:avoid}
+th{background:var(--vio);color:#fff;text-align:left;padding:3.5pt 6pt;font-weight:600}
+td{padding:3.5pt 6pt;border-bottom:.6pt solid var(--line);vertical-align:top}
+tr:nth-child(even) td{background:#faf7fd}
+.ficha td:first-child{width:27%;font-weight:700;color:var(--vio);background:var(--soft)}
+figure{margin:6pt 0 8pt;break-inside:avoid}
+figure img{width:100%;border-radius:3pt;border:.6pt solid var(--line);display:block}
+figcaption{font-size:8.2pt;color:#5a4d73;margin-top:2.5pt}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:9pt}
+.two figure{margin:4pt 0 6pt}
+.call{background:var(--soft);border-left:3pt solid var(--mag);padding:5pt 9pt;margin:5pt 0 8pt;border-radius:0 3pt 3pt 0;break-inside:avoid;font-size:9.1pt}
+.tag{display:inline-block;font-size:7.6pt;font-weight:700;letter-spacing:.05em;padding:0 5pt;border-radius:8pt;vertical-align:1pt;white-space:nowrap}
+.ok{background:#d5f5d5;color:#14471a}.pro{background:#fde7a6;color:#5a4300}.no{background:#ffd5d2;color:#6b110c}
+.pb{break-before:page}
+.small{font-size:8.4pt;color:#5a4d73}
+.q{font-weight:700;color:var(--vio);margin:7pt 0 1pt}
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="t">
+    <div class="k">TRABAJO PRÁCTICO 2 · EXAMEN FINAL · DISEÑO UI/UX EN VIDEOJUEGOS</div>
+    <h1>DeadLivery</h1>
+    <p>Diseño, prototipo y fundamentación de la interfaz — entrega 18/11</p>
+  </div>
+  <img src="img/menu_concept.jpg" alt="Menú principal de DeadLivery (concepto)">
+</div>
+<div class="meta">
+  <div><b>Integrantes:</b> [completar con apellidos del grupo]</div>
+  <div><b>Carpeta de entrega:</b> PARCIAL 2 / [apellidos]</div>
+  <div><b>Proyecto:</b> DeadLivery (nombre en código: Zombineta) · Taller de Proyecto Integral, UNICABA</div>
+  <div><b>Prototipo interactivo:</b> <code>prototipo/deadlivery-prototipo-ui.html</code></div>
+</div>
+
+<h2><span class="n">Parte 1 ·</span> A. Concepto general del juego</h2>
+<table class="ficha">
+<tr><td>Nombre del juego</td><td><b>DeadLivery</b> (juego de palabras entre <i>dead</i> y <i>delivery</i>)</td></tr>
+<tr><td>Género</td><td>Acción lateral de persecución en moto, con tres carriles y gestión de recursos (referencia: <i>Excitebike</i>), más una pelea a pie por oleadas tipo <i>beat’em up</i> cuando se acaba la nafta. Es de <b>control directo</b>.</td></tr>
+<tr><td>Plataforma principal</td><td>PC, con teclado o gamepad (el juego detecta el último dispositivo usado y adapta los textos de ayuda). Build 2D en Unity 6 (URP).</td></tr>
+<tr><td>Breve descripción</td><td>Una repartidora en Vespa debe llevar el pedido al refugio antes de que la horda la alcance. Maneja carriles, turbo, faro, disparo y granadas mientras administra <b>nafta, batería y munición</b>. Si se queda sin nafta, se baja y pelea a pie hasta conseguir un bidón y volver a arrancar. El pedido no puede llegar frío.</td></tr>
+<tr><td>Dirección de arte y tono</td><td>Estética de historieta entintada: línea negra, personajes de proporciones realistas, noche urbana en violetas y magentas, y el rosa de la Vespa como único color cálido. El tono es <b>tensión con humor irónico</b>: una amenaza enorme contra un trabajo cotidiano. La interfaz sigue esa lógica: trazos gruesos, formas oblicuas y un acento magenta que ordena la información.</td></tr>
+</table>
+<div class="two">
+<figure><img src="img/menu_concept.jpg" alt="Concepto del menú principal"><figcaption><b>Arte 1.</b> Concepto del menú principal: boceto entintado, botones en forma de tajo y logotipo de pincel.</figcaption></figure>
+<figure><img src="img/bg_game.jpg" alt="Escena de juego"><figcaption><b>Arte 2.</b> Escena de juego: calle de tres carriles, edificios violetas y la Vespa rosa frente a la horda.</figcaption></figure>
+</div>
+
+<h2><span class="n">B.</span> Fundamentación (Diseño centrado en el jugador)</h2>
+<h3>B1. Audiencia y Flow</h3>
+<p><b>Tipo de jugador principal.</b> Usamos la tipología de Bartle: apuntamos al <b>Logrador (<i>Achiever</i>)</b>. El juego le da objetivos medibles y cercanos: llegar a la meta, mantener los tres recursos en verde, vencer las cuatro oleadas de la pelea a pie y mejorar la <b>nota B/A/S</b> de cada nivel. Como perfil secundario tenemos al <b>jugador competitivo</b>, que repite para pulir la nota. Esto guía el diseño: la información sobre progreso y recursos tiene que ser constante, exacta y leída de un vistazo.</p>
+<p><b>Estrategia de Flow.</b> Para sostener el estado de flow (Csikszentmihalyi) el HUD equilibra desafío y habilidad con una <b>jerarquía de tres niveles</b> que nunca compite con la pista:</p>
+<ol>
+<li><b>Lo vital, en un vistazo.</b> Dos anillos de <b>combustible y batería</b> arriba a la izquierda, a la altura donde la vista de la jugadora ya está mirando. Mantienen su color hasta el 50 %, viran al rojo y <b>titilan en el último 20 %</b>, con un aviso sonoro espaciado. Así la advertencia llega antes de la crisis y no hace falta leer números.</li>
+<li><b>Lo táctico, bajo demanda.</b> El panel de <b>armamento</b> (balas, granadas, C4) usa dígitos grandes y íconos; el C4 se ve apagado en la moto porque solo sirve a pie. Cada cambio de cantidad hace un <i>pop</i> de 0,3 s: se confirma sin tapar nada.</li>
+<li><b>Lo contextual, discreto.</b> La <b>barra de avance</b> (puntos que se pintan al pasarlos, la moto como marcador y la bandera de meta) queda abajo y centrada, fuera del cono de visión. Da sensación de progreso sin exigir atención.</li>
+</ol>
+<p>La <b>amenaza no tiene medidor</b>: la horda se ve en pantalla, porque la cámara deja aire a la izquierda de la moto. Dibujar un radar sumaba ruido, así que el sensor de zombies existe pero está oculto por decisión del equipo. El HUD además <b>cambia de modo</b>: a pie esconde nafta, batería y avance (ya no sirven) y sube el armamento, así que siempre muestra solo lo necesario. Los obstáculos próximos avisan con un ícono parpadeante en el carril correspondiente, y los apagones con una radio que aparece unos segundos antes.</p>
+
+<figure>
+  <img src="img/fig_hud.jpg" alt="HUD de la partida con referencias numeradas">
+  <figcaption><b>Figura 1.</b> HUD de la partida (montaje con los sprites reales del juego sobre una escena del nivel). 1 Combustible · 2 Batería (en rojo y titilando bajo el 20 %) · 3 Armamento · 4 Barra de avance · 5 Meta · 6 La horda, visible en escena, sin medidor.</figcaption>
+</figure>
+
+<h3>B2. Game Feel de la UI</h3>
+<p>Buscamos que la interfaz se sienta como parte del mundo: <b>áspera, rápida y con respuesta inmediata</b>. Las microinteracciones, ya implementadas o definidas en la lista de audio, son:</p>
+<table>
+<tr><th style="width:22%">Acción</th><th style="width:39%">Respuesta visual / física</th><th>Sonido y refuerzo</th></tr>
+<tr><td>Mover el foco en un menú</td><td>El botón (con forma de paralelogramo, como un tajo de tinta) cambia a su variante <i>over</i>, con trama de líneas (en el prototipo, además, se desplaza unos píxeles).</td><td>Tick corto de <code>ui_move</code> por el bus UI, que la pausa no silencia.</td></tr>
+<tr><td>Confirmar / volver</td><td>Fundido de pantalla (<code>ScreenFader</code>) al cambiar de escena; en el prototipo, el botón además se comprime al apretarlo.</td><td><code>ui_confirm</code> (dos notas ascendentes) y <code>ui_back</code> (descendente): el oído distingue entrar de salir.</td></tr>
+<tr><td>Ajustar opciones</td><td>Las flechas cambian sliders, interruptores y desplegables igual; el cambio se aplica al instante (no existe “Aplicar”).</td><td>Al mover el volumen suena el tick al nivel elegido, para probarlo sin salir.</td></tr>
+<tr><td>Recibir un recurso (bidón, batería, balas)</td><td>El anillo se llena con animación, el número hace <i>pop</i> y el recolectable se acerca por un imán de un carril.</td><td>Sonido de recolección y, en el tutorial, un “ding” de paso completado.</td></tr>
+<tr><td>Recurso bajo</td><td>El anillo vira al rojo y titila a 3 Hz.</td><td>Pitido de reserva cada cinco segundos mientras se gasta; nunca continuo.</td></tr>
+<tr><td>Golpe, choque, ser atrapada</td><td>Congelado breve del cuadro al impacto, sacudida de cámara y cámara lenta al caer en manos de la horda.</td><td>Vibración del gamepad por tipo de evento (disparo, choque, golpe, remate, explosión).</td></tr>
+<tr><td>Menú principal</td><td>La niebla se desliza, el faro de la moto titila y a veces falla la luz de un poste.</td><td>Música de menú; “Moto que arranca” previsto para Jugar.</td></tr>
+</table>
+<p class="small">Estado real: los sonidos de menú (<code>ui_move</code>, <code>ui_confirm</code>, <code>ui_back</code>) y de recursos bajos suenan hoy como <i>placeholders</i> sintetizados; los de tutorial, hito y conteo de estadísticas están definidos en la lista de audio pero todavía no se conectaron. El prototipo interactivo incluye una versión sintética de estos sonidos para evaluar el conjunto.</p>
+
+<h3>B3. Accesibilidad y diseño inclusivo</h3>
+<p>En un juego de reflejos con tensión visual constante (titileos, sacudidas, oscuridad y sangre), la accesibilidad es una condición de jugabilidad. Detallamos qué ya funciona en la build y qué sumamos en el prototipo:</p>
+<table>
+<tr><th style="width:23%">Característica</th><th style="width:15%">Estado</th><th>Por qué es importante en este género</th></tr>
+<tr><td><b>Sacudidas y efectos de cámara apagables</b></td><td><span class="tag ok">En el juego</span></td><td>Con scroll rápido, choques y cámara lenta, la sacudida puede marear. Al apagarla se conserva el encuadre por tensión.</td></tr>
+<tr><td><b>Sangre alta o baja</b></td><td><span class="tag ok">En el juego</span></td><td>En “baja” las salpicaduras son polvo y no quedan manchas: se juega igual sin gore explícito.</td></tr>
+<tr><td><b>Audio en tres canales, vibración opcional y luz alta/baja</b></td><td><span class="tag ok">En el juego</span></td><td>Permite bajar la música para oír la horda, apagar la vibración del mando y aligerar el contraste de luces en equipos lentos o personas sensibles.</td></tr>
+<tr><td><b>Entrada redundante y alertas multicanal</b></td><td><span class="tag ok">En el juego</span></td><td>Todo se navega con teclado o gamepad y los carteles muestran la tecla del dispositivo en uso (“{Turbo}” se lee “→” o “RT”). Cada alerta del HUD combina color, titileo, ícono y sonido: nunca depende de un solo canal.</td></tr>
+<tr><td><b>Modo daltónico</b></td><td><span class="tag pro">Prototipo</span></td><td>El estado clave (verde → rojo) se codifica también con triángulo de advertencia, línea discontinua en el anillo y flechas ▲▼ en las comparaciones.</td></tr>
+<tr><td><b>Texto grande</b></td><td><span class="tag pro">Prototipo</span></td><td>Escala de 125 % en menús y carteles; el texto del HUD se lee a distancia y a alta velocidad.</td></tr>
+<tr><td><b>Sin parpadeos</b></td><td><span class="tag pro">Prototipo</span></td><td>Apaga el titileo del anillo, el halo del objeto interactivo y las animaciones de entrada. Hoy el titileo corre exactamente a 3 Hz, en el límite de la guía WCAG sobre destellos, por lo que es una prioridad.</td></tr>
+</table>
+<p>También queda propuesto el <b>remapeo de teclas</b> en Opciones &rarr; Jugabilidad: hoy el esquema es fijo (flechas y X / Z / C / Espacio) y cambia solo entre teclado y gamepad.</p>
+
+<h3>B4. Control indirecto</h3>
+<p><b>No aplica:</b> DeadLivery es de control directo (el jugador mueve la moto y pelea en tiempo real). Aun así, el <b>Garaje</b> del prototipo gestiona un sistema (equipo, armas y pedido) con tres pestañas, una lista y un panel de detalle con comparación de estadísticas, para decidir sin abrir menús anidados.</p>
+
+<h2><span class="n">Parte 2 ·</span> El flujo de usuario a prototipar</h2>
+<p>El prototipo está hecho en <b>HTML interactivo</b> (<code>prototipo/deadlivery-prototipo-ui.html</code>), reutilizando los sprites reales de HUD, fondo y personajes del juego. Simula el ciclo <b>gameplay → tutorial contextual → menú detallado → volver al juego</b>. Para probarlo: abrir el archivo en un navegador, hacer clic en el bidón, elegir “Ir al garaje →” y, ya adentro, usar el mouse o el teclado.</p>
+<table>
+<tr><th style="width:26%">Requisito de la consigna</th><th>Cómo lo resolvimos en el prototipo</th><th style="width:20%">En el juego real</th></tr>
+<tr><td><b>1. Pantalla de juego con HUD</b></td><td>Arranca en una vista de gameplay con el HUD superpuesto y jerarquía clara (Figura 1): anillos de recursos, armamento y barra de avance.</td><td><span class="tag ok">Implementado</span> prefab <code>HudPartida</code> en todos los niveles.</td></tr>
+<tr><td><b>2. Tutorial contextual (pop-up)</b></td><td>Hacer clic en el bidón dispara el cartel “Agarrá un bidón: es tu nafta”. Resalta con un marco amarillo titilante el anillo de combustible, indica “Paso 5 de 10” y se descarta con <b>[Entendido]</b> (o con Esc). Al descartarlo, el anillo se llena con animación y aparece “+60 % NAFTA”.</td><td><span class="tag ok">Implementado</span> tutorial de 10 pasos con marco de resalte. El botón “Entendido” es la variante del prototipo: en el juego el paso avanza al cumplir la acción.</td></tr>
+<tr><td><b>3. Menú detallado</b></td><td>Desde el HUD (botón <b>Garaje</b> o tecla G) o desde el pop-up (<b>Ir al garaje →</b>) se abre el Garaje con tres pestañas funcionales: Moto, Arsenal y Pedido.</td><td><span class="tag pro">Propuesta</span> el menú de Opciones real usa pestañas (Sonido / Pantalla / Jugabilidad).</td></tr>
+<tr><td>— Botones, íconos y navegación</td><td>Pestañas con estado activo y contador; íconos monocromos blancos (sprites del HUD y siluetas propias); botones con forma de paralelogramo y estados <i>normal</i>, <i>hover</i>, <i>presionado</i> y <i>foco</i>. Navegación con mouse o con ↑↓ ←→ / Q-E / Enter / Esc.</td><td><span class="tag ok">Implementado</span> botones y navegación por foco en todo el juego.</td></tr>
+<tr><td>— Contenido interactivo</td><td>Al elegir un ítem de la lista se muestran su ícono, descripción y barras de estadística <b>antes → después</b> (verde mejora, rojo empeora, además de ▲▼ en modo daltónico).</td><td><span class="tag pro">Propuesta</span></td></tr>
+<tr><td>— Botón con estados</td><td><b>Equipar</b> en magenta (activado) → al usarlo, el ítem pasa a <b>Equipado ✓</b> en verde y el botón se desactiva. Los ítems bloqueados muestran <b>Bloqueado</b> en gris con trama y el motivo (“Se desbloquea al terminar el Nivel 2”). Intentar usarlos sacude el botón y suena un tono grave.</td><td><span class="tag pro">Propuesta</span></td></tr>
+<tr><td>— Salida clara</td><td>Botón <b>Volver al juego</b> (Esc) arriba a la derecha, siempre visible; regresa a la Pantalla 1 conservando el estado (por ejemplo, la nafta recargada).</td><td><span class="tag ok">Implementado</span> “Seguir” en Pausa y Esc para volver.</td></tr>
+</table>
+
+<div class="two">
+<figure><img src="img/shot_tutorial.jpg" alt="Pop-up de tutorial"><figcaption><b>Figura 2.</b> Pop-up de tutorial contextual: marco de resalte sobre el anillo de nafta, progreso de pasos y dos salidas.</figcaption></figure>
+<figure><img src="img/shot_garaje_equipar.jpg" alt="Garaje con Equipar activo"><figcaption><b>Figura 3.</b> Garaje: ítem seleccionado con comparación de estadísticas y botón <b>Equipar</b> activo.</figcaption></figure>
+<figure><img src="img/shot_garaje_bloqueado.jpg" alt="Garaje con botón bloqueado"><figcaption><b>Figura 4.</b> Estado <b>desactivado</b>: ítem bloqueado, botón en gris con el motivo al lado.</figcaption></figure>
+<figure><img src="img/shot_garaje_arsenal.jpg" alt="Pestaña Arsenal"><figcaption><b>Figura 5.</b> Pestaña <b>Arsenal</b> con los íconos reales de balas, granada y C4.</figcaption></figure>
+</div>
+
+<h3>Decisiones de diseño y coherencia con la Parte 1</h3>
+<ul>
+<li><b>Flow:</b> el Garaje solo se abre desde una pausa voluntaria o desde un pop-up: no interrumpe la carrera. El HUD no se modifica al volver.</li>
+<li><b>Game feel:</b> cada acción tiene su sonido sintético (mover, confirmar, equipar, denegar, volver) y su animación breve; todo se puede apagar (<i>Sonido</i> / <i>Sin parpadeos</i>).</li>
+<li><b>Accesibilidad:</b> los tres interruptores del pie del Garaje (texto grande, modo daltónico, sin parpadeos) actúan sobre las dos pantallas.</li>
+<li><b>Consistencia:</b> una sola paleta (tinta, papel, magenta, ámbar de resalte, verde/rojo de estado), una sola forma de botón y un solo set de íconos.</li>
+</ul>
+<div class="call"><b>Alcance y honestidad del prototipo.</b> Las pantallas de HUD y tutorial reproducen elementos que ya existen en el juego. El Garaje (equipo, pedidos y desbloqueos) es una <b>propuesta de diseño</b> creada para esta entrega y no está en la build actual; los textos y las cifras de sus ítems son ilustrativos. Para convertir el prototipo en Figma bastan sus pantallas como referencia, y está pendiente publicar el link con permiso de “cualquiera con el enlace puede ver”.</div>
+
+<h2 class="pb"><span class="n">Anexo ·</span> Presentación y defensa (7–10 minutos)</h2>
+<h3>Estructura sugerida (9 diapositivas)</h3>
+<table>
+<tr><th style="width:6%">#</th><th style="width:34%">Diapositiva</th><th>Contenido</th><th style="width:11%">Tiempo</th></tr>
+<tr><td>1</td><td>DeadLivery en una frase</td><td>Concepto, género, plataforma, arte y tono (ficha de la Parte 1-A).</td><td>0:45</td></tr>
+<tr><td>2</td><td>A quién le hablamos</td><td>Logrador de Bartle; qué le damos: metas, recursos y nota B/A/S.</td><td>0:45</td></tr>
+<tr><td>3</td><td>El HUD en tres niveles</td><td>Figura 1 y modos moto / a pie.</td><td>1:15</td></tr>
+<tr><td>4</td><td>Game feel</td><td>Tabla de microinteracciones; demo de sonidos del prototipo.</td><td>1:00</td></tr>
+<tr><td>5</td><td>Accesibilidad</td><td>Cuatro funciones implementadas + tres propuestas.</td><td>1:00</td></tr>
+<tr><td>6</td><td>El tutorial</td><td>Diez pasos, un cartel por vez, marco de resalte, imposible perder.</td><td>1:00</td></tr>
+<tr><td>7</td><td>Demo del prototipo</td><td>HUD → clic en el bidón → pop-up → Garaje → Equipar / bloqueado → Volver.</td><td>2:00</td></tr>
+<tr><td>8</td><td>Qué aprendimos</td><td>Playtests y telemetría que cambiaron la interfaz.</td><td>0:45</td></tr>
+<tr><td>9</td><td>Cierre y preguntas</td><td>Las cinco respuestas de abajo, para repreguntas.</td><td>0:30</td></tr>
+</table>
+
+<h3>Respuestas a las preguntas de la consigna</h3>
+<p class="q">1. ¿Cómo refleja la interfaz la importancia de la UI/UX para el género?</p>
+<p>En una persecución a alta velocidad la jugadora decide en fracciones de segundo, por lo que la UI es parte de la mecánica: el anillo que se pone rojo antes de la crisis, el ícono de obstáculo en su carril y el contador de armas que cambia de lugar al bajarse de la moto son decisiones de diseño que sostienen el ritmo. Una interfaz que obligue a leer detiene la carrera.</p>
+<p class="q">2. ¿Cómo mantiene el HUD en Flow al tipo de jugador definido?</p>
+<p>Al Logrador le damos metas visibles (barra de avance, nota) y recursos que se leen sin números. Tres niveles de jerarquía, color solo para lo urgente, la amenaza dentro de la escena y un HUD que se simplifica a pie. La información justa en el momento justo.</p>
+<p class="q">3. ¿Qué decisiones de accesibilidad tomaron y por qué?</p>
+<p>Sacudida de cámara y sangre apagables, mezcla de audio en tres canales, vibración opcional, navegación completa por teclado o gamepad y alertas redundantes (color, titileo, ícono y sonido). Sumamos modo daltónico, texto grande y “sin parpadeos”, porque el género combina titileos, oscuridad y movimiento constante.</p>
+<p class="q">4. ¿Cómo diseñaron el tutorial para que sea efectivo sin frustrar?</p>
+<p>Diez pasos cortos, un cartel por vez, que aparecen cuando la jugadora puede actuar y enseñan una sola cosa. Se avanza al <i>hacer</i> la acción, no al leer; el marco amarillo señala la barra del HUD de la que se habla; los textos usan la tecla del dispositivo en uso. No se puede perder (recarga recursos y perdona alcances), se rebobina si se pasa de largo un tramo y se puede saltear desde la pausa.</p>
+<p class="q">5. (Si aplica) ¿Cuál fue el mayor desafío en control indirecto?</p>
+<p>No aplica, porque el juego es de control directo. Si preguntan por el mayor desafío de interfaz: <b>mostrar tres recursos y dos armas sin tapar la pista</b>, resuelto con la jerarquía de tres niveles y el cambio de modo del HUD.</p>
+
+<h3>Evidencia de iteración con jugadores</h3>
+<p>El diseño se ajustó con playtests reales: el feedback de la cátedra (“aburrido”) llevó a sumar la pelea a pie; hubo sesiones de playtest documentadas (planes del 20 y 22/10) y el juego guarda <b>telemetría</b> de cada partida en CSV (oleadas, armas usadas, recolectables, peleas ganadas). Con eso se ajustaron controles, ayudas y arsenal. Esta evidencia respalda la sección de fundamentación ante el jurado.</p>
+
+<h3>Checklist de entrega</h3>
+<table>
+<tr><th>Entregable</th><th style="width:19%">Estado</th></tr>
+<tr><td>Documento conceptual y de diseño (PDF): Parte 1, Parte 2 y anexo de defensa</td><td><span class="tag ok">Listo</span> este archivo</td></tr>
+<tr><td>Prototipo interactivo (HUD → tutorial → menú → volver)</td><td><span class="tag ok">Listo</span> <code>prototipo/deadlivery-prototipo-ui.html</code></td></tr>
+<tr><td>Link al prototipo con permiso “cualquiera con el enlace puede ver”</td><td><span class="tag pro">Pendiente</span> publicar el HTML</td></tr>
+<tr><td>Carpeta PARCIAL 2 con los apellidos de los integrantes</td><td><span class="tag pro">Pendiente</span> completar nombres</td></tr>
+<tr><td>Presentación (PowerPoint / Canva) para la defensa</td><td><span class="tag pro">Pendiente</span> usar la estructura de arriba</td></tr>
+</table>
+</body>
+</html>
