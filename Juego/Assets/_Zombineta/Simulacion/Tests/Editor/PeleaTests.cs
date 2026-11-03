@@ -2365,28 +2365,35 @@ namespace Zombineta.Tests
         // --- Balance de las oleadas ---------------------------------------------------
 
         [Test]
-        public void TheLastTwoWaves_AreHarderThanTheFirstTwo_ByDefault()
+        public void EachFight_HasTwoWaves_AndTheSecondIsHarderThanTheFirst_ByDefault()
         {
             var o = new GameConfig().oleadas;
-            Assert.AreEqual(4, o.Count);
+            Assert.AreEqual(2, o.Count, "dos oleadas por pelea");
 
-            // Las dos primeras, como siempre: los tiempos de ataque del GameConfig.
+            // La primera, la de siempre: los tiempos de ataque del GameConfig.
             Assert.AreEqual(1f, o[0].ataque);
-            Assert.AreEqual(1f, o[1].ataque);
-
-            // Las dos ultimas aprietan, y la ultima mas que la anterior: atacan mas rapido.
-            Assert.Greater(o[2].ataque, 1.2f);
-            Assert.Greater(o[3].ataque, o[2].ataque);
-            Assert.Greater(o[2].zombies, o[1].zombies);
-            Assert.Greater(o[3].zombies, o[2].zombies);
-            Assert.Greater(o[3].velocidad, o[1].velocidad);
-
-            // Y dejan menos respiro entre golpe y golpe; las dos primeras, el de siempre.
             Assert.AreEqual(1f, o[0].invulnerable);
-            Assert.AreEqual(1f, o[1].invulnerable);
-            Assert.Less(o[2].invulnerable, 1f);
-            Assert.Less(o[3].invulnerable, o[2].invulnerable);
-            Assert.GreaterOrEqual(o[3].zombies, o[1].zombies * 2, "la ultima trae el doble de zombies que la segunda, o mas");
+
+            // La segunda aprieta: mas zombies, mas rapidos, atacan mas rapido y dejan menos respiro entre golpes.
+            Assert.Greater(o[1].zombies, o[0].zombies);
+            Assert.Greater(o[1].velocidad, o[0].velocidad);
+            Assert.Greater(o[1].ataque, o[0].ataque);
+            Assert.Less(o[1].invulnerable, o[0].invulnerable);
+            Assert.Greater(o[1].pesos[1] + o[1].pesos[2], 0f, "trae corredores o pesados");
+        }
+
+        [Test]
+        public void AFight_BringsFewZombies_AndFewAtATime_ByDefault()
+        {
+            var c = new GameConfig();
+            int total = 0;
+            foreach (var o in c.oleadas)
+            {
+                total += o.zombies;
+                Assert.LessOrEqual(o.simultaneos, 4, "pocos a la vez: no hay filas largas");
+                Assert.LessOrEqual(o.simultaneos, o.zombies);
+            }
+            Assert.LessOrEqual(total, 12, "toda la pelea trae pocos zombies (antes eran 29 en cuatro oleadas)");
         }
 
         [Test]
@@ -2563,6 +2570,7 @@ namespace Zombineta.Tests
             {
                 Assert.AreEqual(normal.oleadas[i].zombies, d[i].zombies);
                 Assert.AreEqual(normal.oleadas[i].velocidad, d[i].velocidad);
+                Assert.AreEqual(normal.oleadas[i].ataque, d[i].ataque);
                 Assert.AreEqual(AyudaDeOleada.Ninguna, d[i].ayuda);
                 Assert.AreEqual(EntradaDeOleada.Alternada, d[i].entrada);
             }
@@ -2708,6 +2716,161 @@ namespace Zombineta.Tests
             Assert.IsTrue((ev & RunEvent.BombaExplota) != 0);
             Assert.AreEqual(24, sim.State.UltimaExplosionMuertos, "la bomba se lleva a todos");
             Assert.AreEqual(0, sim.State.Bombas, "se uso bien: no se devuelve");
+        }
+
+        // --- El rodeo: la fila no se estanca de un solo lado -----------------------------------
+
+        /// <summary>
+        /// Una fila de zombies a la izquierda, en su carril, a esas distancias de ella (el primero pegado, los demas atras). Ella
+        /// queda quieta y con vida de sobra: se mira adonde van los zombies, no si la derriban.
+        /// </summary>
+        static RunSimulation FilaPorLaIzquierda(bool rodeo, params float[] distancias)
+        {
+            var c = ConOleadas();
+            c.rodeoActivo = rodeo;
+            c.oleadas = new List<OleadaPelea>
+            {
+                new OleadaPelea { zombies = distancias.Length, simultaneos = distancias.Length, pesos = new[] { 1f, 0f, 0f }, velocidad = 1f },
+            };
+            c.vidaPelea = 99;
+            var sim = SinNafta(c);
+            var us = sim.Horde.Units;
+            int puestos = 0;
+            for (int i = 0; i < us.Length; i++)
+            {
+                if (!sim.Pelea.Activo(i))
+                    continue;
+                if (puestos < distancias.Length)
+                {
+                    us[i].Alive = true;
+                    us[i].X = sim.State.PeatonX - distancias[puestos++];
+                    us[i].Lane = sim.State.Lane;
+                    us[i].Stagger = 0f;
+                    us[i].Preparando = -1f;
+                    us[i].Enfriamiento = 0.5f;
+                }
+            }
+            return sim;
+        }
+
+        /// <summary>Cuantos zombies vivos que pelean estan a su derecha.</summary>
+        static int ALaDerecha(RunSimulation sim)
+        {
+            int n = 0;
+            var us = sim.Horde.Units;
+            for (int i = 0; i < us.Length; i++)
+                if (sim.Pelea.Activo(i) && us[i].Alive && us[i].X > sim.State.PeatonX)
+                    n++;
+            return n;
+        }
+
+        [Test]
+        public void AZombieStuckInALongQueue_GoesAroundToTheOtherSide()
+        {
+            var sim = FilaPorLaIzquierda(true, 0.9f, 2f, 3.1f, 4.2f);
+            int masALaDerecha = 0;
+            for (int t = 0; t < 60 * 12; t++)
+            {
+                sim.State.Vida = 99;
+                sim.Tick(Quieta, Dt);
+                masALaDerecha = Mathf.Max(masALaDerecha, ALaDerecha(sim));
+            }
+
+            Assert.GreaterOrEqual(masALaDerecha, 1, "alguien de la fila dio la vuelta y se le acerco por el otro lado");
+            Assert.LessOrEqual(masALaDerecha, 3, "no se van todos: la fila sigue de los dos lados");
+        }
+
+        [Test]
+        public void WithoutTheDetour_TheQueueStaysOnOneSide()
+        {
+            var sim = FilaPorLaIzquierda(false, 0.9f, 2f, 3.1f, 4.2f);
+            for (int t = 0; t < 60 * 12; t++)
+            {
+                sim.State.Vida = 99;
+                sim.Tick(Quieta, Dt);
+            }
+
+            Assert.AreEqual(0, ALaDerecha(sim), "sin rodeo, todos esperan en fila del mismo lado");
+        }
+
+        [Test]
+        public void WhoGoesAround_WalksInAnotherLane_SoItDoesNotHitHerOnTheWay()
+        {
+            var sim = FilaPorLaIzquierda(true, 0.9f, 2f, 3.1f, 4.2f);
+            bool vioRodeo = false;
+            var us = sim.Horde.Units;
+            for (int t = 0; t < 60 * 12; t++)
+            {
+                sim.State.Vida = 99;
+                sim.Tick(Quieta, Dt);
+                for (int i = 0; i < us.Length; i++)
+                {
+                    if (!sim.Pelea.Activo(i) || !us[i].Alive || us[i].Rodeo == 0)
+                        continue;
+                    vioRodeo = true;
+                    Assert.Greater(Mathf.Abs(us[i].Lane - sim.State.PeatonY), 0.6f, "de paso va por un carril donde no le pega");
+                    Assert.AreEqual(-1, us[i].Preparando > -1f ? 0 : -1, "y no prepara ningun golpe");
+                }
+            }
+            Assert.IsTrue(vioRodeo, "hubo un rodeo");
+        }
+
+        [Test]
+        public void TheDetour_ReturnsToHerLane_AndEndsUpFightingFromTheOtherSide()
+        {
+            var sim = FilaPorLaIzquierda(true, 0.9f, 2f, 3.1f);
+            var us = sim.Horde.Units;
+            bool alcanzoElLugar = false;
+            for (int t = 0; t < 60 * 12 && !alcanzoElLugar; t++)
+            {
+                sim.State.Vida = 99;
+                sim.Tick(Quieta, Dt);
+                for (int i = 0; i < us.Length; i++)
+                    if (sim.Pelea.Activo(i) && us[i].Alive && us[i].X > sim.State.PeatonX && us[i].Rodeo == 0 &&
+                        us[i].Lane == sim.State.Lane && us[i].X - sim.State.PeatonX <= 1.2f)
+                        alcanzoElLugar = true;
+            }
+            Assert.IsTrue(alcanzoElLugar, "termino pegado a ella, en su carril, del lado de enfrente");
+        }
+
+        [Test]
+        public void ItDoesNotGoAround_IfTheOtherSideIsAlreadyTaken()
+        {
+            var sim = FilaPorLaIzquierda(true, 0.9f, 2f, 3.1f);
+            var us = sim.Horde.Units;
+            // Uno ya pelea del otro lado: no hay hueco al que ir.
+            for (int i = 0; i < us.Length; i++)
+                if (sim.Pelea.Activo(i) && us[i].Alive && us[i].X < sim.State.PeatonX - 3f)
+                {
+                    us[i].X = sim.State.PeatonX + 0.9f;
+                    break;
+                }
+            for (int t = 0; t < 60 * 6; t++)
+            {
+                sim.State.Vida = 99;
+                sim.Tick(Quieta, Dt);
+                for (int i = 0; i < us.Length; i++)
+                    Assert.AreEqual(0, us[i].Rodeo, "nadie da la vuelta si el otro lado tambien esta ocupado");
+            }
+        }
+
+        [Test]
+        public void AtMostTheConfiguredAmount_GoAroundAtTheSameTime()
+        {
+            var sim = FilaPorLaIzquierda(true, 0.9f, 2f, 3.1f, 4.2f, 5.3f, 6.4f);
+            var us = sim.Horde.Units;
+            int maximo = 0;
+            for (int t = 0; t < 60 * 12; t++)
+            {
+                sim.State.Vida = 99;
+                sim.Tick(Quieta, Dt);
+                int ahora = 0;
+                for (int i = 0; i < us.Length; i++)
+                    if (sim.Pelea.Activo(i) && us[i].Alive && us[i].Rodeo != 0)
+                        ahora++;
+                maximo = Mathf.Max(maximo, ahora);
+            }
+            Assert.LessOrEqual(maximo, sim.Config.rodeoMax);
         }
     }
 }

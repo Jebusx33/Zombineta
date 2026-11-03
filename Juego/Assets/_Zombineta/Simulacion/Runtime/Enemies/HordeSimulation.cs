@@ -73,6 +73,14 @@ namespace Zombineta.Enemies
         public float SaltoX0, SaltoX1;
         /// <summary>Carril donde va a caer (el de ella): al despegar pasa a ser el suyo.</summary>
         public int SaltoLane;
+        /// <summary>Si esta rodeandola: el lado (-1 izquierda, 1 derecha) en el que va a volver a ponerse en su carril. 0 = no rodea.</summary>
+        public int Rodeo;
+        /// <summary>Segundos que lleva en camino del rodeo: si no llega, se rinde y sigue por donde este.</summary>
+        public float RodeoT;
+        /// <summary>Segundos que lleva trabado en la fila, sin poder acercarse a ella.</summary>
+        public float Atascado;
+        /// <summary>Segundos hasta que puede volver a intentar un rodeo.</summary>
+        public float RodeoEnfriamiento;
     }
 
     /// <summary>
@@ -154,6 +162,10 @@ namespace Zombineta.Enemies
                 u.PuedeSaltar = false;
                 u.SaltoFase = 0;
                 u.SaltoT = 0f;
+                u.Rodeo = 0;
+                u.RodeoT = 0f;
+                u.Atascado = 0f;
+                u.RodeoEnfriamiento = 0f;
             }
         }
 

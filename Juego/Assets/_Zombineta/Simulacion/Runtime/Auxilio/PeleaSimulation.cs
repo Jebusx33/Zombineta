@@ -978,6 +978,8 @@ namespace Zombineta.Auxilio
             u.Preparando = -1f;
             u.PuedeSaltar = false;
             u.SaltoFase = 0;
+            u.Rodeo = 0;
+            u.Atascado = 0f;
         }
 
         RunEvent MoverZombies(float dt)
@@ -988,10 +990,13 @@ namespace Zombineta.Auxilio
             // Cuantos estan preparando un ataque ahora: hay un tope, los demas esperan su turno.
             int atacando = 0;
             int saltando = 0;
+            int rodeando = 0;
             for (int i = 0; i < units.Length; i++)
             {
                 if (!activo[i] || !units[i].Alive)
                     continue;
+                if (units[i].Rodeo != 0)
+                    rodeando++;
                 if (units[i].Preparando >= 0f)
                     atacando++;
                 if (units[i].SaltoFase == 1 || units[i].SaltoFase == 2)
@@ -1034,6 +1039,13 @@ namespace Zombineta.Auxilio
 
                 float dx = s.PeatonX - u.X;
                 u.Mira = dx >= 0f ? 1 : -1;
+
+                u.RodeoEnfriamiento = Mathf.Max(0f, u.RodeoEnfriamiento - dt);
+                if (u.Rodeo != 0)
+                {
+                    AvanzarRodeo(u, dt);
+                    continue;
+                }
 
                 bool alineado = Alineado(u);
                 if (!alineado && !u.PuedeSaltar)
@@ -1082,6 +1094,7 @@ namespace Zombineta.Auxilio
 
                 if (enRango)
                 {
+                    u.Atascado = 0f;
                     u.Enfriamiento -= dt;
                     // Listo para pegar, pero solo prepara el ataque si hay un lugar libre.
                     if (u.Enfriamiento <= 0f && atacando < c.maxAtacantes)
@@ -1090,6 +1103,23 @@ namespace Zombineta.Auxilio
                         atacando++;
                     }
                     continue;
+                }
+
+                // Trabado en la fila (otro zombie mas cerca de ella le tapa el paso): tras un rato no se queda
+                // esperando, da la vuelta por otro carril y se le acerca desde el otro lado, buscando un hueco.
+                if (c.rodeoActivo && alineado && !u.PuedeSaltar)
+                {
+                    u.Atascado = EstaTrabado(i, u) ? u.Atascado + dt : 0f;
+                    if (u.Atascado >= c.rodeoEspera && u.RodeoEnfriamiento <= 0f && rodeando < c.rodeoMax &&
+                        IniciarRodeo(i, u))
+                    {
+                        rodeando++;
+                        continue;
+                    }
+                }
+                else
+                {
+                    u.Atascado = 0f;
                 }
 
                 // Se acerca: en su carril hasta quedar a tiro; en otro, hasta ponerse a la par.
@@ -1101,6 +1131,112 @@ namespace Zombineta.Auxilio
                 }
             }
             return ev;
+        }
+
+        // --- El rodeo de los zombies ---------------------------------------------
+
+        /// <summary>
+        /// Si otro zombie vivo de su mismo carril, de su mismo lado y mas cerca de ella, le tapa el paso (a lo sumo
+        /// una separacion y un poco mas): esta en la fila, no puede acercarse mas.
+        /// </summary>
+        bool EstaTrabado(int indice, ZombieUnit u)
+        {
+            float px = s.PeatonX;
+            float distancia = Mathf.Abs(u.X - px);
+            float margen = c.zombieSeparacion * 1.2f;
+            var units = h.Units;
+            for (int j = 0; j < units.Length; j++)
+            {
+                var o = units[j];
+                if (j == indice || !activo[j] || !o.Alive || o.Lane != u.Lane || o.Rodeo != 0 || o.SaltoFase == 2)
+                    continue;
+                if ((o.X - px) * (u.X - px) <= 0f)
+                    continue;   // del otro lado de ella
+                float delante = Mathf.Abs(o.X - px);
+                if (delante < distancia && distancia - delante <= margen)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>Si hay lugar pegado a ella, de ese lado, en su carril: nadie a tiro ni de camino a ocuparlo.</summary>
+        bool HayHueco(int lado)
+        {
+            float px = s.PeatonX;
+            float cerca = c.zombieAlcance + c.zombieSeparacion * 0.5f;
+            var units = h.Units;
+            for (int j = 0; j < units.Length; j++)
+            {
+                var o = units[j];
+                if (!activo[j] || !o.Alive)
+                    continue;
+                if (o.Rodeo == lado)
+                    return false;
+                if (o.Rodeo == 0 && Alineado(o) && (o.X >= px ? 1 : -1) == lado && Mathf.Abs(o.X - px) < cerca)
+                    return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Empieza a dar la vuelta: se pasa a un carril que no sea el de ella y camina hacia el lado opuesto al que esta,
+        /// si ahi hay hueco. Devuelve false si no hay a donde ir.
+        /// </summary>
+        bool IniciarRodeo(int indice, ZombieUnit u)
+        {
+            int lado = u.X < s.PeatonX ? 1 : -1;
+            if (!HayHueco(lado))
+                return false;
+
+            // El carril de paso: uno que no la deje pegable (a mas de toleranciaCarril de ella), el menos poblado.
+            var units = h.Units;
+            int mejor = -1;
+            int menos = int.MaxValue;
+            for (int carril = 0; carril < RunSimulation.LaneCount; carril++)
+            {
+                if (Mathf.Abs(carril - s.PeatonY) <= c.toleranciaCarril)
+                    continue;
+                int n = 0;
+                for (int j = 0; j < units.Length; j++)
+                    if (j != indice && activo[j] && units[j].Alive && units[j].Lane == carril)
+                        n++;
+                if (n < menos || (n == menos && Mathf.Abs(carril - u.Lane) < Mathf.Abs(mejor - u.Lane)))
+                {
+                    mejor = carril;
+                    menos = n;
+                }
+            }
+            if (mejor < 0)
+                return false;
+
+            u.Lane = mejor;
+            u.Rodeo = lado;
+            u.RodeoT = 0f;
+            u.Atascado = 0f;
+            return true;
+        }
+
+        /// <summary>Camina hacia el lado opuesto, pasando de largo por otro carril; al llegar vuelve al carril de ella.</summary>
+        void AvanzarRodeo(ZombieUnit u, float dt)
+        {
+            u.RodeoT += dt;
+            float meta = s.PeatonX + u.Rodeo * c.zombieAlcance * 0.8f;
+            float falta = meta - u.X;
+            bool llego = Mathf.Abs(falta) <= 0.05f;
+            if (llego || u.RodeoT >= c.rodeoMaxSegundos)
+            {
+                u.Rodeo = 0;
+                u.RodeoT = 0f;
+                u.Atascado = 0f;
+                u.RodeoEnfriamiento = c.rodeoEnfriamiento;
+                if (llego)
+                    u.Lane = Mathf.Clamp(Mathf.RoundToInt(s.PeatonY), 0, RunSimulation.LaneCount - 1);
+                return;
+            }
+
+            int dir = falta >= 0f ? 1 : -1;
+            u.Mira = dir;
+            u.X += dir * Mathf.Min(VelocidadDe(u) * c.rodeoVelocidad * dt, Mathf.Abs(falta));
         }
 
         // --- El salto de los zombies ---------------------------------------------
@@ -1302,6 +1438,10 @@ namespace Zombineta.Auxilio
             u.PuedeSaltar = c.saltoActivo && s.Oleada == 0;
             u.SaltoFase = 0;
             u.SaltoT = 0f;
+            u.Rodeo = 0;
+            u.RodeoT = 0f;
+            u.Atascado = 0f;
+            u.RodeoEnfriamiento = 0f;
             u.Enfriamiento = 0.3f + (float)rng.NextDouble() * 0.5f;
             u.CambioCarril = (float)rng.NextDouble() * 0.8f;
             u.Mira = x < s.PeatonX ? 1 : -1;
@@ -1356,7 +1496,7 @@ namespace Zombineta.Auxilio
             {
                 fila.Clear();
                 for (int i = 0; i < units.Length; i++)
-                    if (activo[i] && units[i].Alive && units[i].Lane == carril && units[i].SaltoFase != 2)
+                    if (activo[i] && units[i].Alive && units[i].Lane == carril && units[i].SaltoFase != 2 && units[i].Rodeo == 0)
                         fila.Add(i);
                 if (fila.Count < 2)
                     continue;
