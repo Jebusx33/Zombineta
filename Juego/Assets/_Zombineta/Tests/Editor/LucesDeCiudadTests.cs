@@ -26,6 +26,12 @@ namespace Zombineta.Juego.Tests
 
             Assert.IsNotNull(ventanas, "el edificio no tiene luz de ventanas");
             Assert.IsNotNull(ventanas.lightCookieSprite, "la luz de ventanas no tiene mascara");
+            // Si arte cambia el dibujo, la mascara tiene que acompanarlo: si no, las ventanas se iluminan corridas.
+            var dibujo = prefab.GetComponent<SpriteRenderer>().sprite.bounds;
+            var mascara = ventanas.lightCookieSprite.bounds;
+            Assert.AreEqual(dibujo.size.x, mascara.size.x, 0.05f, "ancho de la mascara");
+            Assert.AreEqual(dibujo.size.y, mascara.size.y, 0.05f, "alto de la mascara");
+            Assert.AreEqual(dibujo.min.y, mascara.min.y, 0.05f, "apoyo de la mascara");
             Assert.AreEqual(new[] { SortingLayer.NameToID("Fondo") }, ventanas.targetSortingLayers);
             Assert.IsNotNull(ventanas.GetComponent<LuzDeCiudad>());
         }
