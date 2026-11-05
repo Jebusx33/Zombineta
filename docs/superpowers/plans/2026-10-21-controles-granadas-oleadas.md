@@ -328,3 +328,50 @@ Devolución del profe: hay muchos beat'em up y abruma.
 
 **Verificado:** 375 tests de la simulación en verde fuera de Unity (2 nuevos del corte) y el juego compila. **Sin probar en Unity:** el
 modelo no incluye turbo, caídas ni los bidones aéreos, así que las cifras son una guía; falta jugar los dos niveles.
+
+## Fase 14 - Icono de la C4 nuevo
+
+`Art/HUD/Partida/hud_icono_c4.png` es ahora la silueta blanca de la C4 con reloj (la que mandó arte), 144×144 como la granada y la
+munición (fondo transparente, trazo blanco opaco; el HUD la tiñe/apaga con el `color` de la imagen). Mismo archivo y mismo `.meta`: no
+hay que reasignar nada. `HudPartida.prefab` la dibuja en un recuadro de 40×40. Un solo prefab, así que vale para todos los niveles, en moto y a pie.
+No se toca la bomba del mundo (`Resources/Arsenal/BombaTemporal.png`), que no es interfaz.
+
+## Fase 15 - Dos oleadas por pelea, con muchos menos zombies
+
+Antes cada pelea traía 4 oleadas (3 · 5 · 9 · 12 = 29 zombies, hasta 7 a la vez): abrumaba. Ahora son **2 oleadas** (`GameConfig.oleadas`):
+
+| Oleada | Zombies | A la vez | Tipos | Velocidad | Ataque | Respiro entre golpes |
+|---|---|---|---|---|---|---|
+| 1 (la del salto) | 4 | 3 | comunes | 0,9 | 1 | 1 |
+| 2 | 6 | 4 | 40 % comunes, 30 % corredores, 30 % pesados | 1,1 | 1,5 | 0,8 |
+
+Total 10 zombies por pelea (antes 29). La 2.ª sigue apretando respecto de la 1.ª (más rápida, ataca más rápido, deja menos respiro).
+`oleadasDidacticas` (apagada en el nivel 1) conserva sus dos primeras iguales a éstas. Es solo balance: se ajusta en el Inspector del `GameConfig`.
+Ojo: `GameConfig.asset` no guarda las oleadas (usa el valor por defecto del código), así que si se editan en el Inspector se guardan ahí.
+
+## Fase 16 - Los zombies de la fila dan la vuelta (rodeo)
+
+**El problema:** los zombies se meten todos en el carril de ella y hacen fila de cada lado; solo el primero de cada lado puede pegarle
+(y con `maxAtacantes = 2`, dos a la vez), así que si la fila queda de un solo lado el resto nunca la toca y la pelea se estanca.
+
+**Lo que pasa ahora** (`PeleaSimulation`, `rodeoActivo`): un zombie *trabado* en la fila (otro de su carril, de su lado y más cerca de ella le
+tapa el paso) espera `rodeoEspera` (1,2 s). Si del lado opuesto hay hueco (nadie a tiro ni de camino), **se cambia a un carril por donde no le
+pega** (el menos poblado), camina hacia el otro lado a `rodeoVelocidad` (1,4×), pasa de largo y, al llegar, **vuelve a su carril** y pelea desde ahí.
+Se mira hacia donde camina (no hacia ella) mientras da la vuelta, y no prepara golpes ni entra en la fila (`Separar` lo ignora).
+
+- Parámetros nuevos de `GameConfig` (grupo "Pelea a pie"): `rodeoActivo`, `rodeoEspera` (1,2), `rodeoMax` (2 a la vez), `rodeoVelocidad` (1,4),
+  `rodeoMaxSegundos` (6: si ella se mueve y no la alcanza, se rinde y sigue por donde esté), `rodeoEnfriamiento` (4).
+- Los de la primera oleada (que saltan) no rodean: saltan sobre ella desde donde estén.
+- `ZombieUnit` suma `Rodeo`, `RodeoT`, `Atascado` y `RodeoEnfriamiento` (se reinician al entrar, al estacionarse y en `HordeSimulation.Reset`).
+
+## Fase 17 - Verificación
+
+6 tests nuevos de `PeleaTests` (el del balance por defecto se reescribió para 2 oleadas) y 407 de 408 en verde fuera de Unity (el que falla es el
+temblor de la cámara, por el ruido Perlin falso del arnés). Cubren: la fila de 4 por la izquierda hace que alguien pase al otro lado (y sin
+rodeo, no); el que da la vuelta va por otro carril (a más de `toleranciaCarril` de ella) y no prepara golpes; termina pegado a ella en su
+carril del lado opuesto; no rodea si el otro lado ya está ocupado; nunca más de `rodeoMax` a la vez.
+
+**Sin probar en Unity:** cómo se ve el giro (la vista mueve el carril con `laneChangeSpeed`, el zombie cruza por detrás/delante de ella),
+si con 4 y 6 zombies la pelea se siente justa (sin turbo ni caídas: es solo la simulación) y si a `rodeoEspera` = 1,2 s el cruce se lee como
+"buscar el hueco" y no como un teletransporte. Ojo con los golpes: cada golpe recibido la empuja, así que a veces queda de un lado distinto
+al que se esperaba.

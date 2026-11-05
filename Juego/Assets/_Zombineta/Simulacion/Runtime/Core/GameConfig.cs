@@ -325,13 +325,12 @@ namespace Zombineta.Core
         [Tooltip("Oleadas de la pelea, de menos a mas. Vacio = siempre 'zombiesEnArena' del tipo que toque.")]
         public List<OleadaPelea> oleadas = new List<OleadaPelea>
         {
-            // Las dos primeras, como estaban (la dificultad esta bien); las dos ultimas aprietan: muchos mas zombies,
-            // mas pesados y corredores, que caminan mas rapido, atacan mas rapido (tardan menos en preparar y en repetir
-            // el golpe) y dejan menos respiro entre golpe y golpe (menos invulnerabilidad tras recibir uno).
-            new OleadaPelea { zombies = 3,  simultaneos = 3, pesos = new[] { 1f, 0f, 0f },          velocidad = 0.85f },
-            new OleadaPelea { zombies = 5,  simultaneos = 4, pesos = new[] { 0.7f, 0.3f, 0f },      velocidad = 1f },
-            new OleadaPelea { zombies = 9,  simultaneos = 6, pesos = new[] { 0.25f, 0.35f, 0.4f },  velocidad = 1.2f,  ataque = 2f, invulnerable = 0.8f },
-            new OleadaPelea { zombies = 12, simultaneos = 7, pesos = new[] { 0.15f, 0.4f, 0.45f },  velocidad = 1.35f, ataque = 3f, invulnerable = 0.6f },
+            // Dos oleadas por pelea (con 29 zombies en cuatro, hacian fila y abrumaban). La primera es la de la
+            // transicion (llegan corriendo y saltan): pocos y comunes. La segunda aprieta: mezcla pesados y corredores,
+            // camina mas rapido, ataca mas rapido (tarda menos en preparar y en repetir el golpe) y deja menos respiro
+            // entre golpe y golpe (menos invulnerabilidad tras recibir uno). Pocos a la vez: no hay filas largas.
+            new OleadaPelea { zombies = 4, simultaneos = 3, pesos = new[] { 1f, 0f, 0f },          velocidad = 0.9f },
+            new OleadaPelea { zombies = 6, simultaneos = 4, pesos = new[] { 0.4f, 0.3f, 0.3f },    velocidad = 1.1f, ataque = 1.5f, invulnerable = 0.8f },
         };
         [Tooltip("Pelea didactica: la PRIMERA pelea del nivel usa 'oleadasDidacticas' en vez de 'oleadas'. Solo el nivel que " +
                  "presenta el arsenal (el primero) la prende; lo pone LevelScene.")]
@@ -342,8 +341,8 @@ namespace Zombineta.Core
                  "la tercera obliga a usar la granada (una manada lenta de un solo lado) y la cuarta la bomba (muchos de los dos lados).")]
         public List<OleadaPelea> oleadasDidacticas = new List<OleadaPelea>
         {
-            new OleadaPelea { zombies = 3,  simultaneos = 3,  pesos = new[] { 1f, 0f, 0f }, velocidad = 0.85f },
-            new OleadaPelea { zombies = 5,  simultaneos = 4,  pesos = new[] { 0.7f, 0.3f, 0f }, velocidad = 1f },
+            new OleadaPelea { zombies = 4,  simultaneos = 3,  pesos = new[] { 1f, 0f, 0f }, velocidad = 0.9f },
+            new OleadaPelea { zombies = 6,  simultaneos = 4,  pesos = new[] { 0.4f, 0.3f, 0.3f }, velocidad = 1.1f, ataque = 1.5f, invulnerable = 0.8f },
             // Granada: una manada de comunes, lentos para darle tiempo de pensar, toda por la izquierda. Entran todos juntos
             // y hacen fila: pegarles uno por uno es una tortura; una granada se lleva a los que quedan en su radio.
             // Con 2 granadas (la 2.ª por si la primera no alcanza a todos) se pueden llevar a casi toda la manada.
@@ -420,6 +419,19 @@ namespace Zombineta.Core
         [Tooltip("Metros minimos entre dos zombies vivos del mismo carril en la pelea: los demas hacen fila " +
                  "detras del que esta pegado a la protagonista, en vez de encimarse en el mismo lugar.")]
         public float zombieSeparacion = 1.1f;
+        [Tooltip("Un zombie trabado en la fila, detras de otro y sin poder llegar a ella, no se queda esperando: da la vuelta por " +
+                 "otro carril y se le acerca desde el otro lado, buscando un hueco. Asi la fila no se estanca de un solo lado.")]
+        public bool rodeoActivo = true;
+        [Tooltip("Segundos que espera trabado en la fila antes de intentar rodearla.")]
+        [Min(0f)] public float rodeoEspera = 1.2f;
+        [Tooltip("Cuantos zombies pueden estar dando la vuelta a la vez.")]
+        [Min(1)] public int rodeoMax = 2;
+        [Tooltip("Multiplica la velocidad con la que camina al dar la vuelta.")]
+        [Min(0.1f)] public float rodeoVelocidad = 1.4f;
+        [Tooltip("Segundos que tiene para llegar al otro lado: si ella se mueve y no la alcanza, se rinde y sigue por donde este.")]
+        [Min(0.5f)] public float rodeoMaxSegundos = 6f;
+        [Tooltip("Segundos que espera un zombie, despues de dar la vuelta, para poder dar otra.")]
+        [Min(0f)] public float rodeoEnfriamiento = 4f;
         [Tooltip("Zombies que pueden estar preparando un ataque a la vez: los demas esperan su turno. Evita que la rodeen y la golpeen todos juntos.")]
         [Min(1)] public int maxAtacantes = 2;
         [Tooltip("Segundos que se prepara antes de pegar: el aviso para esquivarlo o pegarle primero.")]
