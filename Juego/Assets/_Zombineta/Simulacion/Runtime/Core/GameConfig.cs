@@ -97,6 +97,11 @@ namespace Zombineta.Core
         public float turboBurnMultiplier = 3f;
         public float reverseBurnMultiplier = 0.5f;
         public float fuelPickupAmount = 25f;
+        [Tooltip("Metros antes del refugio desde los que la nafta alcanza siempre: el consumo baja de a poco, sin que se " +
+                 "note, para llegar con lo justo. Quedarse sin nafta viendo la meta se siente injusto. 0 = apagado.")]
+        [Min(0f)] public float metrosDeGracia = 200f;
+        [Tooltip("Nafta con la que se llega al refugio en ese tramo, como minimo (en puntos de nafta).")]
+        [Min(0.01f)] public float reservaDeGracia = 1f;
 
         [Header("Bateria y faro")]
         public float batteryMax = 100f;

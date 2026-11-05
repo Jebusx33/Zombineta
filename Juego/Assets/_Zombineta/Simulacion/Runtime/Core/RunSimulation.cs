@@ -570,7 +570,36 @@ namespace Zombineta.Core
                     break;
             }
 
-            State.Fuel = Mathf.Max(0f, State.Fuel - config.fuelBurnPerSecond * multiplier * dt);
+            float gasto = config.fuelBurnPerSecond * multiplier * dt;
+            State.Fuel = Mathf.Max(PisoDeNafta, State.Fuel - gasto * FactorDeGracia(multiplier));
+        }
+
+        /// <summary>
+        /// Si la moto esta en el tramo de gracia: tan cerca del refugio que la nafta tiene que alcanzar. Con un
+        /// jefe por vencer el refugio todavia no cuenta, y una moto ya sin nafta no se rescata.
+        /// </summary>
+        public bool EnTramoDeGracia =>
+            config.metrosDeGracia > 0f && !Jefe.Pendiente && State.Fuel > 0f &&
+            meta - State.PlayerX <= config.metrosDeGracia;
+
+        /// <summary>Lo minimo que puede quedar en el tanque: la reserva en el tramo de gracia, si no 0.</summary>
+        float PisoDeNafta => EnTramoDeGracia ? Mathf.Min(State.Fuel, config.reservaDeGracia) : 0f;
+
+        /// <summary>
+        /// Cuanto del consumo normal se gasta (0 a 1). Si lo que queda no alcanza para llegar a la meta, se gasta
+        /// en proporcion, asi el tanque llega a la reserva justo en el refugio: el indicador sigue bajando parejo.
+        /// </summary>
+        float FactorDeGracia(float multiplier)
+        {
+            if (!EnTramoDeGracia)
+                return 1f;
+            float velocidad = Mathf.Max(1f, Mathf.Abs(PlayerSpeed));
+            float porMetro = config.fuelBurnPerSecond * multiplier / velocidad;
+            float necesita = porMetro * Mathf.Max(0f, meta - State.PlayerX);
+            float tiene = State.Fuel - config.reservaDeGracia;
+            if (necesita <= 0f || tiene >= necesita)
+                return 1f;
+            return Mathf.Clamp01(tiene / necesita);
         }
 
         RunEvent DrainBattery(float dt)
@@ -662,7 +691,7 @@ namespace Zombineta.Core
 
             // Aterrizo torcida: al piso. La horda hace el resto.
             State.StunRemaining = config.fallStunDuration;
-            State.Fuel = Mathf.Max(0f, State.Fuel - config.fallFuelPenalty);
+            State.Fuel = Mathf.Max(PisoDeNafta, State.Fuel - config.fallFuelPenalty);
             State.Fallen = true;
             return RunEvent.Fell;
         }
@@ -761,7 +790,7 @@ namespace Zombineta.Core
         public RunEvent ApplyCrash()
         {
             State.StunRemaining = config.crashStunDuration;
-            State.Fuel = Mathf.Max(0f, State.Fuel - config.crashFuelPenalty);
+            State.Fuel = Mathf.Max(PisoDeNafta, State.Fuel - config.crashFuelPenalty);
             return RunEvent.Crashed;
         }
 
@@ -826,7 +855,7 @@ namespace Zombineta.Core
             if (t.ramStun > 0f)
                 State.StunRemaining = Mathf.Max(State.StunRemaining, t.ramStun);
             if (t.ramFuelPenalty > 0f)
-                State.Fuel = Mathf.Max(0f, State.Fuel - t.ramFuelPenalty);
+                State.Fuel = Mathf.Max(PisoDeNafta, State.Fuel - t.ramFuelPenalty);
 
             Horde.ReportRunOver(x, lane, type);
             return RunEvent.RanOver;
