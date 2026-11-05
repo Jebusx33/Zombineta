@@ -19,6 +19,11 @@ namespace Zombineta.Juego.Flow
         [SerializeField] ScreenFader fader;
         [SerializeField] float fadeSeconds = 0.25f;
 
+        [Tooltip("Al entrar o salir de un nivel, la pantalla se cierra en un circulo sobre la moto (iris) en vez de fundirse.")]
+        [SerializeField] bool irisEnLosNiveles = true;
+        [Tooltip("Segundos que tarda el iris en cerrarse, y lo mismo en abrirse.")]
+        [SerializeField] float segundosIris = 0.7f;
+
         [Tooltip("El nivel del tutorial (escena Tutorial y el audio del nivel 1): no forma parte de Niveles.asset.")]
         [SerializeField] LevelInfo tutorial;
 
@@ -219,9 +224,12 @@ namespace Zombineta.Juego.Flow
                 var plan = pending.Dequeue();
                 Traza("plan: descarga [" + string.Join(", ", plan.Unload) + "] carga [" + string.Join(", ", plan.Load) + "] activa " + plan.Active + " fade " + plan.Fade);
 
+                bool iris = irisEnLosNiveles && TocaUnNivel(plan);
                 if (plan.Fade && fader != null)
                 {
-                    yield return fader.FadeTo(1f, fadeSeconds);
+                    fader.Modo = iris ? Transicion.Iris : Transicion.Fundido;
+                    fader.Seguir = iris ? CentroDeLaProtagonista : (System.Func<Vector2>)null;
+                    yield return fader.FadeTo(1f, iris ? segundosIris : fadeSeconds);
                     Traza("fundido a negro listo");
                 }
 
@@ -253,11 +261,50 @@ namespace Zombineta.Juego.Flow
 
                 if (plan.Fade && fader != null)
                 {
-                    yield return fader.FadeTo(0f, fadeSeconds);
+                    if (iris)
+                    {
+                        // Dos cuadros para que la camara del nivel nuevo se acomode: si no, el circulo se abre lejos de la moto.
+                        yield return null;
+                        yield return null;
+                    }
+                    yield return fader.FadeTo(0f, iris ? segundosIris : fadeSeconds);
                     Traza("fundido de vuelta listo");
                 }
             }
             busy = false;
+        }
+
+        bool TocaUnNivel(ScenePlan plan)
+        {
+            foreach (var s in plan.Load)
+                if (EsEscenaDeNivel(s))
+                    return true;
+            foreach (var s in plan.Unload)
+                if (EsEscenaDeNivel(s))
+                    return true;
+            return false;
+        }
+
+        bool EsEscenaDeNivel(string escena) =>
+            escena == TutorialScene() || escena == nivelSuelto || escena == LevelScene(flow.LevelIndex) ||
+            escena.StartsWith("Level_");
+
+        /// <summary>Donde esta la protagonista en pantalla (en la moto o a pie); sin nivel, el medio.</summary>
+        static Vector2 CentroDeLaProtagonista()
+        {
+            var run = FindAnyObjectByType<RunController>();
+            // La camara del nivel, no la principal: Boot tiene la suya.
+            var seguidora = FindAnyObjectByType<CameraFollow>();
+            var cam = seguidora != null ? seguidora.GetComponent<Camera>() : Camera.main;
+            if (run == null || run.Sim == null || cam == null)
+                return new Vector2(0.5f, 0.5f);
+
+            var s = run.Sim.State;
+            bool aPie = s.Phase == RunPhase.Pelea || s.Loss == LossReason.Derribada;
+            var mundo = aPie
+                ? new Vector3(run.ToWorldX(s.PeatonX), run.LaneToWorldY(s.PeatonY) + 0.9f, 0f)
+                : new Vector3(run.ToWorldX(s.PlayerX), run.LaneToWorldY(s.LaneVisual) + 0.7f + run.HeightToWorld(s.Height), 0f);
+            return IrisMath.CentroEnPantalla(cam.WorldToViewportPoint(mundo));
         }
 
         // --- Niveles ---------------------------------------------------------------

@@ -61,6 +61,9 @@ namespace Zombineta.Juego.Levels
         [Tooltip("El jefe del nivel. Vacio = sin jefe.")]
         [SerializeField] Zombineta.Jefe.JefeConfig jefe;
 
+        [Tooltip("Como se ve la imagen de este nivel: normal, blanco y negro o pelicula vieja. El HUD no cambia.")]
+        [SerializeField] Zombineta.Estilo.EstiloVisual estilo;
+
         [Header("Recolectables")]
         [Tooltip("Los recolectables (nafta, bateria, municion) flotan: suben y bajan despacio.")]
         [SerializeField] bool flotarRecolectables = true;
@@ -112,6 +115,7 @@ namespace Zombineta.Juego.Levels
         public LevelGeneratorSettings Generator => generator;
         public List<Tramo> Tramos => tramos;
         public PerfilDeLuz Perfil => perfil;
+        public Zombineta.Estilo.EstiloVisual Estilo => estilo;
 
         // Sin config asignada: usar los valores actuales de Settings/GameConfig.asset (no los
         // defaults viejos de la clase GameConfig, que ya no coinciden con el asset en uso).

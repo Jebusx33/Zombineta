@@ -14142,6 +14142,9 @@ MonoBehaviour:
     hasta: 300
     presionHorda: 1.1
     oscuridad: 0
+    lluvia: 0
+    niebla: 0
+    viento: 0.35
     obstaculos: 1
     recursos: 1
     piezas: 1
@@ -14150,6 +14153,9 @@ MonoBehaviour:
     hasta: 1100
     presionHorda: 1.15
     oscuridad: 0
+    lluvia: 0
+    niebla: 0.25
+    viento: 0.4
     obstaculos: 1
     recursos: 1
     piezas: 1
@@ -14158,6 +14164,9 @@ MonoBehaviour:
     hasta: 1900
     presionHorda: 1.2
     oscuridad: 0
+    lluvia: 0
+    niebla: 0
+    viento: 0.5
     obstaculos: 1
     recursos: 1
     piezas: 1
@@ -14166,6 +14175,9 @@ MonoBehaviour:
     hasta: 2700
     presionHorda: 1.25
     oscuridad: 0
+    lluvia: 0
+    niebla: 0.8
+    viento: 0.3
     obstaculos: 1
     recursos: 1
     piezas: 1
@@ -14174,6 +14186,9 @@ MonoBehaviour:
     hasta: 3500
     presionHorda: 1.3
     oscuridad: 0
+    lluvia: 0
+    niebla: 0.5
+    viento: 0.45
     obstaculos: 1
     recursos: 1
     piezas: 1
@@ -14182,6 +14197,9 @@ MonoBehaviour:
     hasta: 4000
     presionHorda: 1.3
     oscuridad: 0
+    lluvia: 0
+    niebla: 0.9
+    viento: 0.3
     obstaculos: 1
     recursos: 1
     piezas: 1
@@ -14193,6 +14211,7 @@ MonoBehaviour:
   reintentosPelea: 1
   peleaDidactica: 0
   jefe: {fileID: 11400000, guid: cd077d558ab6e114c9c03c13dafcdcb9, type: 2}
+  estilo: 0
   flotarRecolectables: 1
   flotarAltura: 0.1
   flotarVelocidad: 3

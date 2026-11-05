@@ -149,6 +149,9 @@ namespace Zombineta.Juego.Levels
         {
             Traza(won ? "victoria" : "atrapada: empieza el plano final");
             finaleWon = won;
+            // Atrapada: el color se va mientras dura el plano final.
+            if (!won)
+                Zombineta.Estilo.EstiloDeImagen.Desaturar(0.85f);
             float hold = 0f;
             if (cameraRig != null)
                 hold = won ? cameraRig.PlayVictory() : cameraRig.PlayCatch();

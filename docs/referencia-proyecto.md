@@ -136,6 +136,19 @@ Sistema propio con buses (`AudioBuses`), director de música (`MusicDirector`), 
 de presupuesto de luces (`LightBudget`) limita la cantidad activa. `TallerLuz.unity` es una
 escena de prueba de iluminación.
 
+## Clima, estilo de imagen y transiciones
+
+- **Clima** (`Scripts/Gameplay/Clima/ClimaDirector`): lluvia con salpicaduras, tres bancos de niebla, papeles
+  al viento y árboles que se mecen. Cada tramo de `LevelScene` tiene `lluvia`, `niebla` y `viento` (0 a 1) y
+  entran con el mismo fundido que el apagón. Es solo dibujo: no cambia reglas. Se crea solo al dar Play; en
+  calidad Baja usa menos partículas y el faro no se ve en el aire.
+- **Estilo** (`Scripts/Gameplay/Estilo/EstiloDeImagen`): blanco y negro o película vieja, con el campo `Estilo`
+  de `LevelScene`. Es un Volume de post-processing armado por código (color, grano, viñeta) más una capa con
+  rayas y polvo (`Resources/Estilo/PeliculaVieja.shader`). El HUD no cambia. Al ser atrapada, el color se va.
+  F6 recorre los estilos en el editor.
+- **Iris** (`ScreenFader` + `Resources/Estilo/Iris.shader`): al entrar y salir de un nivel la pantalla se
+  cierra en un círculo sobre la protagonista. Se apaga con `irisEnLosNiveles` de `GameRoot` (escena Boot).
+
 ---
 
 ## Tests

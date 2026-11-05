@@ -25,6 +25,16 @@ namespace Zombineta.Level
         [Tooltip("0 = luz normal del nivel. 1 = apagon: la calle queda a oscuras y solo el faro deja ver.")]
         [Range(0f, 1f)] public float oscuridad;
 
+        [Header("Clima (solo se ve: no cambia las reglas)")]
+        [Tooltip("0 = sin lluvia. 1 = aguacero.")]
+        [Range(0f, 1f)] public float lluvia;
+
+        [Tooltip("0 = aire limpio. 1 = bancos de niebla espesos.")]
+        [Range(0f, 1f)] public float niebla;
+
+        [Tooltip("0 = calma. 1 = viento fuerte: inclina la lluvia, arrastra la niebla y los papeles, mueve los arboles.")]
+        [Range(0f, 1f)] public float viento;
+
         [Header("Densidad al generar (multiplica los numeros del generador)")]
         [Tooltip("Obstaculos sueltos. 0 = ninguno.")]
         [Min(0f)] public float obstaculos = 1f;
@@ -106,6 +116,29 @@ namespace Zombineta.Level
         /// <summary>Oscuridad (0..1) a esos metros, con el fundido de entrada y salida.</summary>
         public static float OscuridadAt(IReadOnlyList<Tramo> tramos, float meters, float transicion) =>
             Suavizado(tramos, meters, transicion, 0f, t => t.oscuridad);
+
+        /// <summary>Lluvia (0..1) a esos metros, con el fundido entre tramos.</summary>
+        public static float LluviaAt(IReadOnlyList<Tramo> tramos, float meters, float transicion) =>
+            Suavizado(tramos, meters, transicion, 0f, t => t.lluvia);
+
+        /// <summary>Niebla (0..1) a esos metros, con el fundido entre tramos.</summary>
+        public static float NieblaAt(IReadOnlyList<Tramo> tramos, float meters, float transicion) =>
+            Suavizado(tramos, meters, transicion, 0f, t => t.niebla);
+
+        /// <summary>Viento (0..1) a esos metros, con el fundido entre tramos.</summary>
+        public static float VientoAt(IReadOnlyList<Tramo> tramos, float meters, float transicion) =>
+            Suavizado(tramos, meters, transicion, 0f, t => t.viento);
+
+        /// <summary>Si algun tramo tiene clima: si no, no hace falta armar nada para dibujarlo.</summary>
+        public static bool TieneClima(IReadOnlyList<Tramo> tramos)
+        {
+            if (tramos == null)
+                return false;
+            foreach (var t in tramos)
+                if (t != null && (t.lluvia > 0f || t.niebla > 0f || t.viento > 0f))
+                    return true;
+            return false;
+        }
 
         static float Suavizado(IReadOnlyList<Tramo> tramos, float meters, float transicion, float sinTramos,
             Func<Tramo, float> valor)

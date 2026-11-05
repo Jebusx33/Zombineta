@@ -137,7 +137,8 @@ cada tabla traen el nombre sin la extensión.
 | Apagón: vuelve la luz | `world_blackout_end` | Termina el apagón | ❌ | M | Sí | Transformador que arranca, tubos que parpadean |
 | Postes que titilan | `world_pole_flicker` | Faroles del escenario que parpadean | ❌ | B | Sí | Chisporroteo posicional |
 | Autos abandonados (Nivel 2) | `world_car_alarm_01` a `_03` | Al pasar junto a autos del embotellamiento | ❌ | M | Sí | Alarmas de auto, bocinas trabadas, radios encendidas |
-| Lluvia (si se suma al nivel) | `amb_rain` | Loop | ❌ | B | Sí | Solo si el arte suma lluvia |
+| Lluvia | `amb_rain` | Loop, con el volumen de la lluvia del tramo | ❌ | M | Sí | Ya llueve en el Nivel 1 (los apagones son la tormenta). El volumen sale de `ClimaDirector.Lluvia` |
+| Viento | `amb_wind` | Loop, con el volumen del viento del tramo | ❌ | M | Sí | Sopla en todo el Nivel 2 y en las tormentas del Nivel 1. El volumen sale de `ClimaDirector.Viento` |
 
 ### 2.5 Jefe del Nivel 2 — diegético
 
@@ -301,7 +302,7 @@ conversación del 21/10.
 | Moto y protagonista (2.1) | 19 | 6 | 4 | 4 | 5 |
 | Recolectables (2.2) | 6 | 0 | 5 | 0 | 1 |
 | Zombies y horda (2.3) | 10 | 3 | 2 | 0 | 5 |
-| Mundo y ambiente (2.4) | 7 | 0 | 0 | 2 | 5 |
+| Mundo y ambiente (2.4) | 8 | 0 | 0 | 2 | 6 |
 | Jefe del Nivel 2 (2.5) | 7 | 0 | 7 | 0 | 0 |
 | Pelea: protagonista (3.1) | 15 | 8 | 0 | 1 | 6 |
 | Pelea: zombies (3.2) | 6 | 0 | 0 | 0 | 6 |
@@ -311,7 +312,7 @@ conversación del 21/10.
 | Transiciones (5) | 10 | 1 | 2 | 0 | 7 |
 | Menús y pantallas (6) | 17 | 0 | 5 | 0 | 12 |
 | Radio (7) | 6 | 0 | 0 | 0 | 6 |
-| **Total** | **126** | **18** | **28** | **8** | **72** |
+| **Total** | **127** | **18** | **28** | **8** | **73** |
 
 **Por dónde empezar (prioridad A, en este orden):**
 1. Reexportar los tres audios de la moto (el motor está mudo).

@@ -314,6 +314,7 @@ andando pero no se anuncia en ningún cartel**. Las acciones nuevas viven en el 
 | Reinicio rápido (Game Over) | R | — (solo teclado, y solo en una escena de nivel suelta sin flujo: `LevelFlowBridge.Start` pone `run.QuickRestartEnabled = false` en cuanto hay flujo, así que en el juego normal R no hace nada) |
 | F2 ganar / F3 perder (editor y builds de desarrollo) | F2 / F3 | Select + RB / Select + LB |
 | Saltar al jefe del nivel (editor y builds de desarrollo) | F5 | — |
+| Cambiar el estilo de imagen: normal, blanco y negro, película vieja (editor y builds de desarrollo) | F6 | — |
 
 Los dos juntos (turbo + retroceso) dan Normal, igual que D+A hoy. El stick de carril usa punto
 de presión 0,5 y libera por debajo de ≈0,375 (default del Input System): un empujón sostenido
@@ -597,6 +598,18 @@ y se listan en `Settings/AnimacionesAPie.asset`, junto con su ritmo. El 1.º y 2
 remate, `punch_high`. Para cambiar un dibujo, se reemplaza el PNG con el mismo nombre y el importador conserva el
 pivote en los pies. Son lienzos de 540 × 384; un cuadro nuevo tiene que mantener a la protagonista en el mismo lugar del
 lienzo. No hay poses de disparo, granada ni bomba: al disparar, el cuerpo solo retrocede un poco.
+
+**Nafta de gracia (05/11):** en los últimos 200 m antes del refugio la nafta alcanza siempre. Si lo que queda no
+llega, el consumo baja en proporción y el tanque llega a la reserva justo en la meta; los choques tampoco lo
+vacían. `metrosDeGracia` y `reservaDeGracia` en `GameConfig` (0 metros lo apaga). Con un jefe por vencer no
+corre, y una moto que ya se quedó sin nafta antes de ese tramo pelea a pie como siempre.
+
+**Clima, estilo e iris (05/11):** cada tramo tiene `lluvia`, `niebla` y `viento` y `ClimaDirector` los
+dibuja (ver `docs/referencia-proyecto.md`). De ejemplo: en el Nivel 1 llueve desde "Desarrollar II" y los
+apagones son la tormenta; en el Nivel 2 sopla viento todo el nivel y hay niebla en el Cruce, la Persecución y la
+Recta final, donde está el jefe. `LevelScene` tiene `Estilo` (normal, blanco y negro, película vieja) y F6 los
+recorre en el editor. Cada nivel arranca en blanco y negro y toma color (1,2 s y después 2,5 s, en `EstiloDeImagen`); al ser atrapada la imagen pierde el color. Entrar y salir de un nivel es con iris. Todo se
+crea solo al dar Play: no hay objetos nuevos en las escenas. Los sonidos de lluvia y viento todavía no existen.
 
 **Jefe del Nivel 2 (01/11):** sale de `Game Design/Jefe_Nivel_2_Propuesta_v01.md`, con las decisiones de José
 sobre lo que estaba abierto. Es un duelo en moto en la Recta final: entra en el metro 3500, la horda se queda
