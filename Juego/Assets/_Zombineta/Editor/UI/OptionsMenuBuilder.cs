@@ -13,10 +13,10 @@ using Zombineta.Juego.Screens;
 namespace Zombineta.Juego.EditorTools
 {
     /// <summary>
-    /// Arma la escena Options segun la referencia de arte: fondo en degradado, titulo dorado,
-    /// pestanas de seccion a la izquierda y un panel con las filas agrupadas en Sonido, Pantalla
-    /// y Jugabilidad, mas la ayuda de teclas abajo a la derecha. Las medidas son las de la
-    /// referencia en 1920x1080, contadas desde la esquina de arriba a la izquierda.
+    /// Arma la escena Options con el estilo del menu principal: su mismo fondo, un panel oscuro
+    /// con borde rosa a la derecha, pestanas de seccion arriba (Sonido, Pantalla y Jugabilidad,
+    /// la activa como tira clara) y las filas agrupadas por seccion, mas la ayuda de teclas
+    /// debajo. Las medidas son en 1920x1080, contadas desde la esquina de arriba a la izquierda.
     /// </summary>
     public static class OptionsMenuBuilder
     {
@@ -24,21 +24,26 @@ namespace Zombineta.Juego.EditorTools
         internal const string ArtDir = "Assets/_Zombineta/Art/UI/Opciones";
         const string ActionsPath = "Assets/Settings/InputSystem_Actions.inputactions";
 
-        static readonly Color FondoIzq = new Color32(27, 18, 37, 255);
-        static readonly Color FondoDer = new Color32(250, 250, 250, 255);
+        // Panel y Chip los sigue usando la pantalla de creditos.
         internal static readonly Color Panel = new Color32(28, 20, 38, 255);
-        internal static readonly Color Magenta = new Color32(242, 27, 214, 255);
-        static readonly Color Pista = new Color32(142, 28, 110, 255);
-        internal static readonly Color Dorado = new Color32(255, 210, 26, 255);
-        static readonly Color Manija = new Color32(184, 146, 10, 255);
-        static readonly Color Linea = new Color32(216, 214, 222, 255);
         internal static readonly Color Chip = new Color32(90, 83, 99, 235);
-        static readonly Color Resaltado = new Color(0.95f, 0.11f, 0.84f, 0.16f);
 
-        // Panel y filas.
-        const float PanelX = 590f, PanelY = 262f, PanelW = 1000f, PanelH = 673f;
-        const float FilaX = 632f, FilaW = 868f, FilaH = 44f;
-        const float EtiquetaX = 20f, ControlX = 285f, ValorX = 558f;
+        // La paleta del menu principal: rosa de acento, blanco y violeta oscuro.
+        static readonly Color Rosa = new Color32(233, 31, 128, 255);
+        static readonly Color RosaClaro = new Color32(255, 170, 214, 255);
+        static readonly Color Ayuda = new Color32(228, 218, 238, 255);
+        static readonly Color Pista = new Color32(150, 45, 125, 255);
+        static readonly Color Manija = Rosa;
+        static readonly Color Linea = new Color32(214, 122, 180, 255);
+        static readonly Color Resaltado = new Color(0.91f, 0.12f, 0.5f, 0.3f);
+
+        // Panel (a la derecha, como el del menu principal: a la izquierda queda el arte) y filas.
+        const float PanelX = 1000f, PanelY = 110f, PanelW = 860f, PanelH = 860f;
+        const float FilaX = 1040f, FilaW = 780f, FilaH = 44f;
+        const float EtiquetaX = 20f, ControlX = 320f, ValorX = 600f;
+
+        // Tira clara de la seleccion, la misma del menu principal.
+        static Sprite spriteSeleccion;
 
         [MenuItem("Zombineta/UI/Reconstruir menu de opciones")]
         static void Rebuild()
@@ -51,8 +56,12 @@ namespace Zombineta.Juego.EditorTools
 
         public static void Build()
         {
-            var fondo = Degradado("opciones_fondo.png", x => Color.Lerp(FondoIzq, FondoDer, x));
-            // Blanco con alfa: se tine por Image.color, sirve para el panel y para las lineas.
+            // El mismo fondo y panel que el menu principal (ver MenuPrincipalBuilder).
+            var fondo = MenuPrincipalBuilder.Importar(MenuPrincipalBuilder.ArteDir + "menu_fondo_v2.png", Vector4.zero, comprimir: true);
+            var panelSprite = MenuPrincipalBuilder.Importar(MenuPrincipalBuilder.UiDir + "menu_panel.png", new Vector4(40, 40, 40, 40));
+            spriteSeleccion = MenuPrincipalBuilder.Importar(MenuPrincipalBuilder.UiDir + "menu_boton_sel.png", new Vector4(26, 24, 26, 24));
+            var tecla = MenuPrincipalBuilder.Importar(MenuPrincipalBuilder.UiDir + "menu_tecla.png", new Vector4(14, 14, 14, 14));
+            // Blanco con alfa: se tine por Image.color, sirve para las lineas de cada seccion.
             var desvanecido = Degradado("opciones_desvanecido.png",
                 x => new Color(1f, 1f, 1f, 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.3f, 1f, x))));
 
@@ -63,21 +72,24 @@ namespace Zombineta.Juego.EditorTools
 
             var bg = AddImage(root, "Fondo", Color.white, 0, 0, 1920, 1080);
             bg.sprite = fondo;
+            bg.raycastTarget = false;
 
-            // Titulo con su subrayado.
-            var titulo = AddText(root, "Titulo", "OPCIONES", 58, Dorado, 103, 108, 600, 70, TextAnchor.MiddleLeft);
+            // Panel de opciones.
+            var panel = AddImage(root, "Panel", Color.white, PanelX, PanelY, PanelW, PanelH);
+            panel.sprite = panelSprite;
+            panel.type = Image.Type.Sliced;
+            panel.raycastTarget = false;
+            var filas = panel.transform;
+
+            // Titulo con su subrayado, arriba del panel.
+            var titulo = AddText(root, "Titulo", "OPCIONES", 56, Color.white, FilaX, 128, 600, 70, TextAnchor.MiddleLeft);
             titulo.fontStyle = FontStyle.Bold;
             var borde = titulo.gameObject.AddComponent<Outline>();
             borde.effectColor = new Color(0.1f, 0.05f, 0.12f, 1f);
             borde.effectDistance = new Vector2(2f, -2f);
-            AddImage(root, "Subrayado", Magenta, 105, 172, 126, 13);
+            AddImage(root, "Subrayado", Rosa, FilaX + 2f, 204, 126, 8);
 
-            // Panel de opciones.
-            var panel = AddImage(root, "Panel", Panel, PanelX, PanelY, PanelW, PanelH);
-            panel.sprite = desvanecido;
-            var filas = panel.transform;
-
-            float y = 300f - PanelY;
+            float y = 335f - PanelY;
             AddEncabezado(filas, "SONIDO", y, desvanecido);
             var general = AddSlider(filas, "Volumen", y += 50f);
             var musica = AddSlider(filas, "Música", y += 48f);
@@ -101,15 +113,15 @@ namespace Zombineta.Juego.EditorTools
             var so = new SerializedObject(secciones);
             var lista = so.FindProperty("secciones");
             lista.arraySize = 3;
-            AddPestana(root, lista.GetArrayElementAtIndex(0), "Sonido", 262f, general, musica, efectos);
-            AddPestana(root, lista.GetArrayElementAtIndex(1), "Pantalla", 353f, fullscreen, camara, luz);
-            AddPestana(root, lista.GetArrayElementAtIndex(2), "Jugabilidad", 444f, sacudidas, sangre, vibracion);
+            AddPestana(root, lista.GetArrayElementAtIndex(0), "Sonido", FilaX, general, musica, efectos);
+            AddPestana(root, lista.GetArrayElementAtIndex(1), "Pantalla", FilaX + 268f, fullscreen, camara, luz);
+            AddPestana(root, lista.GetArrayElementAtIndex(2), "Jugabilidad", FilaX + 536f, sacudidas, sangre, vibracion);
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            // Ayuda de teclas. "Volver" tambien se puede clickear.
-            AddAyuda(root, "Navegar", 1255f, new[] { "↑", "↓" });
-            AddAyuda(root, "Ajustar", 1471f, new[] { "←", "→" });
-            var volver = AddAyuda(root, "Volver", 1686f, new[] { "Esc" });
+            // Ayuda de teclas, debajo del panel. "Volver" tambien se puede clickear.
+            AddAyudaMenu(root, "Navegar", FilaX, new[] { "↑", "↓" }, tecla);
+            AddAyudaMenu(root, "Ajustar", FilaX + 270f, new[] { "←", "→" }, tecla);
+            var volver = AddAyudaMenu(root, "Volver", FilaX + 540f, new[] { "Esc" }, tecla);
             var boton = volver.gameObject.AddComponent<Button>();
             boton.targetGraphic = volver;
             boton.navigation = new Navigation { mode = Navigation.Mode.None };
@@ -140,10 +152,10 @@ namespace Zombineta.Juego.EditorTools
         static void AddEncabezado(Transform panel, string titulo, float y, Sprite desvanecido)
         {
             float x = FilaX - PanelX;
-            AddText(panel, "Encabezado " + titulo, titulo, 24, Color.white, x, y - 20f, 300f, 40f, TextAnchor.MiddleLeft);
-            // La linea arranca despues del texto (mayusculas de 24 px: ~14 px por letra).
-            float desde = x + titulo.Length * 14f + 66f;
-            var linea = AddImage(panel, "Linea " + titulo, Linea, desde, y, 1470f - PanelX - desde, 3f);
+            AddText(panel, "Encabezado " + titulo, titulo, 26, RosaClaro, x, y - 20f, 300f, 40f, TextAnchor.MiddleLeft);
+            // La linea arranca despues del texto (mayusculas de 26 px: ~16 px por letra).
+            float desde = x + titulo.Length * 16f + 60f;
+            var linea = AddImage(panel, "Linea " + titulo, Linea, desde, y, FilaX + FilaW - PanelX - desde, 3f);
             linea.sprite = desvanecido;
             linea.raycastTarget = false;
         }
@@ -166,7 +178,7 @@ namespace Zombineta.Juego.EditorTools
             resaltado.raycastTarget = false;
             resaltado.enabled = false;
 
-            var etiqueta = AddText(rt, "Etiqueta", label, 24, Color.white, EtiquetaX, 0, 260, FilaH, TextAnchor.MiddleLeft);
+            var etiqueta = AddText(rt, "Etiqueta", label, 28, Color.white, EtiquetaX, 0, 290, FilaH, TextAnchor.MiddleLeft);
             return (rt, resaltado, etiqueta);
         }
 
@@ -177,6 +189,9 @@ namespace Zombineta.Juego.EditorTools
             Set(f, "resaltado", resaltado);
             Set(f, "etiqueta", etiqueta);
             Set(f, "valor", valor);
+            var so = new SerializedObject(f);
+            so.FindProperty("etiquetaSeleccionada").colorValue = RosaClaro;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         static Slider AddSlider(Transform panel, string label, float y)
@@ -218,7 +233,7 @@ namespace Zombineta.Juego.EditorTools
             slider.transition = Selectable.Transition.None;
             pista.raycastTarget = true;
 
-            var valor = AddText(fila, "Valor", "50%", 18, Color.white, ValorX, 0, 100, FilaH, TextAnchor.MiddleLeft);
+            var valor = AddText(fila, "Valor", "50%", 22, Color.white, ValorX, 0, 100, FilaH, TextAnchor.MiddleLeft);
             Fila(fila, slider, resaltado, etiqueta, valor);
             return slider;
         }
@@ -248,7 +263,7 @@ namespace Zombineta.Juego.EditorTools
             toggle.isOn = true;
             go.AddComponent<AjusteConFlechas>();
 
-            var valor = AddText(fila, "Valor", "Sí", 18, Color.white, ValorX, 0, 100, FilaH, TextAnchor.MiddleLeft);
+            var valor = AddText(fila, "Valor", "Sí", 22, Color.white, ValorX, 0, 100, FilaH, TextAnchor.MiddleLeft);
             Fila(fila, toggle, resaltado, etiqueta, valor);
             return toggle;
         }
@@ -321,32 +336,63 @@ namespace Zombineta.Juego.EditorTools
 
         // --- Pestanas y ayuda --------------------------------------------------------
 
-        static void AddPestana(Transform root, SerializedProperty seccion, string label, float y, params Selectable[] controles)
+        /// <summary>
+        /// Pestana arriba del panel: la de la seccion activa se ve como la tira clara del menu
+        /// principal, con el texto oscuro; las demas, texto blanco sobre el panel.
+        /// </summary>
+        static void AddPestana(Transform root, SerializedProperty seccion, string label, float x, params Selectable[] controles)
         {
-            const float x = 95f, w = 438f, h = 70f;
+            const float y = 226f, w = 252f, h = 64f;
 
-            var borde = AddImage(root, "Pestana " + label, Magenta, x, y, w, h);
-            AddImage(borde.transform, "Fondo", Color.white, 1, 1, w - 2, h - 2).raycastTarget = false;
-            AddText(borde.transform, "Texto", label, 36, Color.black, 90, 0, w - 100, h, TextAnchor.MiddleLeft);
+            var area = AddImage(root, "Pestana " + label, Color.clear, x, y, w, h);
 
-            // Marca a la izquierda de la caja: crece hacia afuera en la seccion activa.
-            var marca = AddImage(borde.transform, "Marca", Magenta, 0, 0, 10, h);
-            marca.rectTransform.pivot = new Vector2(1f, 1f);
-            marca.rectTransform.anchoredPosition = Vector2.zero;
-            marca.raycastTarget = false;
+            var resaltado = AddImage(area.transform, "Resaltado", Color.white, 0, 0, w, h);
+            resaltado.sprite = spriteSeleccion;
+            resaltado.type = Image.Type.Sliced;
+            resaltado.raycastTarget = false;
 
-            var boton = borde.gameObject.AddComponent<Button>();
-            boton.targetGraphic = borde;
+            var texto = AddText(area.transform, "Texto", label, 32, Color.white, 0, 0, w, h, TextAnchor.MiddleCenter);
+
+            var boton = area.gameObject.AddComponent<Button>();
+            boton.targetGraphic = area;
             boton.transition = Selectable.Transition.None;
             boton.navigation = new Navigation { mode = Navigation.Mode.None };
 
             seccion.FindPropertyRelative("pestana").objectReferenceValue = boton;
-            seccion.FindPropertyRelative("marca").objectReferenceValue = marca;
+            seccion.FindPropertyRelative("resaltado").objectReferenceValue = resaltado.gameObject;
+            seccion.FindPropertyRelative("etiqueta").objectReferenceValue = texto;
             var lista = seccion.FindPropertyRelative("controles");
             lista.arraySize = controles.Length;
             for (int i = 0; i < controles.Length; i++)
                 lista.GetArrayElementAtIndex(i).objectReferenceValue = controles[i];
         }
+
+        /// <summary>La ayuda de teclas del menu principal: teclas con contorno y el texto al lado.</summary>
+        static Image AddAyudaMenu(Transform root, string label, float x, string[] teclas, Sprite tecla)
+        {
+            const float y = 984f, h = 44f;
+
+            float ancho = 0f;
+            foreach (var t in teclas)
+                ancho += TeclaAncho(t) + 8f;
+            var contenedor = AddImage(root, "Ayuda " + label, Color.clear, x, y, ancho + 8f + 170f, h);
+
+            float kx = 0f;
+            foreach (var t in teclas)
+            {
+                float kw = TeclaAncho(t);
+                var caja = AddImage(contenedor.transform, "Tecla " + t, Color.white, kx, 4f, kw, 36f);
+                caja.sprite = tecla;
+                caja.type = Image.Type.Sliced;
+                caja.raycastTarget = false;
+                AddText(caja.transform, "Texto", t, 20, Color.white, 0, 0, kw, 36f, TextAnchor.MiddleCenter);
+                kx += kw + 8f;
+            }
+            AddText(contenedor.transform, "Texto", label, 26, Ayuda, kx + 8f, 0, 170f, h, TextAnchor.MiddleLeft);
+            return contenedor;
+        }
+
+        static float TeclaAncho(string tecla) => tecla.Length > 3 ? 76f : tecla.Length > 1 ? 56f : 44f;
 
         internal static Image AddAyuda(Transform root, string label, float x, string[] teclas)
         {

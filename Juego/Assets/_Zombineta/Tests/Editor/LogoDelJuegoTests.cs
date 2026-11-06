@@ -14,6 +14,8 @@ namespace Zombineta.Juego.Tests
     {
         const string RutaLogo = "Assets/_Zombineta/Art/UI/sprite_logo_deadlivery_1.png";
         const string RutaMenu = "Assets/_Zombineta/Scenes/MainMenu.unity";
+        // El fondo del menu principal ya trae el logo dibujado.
+        const string RutaFondoMenu = "Assets/_Zombineta/Art/MenuInicio/menu_fondo_v2.png";
 
         [Test]
         public void ElMenuPrincipalMuestraElLogoYNoElTextoViejo()
@@ -23,7 +25,7 @@ namespace Zombineta.Juego.Tests
             var escena = estaba ? yaCargada : EditorSceneManager.OpenScene(RutaMenu, OpenSceneMode.Additive);
             try
             {
-                var logo = AssetDatabase.LoadAssetAtPath<Sprite>(RutaLogo);
+                var logo = AssetDatabase.LoadAssetAtPath<Sprite>(RutaFondoMenu);
                 bool hayLogo = false;
                 foreach (var raiz in escena.GetRootGameObjects())
                 {
