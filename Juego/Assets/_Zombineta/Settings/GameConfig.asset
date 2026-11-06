@@ -20,6 +20,9 @@ MonoBehaviour:
   turboSpeedMultiplier: 1.8
   reverseSpeedMultiplier: 0.35
   fuelMax: 100
+  fuelInicial: 0
+  bidonesDesdePelea: 0
+  bidonesHastaMetro: 0
   fuelBurnPerSecond: 2.2
   turboBurnMultiplier: 3
   reverseBurnMultiplier: 0.5
@@ -50,9 +53,43 @@ MonoBehaviour:
   explosionRadius: 8
   explosionScareRadius: 16
   explosionScareSeconds: 1
+  granadaMax: 3
+  granadaInicial: 0
+  granadaDistancia: 10
+  granadaVuelo: 0.85
+  hordaSinRegenerar: 5
+  granadaDistanciaAPie: 5
+  granadaRadioAPie: 4.5
+  bombaMax: 2
+  bombaInicial: 0
+  bombaMecha: 2
+  bombaRadioPropio: 3
+  bombaCarrilesPropios: 1
+  granadasPrimeraPelea: 1
+  bombasPrimeraPelea: 1
+  saltoActivo: 1
+  saltoDistanciaMax: 8
+  saltoDistanciaMin: 1
+  saltoVelocidadCarrera: 11
+  saltoEntradaMin: 9
+  saltoEntradaMax: 24
+  saltoAgacharse: 0.45
+  saltoVuelo: 0.7
+  saltoAterrizaje: 0.85
+  saltoRadio: 1.3
+  saltoAlcanceCaida: 0.7
+  saltoMaxSimultaneos: 2
+  frenadoGapHorda: 14
+  retrocesoAciertos: 2
+  retrocesoVentana: 3
+  retrocesoMetros: 12
+  retrocesoSegundos: 3
+  retrocesoEnfriamiento: 8
   motoNariz: 1.4
   motoCola: 1.4
   medioLargoRecurso: 0.5
+  imanCarriles: 1
+  imanMetros: 7
   medioLargoObstaculo: 2
   medioLargoZombie: 0.4
   crashStunDuration: 0.05
@@ -68,22 +105,134 @@ MonoBehaviour:
   perfectLandingAngle: 8
   safeLandingAngle: 25
   landingBoostMultiplier: 1.25
+  rampBoostMultiplier: 1.6
+  rampBoostDuration: 2.2
   landingBoostDuration: 1.5
   fallStunDuration: 1.6
   fallFuelPenalty: 10
   aerialPickupTolerance: 1.5
+  peleaSinNafta: 1
+  paradaSegundos: 1.1
+  arranqueSegundos: 0.8
+  vidaExtraPrimeraPelea: 1
+  reintentosPelea: 0
+  oleadas:
+  - zombies: 5
+    simultaneos: 4
+    pesos:
+    - 1
+    - 0.3
+    - 0
+    velocidad: 0.9
+    ataque: 1
+    invulnerable: 1
+    entrada: 0
+    ayuda: 0
+    cantidadAsegurada: 1
+  - zombies: 7
+    simultaneos: 5
+    pesos:
+    - 0.4
+    - 0.3
+    - 0.3
+    velocidad: 1.5
+    ataque: 1.9
+    invulnerable: 0.8
+    entrada: 0
+    ayuda: 0
+    cantidadAsegurada: 1
+  peleaDidactica: 0
+  granadasPeleaDidactica: 2
+  oleadasDidacticas:
+  - zombies: 4
+    simultaneos: 3
+    pesos:
+    - 1
+    - 0
+    - 0
+    velocidad: 0.9
+    ataque: 1
+    invulnerable: 1
+    entrada: 0
+    ayuda: 0
+    cantidadAsegurada: 1
+  - zombies: 6
+    simultaneos: 4
+    pesos:
+    - 0.4
+    - 0.3
+    - 0.3
+    velocidad: 1.1
+    ataque: 1.5
+    invulnerable: 0.8
+    entrada: 0
+    ayuda: 0
+    cantidadAsegurada: 1
+  - zombies: 20
+    simultaneos: 20
+    pesos:
+    - 1
+    - 0
+    - 0
+    velocidad: 0.55
+    ataque: 1
+    invulnerable: 1
+    entrada: 1
+    ayuda: 1
+    cantidadAsegurada: 2
+  - zombies: 24
+    simultaneos: 24
+    pesos:
+    - 1
+    - 0
+    - 0
+    velocidad: 0.6
+    ataque: 1
+    invulnerable: 1
+    entrada: 0
+    ayuda: 2
+    cantidadAsegurada: 1
+  maxSimultaneos: 6
+  respiroOleada: 1.5
+  dropBotiquin: 0.15
+  botiquinSeparacion: 2.4
+  dropBalas: 0.1
+  dropBalasCantidad: 2
+  dropSegundos: 10
+  dropAlcance: 0.9
+  premioBalas: 00000000010000000200000003000000i
+  premioBateria:
+  - 0
+  - 0
+  - 25
+  - 40
   vidaPelea: 5
   gapTrasPelea: 45
   arenaMedioAncho: 12
   peatonVelocidad: 6
+  peatonVelocidadCarril: 3
+  toleranciaCarril: 0.6
   golpeAlcance: 1.6
   golpeEnfriamiento: 0.27
+  comboVentana: 0.6
+  rematePausa: 0.55
+  remateRadio: 2.4
+  remateEmpuje: 3.5
+  remateDerribo: 1.4
   golpeDuracion: 0.15
   golpeEmpuje: 0.35
   golpeFreno: 0.5
   zombiesEnArena: 8
   zombieVelocidadPelea: 2.2
   zombieAlcance: 1.1
+  zombieSeparacion: 1.1
+  rodeoActivo: 1
+  rodeoEspera: 1.2
+  rodeoMax: 2
+  rodeoVelocidad: 1.4
+  rodeoMaxSegundos: 6
+  rodeoEnfriamiento: 4
+  maxAtacantes: 2
   zombiePreparacion: 0.5
   zombieEnfriamiento: 1
   invulnerableTrasGolpe: 0.8
