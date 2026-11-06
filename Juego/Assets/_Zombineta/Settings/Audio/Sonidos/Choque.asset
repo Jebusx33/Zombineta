@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: Choque
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.Sonido
   clips:
-  - {fileID: 8300000, guid: c4151079a3a8ecb488f80215a54bc56a, type: 3}
-  - {fileID: 8300000, guid: c38ead19a9b1c254bab9000b4cf70de5, type: 3}
-  volumen: {x: 0.6, y: 0.8}
+  - {fileID: 8300000, guid: 919267aa2215d7d40b75f497196e9372, type: 3}
+  volumen: {x: 1, y: 1}
   tono: {x: 0.95, y: 1.05}
   bus: 1
   posicional: 1

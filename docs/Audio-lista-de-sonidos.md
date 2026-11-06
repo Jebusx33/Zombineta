@@ -1,7 +1,7 @@
 # Zombineta — Lista de audios
 
 Inventario de todo el audio que el juego usa hoy y propuesta de lo que falta, armado a partir del
-estado del proyecto al 01/11. La música va aparte, al final. Para el *cómo* (dónde se pisa un
+estado del proyecto al 01/11 y puesto al día el 06/11 con los audios editados. Los efectos con audio editado suenan a volumen 1 (vienen ecualizados). La música va aparte, al final. Para el *cómo* (dónde se pisa un
 archivo, volúmenes, loops) ver [`Guia-de-sonido.md`](Guia-de-sonido.md).
 
 ## Cómo leer las tablas
@@ -63,13 +63,13 @@ cada tabla traen el nombre sin la extensión.
 
 | # | Problema | Efecto en el juego | Cómo se arregla |
 |---|---|---|---|
-| 1 | `moto_iddle`, `moto_acelera` y `moto_cambio` están **en silencio** (todas las muestras en 0) | **El motor y el cambio de carril están mudos** | Reexportarlos y pisar los archivos con el mismo nombre |
-| 2 | El cambio de carril usa `moto_acelera` (4,7 s) | Un sonido largo para una acción de 0,1 s; se pisa consigo mismo | Un clip corto (0,1–0,3 s) llamado `moto_carril` |
-| 3 | El ambiente del Nivel 1 no tiene clip | La ciudad queda sin fondo sonoro | Asignar `amb_level1_city` u otro ambiente nuevo |
-| 4 | El ambiente del Nivel 2 es `autopista_tension` (0,39 s) en loop | Se repite casi 3 veces por segundo: suena a zumbido | Un loop de ambiente de 8–20 s |
+| 1 | `moto_iddle`, `moto_acelera` y `moto_cambio` están **en silencio** (todas las muestras en 0) | **El motor y el cambio de carril están mudos** | **Resuelto (06/11):** vinieron reexportados, y `moto_cambio` ya suena al entrar en turbo |
+| 2 | El cambio de carril usa `moto_acelera` (4,7 s) | Un sonido largo para una acción de 0,1 s; se pisa consigo mismo | **Resuelto (06/11):** `moto_carril` (2 s, más largo que lo pedido: probarlo con muchos cambios seguidos) |
+| 3 | El ambiente del Nivel 1 no tiene clip | La ciudad queda sin fondo sonoro | **Resuelto (06/11):** `amb_level1_city` nuevo, de 40 s |
+| 4 | El ambiente del Nivel 2 es `autopista_tension` (0,39 s) en loop | Se repite casi 3 veces por segundo: suena a zumbido | **Resuelto (06/11):** `autopista_tension` ahora es un pulso de 2,1 s que se repite |
 | 5 | Golpe1 y Golpe2 usan el mismo `player_punch` | El combo suena igual en cada golpe (solo cambia el tono) | Dos golpes distintos: `player_punch_01` y `player_punch_02` |
-| 6 | Salto y GolpeAlAire usan el mismo `player_swoosh` | Se confunden entre sí | Un sonido propio para el salto de la rampa: `moto_salto` |
-| 7 | `level_start.wav` y `Pinky Swings.mp3` están en el proyecto pero **no se usan** | — | Definir dónde van (ver secciones 5 y 9) |
+| 6 | Salto y GolpeAlAire usan el mismo `player_swoosh` | Se confunden entre sí | **Resuelto (06/11):** `moto_salto` |
+| 7 | `level_start.wav` y `Pinky Swings.mp3` están en el proyecto pero **no se usan** | — | **`level_start` resuelto (06/11):** suena al arrancar a correr. `Pinky Swings` es el mismo audio que `mus_cinematic_loop` |
 | 8 | El popup de radio de los apagones tiene el **campo de sonido vacío** | Aparece en silencio | Cargar los mensajes de radio (sección 7) |
 | 9 | 28 efectos siguen siendo placeholders sintetizados | El juego suena "de prototipo" | Reemplazarlos (marcados 🟡 abajo) |
 
@@ -81,22 +81,22 @@ cada tabla traen el nombre sin la extensión.
 
 | Sonido | Archivo | Cuándo suena | Estado | Prio | Prog. | Nota |
 |---|---|---|---|---|---|---|
-| Motor en marcha (loop) | `moto_acelera` | Siempre en la partida; el tono sube con la velocidad | ⚠️ | A | No | Mudo (problema 1) |
-| Ralentí (loop) | `moto_iddle` | Moto quieta o casi quieta; se cruza con la marcha | ⚠️ | A | No | Mudo (problema 1) |
-| Cambio / acelerón | `moto_cambio` | Al entrar en turbo | ❌ | M | No | Ya programado: solo falta el clip (`MotorCambio`) |
-| Cambio de carril | `moto_carril` | Cada cambio de carril | ⚠️ | A | No | Problema 2. Corto, tipo "swish" de neumático |
+| Motor en marcha (loop) | `moto_acelera` | Siempre en la partida; el tono sube con la velocidad | ✅ | A | No | `moto_acelera` |
+| Ralentí (loop) | `moto_iddle` | Moto quieta o casi quieta; se cruza con la marcha | ✅ | A | No | `moto_iddle` |
+| Cambio / acelerón | `moto_cambio` | Al entrar en turbo | ✅ | M | No | `moto_cambio` (`MotorCambio`) |
+| Cambio de carril | `moto_carril` | Cada cambio de carril | ✅ | A | No | `moto_carril`. Dura 2 s: probarlo con muchos cambios seguidos |
 | Disparo | `player_pistol_shot` | Disparar con balas | ✅ | A | No | `player_pistol_shot` |
 | Sin balas (clic seco) | `player_empty_gun` | Disparar sin balas | ✅ | A | No | `player_empty_gun` |
 | Faro on / off | `moto_faro_on` y `moto_faro_off` | Prender y apagar el faro | 🟡 | M | No | Clic + zumbido eléctrico |
-| Choque contra obstáculo | `moto_choque_01` a `_02` | Chocar | 🟡 | A | No | Ideal: variar según el obstáculo (metal del auto, madera del kiosko, bolsas de basura) → **Sí** |
-| Salto en rampa | `moto_salto` | Despegar | ⚠️ | M | No | Problema 6 |
-| Aterrizaje | `moto_aterriza` | Caer sin ángulo perfecto | 🟡 | M | No |  |
+| Choque contra obstáculo | `moto_choque_01` a `_02` | Chocar | ✅ | A | No | Hay una sola variante (`_01`). Ideal: variar según el obstáculo (metal del auto, madera del kiosko, bolsas de basura) → **Sí** |
+| Salto en rampa | `moto_salto` | Despegar | ✅ | M | No | `moto_salto` |
+| Aterrizaje | `moto_aterriza` | Caer sin ángulo perfecto | ✅ | M | No | `moto_aterriza` |
 | Aterrizaje perfecto | `moto_aterriza_perfecto` | Caer con el ángulo justo | 🟡 | M | No | Puede llevar un brillo no diegético encima |
 | Caída de la moto | `moto_caida` | Se cae al aterrizar mal (`Fell`) | ❌ | A | Mínima | Golpe + metal arrastrándose |
 | Frenando sin nafta | `moto_apaga_motor` | La moto se queda sin nafta y frena antes de bajarse | ✅ | A | Mínima | Lo cubre `moto_apaga_motor`, el mismo de "Sin nafta" |
 | Sin nafta | `moto_apaga_motor` | Se vacía el tanque | ✅ | A | No | `moto_apaga_motor` |
 | Sin batería | `moto_sin_bateria` | El faro se apaga solo (`RanOutOfBattery`) | ❌ | M | Mínima | Chisporroteo y apagado |
-| Faro titilando (batería baja) | `moto_faro_titila` | Batería < 25 %, el faro parpadea | ❌ | B | Sí | Chisporroteo sincronizado con el parpadeo |
+| Faro titilando (batería baja) | `moto_faro_titila` | Batería < 25 %, el faro parpadea | ✅ | B | Sí | Loop mientras titila (`LoopsDeNivel`) |
 | Granada lanzada | `player_granade_throw` | Lanza una granada hacia atrás | ❌ | A | Mínima | Silbido corto + "clinc" de la anilla |
 | Granada explota | `player_granade` | Cae sobre la horda | ✅ | A | Mínima | `player_granade`. Reemplaza a la explosión de barril |
 | Granada denegada | `player_empty_gun` | Quiere tirar y no tiene | ✅ | M | Mínima | `player_empty_gun`, solo si no quedan granadas |
@@ -119,8 +119,8 @@ cada tabla traen el nombre sin la extensión.
 | Horda (loop posicional) | `zombie_horde` | Siempre; sube al acercarse, también en la pelea | ✅ | A | No | `zombie_horde` |
 | Gemidos sueltos de la horda | `zombie-sound` y `zombie-bite` | Con la horda cerca, cada 2,5–6 s | ✅ | M | No | `zombie-sound` / `zombie-bite` |
 | Zombie de frente | `zombie-sound` y `zombie-bite` | Entra en rango un zombie que viene de frente | ✅ | A | No |  |
-| Atropello | `zombie_runover` | Pisar un zombie | 🟡 | A | No |  |
-| Bala que impacta | `zombie_hit_bullet` | La bala le pega a un zombie | ❌ | A | Mínima | Carne; confirma el acierto |
+| Atropello | `zombie_runover` | Pisar un zombie | ✅ | A | No | `zombie_runover` |
+| Bala que impacta | `zombie_hit_bullet` | La bala le pega a un zombie | ✅ | A | Mínima | Suena también si lo mata. Los golpes a pie no lo disparan |
 | Zombie muere por bala | `zombie_death_bullet` | Muere de un tiro | ❌ | A | Mínima | Grito corto + cuerpo que cae |
 | Disparo errado | `player_shot_miss` | La bala no le pega a nada (`ShotMissed`) | ❌ | B | Mínima | Rebote lejano |
 | Horda retrocede | `horde_retreat` | Dos aciertos seguidos la frenan | ❌ | A | Mínima | Gruñido colectivo de dolor: premia el acierto |
@@ -131,14 +131,14 @@ cada tabla traen el nombre sin la extensión.
 
 | Sonido | Archivo | Cuándo suena | Estado | Prio | Prog. | Nota |
 |---|---|---|---|---|---|---|
-| Ambiente Nivel 1 (ciudad) | `amb_level1_city` | Loop de fondo | ⚠️ | A | No | Problema 3. Viento, sirenas lejanas, perros, vidrios |
-| Ambiente Nivel 2 (puente / autopista) | `amb_level2_bridge` | Loop de fondo | ⚠️ | A | No | Problema 4. Viento abierto, metal del puente, agua abajo |
-| Apagón: corte de luz | `world_blackout_start` | Empieza el apagón | ❌ | A | Sí | Zumbido eléctrico que se corta en seco: el momento más dramático del nivel |
-| Apagón: vuelve la luz | `world_blackout_end` | Termina el apagón | ❌ | M | Sí | Transformador que arranca, tubos que parpadean |
+| Ambiente Nivel 1 (ciudad) | `amb_level1_city` | Loop de fondo | ✅ | A | No | `amb_level1_city` (40 s) |
+| Ambiente Nivel 2 (puente / autopista) | `autopista_tension` | Loop de fondo | ✅ | A | No | Un pulso de 2,1 s; el viento del nivel suma `amb_wind` encima. `amb_level2_bridge` queda sin usar |
+| Apagón: corte de luz | `world_blackout_start` | Empieza el apagón | ✅ | A | Sí | Suena cuando la luz empieza a bajar (oscuridad 0,25). Zumbido eléctrico que se corta en seco: el momento más dramático del nivel |
+| Apagón: vuelve la luz | `world_blackout_end` | Termina el apagón | ✅ | M | Sí | Suena cuando la luz recuperó casi la mitad, también si se prende para pelear. Transformador que arranca, tubos que parpadean |
 | Postes que titilan | `world_pole_flicker` | Faroles del escenario que parpadean | ❌ | B | Sí | Chisporroteo posicional |
-| Autos abandonados (Nivel 2) | `world_car_alarm_01` a `_03` | Al pasar junto a autos del embotellamiento | ❌ | M | Sí | Alarmas de auto, bocinas trabadas, radios encendidas |
-| Lluvia | `amb_rain` | Loop, con el volumen de la lluvia del tramo | ❌ | M | Sí | Ya llueve en el Nivel 1 (los apagones son la tormenta). El volumen sale de `ClimaDirector.Lluvia` |
-| Viento | `amb_wind` | Loop, con el volumen del viento del tramo | ❌ | M | Sí | Sopla en todo el Nivel 2 y en las tormentas del Nivel 1. El volumen sale de `ClimaDirector.Viento` |
+| Autos abandonados (Nivel 2) | `world_car_alarm_01` a `_02` | Al pasar junto a autos del embotellamiento | ✅ | M | Sí | Cada auto tiene 35 % de chance a 10 m, con 6–12 s de descanso entre alarmas. Solo en el banco del Nivel 2 |
+| Lluvia | `amb_rain` | Loop, con el volumen de la lluvia del tramo | ✅ | M | Sí | Ya llueve en el Nivel 1 (los apagones son la tormenta). El volumen sale de `ClimaDirector.Lluvia` |
+| Viento | `amb_wind` | Loop, con el volumen del viento del tramo | ✅ | M | Sí | Sopla en todo el Nivel 2 y en las tormentas del Nivel 1. El volumen sale de `ClimaDirector.Viento` |
 
 ### 2.5 Jefe del Nivel 2 — diegético
 
@@ -236,7 +236,7 @@ Hoy usa sonidos prestados de otras acciones. Cada uno necesita su archivo y una 
 | Sonido | Archivo | Cuándo suena | Estado | Tipo | Prio | Prog. | Nota |
 |---|---|---|---|---|---|---|---|
 | Intro del estudio | — | Video antes del menú | ✅ | — | — | No | Trae su propio audio en el video |
-| Inicio de nivel | `level_start` | Al arrancar a correr | ❌ | No diegético | A | Mínima | **`level_start.wav` ya está en el proyecto sin usar** |
+| Inicio de nivel | `level_start` | Al arrancar a correr | ✅ | No diegético | A | Mínima | Una vez por partida y en cada reintento; volver a la moto después de pelear no cuenta |
 | Cambio de pantalla | `ui_transition` | Fundido entre pantallas | ❌ | No diegético | B | Sí | Un "whoosh" suave, opcional |
 | Entrar a pausa | `ui_pause` | Abrir el menú de pausa | ❌ | UI | M | Sí | La música ya baja sola; falta el clic |
 | Salir de pausa | `ui_resume` | Volver al juego | ❌ | UI | M | Sí |  |
@@ -299,31 +299,31 @@ conversación del 21/10.
 
 | Grupo | Total | ✅ | 🟡 | ⚠️ | ❌ |
 |---|---|---|---|---|---|
-| Moto y protagonista (2.1) | 19 | 6 | 4 | 4 | 5 |
+| Moto y protagonista (2.1) | 19 | 14 | 2 | 0 | 3 |
 | Recolectables (2.2) | 6 | 0 | 5 | 0 | 1 |
-| Zombies y horda (2.3) | 10 | 3 | 2 | 0 | 5 |
-| Mundo y ambiente (2.4) | 8 | 0 | 0 | 2 | 6 |
+| Zombies y horda (2.3) | 10 | 5 | 1 | 0 | 4 |
+| Mundo y ambiente (2.4) | 8 | 7 | 0 | 0 | 1 |
 | Jefe del Nivel 2 (2.5) | 7 | 0 | 7 | 0 | 0 |
 | Pelea: protagonista (3.1) | 15 | 8 | 0 | 1 | 6 |
 | Pelea: zombies (3.2) | 6 | 0 | 0 | 0 | 6 |
 | Pelea: drops (3.3) | 6 | 0 | 0 | 0 | 6 |
 | Pelea: refuerzo (3.4) | 9 | 0 | 0 | 0 | 9 |
 | HUD (4) | 8 | 0 | 3 | 1 | 4 |
-| Transiciones (5) | 10 | 1 | 2 | 0 | 7 |
+| Transiciones (5) | 10 | 2 | 2 | 0 | 6 |
 | Menús y pantallas (6) | 17 | 0 | 5 | 0 | 12 |
 | Radio (7) | 6 | 0 | 0 | 0 | 6 |
-| **Total** | **127** | **18** | **28** | **8** | **73** |
+| **Total** | **127** | **36** | **25** | **2** | **64** |
 
 **Por dónde empezar (prioridad A, en este orden):**
-1. Reexportar los tres audios de la moto (el motor está mudo).
-2. Ambientes de los dos niveles.
-3. Zombie prepara el ataque, zombie recibe golpe y zombie muere (la pelea se juega con el oído).
-4. Granada lanzada.
-5. Bala que impacta, zombie que muere por bala y horda que retrocede.
-6. Corte de luz del apagón y el mensaje de radio.
-7. Inicio de nivel (`level_start.wav`, ya está), oleada nueva, pelea ganada.
-8. Aviso del HUD de obstáculo en carril.
-9. Reemplazar los placeholders 🟡 de choque, pickups, UI y stingers.
+Ya resuelto el 06/11: el motor, los ambientes, el impacto de bala, el apagón y el inicio de nivel.
+
+1. Zombie prepara el ataque, zombie recibe golpe y zombie muere (la pelea se juega con el oído).
+2. Granada lanzada.
+3. Zombie que muere por bala y horda que retrocede.
+4. El mensaje de radio del apagón.
+5. Oleada nueva y pelea ganada.
+6. Aviso del HUD de obstáculo en carril.
+7. Reemplazar los placeholders 🟡 de pickups, UI y stingers.
 
 ---
 
@@ -347,7 +347,7 @@ conversación del 21/10.
 | Créditos | `mus_credits_loop` | 16 s | 🟡 | Placeholder |
 | Tutorial | (el tema del nivel que use) | — | 🟡 | Podría tener un tema propio, más tranquilo |
 
-Sin usar en el proyecto: `Pinky Swings.mp3` (30 s), `mus_level1_tension` (16 s, reemplazada por
+Sin usar en el proyecto: `Pinky Swings.mp3` (30 s, el mismo tema que `mus_cinematic_loop`), `mus_level1_tension` (16 s, reemplazada por
 la tribal) y la carpeta `Musica/old/` (versiones viejas de menú, cinemática y nivel 1).
 
 ### 9.2 Lo que sumaría

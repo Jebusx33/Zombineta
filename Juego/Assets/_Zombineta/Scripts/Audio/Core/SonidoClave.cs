@@ -18,5 +18,13 @@ namespace Zombineta.Audio
         GranadaExplota, BombaPuesta, BombaExplota,
         // Avisos del HUD: la nafta o la bateria entran en el tramo bajo.
         HudNaftaBaja, HudBateriaBaja,
+        // El mundo: se corta la luz del apagon, vuelve, y las alarmas de los autos abandonados.
+        ApagonEmpieza, ApagonTermina, AlarmaDeAuto,
+        // La bala que le pega a un zombie (aunque lo mate).
+        ImpactoDeBala,
+        // Loops que siguen al clima del tramo y al faro titilando con la bateria baja (LoopsDeNivel).
+        Lluvia, Viento, FaroTitila,
+        // Una vez por partida, al arrancar a correr (no al volver a la moto despues de una pelea).
+        InicioDeNivel,
     }
 }
