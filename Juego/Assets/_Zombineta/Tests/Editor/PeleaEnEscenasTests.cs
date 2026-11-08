@@ -20,7 +20,7 @@ namespace Zombineta.Juego.Tests
 
         static readonly string[] NivelesConPelea =
         {
-            "Level_01_Auxilio_v2",
+            "Level_01",
             "Level_02",
         };
 

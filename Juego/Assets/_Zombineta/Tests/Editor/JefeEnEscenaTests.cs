@@ -86,7 +86,7 @@ namespace Zombineta.Juego.Tests
         [Test]
         public void ElNivel1NoTieneJefe()
         {
-            ConEscena("Level_01_Auxilio_v2", escena =>
+            ConEscena("Level_01", escena =>
             {
                 Assert.IsNull(new SerializedObject(Buscar<LevelScene>(escena)).FindProperty("jefe").objectReferenceValue);
                 Assert.IsNull(Buscar<VistaDelJefe>(escena));

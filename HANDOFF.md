@@ -578,7 +578,7 @@ punta a punta con teclado y con joystick (sección 7).
 
 ### Pelea a pie, playtests y arsenal (octubre)
 
-Se hizo por fases sobre `Level_01_Auxilio_v2` y `Level_02`. El detalle de cada decisión, las respuestas
+Se hizo por fases sobre `Level_01` y `Level_02`. El detalle de cada decisión, las respuestas
 del equipo y los valores a ajustar están en los planes de `docs/superpowers/plans/`:
 `2026-10-16-auxilio-pelea.md` y `2026-10-18-beatemup-v2.md` (la pelea y su segunda versión),
 `2026-10-20-playtest-axo.md`, `2026-10-22-playtest-jesus.md` y `2026-10-21-controles-granadas-oleadas.md`
@@ -663,7 +663,7 @@ vistas leen el estado. `RunSimulation` (moto) delega la pelea en `PeleaSimulatio
 - **Telemetría de playtest:** `Juego/Playtests/sesion_*.csv` (ignorado por git). Filas nuevas para granadas,
   bombas, oleadas, `item_pasado`, `horda_retrocede`, `drop_lleno` y `pelea_ganada`.
 
-**Para verlo hay que regenerar los niveles** (botón "Regenerar" de la paleta) en `Level_01_Auxilio_v2` y
+**Para verlo hay que regenerar los niveles** (botón "Regenerar" de la paleta) en `Level_01` y
 `Level_02`: sin eso no salen granadas ni bombas en el recorrido (la primera pelea sí las trae).
 
 **Trampas de esta etapa:**

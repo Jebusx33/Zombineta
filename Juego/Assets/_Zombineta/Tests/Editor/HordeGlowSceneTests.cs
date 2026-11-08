@@ -15,8 +15,6 @@ namespace Zombineta.Juego.Tests
     public class HordeGlowSceneTests
     {
         [TestCase("Assets/_Zombineta/Scenes/Level_01.unity")]
-        [TestCase("Assets/_Zombineta/Scenes/Level_01_Auxilio.unity")]
-        [TestCase("Assets/_Zombineta/Scenes/Level_01_Auxilio_v2.unity")]
         [TestCase("Assets/_Zombineta/Scenes/Level_02.unity")]
         [TestCase("Assets/_Zombineta/Scenes/Templates/NivelBase.unity")]
         public void ElResplandorNoArrastraElNivel(string path)
