@@ -29,13 +29,13 @@ namespace Zombineta.Juego.EditorTools
         internal static readonly Color Chip = new Color32(90, 83, 99, 235);
 
         // La paleta del menu principal: rosa de acento, blanco y violeta oscuro.
-        static readonly Color Rosa = new Color32(233, 31, 128, 255);
-        static readonly Color RosaClaro = new Color32(255, 170, 214, 255);
-        static readonly Color Ayuda = new Color32(228, 218, 238, 255);
+        internal static readonly Color Rosa = new Color32(233, 31, 128, 255);
+        internal static readonly Color RosaClaro = new Color32(255, 170, 214, 255);
+        internal static readonly Color Ayuda = new Color32(228, 218, 238, 255);
         static readonly Color Pista = new Color32(150, 45, 125, 255);
         static readonly Color Manija = Rosa;
         static readonly Color Linea = new Color32(214, 122, 180, 255);
-        static readonly Color Resaltado = new Color(0.91f, 0.12f, 0.5f, 0.3f);
+        internal static readonly Color Resaltado = new Color(0.91f, 0.12f, 0.5f, 0.3f);
 
         // Panel (a la derecha, como el del menu principal: a la izquierda queda el arte) y filas.
         const float PanelX = 1000f, PanelY = 110f, PanelW = 860f, PanelH = 860f;
@@ -368,7 +368,7 @@ namespace Zombineta.Juego.EditorTools
         }
 
         /// <summary>La ayuda de teclas del menu principal: teclas con contorno y el texto al lado.</summary>
-        static Image AddAyudaMenu(Transform root, string label, float x, string[] teclas, Sprite tecla)
+        internal static Image AddAyudaMenu(Transform root, string label, float x, string[] teclas, Sprite tecla)
         {
             const float y = 984f, h = 44f;
 
