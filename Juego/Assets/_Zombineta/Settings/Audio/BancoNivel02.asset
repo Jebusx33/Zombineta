@@ -15,3 +15,5 @@ MonoBehaviour:
   entradas:
   - clave: 5
     sonido: {fileID: 11400000, guid: d93a349d59bf00c4e8b60b4adecb5725, type: 2}
+  - clave: 39
+    sonido: {fileID: 11400000, guid: 996ef00939e739f4b91ac54500f2ddd3, type: 2}

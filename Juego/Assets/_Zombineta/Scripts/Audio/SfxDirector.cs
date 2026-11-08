@@ -5,6 +5,7 @@ using Zombineta.Enemies;
 using Zombineta.Flow;
 using Zombineta.Juego.Flow;
 using Zombineta.Level;
+using Zombineta.Luz;
 using Zombineta.UI;
 
 namespace Zombineta.Audio
@@ -17,8 +18,10 @@ namespace Zombineta.Audio
     /// entrado dentro de distanciaAvisoZombie (12 m por defecto) por delante de la moto: cerca a
     /// proposito, porque a distanciaMaxima (30 m) la atenuacion espacial ya dio 0 y no se
     /// escuchaba; y escucha GameRoot.Flow.Changed para Victoria y Derrota (Won/Lost no disparan
-    /// sonido por si solos). Vive en el prefab SonidoDeNivel, como hijo suyo. Busca su
-    /// RunController si no esta cableado.
+    /// sonido por si solos). Tambien hace sonar el impacto de bala (de los eventos de la horda),
+    /// el corte y la vuelta de la luz (LightingDirector.Oscuridad) y, si el banco del nivel las
+    /// tiene, las alarmas de los autos que pasa. Vive en el prefab SonidoDeNivel, como hijo suyo.
+    /// Busca su RunController si no esta cableado.
     /// </summary>
     [DefaultExecutionOrder(15)]
     public sealed class SfxDirector : MonoBehaviour
@@ -33,9 +36,24 @@ namespace Zombineta.Audio
                  "da 0).")]
         [SerializeField] float distanciaAvisoZombie = 12f;
 
+        [Header("Alarmas de autos")]
+        [Tooltip("Variante de Obstacle que es un auto (la de Obstaculo_Auto en LevelItemPalette).")]
+        [SerializeField] int varianteDeAuto = 0;
+        [Tooltip("Metros por delante de la moto a los que un auto puede saltar con la alarma.")]
+        [SerializeField] float distanciaAlarma = 10f;
+        [Tooltip("Probabilidad de que un auto suene al pasar, si ya paso el descanso entre alarmas.")]
+        [Range(0f, 1f)] [SerializeField] float probabilidadAlarma = 0.35f;
+        [Tooltip("Segundos de descanso entre dos alarmas (al azar entre los dos): que no suene todo el embotellamiento.")]
+        [SerializeField] Vector2 descansoEntreAlarmas = new Vector2(6f, 12f);
+
         readonly AlertaDeRecurso alertaNafta = new AlertaDeRecurso(IndicadorDeRecurso.Bajo, SegundosEntreAvisos);
         readonly AlertaDeRecurso alertaBateria = new AlertaDeRecurso(IndicadorDeRecurso.Bajo, SegundosEntreAvisos);
         readonly HashSet<LevelRuntime.Item> zombieAdelanteSonado = new HashSet<LevelRuntime.Item>();
+        readonly HashSet<LevelRuntime.Item> autosPasados = new HashSet<LevelRuntime.Item>();
+        readonly CruceDeApagon apagon = new CruceDeApagon();
+        float proximaAlarma;
+        // El sonido de largada se debe hasta que la partida arranca a correr; se rearma con cada reintento.
+        bool inicioPendiente = true;
 
         int lastHordeEpoch = -1;
         float prevFuel, prevBattery, prevAmmo;
@@ -56,6 +74,7 @@ namespace Zombineta.Audio
                 run.Stepped += OnStepped;
                 run.Restarted += OnRestarted;
                 CachearRecursos();
+                inicioPendiente = true;
             }
 
             flujo = GameRoot.Flow;
@@ -78,6 +97,9 @@ namespace Zombineta.Audio
         {
             CachearRecursos();
             zombieAdelanteSonado.Clear();
+            autosPasados.Clear();
+            proximaAlarma = 0f;
+            inicioPendiente = true;
             lastHordeEpoch = -1;
         }
 
@@ -93,6 +115,27 @@ namespace Zombineta.Audio
             prevBombas = s.Bombas;
             alertaNafta.Reiniciar(Fraccion(s.Fuel, run.Config.fuelMax));
             alertaBateria.Reiniciar(Fraccion(s.Battery, run.Config.batteryMax));
+            apagon.Reiniciar(LightingDirector.Oscuridad);
+        }
+
+        /// <summary>Una vez por partida, en el primer cuadro en carrera: volver a la moto despues de una pelea no cuenta.</summary>
+        void SonarLargada(RunState s)
+        {
+            var audio = AudioDirector.Instance;
+            if (!inicioPendiente || audio == null || s.Phase != RunPhase.Running)
+                return;
+            inicioPendiente = false;
+            audio.Play(SonidoClave.InicioDeNivel);
+        }
+
+        /// <summary>El corte y la vuelta de la luz, al ritmo de lo que se ve (la oscuridad ya suavizada).</summary>
+        void SonarApagon()
+        {
+            var cambio = apagon.Avanzar(LightingDirector.Oscuridad);
+            var audio = AudioDirector.Instance;
+            if (audio == null || cambio == CambioDeApagon.Nada)
+                return;
+            audio.Play(cambio == CambioDeApagon.Empieza ? SonidoClave.ApagonEmpieza : SonidoClave.ApagonTermina);
         }
 
         static float Fraccion(float valor, float maximo) => maximo <= 0f ? 0f : valor / maximo;
@@ -113,11 +156,13 @@ namespace Zombineta.Audio
             if (run == null || run.Sim == null)
                 return;
 
-            EscanearZombiesAdelante();
+            EscanearAdelante();
             EscanearEventosDeHorda();
+            SonarApagon();
             explotoUnArma = false;
 
             var s = run.Sim.State;
+            SonarLargada(s);
             AvisarRecursosBajos(s);
             prevFuel = s.Fuel;
             prevBattery = s.Battery;
@@ -190,30 +235,65 @@ namespace Zombineta.Audio
             if (state.Bombas > prevBombas) audio.Play(SonidoClave.PickupBomba);
         }
 
-        void EscanearZombiesAdelante()
+        /// <summary>Lo que viene por delante: los zombies de frente y los autos que pueden saltar con la alarma.</summary>
+        void EscanearAdelante()
         {
             var audio = AudioDirector.Instance;
             if (audio == null || run.Level == null)
                 return;
 
+            // Solo los niveles con alarmas en su banco (el Nivel 2): en el resto los autos no suenan.
+            bool hayAlarmas = run.Sim.State.Phase == RunPhase.Running && audio.Resolver(SonidoClave.AlarmaDeAuto) != null;
             float playerX = run.Sim.State.PlayerX;
             var items = run.Level.Items;
             for (int i = 0; i < items.Length; i++)
             {
                 var item = items[i];
-                if (item.Entry.kind != LevelEntryKind.ZombieFront)
-                    continue;
-                if (zombieAdelanteSonado.Contains(item))
-                    continue; // ya sonado: no lo vuelve a evaluar cuadro a cuadro.
-
-                float dx = item.Entry.distance - playerX;
-                if (!EnRangoDeAviso(dx, distanciaAvisoZombie))
-                    continue;
-
-                zombieAdelanteSonado.Add(item);
-                audio.Play(SonidoClave.ZombieAdelante, run.ToWorldX(item.Entry.distance));
+                if (item.Entry.kind == LevelEntryKind.ZombieFront)
+                    AvisarZombieAdelante(audio, item, playerX);
+                else if (hayAlarmas && item.Entry.kind == LevelEntryKind.Obstacle && item.Entry.variant == varianteDeAuto)
+                    TalVezAlarma(audio, item, playerX);
             }
         }
+
+        void AvisarZombieAdelante(AudioDirector audio, LevelRuntime.Item item, float playerX)
+        {
+            if (zombieAdelanteSonado.Contains(item))
+                return; // ya sonado: no lo vuelve a evaluar cuadro a cuadro.
+
+            float dx = item.Entry.distance - playerX;
+            if (!EnRangoDeAviso(dx, distanciaAvisoZombie))
+                return;
+
+            zombieAdelanteSonado.Add(item);
+            audio.Play(SonidoClave.ZombieAdelante, run.ToWorldX(item.Entry.distance));
+        }
+
+        /// <summary>Cada auto tira una sola vez, al entrar en rango; si toca, suena desde donde esta.</summary>
+        void TalVezAlarma(AudioDirector audio, LevelRuntime.Item item, float playerX)
+        {
+            if (autosPasados.Contains(item) || !EnRangoDeAviso(item.Entry.distance - playerX, distanciaAlarma))
+                return;
+            autosPasados.Add(item);
+
+            if (!SuenaAlarma(Random.value, probabilidadAlarma, Time.time, proximaAlarma))
+                return;
+            proximaAlarma = Time.time + Random.Range(descansoEntreAlarmas.x, descansoEntreAlarmas.y);
+            audio.Play(SonidoClave.AlarmaDeAuto, run.ToWorldX(item.Entry.distance));
+        }
+
+        /// <summary>Regla pura de la alarma: paso el descanso desde la ultima y el sorteo (0 a 1) cae dentro de la probabilidad.</summary>
+        public static bool SuenaAlarma(float azar, float probabilidad, float ahora, float proxima) =>
+            ahora >= proxima && azar < probabilidad;
+
+        /// <summary>
+        /// Regla pura del impacto de bala: un zombie que muere de un tiro, o uno que lo aguanta. El que
+        /// lo aguanta deja un Impact justo despues del trazador de la bala; los golpes a pie tambien
+        /// dejan Impact, pero sin trazador antes.
+        /// </summary>
+        public static bool EsImpactoDeBala(HordeEvent e, bool trasTrazador) =>
+            (e.Kind == HordeEventKind.Death && e.Cause == DeathCause.Bullet) ||
+            (e.Kind == HordeEventKind.Impact && trasTrazador);
 
         /// <summary>
         /// Regla pura de disparo de ZombieAdelante: adelante de la moto (dx > 0) y dentro del
@@ -234,9 +314,14 @@ namespace Zombineta.Audio
             if (audio == null)
                 return;
 
+            bool trasTrazador = false;
             for (int i = 0; i < horde.Events.Count; i++)
             {
                 var e = horde.Events[i];
+                if (EsImpactoDeBala(e, trasTrazador))
+                    audio.Play(SonidoClave.ImpactoDeBala, run.ToWorldX(e.X));
+                trasTrazador = e.Kind == HordeEventKind.Tracer;
+
                 if (e.Kind == HordeEventKind.Death && e.Cause == DeathCause.RunOver)
                     audio.Play(SonidoClave.Atropello, run.ToWorldX(e.X));
                 else if (e.Kind == HordeEventKind.Explosion && !explotoUnArma)

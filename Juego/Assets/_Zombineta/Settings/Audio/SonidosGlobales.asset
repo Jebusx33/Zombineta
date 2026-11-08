@@ -87,3 +87,17 @@ MonoBehaviour:
     sonido: {fileID: 11400000, guid: 695cd7b7723bda5489b06a8173bca0c4, type: 2}
   - clave: 36
     sonido: {fileID: 11400000, guid: fbdd0762b762c094c80436e8f99745ec, type: 2}
+  - clave: 37
+    sonido: {fileID: 11400000, guid: 57330d6b3dd861b4ba3926d63d0d430f, type: 2}
+  - clave: 38
+    sonido: {fileID: 11400000, guid: 93583b402010a864a96aff3ae5840f60, type: 2}
+  - clave: 40
+    sonido: {fileID: 11400000, guid: b682e04342d83da44abcebfceb9b822f, type: 2}
+  - clave: 41
+    sonido: {fileID: 11400000, guid: 26553de6c40ea254dafe34156df6eec1, type: 2}
+  - clave: 42
+    sonido: {fileID: 11400000, guid: 04e6b8dc1ad87dc49a9cc52327d7dc5a, type: 2}
+  - clave: 43
+    sonido: {fileID: 11400000, guid: a34b957390501814d87f6e726ad7625f, type: 2}
+  - clave: 44
+    sonido: {fileID: 11400000, guid: 46c7abbed0b92734b83d542468466745, type: 2}

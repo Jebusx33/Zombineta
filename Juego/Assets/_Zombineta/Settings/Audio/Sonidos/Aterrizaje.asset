@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: Aterrizaje
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.Sonido
   clips:
-  - {fileID: 8300000, guid: ed3cdb446f177e4419b93937934e32d4, type: 3}
-  - {fileID: 8300000, guid: d3dcb5465c7c5334db95d351adf6c1ef, type: 3}
-  volumen: {x: 0.6, y: 0.8}
+  - {fileID: 8300000, guid: 4d5508bd991e5bf4d97338bcce376317, type: 3}
+  volumen: {x: 1, y: 1}
   tono: {x: 0.95, y: 1.05}
   bus: 1
   posicional: 0

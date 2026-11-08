@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddf22108bed52c5489e74566555f27ef, type: 3}
   m_Name: MotorCambio
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.Sonido
-  clips: []
-  volumen: {x: 0.6, y: 0.75}
+  clips:
+  - {fileID: 8300000, guid: 3299892d9d3f21a4ab28a55015898a9a, type: 3}
+  volumen: {x: 1, y: 1}
   tono: {x: 0.97, y: 1.03}
   bus: 1
   posicional: 0

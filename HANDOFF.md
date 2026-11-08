@@ -451,8 +451,9 @@ mismos valores por defecto, que `MezclaAudioTests` fija). `General` no es un bus
 aparte que se multiplica arriba de los cuatro. El prefab del sonido de nivel es
 `Art/Audio/SonidoDelNivel.prefab` (raíz `SonidoDeNivel`, suelto en la escena de cada nivel, nunca
 en `Nivel` — misma trampa que `HordeGlow`), que registra el banco del nivel y avisa la amenaza de
-la horda cuadro a cuadro; `SfxDirector`, `MotorSonido`, `HordaSonido` y `AmbienteSonido` son sus
-cuatro hijos.
+la horda cuadro a cuadro; `SfxDirector`, `MotorSonido`, `HordaSonido`, `AmbienteSonido` y `LoopsDeNivel` son sus
+cinco hijos. `LoopsDeNivel` maneja los loops que suben y bajan solos: la lluvia y el viento con el
+clima del tramo, y el faro que chisporrotea con la batería baja.
 
 **Dónde está cada cosa:**
 - Scripts: `Scripts/Audio/` (`Core/` y `Data/` son C# plano y testeado; el resto son
