@@ -38,6 +38,11 @@ namespace Zombineta.Auxilio
         public ClipAPie golpeAlto = new ClipAPie { cuadrosPorSegundo = 20f };
         public ClipAPie lastimada = new ClipAPie { cuadrosPorSegundo = 12f };
         public ClipAPie derribada = new ClipAPie { cuadrosPorSegundo = 10f };
+        [Tooltip("El disparo a pie: saca el arma y tira con el brazo estirado.")]
+        public ClipAPie dispara = new ClipAPie { cuadrosPorSegundo = 16f };
+        [Tooltip("Cuadro (desde 0) en que el brazo ya apunta. Si vuelve a disparar con el arma afuera, " +
+                 "sigue desde aca en vez de sacarla otra vez.")]
+        [Min(0)] public int disparoRepiteDesde = 3;
 
         public ClipAPie Clip(PoseAPie pose)
         {
@@ -48,6 +53,7 @@ namespace Zombineta.Auxilio
                 case PoseAPie.GolpeAlto: return golpeAlto;
                 case PoseAPie.Lastimada: return lastimada;
                 case PoseAPie.Derribada: return derribada;
+                case PoseAPie.Dispara: return dispara;
                 default: return quieta;
             }
         }

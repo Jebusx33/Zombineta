@@ -2,11 +2,12 @@ using UnityEngine;
 
 namespace Zombineta.Auxilio
 {
-    public enum PoseAPie { Quieta, Camina, GolpeBajo, GolpeAlto, Lastimada, Derribada }
+    public enum PoseAPie { Quieta, Camina, GolpeBajo, GolpeAlto, Lastimada, Derribada, Dispara }
 
     /// <summary>
     /// Elige que animacion de la protagonista a pie se ve y por que cuadro va. Derribada le gana a
-    /// todo; un golpe o el dolor se terminan de ver y despues vuelve a quieta o caminando.
+    /// todo; un golpe, un disparo o el dolor se terminan de ver y despues vuelve a quieta o
+    /// caminando. Disparar con el arma ya apuntada sigue desde el cuadro del tiro, sin sacarla otra vez.
     /// </summary>
     public sealed class ReproductorAPie
     {
@@ -27,6 +28,21 @@ namespace Zombineta.Auxilio
                 Empezar(remate ? PoseAPie.GolpeAlto : PoseAPie.GolpeBajo);
         }
 
+        public void Disparar()
+        {
+            if (Actual == PoseAPie.Derribada)
+                return;
+            if (Actual != PoseAPie.Dispara)
+            {
+                Empezar(PoseAPie.Dispara);
+                return;
+            }
+            // Ya esta disparando: si el brazo apunta, vuelve al cuadro del tiro; si todavia saca el arma, sigue.
+            float apunta = animaciones.disparoRepiteDesde / animaciones.dispara.cuadrosPorSegundo;
+            if (tiempo >= apunta)
+                tiempo = apunta;
+        }
+
         public void Lastimar()
         {
             if (Actual != PoseAPie.Derribada)
@@ -43,7 +59,8 @@ namespace Zombineta.Auxilio
                 Seguir(PoseAPie.Derribada);
                 return;
             }
-            bool terminaSola = Actual == PoseAPie.GolpeBajo || Actual == PoseAPie.GolpeAlto || Actual == PoseAPie.Lastimada;
+            bool terminaSola = Actual == PoseAPie.GolpeBajo || Actual == PoseAPie.GolpeAlto ||
+                               Actual == PoseAPie.Lastimada || Actual == PoseAPie.Dispara;
             if (!terminaSola || tiempo >= Clip.Duracion)
                 Seguir(camina ? PoseAPie.Camina : PoseAPie.Quieta);
         }

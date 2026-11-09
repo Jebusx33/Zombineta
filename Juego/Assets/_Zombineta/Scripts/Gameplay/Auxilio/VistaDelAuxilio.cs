@@ -87,7 +87,10 @@ namespace Zombineta.Auxilio
                 reproductor?.Lastimar();
 
             if ((ev & RunEvent.Shot) != 0 && run.Sim != null && run.Sim.State.Phase == RunPhase.Pelea)
+            {
                 disparoRestante = DuracionDisparo;
+                reproductor?.Disparar();
+            }
         }
 
         void Awake()

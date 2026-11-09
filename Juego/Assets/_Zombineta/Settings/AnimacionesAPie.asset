@@ -65,3 +65,13 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 7cf92cca5da58d24dab0bc249dd9e2d2, type: 3}
     cuadrosPorSegundo: 10
     enBucle: 0
+  dispara:
+    cuadros:
+    - {fileID: 21300000, guid: bb396737e3a5b1642b57db352dc10f94, type: 3}
+    - {fileID: 21300000, guid: b9deda3f42272374cab2ce57509d46c4, type: 3}
+    - {fileID: 21300000, guid: 90daaa1fa0ef6d845ad3a6a752ebb12f, type: 3}
+    - {fileID: 21300000, guid: 342d82ddb81d8a74f9a20511e4ef78ff, type: 3}
+    - {fileID: 21300000, guid: c3145b37f7e9ac042992aeffb9204c9d, type: 3}
+    cuadrosPorSegundo: 16
+    enBucle: 0
+  disparoRepiteDesde: 3

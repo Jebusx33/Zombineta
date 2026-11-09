@@ -29,6 +29,8 @@ namespace Zombineta.Juego.Tests
             animaciones.golpeAlto = Clip(6, 10f);
             animaciones.lastimada = Clip(3, 10f);
             animaciones.derribada = Clip(5, 10f);
+            animaciones.dispara = Clip(5, 10f);
+            animaciones.disparoRepiteDesde = 3;
         }
 
         [TearDown]
@@ -107,6 +109,69 @@ namespace Zombineta.Juego.Tests
 
             Assert.AreEqual(PoseAPie.Derribada, r.Actual);
             Assert.AreEqual("4", r.Cuadro.name);
+        }
+
+        [Test]
+        public void ElDisparoSeTerminaDeVerYDespuesVuelveAQuieta()
+        {
+            var r = new ReproductorAPie(animaciones);
+            r.Disparar();
+            Assert.AreEqual(PoseAPie.Dispara, r.Actual);
+            Assert.AreEqual("0", r.Cuadro.name, "saca el arma");
+
+            r.Avanzar(0.45f, true, false);
+            Assert.AreEqual(PoseAPie.Dispara, r.Actual, "aunque camine, el tiro se termina de ver");
+            Assert.AreEqual("4", r.Cuadro.name);
+
+            r.Avanzar(0.1f, false, false);
+            Assert.AreEqual(PoseAPie.Quieta, r.Actual);
+        }
+
+        [Test]
+        public void DispararConElArmaYaApuntadaNoLaVuelveASacar()
+        {
+            var r = new ReproductorAPie(animaciones);
+            r.Disparar();
+            r.Avanzar(0.45f, false, false);
+
+            r.Disparar();
+
+            Assert.AreEqual(PoseAPie.Dispara, r.Actual);
+            Assert.AreEqual("3", r.Cuadro.name, "sigue apuntando: arranca en el cuadro del tiro");
+        }
+
+        [Test]
+        public void DispararMientrasSacaElArmaNoLaReinicia()
+        {
+            var r = new ReproductorAPie(animaciones);
+            r.Disparar();
+            r.Avanzar(0.15f, false, false);
+
+            r.Disparar();
+
+            Assert.AreEqual("1", r.Cuadro.name);
+        }
+
+        [Test]
+        public void ElDolorYElGolpeCortanElDisparo()
+        {
+            var r = new ReproductorAPie(animaciones);
+            r.Disparar();
+            r.Lastimar();
+            Assert.AreEqual(PoseAPie.Lastimada, r.Actual);
+
+            r.Disparar();
+            r.Golpear(false);
+            Assert.AreEqual(PoseAPie.GolpeBajo, r.Actual);
+        }
+
+        [Test]
+        public void DerribadaIgnoraLosDisparos()
+        {
+            var r = new ReproductorAPie(animaciones);
+            r.Avanzar(0.01f, false, true);
+            r.Disparar();
+            Assert.AreEqual(PoseAPie.Derribada, r.Actual);
         }
 
         [Test]
