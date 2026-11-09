@@ -32,8 +32,8 @@ MonoBehaviour:
     proyectaSombra: 0
     material: {fileID: 0}
     variants:
-    - sprite: {fileID: 21300000, guid: 0a56c5594d5fa8f4893455e48812aa87, type: 3}
-      prefab: {fileID: 2397860195985427030, guid: e2d331a1b836fd047a6ca3b3a7b06e5e, type: 3}
+    - sprite: {fileID: 0}
+      prefab: {fileID: 2397860195985427030, guid: 8fe12cbe82184af49932353629545914, type: 3}
       grupo: ciudad
       weight: 1
       heightScale: 1
@@ -42,6 +42,7 @@ MonoBehaviour:
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
       acompananteCapa: Fondo
       acompananteOrden: -50
   - name: Edificios
@@ -73,6 +74,7 @@ MonoBehaviour:
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
       acompananteCapa: Fondo
       acompananteOrden: -50
     - sprite: {fileID: 0}
@@ -85,6 +87,7 @@ MonoBehaviour:
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
       acompananteCapa: Fondo
       acompananteOrden: -50
     - sprite: {fileID: 0}
@@ -97,6 +100,7 @@ MonoBehaviour:
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
       acompananteCapa: Fondo
       acompananteOrden: -50
   - name: Arboles
@@ -105,7 +109,7 @@ MonoBehaviour:
     sortingOrder: -40
     sortingLayer: Arboles
     baselineY: 1.4024222
-    height: 6.7
+    height: 8.456
     gapChance: 0.55
     gapMin: 3
     gapMax: 10
@@ -128,6 +132,20 @@ MonoBehaviour:
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+    - sprite: {fileID: 0}
+      prefab: {fileID: 565231834465978867, guid: fae03ef0da16bcf4c9d7c793c3157192, type: 3}
+      grupo: nivel1
+      weight: 1
+      heightScale: 1
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
       acompananteCapa: Fondo
       acompananteOrden: -50
   - name: Calle
@@ -159,6 +177,7 @@ MonoBehaviour:
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
       acompananteCapa: Fondo
       acompananteOrden: -50
     - sprite: {fileID: 0}
@@ -170,7 +189,8 @@ MonoBehaviour:
       avancePx: 2240
       ordenExtra: 1
       acompanante: {fileID: 3718877821837324326, guid: 537d060dde40b674ea36df476cbf5f4b, type: 3}
-      acompananteOffsetPx: {x: 1169, y: 1124}
+      acompananteOffsetPx: {x: 1204, y: 1124}
+      acompananteEscala: 2.4427283
       acompananteCapa: Calle
       acompananteOrden: -49
   - name: Vereda de abajo
@@ -202,6 +222,7 @@ MonoBehaviour:
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
       acompananteCapa: Fondo
       acompananteOrden: -50
   - name: Primer plano
@@ -233,6 +254,7 @@ MonoBehaviour:
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
       acompananteCapa: Fondo
       acompananteOrden: -50
     - sprite: {fileID: 0}
@@ -245,6 +267,7 @@ MonoBehaviour:
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
       acompananteCapa: Fondo
       acompananteOrden: -50
     - sprite: {fileID: 0}
@@ -257,6 +280,7 @@ MonoBehaviour:
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
       acompananteCapa: Fondo
       acompananteOrden: -50
   - name: Frontal
@@ -288,6 +312,7 @@ MonoBehaviour:
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
       acompananteCapa: Fondo
       acompananteOrden: -50
     - sprite: {fileID: 0}
@@ -300,6 +325,7 @@ MonoBehaviour:
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
       acompananteCapa: Fondo
       acompananteOrden: -50
     - sprite: {fileID: 0}
@@ -312,17 +338,32 @@ MonoBehaviour:
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
       acompananteCapa: Fondo
       acompananteOrden: -50
     - sprite: {fileID: 0}
       prefab: {fileID: 565231834465978867, guid: 57384bae17c94aa41bf11b47bf8c3117, type: 3}
       grupo: nivel1
       weight: 1
-      heightScale: 1.1
+      heightScale: 1.388
       yOffset: 0
       avancePx: 0
       ordenExtra: 0
       acompanante: {fileID: 0}
       acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
+      acompananteCapa: Fondo
+      acompananteOrden: -50
+    - sprite: {fileID: 0}
+      prefab: {fileID: 565231834465978867, guid: fae03ef0da16bcf4c9d7c793c3157192, type: 3}
+      grupo: nivel1
+      weight: 1
+      heightScale: 1.388
+      yOffset: 0
+      avancePx: 0
+      ordenExtra: 0
+      acompanante: {fileID: 0}
+      acompananteOffsetPx: {x: 0, y: 0}
+      acompananteEscala: 1
       acompananteCapa: Fondo
       acompananteOrden: -50

@@ -169,7 +169,7 @@ namespace Zombineta.Scenery
                     especiales[i] = acomp != null;
                     if (acomp != null)
                     {
-                        float k = sr.sprite.pixelsPerUnit / acomp.sprite.pixelsPerUnit;
+                        float k = sr.sprite.pixelsPerUnit / acomp.sprite.pixelsPerUnit * v.acompananteEscala;
                         acompDesde[i] = v.acompananteOffsetPx.x / sr.sprite.pixelsPerUnit * scales[i];
                         acompHasta[i] = acompDesde[i] + acomp.sprite.bounds.size.x * k * scales[i];
                         acompAlcance = Mathf.Max(acompAlcance, acompHasta[i]);
@@ -329,8 +329,9 @@ namespace Zombineta.Scenery
 
                 var go = UnityEngine.Object.Instantiate(v.acompanante, tile);
                 go.name = v.acompanante.name;
-                // Mismo dibujante, misma densidad de pixeles: se compensa si se importaron distinto.
-                float k = tileSprite.pixelsPerUnit / acomp.sprite.pixelsPerUnit;
+                // Mismo dibujante, misma densidad de pixeles: se compensa si se importaron distinto, y se
+                // agranda si el acompanante esta dibujado a otra escala (acompananteEscala).
+                float k = tileSprite.pixelsPerUnit / acomp.sprite.pixelsPerUnit * v.acompananteEscala;
                 var esquina = (Vector2)tileSprite.bounds.min + v.acompananteOffsetPx / tileSprite.pixelsPerUnit;
                 go.transform.localScale = new Vector3(k, k, 1f);
                 go.transform.localPosition = new Vector3(

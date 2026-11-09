@@ -598,7 +598,10 @@ pierde). Una escena con la pelea prendida tiene que traer `HudPelea`, el prefab 
 y se listan en `Settings/AnimacionesAPie.asset`, junto con su ritmo. El 1.º y 2.º golpe usan `punch_low` y el
 remate, `punch_high`. Para cambiar un dibujo, se reemplaza el PNG con el mismo nombre y el importador conserva el
 pivote en los pies. Son lienzos de 540 × 384; un cuadro nuevo tiene que mantener a la protagonista en el mismo lugar del
-lienzo. No hay poses de disparo, granada ni bomba: al disparar, el cuerpo solo retrocede un poco.
+lienzo. Desde el 09/11 todos los cuadros están pintados (la caminata con cara y la caída a color) y hay pose de
+disparo (`shot`, 5 cuadros a 16 por segundo): saca el arma y tira con el brazo estirado. Si vuelve a disparar con el
+arma afuera, sigue desde el cuadro 4 (`disparoRepiteDesde`) en vez de sacarla otra vez; el dolor o un golpe la
+cortan. No hay poses de granada ni bomba.
 
 **Nafta de gracia (05/11):** en los últimos 200 m antes del refugio la nafta alcanza siempre. Si lo que queda no
 llega, el consumo baja en proporción y el tanque llega a la reserva justo en la meta; los choques tampoco lo
@@ -627,6 +630,18 @@ asset el nivel se juega como antes. F5 lleva directo al jefe. El HUD del duelo y
 y `tile_edificio_5` tienen ventanas con máscara (`Art/Tileset/Level2/Luces/`) y los paredones 1 a 3 llevan
 un farol cálido que alumbra paredón y calle. Árboles y paredón pasaron a la capa `Arboles`: en `Fondo` los
 pintaba la luz de las ventanas. Hoy el Nivel 2 no tiene apagones, pero si se agrega uno estas luces se cortan solas.
+
+**Tiles del Nivel 1 (09/11):** la bocacalle de arriba (`tile_bocacalle_arriba_v5`) es ahora una calle que se aleja
+entre los edificios, dibujada a la escala de los edificios y no a la de la calle (que está al 25 %). Sigue siendo el
+acompañante de `tile_pista_bocacalle` y va en la capa `Calle`, pero con `acompananteEscala` 2,44 (campo nuevo de
+`SceneryVariant`): así mide lo mismo que un edificio y apoya justo sobre la calle, con su línea amarilla sobre la de
+abajo. Tiene ventanas con máscara (`Luces/luz_bocacalle`), un farol y un semáforo. Hay dos árboles
+(`tile_arbol_1` y `tile_arbol_2`, v5, con las ramas enteras: la capa `Arboles` pasó a 8,456 de alto), la rampa es
+un contenedor con rampa (`tile_rampa_v5`) y el cielo es el pintado `tile_fondo_cielo_v1`. El Nivel 2 sigue con
+`cielo_degrade`. La rampa cabe en su carril: mide 1,35 de alto (la vieja, 2,19, invadia el carril de abajo y salia de
+la calle) y su base queda 0,35 bajo el centro del carril; se ajusta con el pivote y los pixeles por unidad del
+sprite, porque la escala de la paleta (0,3) la comparten los items. Los avisos de obstaculo (`LaneWarningView`)
+van centrados en su carril y miden 0,85 carriles (`altoEnCarriles`), siguiendo el zoom de la camara.
 
 **HUD de la partida (01/11):** todos los niveles usan `Prefabs/HudPartida.prefab` (`HudPaneles`), con el
 arte en `Art/HUD/Partida/`: se ajusta en un solo lugar. Reemplaza a `HudArsenal` y `HudMunicionPelea`. Los

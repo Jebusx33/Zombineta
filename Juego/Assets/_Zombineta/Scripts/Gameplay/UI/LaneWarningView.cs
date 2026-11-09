@@ -30,20 +30,35 @@ namespace Zombineta.UI
         [Tooltip("Cada icono sigue la altura en pantalla de su carril (la camara hace zoom: un " +
                  "icono fijo se despega de su carril y parece avisar en otro).")]
         [SerializeField] bool anclarAlCarril = true;
-        [Tooltip("Unidades de mundo sobre la linea del carril donde va el icono.")]
-        [SerializeField] float alturaSobreCarril = 0.7f;
+        [Tooltip("Unidades de mundo sobre el centro del carril donde va el centro del icono. 0 = centrado en su carril.")]
+        [SerializeField] float alturaSobreCarril = 0f;
+        [Tooltip("Alto del icono, en carriles: menos de 1 para que dos avisos seguidos no se pisen ni parezcan de otro carril.")]
+        [Range(0.3f, 1.2f)] [SerializeField] float altoEnCarriles = 0.85f;
 
-        /// <summary>Lleva el icono a la altura en pantalla de su carril (Canvas Screen Space - Overlay).</summary>
+        /// <summary>
+        /// Lleva el icono a la altura en pantalla de su carril y lo achica o agranda a la medida del carril
+        /// (Canvas Screen Space - Overlay): con el zoom de la camara los carriles cambian de tamano en pantalla.
+        /// </summary>
         void Anclar(RectTransform icono, int carril)
         {
             var cam = Camera.main;
             if (!anclarAlCarril || cam == null)
                 return;
-            var mundo = new Vector3(cam.transform.position.x, run.LaneToWorldY(carril) + alturaSobreCarril, 0f);
-            float y = cam.WorldToScreenPoint(mundo).y;
+            float x = cam.transform.position.x;
+            float y = cam.WorldToScreenPoint(new Vector3(x, run.LaneToWorldY(carril) + alturaSobreCarril, 0f)).y;
+            float y0 = cam.WorldToScreenPoint(new Vector3(x, run.LaneToWorldY(0), 0f)).y;
+            float y1 = cam.WorldToScreenPoint(new Vector3(x, run.LaneToWorldY(1), 0f)).y;
             var p = icono.position;
             icono.position = new Vector3(p.x, y, p.z);
+
+            var canvas = icono.GetComponentInParent<Canvas>();
+            float escalaCanvas = canvas != null ? canvas.rootCanvas.scaleFactor : 1f;
+            icono.localScale = Vector3.one * EscalaDelIcono(Mathf.Abs(y1 - y0), icono.rect.height * escalaCanvas, altoEnCarriles);
         }
+
+        /// <summary>Regla pura: cuanto escalar un icono de altoIconoPx para que mida altoEnCarriles carriles de separacionPx.</summary>
+        public static float EscalaDelIcono(float separacionPx, float altoIconoPx, float altoEnCarriles) =>
+            altoIconoPx <= 0f || separacionPx <= 0f ? 1f : separacionPx * altoEnCarriles / altoIconoPx;
 
         void LateUpdate()
         {

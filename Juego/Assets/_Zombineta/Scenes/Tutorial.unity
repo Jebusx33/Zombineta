@@ -150,6 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Zombineta::Zombineta.UI.HudView
   run: {fileID: 1170739137}
   paneles: {fileID: 1851425114}
+  mostrarSensor: 0
   sensor: {fileID: 428659204}
   threatFill: {fileID: 0}
   threatDistance: {fileID: 1878941140}
@@ -3144,6 +3145,8 @@ MonoBehaviour:
   bidonesHastaMetro: 0
   reintentosPelea: 0
   peleaDidactica: 0
+  jefe: {fileID: 0}
+  estilo: 0
   flotarRecolectables: 1
   flotarAltura: 0.1
   flotarVelocidad: 3
@@ -4229,7 +4232,8 @@ MonoBehaviour:
   hideDistance: 10
   blinkHz: 3
   anclarAlCarril: 1
-  alturaSobreCarril: 0.7
+  alturaSobreCarril: 0
+  altoEnCarriles: 0.85
 --- !u!1 &1526355565
 GameObject:
   m_ObjectHideFlags: 0

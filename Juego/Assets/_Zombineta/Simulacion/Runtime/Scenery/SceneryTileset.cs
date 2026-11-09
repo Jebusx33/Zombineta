@@ -48,6 +48,11 @@ namespace Zombineta.Scenery
                  "sprite del tile, medidos desde su esquina de abajo a la izquierda.")]
         public Vector2 acompananteOffsetPx;
 
+        [Tooltip("Cuanto mas grande se dibuja el acompanante que el tile, a igual densidad de pixeles. " +
+                 "1 = mismo dibujante y misma escala. La bocacalle de arriba esta dibujada a la escala de " +
+                 "los edificios, y la calle al 25 %: por eso va agrandada.")]
+        [Min(0.01f)] public float acompananteEscala = 1f;
+
         [Tooltip("Sorting Layer y orden del acompanante.")]
         public string acompananteCapa = "Fondo";
         public int acompananteOrden = -50;

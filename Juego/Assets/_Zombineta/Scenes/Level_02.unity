@@ -13143,7 +13143,8 @@ MonoBehaviour:
   hideDistance: 10
   blinkHz: 3
   anclarAlCarril: 1
-  alturaSobreCarril: 0.7
+  alturaSobreCarril: 0
+  altoEnCarriles: 0.85
 --- !u!1 &1097031426
 GameObject:
   m_ObjectHideFlags: 0
