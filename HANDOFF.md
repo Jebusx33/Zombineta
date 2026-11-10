@@ -77,13 +77,25 @@ Diseño: `docs/superpowers/specs/2026-09-13-escenas-juego-design.md`.
 
 | Escena | Qué es |
 |---|---|
-| `Boot` | Nunca se descarga. `GameRoot` (flujo + director de escenas), `EventSystem`, el fundido y el `Audio` (`AudioDirector`/`MusicDirector`, ver sección 0 "Sonido") |
+| `Boot` | Nunca se descarga. `GameRoot` (flujo + director de escenas), `EventSystem`, el fundido, el `Audio` (`AudioDirector`/`MusicDirector`, ver sección 0 "Sonido") y la `Camara de respaldo` |
 | `MainMenu`, `CharacterSelect`, `Cinematic`, `LevelComplete`, `GameOver`, `Ending`, `Credits` | Pantallas base: reemplazan a la anterior con fundido |
 | `Level_01`, `Level_02` | Niveles jugables, armados sobre `Scenes/Templates/NivelBase` (ver "Niveles armados a mano"). F2 gana, F3 pierde (editor), Esc/Start pausa |
 | `Options`, `Pause` | Capas: se cargan encima sin descargar lo de abajo. Con la pausa encima el tiempo se congela |
 
 - `GameFlow` (compartido) decide a qué pantalla se va. `SceneRoutePlanner` (C# plano, con tests)
   traduce cada cambio en escenas a cargar y descargar. `GameRoot` ejecuta ese plan.
+- **Cámara de respaldo (10/11):** `Boot` no tiene cámara propia y cada pantalla trae la suya, así que entre que se
+  descarga una y se carga la otra no quedaba ninguna (el editor mostraba "Display 1 No cameras rendering").
+  `CamaraDeRespaldo` pinta de negro sin dibujar nada y se prende sola solo cuando no hay otra cámara.
+- **Al final de la cinemática (10/11):** el tema del nivel arranca cuando empieza el último fundido de la
+  cinemática (`MusicDirector.AdelantarNivel`), y como la cinemática ya termina en negro el iris no se cierra
+  encima: se carga el nivel directo y se abre el iris. La música se oye unos 0,4 s antes de que se vea el nivel.
+- **El mapa en un televisor viejo (10/11):** `MapScreen` se dibuja a una textura (la cámara de la escena `Mapa`) y
+  `PantallaCRT` la muestra con `Resources/Estilo/CRT.shader`: curva de gran angular, esquinas redondeadas, líneas
+  de barrido, un poco de separación de color y viñeta. Al aparecer se prende como una tele (`EncendidoTV`, C#
+  plano y testeado: una línea blanca que se estira de lado a lado, se abre en alto y se le va el brillo, 0,75 s),
+  y por eso `GameRoot` saca el fundido de una vez al cargar el mapa. Al prenderse suena `map_start` (`MapaEncendido`). Los números del efecto están en el
+  componente `PantallaCRT` que se crea por código.
 - **Play desde cualquier escena.** Abrís `Level_02` (o `MainMenu`, o la que sea) y le das Play:
   `Boot` se carga sola al lado y el flujo arranca en esa pantalla. No hace falta recorrer el juego
   para probar una pantalla.
@@ -451,8 +463,11 @@ mismos valores por defecto, que `MezclaAudioTests` fija). `General` no es un bus
 aparte que se multiplica arriba de los cuatro. El prefab del sonido de nivel es
 `Art/Audio/SonidoDelNivel.prefab` (raíz `SonidoDeNivel`, suelto en la escena de cada nivel, nunca
 en `Nivel` — misma trampa que `HordeGlow`), que registra el banco del nivel y avisa la amenaza de
-la horda cuadro a cuadro; `SfxDirector`, `MotorSonido`, `HordaSonido`, `AmbienteSonido` y `LoopsDeNivel` son sus
-cinco hijos. `LoopsDeNivel` maneja los loops que suben y bajan solos: la lluvia y el viento con el
+la horda cuadro a cuadro; `SfxDirector`, `MotorSonido`, `HordaSonido`, `AmbienteSonido`, `LoopsDeNivel` y `OrugasDelJefe` son sus
+seis hijos (`OrugasDelJefe`, desde el 10/11: el loop `boss_tank` del jefe, que acelera en la embestida). `SonidoDeNivel` reintenta enganchar el banco cada cuadro hasta que Boot esté cargado: con Play directo
+en la escena del nivel, Boot llega un cuadro después y antes el banco del nivel quedaba sin poner (no sonaban las
+alarmas del Nivel 2). Los sonidos posicionales del `AudioDirector` se vuelven a panear cada cuadro mientras suenan
+(10/11). `LoopsDeNivel` maneja los loops que suben y bajan solos: la lluvia y el viento con el
 clima del tramo, y el faro que chisporrotea con la batería baja.
 
 **Dónde está cada cosa:**
@@ -603,9 +618,12 @@ y se listan en `Settings/AnimacionesAPie.asset`, junto con su ritmo. El 1.º y 2
 remate, `punch_high`. Para cambiar un dibujo, se reemplaza el PNG con el mismo nombre y el importador conserva el
 pivote en los pies. Son lienzos de 540 × 384; un cuadro nuevo tiene que mantener a la protagonista en el mismo lugar del
 lienzo. Desde el 09/11 todos los cuadros están pintados (la caminata con cara y la caída a color) y hay pose de
-disparo (`shot`, 5 cuadros a 16 por segundo): saca el arma y tira con el brazo estirado. Si vuelve a disparar con el
-arma afuera, sigue desde el cuadro 4 (`disparoRepiteDesde`) en vez de sacarla otra vez; el dolor o un golpe la
-cortan. No hay poses de granada ni bomba.
+disparo (`shot`, 5 cuadros a 16 por segundo). Desde el 10/11 cada disparo arranca en el cuadro 4, con el brazo ya
+estirado (`cuadroDelTiro`): el tiro, el sonido y el fogonazo salen al apretar, así que no hay tiempo de mostrar cómo
+saca el arma. Lo mismo en la moto (`ScooterView.shootFireFrame`, cuadro 5 de 12). El fogonazo, la traza y el destello
+nacen en la boca del arma del dibujo (`bocaDelArma` en el asset y `muzzlePixel` en `ScooterView`, en píxeles desde
+arriba a la izquierda del cuadro; `PuntaDelArma` los pasa al mundo). Si cambia el dibujo del disparo, hay que medir
+de nuevo esos píxeles. El dolor o un golpe cortan el disparo. No hay poses de granada ni bomba.
 
 **Nafta de gracia (05/11):** en los últimos 200 m antes del refugio la nafta alcanza siempre. Si lo que queda no
 llega, el consumo baja en proporción y el tanque llega a la reserva justo en la meta; los choques tampoco lo
@@ -629,6 +647,16 @@ embestida. Cada ciclo aparecen en el camino una caja de 4 balas y una granada, l
 recogerlas: lo que se pasa de largo se pierde hasta el ciclo siguiente. La meta no cuenta con el jefe
 vivo: al vencerlo, el refugio aparece 60 m adelante. Los números están en `Settings/JefeNivel2.asset` y sin ese
 asset el nivel se juega como antes. F5 lleva directo al jefe. El HUD del duelo y los sonidos son provisorios.
+
+**Presión de la horda en el Nivel 2 (10/11):** José se alejaba muy fácil. En el Nivel 2 no hay apagones, así que
+se puede andar con el faro siempre prendido, y el faro frena a la horda a la mitad: con la presión de antes (1,1 a 1,3)
+la horda quedaba a unos 50 m todo el nivel. Los tramos pasaron a 1,3 / 1,4 / 1,45 / 1,5 / 1,55 / 1,55 (un 20 % más;
+`GameConfig` no se tocó, el Nivel 1 queda igual). Medido con la partida real y nafta y batería infinitas: con faro y
+andando normal ahora la alcanzan a los 657 m; con faro y turbo cuando aprieta queda a unos 20 m (mínima 8 m). Faro y
+turbo todo el tiempo sigue escapando (la goma elástica, +7 m/s, también queda a la mitad con el faro); en una partida
+real lo frena la nafta, que el turbo gasta al triple. La sonda es `SondaHorda` (script suelto de la sesión, no está en
+el repo): si hace falta otra vuelta, el próximo ajuste es que el faro frene menos en este nivel o que la goma
+elástica no se divida con el faro.
 
 **Luces del Nivel 2 (01/11):** la autopista usa las mismas `LuzDeCiudad` que el Nivel 1. `tile_edificio_4`
 y `tile_edificio_5` tienen ventanas con máscara (`Art/Tileset/Level2/Luces/`) y los paredones 1 a 3 llevan
@@ -1211,9 +1239,10 @@ Estas costaron tiempo real en esta sesión:
 
 21. **Límite de 260 caracteres de ruta en Windows.** Con el repo en
     `D:\Jose\Facu\Taller de proyecto integral\Prototipo\Zombineta\Zombineta\Juego`, un archivo
-    de `com.unity.2d.tooling` en `Library/PackageCache` ya no se puede leer
-    (`DirectoryNotFoundException` al importar un `.uxml`). No rompe el juego, pero va a empeorar.
-    Clonar el repo en una ruta corta.
+    de `com.unity.2d.tooling` en `Library/PackageCache` ya no se podía leer
+    (`DirectoryNotFoundException` al importar un `.uxml`). El 10/11 el repo de Jose pasó a
+    `D:\Jose\Facu\Taller de proyecto integral\Zombineta` (24 caracteres menos). Clonar el repo
+    en una ruta corta.
 
 22. **Cerrar Unity desde el MCP:** `EditorApplication.Exit(0)` funciona, pero si se agenda con
     `delayCall` puede tardar más de un minuto en ejecutarse. Antes de mover carpetas, confirmar
@@ -1830,8 +1859,9 @@ existe, no lo que se imaginó.
 
 ## 8. Cosas sueltas
 
-- El proyecto está anidado en `Prototipo/Zombineta/Zombineta`. Es feo pero moverlo con Unity
-  abierto es riesgoso. El repo git está en la carpeta interna, que es lo correcto.
+- En la compu de Jose el repo está en `Taller de proyecto integral\Zombineta` (antes estaba
+  anidado en `Prototipo\Zombineta\Zombineta`). Los builds van afuera del repo, en
+  `Taller de proyecto integral\Builds`. Para mover el repo hay que cerrar Unity primero.
 - La carpeta se llama `Scripts/Enemies` y no `Scripts/Horde` porque Unity dejó el archivo
   fuera de la lista de fuentes de la assembly pese a reconocerlo como `MonoScript`, y mover
   la carpeta fue lo que destrabó ese caché.

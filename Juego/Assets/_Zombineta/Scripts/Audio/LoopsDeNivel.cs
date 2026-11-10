@@ -24,9 +24,14 @@ namespace Zombineta.Audio
         [Tooltip("Fraccion de bateria por debajo de la cual el faro titila (la misma que HeadlightView.flickerBelow).")]
         [Range(0f, 1f)] [SerializeField] float faroTitilaDebajoDe = 0.25f;
 
+        [Tooltip("Como sigue el volumen de la lluvia a su intensidad: 1 = en proporcion; menos de 1 = una lluvia " +
+                 "media ya se oye fuerte (0,5: con la mitad de lluvia suena al 71 %). Con lluvia plena es igual.")]
+        [Range(0.2f, 1f)] [SerializeField] float curvaLluvia = 0.5f;
+
         sealed class Loop
         {
             public SonidoClave clave;
+            public float curva = 1f;
             public AudioSource source;
             public FuenteConBus fuente;
             public float volumenBase;
@@ -42,6 +47,7 @@ namespace Zombineta.Audio
             if (run == null)
                 run = FindAnyObjectByType<RunController>();
             lluvia = Crear(SonidoClave.Lluvia, "Lluvia");
+            lluvia.curva = curvaLluvia;
             viento = Crear(SonidoClave.Viento, "Viento");
             faro = Crear(SonidoClave.FaroTitila, "Faro titila");
         }
@@ -109,6 +115,16 @@ namespace Zombineta.Audio
             return FaroTitila(s.Phase == RunPhase.Running, s.HeadlightOn, carga, faroTitilaDebajoDe);
         }
 
+        /// <summary>
+        /// Regla pura: el volumen de un loop con esa intensidad (0 a 1). La curva es un exponente: con 1 va en
+        /// proporcion; con menos, las intensidades medias suenan mas fuerte y la plena queda igual.
+        /// </summary>
+        public static float VolumenDeLoop(float volumenBase, float intensidad, float curva)
+        {
+            float i = Mathf.Clamp01(intensidad);
+            return volumenBase * (i <= 0f ? 0f : Mathf.Pow(i, Mathf.Max(0.01f, curva)));
+        }
+
         /// <summary>Regla pura: el faro chisporrotea en carrera, prendido y con la bateria baja pero no vacia.</summary>
         public static bool FaroTitila(bool corriendo, bool prendido, float carga, float debajoDe) =>
             corriendo && prendido && carga > 0f && carga < debajoDe;
@@ -120,7 +136,7 @@ namespace Zombineta.Audio
             if (l.source.clip == null)
                 return;
 
-            float objetivo = l.volumenBase * Mathf.Clamp01(intensidad);
+            float objetivo = VolumenDeLoop(l.volumenBase, intensidad, l.curva);
             l.fuente.volumenPropio = Mathf.MoveTowards(l.fuente.volumenPropio, objetivo, dt / SegundosDeFundido);
 
             bool suena = l.fuente.volumenPropio > 0.0001f;

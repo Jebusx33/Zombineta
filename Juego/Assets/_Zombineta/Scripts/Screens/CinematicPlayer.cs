@@ -47,13 +47,17 @@ namespace Zombineta.Juego.Screens
             if (title != null)
                 title.text = level != null ? level.displayName : "";
 
-            yield return Show(titleGroup, titleSeconds);
+            bool hayVinetas = level != null && level.comicPanels != null && level.comicPanels.Count > 0 && panel != null;
+            yield return Show(titleGroup, titleSeconds, !hayVinetas);
 
-            if (level != null)
+            if (hayVinetas)
                 yield return PlayPanels(level.comicPanels);
 
             Finish();
         }
+
+        // El ultimo fundido de la cinematica: desde aca ya suena el tema del nivel.
+        static void EmpiezaElFinal() => Zombineta.Audio.MusicDirector.Instance?.AdelantarNivel();
 
         readonly List<Image> pageImages = new List<Image>();
         int pageCount;
@@ -85,6 +89,7 @@ namespace Zombineta.Juego.Screens
                     yield return null;
             }
 
+            EmpiezaElFinal();
             yield return Fade(panelGroup, 0f);
         }
 
@@ -147,12 +152,14 @@ namespace Zombineta.Juego.Screens
                 advance = true;
         }
 
-        IEnumerator Show(CanvasGroup group, float seconds)
+        IEnumerator Show(CanvasGroup group, float seconds, bool esElFinal)
         {
             advance = false;
             yield return Fade(group, 1f);
             for (float t = 0f; t < seconds && !advance && !skip; t += Time.unscaledDeltaTime)
                 yield return null;
+            if (esElFinal)
+                EmpiezaElFinal();
             yield return Fade(group, 0f);
         }
 

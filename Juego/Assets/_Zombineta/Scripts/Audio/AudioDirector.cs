@@ -71,6 +71,10 @@ namespace Zombineta.Audio
         FuenteConBus[] pool;
         AudioSource[] sources;
         float[] inicioSlot;
+        // Donde esta (X de mundo) lo que suena en cada fuente posicional; NaN si no es posicional. El paneo
+        // y la atenuacion se recalculan cada cuadro: una alarma de 6 s pasa de la derecha a la izquierda
+        // mientras la moto pasa el auto.
+        float[] posicionSlot;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetStatics() => Instance = null;
@@ -105,13 +109,55 @@ namespace Zombineta.Audio
             buses.MusicaEnPausa = m.musicaEnPausa;
             buses.ExponenteCurva = m.exponenteVolumen;
             buses.PausaDuck = Mathf.MoveTowards(buses.PausaDuck, objetivo, Time.unscaledDeltaTime / m.fundidoPausa);
+
+            Reubicar();
         }
+
+        /// <summary>Los sonidos posicionales que siguen sonando se vuelven a panear desde donde esta la moto ahora.</summary>
+        void Reubicar()
+        {
+            if (posicionSlot == null)
+                return;
+            for (int i = 0; i < posicionSlot.Length; i++)
+            {
+                if (float.IsNaN(posicionSlot[i]) || !SigueSonando(i))
+                    continue;
+                pool[i].espacial = Ubicar(posicionSlot[i], out float pan);
+                sources[i].panStereo = pan;
+            }
+        }
+
+        // Por el tiempo y no por isPlaying: con el audio en pausa isPlaying da false.
+        bool SigueSonando(int slot)
+        {
+            var src = sources[slot];
+            if (src.clip == null)
+                return false;
+            float dura = src.clip.length / Mathf.Max(0.01f, Mathf.Abs(src.pitch));
+            return Time.unscaledTime - inicioSlot[slot] < dura;
+        }
+
+        /// <summary>Volumen espacial (0 = fuera de rango) y paneo de algo que esta en esa X de mundo, oido desde la moto.</summary>
+        float Ubicar(float worldX, out float pan)
+        {
+            float dx = Espaciado(worldX, PlayerWorldX, WorldUnitsPerMeter);
+            var cfg = Espacial;
+            pan = SonidoEspacial.Pan(dx, cfg);
+            return SonidoEspacial.Volumen(dx, cfg);
+        }
+
+        /// <summary>Metros (con signo) desde quien escucha hasta el sonido.</summary>
+        public static float Espaciado(float worldX, float oyenteWorldX, float unidadesPorMetro) =>
+            (worldX - oyenteWorldX) / Mathf.Max(0.0001f, unidadesPorMetro);
 
         void ArmarPool()
         {
             pool = new FuenteConBus[TamanioPool];
             sources = new AudioSource[TamanioPool];
             inicioSlot = new float[TamanioPool];
+            posicionSlot = new float[TamanioPool];
+            for (int i = 0; i < TamanioPool; i++)
+                posicionSlot[i] = float.NaN;
 
             for (int i = 0; i < TamanioPool; i++)
             {
@@ -192,15 +238,12 @@ namespace Zombineta.Audio
 
             float pan = 0f;
             float espacialVol = 1f;
-            if (sonido.posicional && worldX.HasValue)
+            bool posicional = sonido.posicional && worldX.HasValue;
+            if (posicional)
             {
-                float metros = Mathf.Max(0.0001f, WorldUnitsPerMeter);
-                float dx = (worldX.Value - PlayerWorldX) / metros;
-                var cfg = Espacial;
-                espacialVol = SonidoEspacial.Volumen(dx, cfg);
+                espacialVol = Ubicar(worldX.Value, out pan);
                 if (espacialVol <= 0f)
                     return; // fuera de rango: no suena.
-                pan = SonidoEspacial.Pan(dx, cfg);
             }
 
             ultimoUso[sonido] = ahora;
@@ -219,6 +262,7 @@ namespace Zombineta.Audio
             fuente.espacial = espacialVol;
 
             inicioSlot[slot] = ahora;
+            posicionSlot[slot] = posicional ? worldX.Value : float.NaN;
             src.Play();
         }
 

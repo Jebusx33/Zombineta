@@ -45,6 +45,24 @@ namespace Zombineta.Juego.Tests
             Assert.AreEqual(PlayerClip.Idle, a.Clip);
         }
 
+        [Test] public void ElDisparoPuedeArrancarEnElCuadroQueApunta()
+        {
+            var a = Nueva();
+            a.Play(PlayerClip.Shoot, 4);
+            Assert.AreEqual(4, a.Frame, "ya apunta en el instante del tiro");
+            a.Tick(0.06f); // 4/20 + 0,06 = 0,26 s x 20 fps = cuadro 5
+            Assert.AreEqual(5, a.Frame);
+            a.Tick(0.35f); // 0,61 s x 20 = 12: termino
+            Assert.AreEqual(PlayerClip.Idle, a.Clip);
+        }
+
+        [Test] public void ArrancarMasAllaDelUltimoCuadroNoSeVaDeRango()
+        {
+            var a = Nueva();
+            a.Play(PlayerClip.Shoot, 40);
+            Assert.AreEqual(11, a.Frame);
+        }
+
         [Test] public void CrashSeCongelaEnElUltimoCuadro()
         {
             var a = Nueva();

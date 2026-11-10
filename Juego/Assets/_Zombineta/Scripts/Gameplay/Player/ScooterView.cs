@@ -33,6 +33,14 @@ namespace Zombineta.Player
         [SerializeField] float upFps = 16f;
         [SerializeField] float shootFps = 20f;
 
+        [Header("Disparo")]
+        [Tooltip("Cuadro del disparo (desde 0) en que el brazo ya apunta. El clip arranca aca: el tiro sale " +
+                 "al apretar, asi que no hay tiempo de mostrar como saca el arma.")]
+        [Min(0)] [SerializeField] int shootFireFrame = 4;
+        [Tooltip("Boca del arma en ese cuadro, en pixeles desde arriba a la izquierda del cuadro. " +
+                 "De ahi salen el fogonazo y la traza.")]
+        [SerializeField] Vector2 muzzlePixel = new Vector2(148f, 135f);
+
         PlayerAnim anim;
         int lastLane;
 
@@ -67,6 +75,21 @@ namespace Zombineta.Player
         /// haya un set de animaciones por personaje.
         /// </summary>
         public void SetCharacterColor(Color color) => characterColor = color;
+
+        /// <summary>
+        /// La boca del arma en el mundo, en el cuadro en que apunta. Null si no hay dibujo de disparo
+        /// (quien lo use vuelve a su posicion de siempre).
+        /// </summary>
+        public Vector3? BocaDelArma
+        {
+            get
+            {
+                if (body == null || shootSprites == null || shootSprites.Length == 0)
+                    return null;
+                var cuadro = shootSprites[Mathf.Clamp(shootFireFrame, 0, shootSprites.Length - 1)];
+                return cuadro != null ? PuntaDelArma.EnMundo(body, cuadro, muzzlePixel) : (Vector3?)null;
+            }
+        }
 
         void Awake()
         {
@@ -127,7 +150,7 @@ namespace Zombineta.Player
             lastLane = state.Lane;
 
             if ((events & RunEvent.Shot) != 0)
-                anim.Play(PlayerClip.Shoot);
+                anim.Play(PlayerClip.Shoot, shootFireFrame);
 
             if ((events & RunEvent.Fell) != 0)
                 anim.Play(PlayerClip.Crash);

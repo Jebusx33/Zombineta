@@ -36,6 +36,10 @@ namespace Zombineta.Audio
                  "da 0).")]
         [SerializeField] float distanciaAvisoZombie = 12f;
 
+        [Header("Jefe")]
+        [Tooltip("Segundos entre el disparo y el rebote de la bala en el jefe: separados se oyen los dos.")]
+        [SerializeField] float demoraRebote = 0.09f;
+
         [Header("Alarmas de autos")]
         [Tooltip("Variante de Obstacle que es un auto (la de Obstaculo_Auto en LevelItemPalette).")]
         [SerializeField] int varianteDeAuto = 0;
@@ -205,14 +209,16 @@ namespace Zombineta.Audio
             if ((events & RunEvent.PickedUp) != 0)
                 SonarPickups(audio, state);
 
-            // El jefe, con sonidos prestados hasta que tenga los suyos (ver Audio-lista-de-sonidos.md).
-            if ((events & RunEvent.JefeApunta) != 0) audio.Play(SonidoClave.HudBateriaBaja);
-            if ((events & RunEvent.JefeDispara) != 0) audio.Play(SonidoClave.Atropello);
-            if ((events & RunEvent.JefeImpacto) != 0) audio.Play(SonidoClave.ExplosionBarril);
-            if ((events & RunEvent.JefeEmbiste) != 0) audio.Play(SonidoClave.ZombieAdelante);
-            if ((events & RunEvent.JefeHerido) != 0) audio.Play(SonidoClave.Golpe1);
-            if ((events & RunEvent.JefeRebota) != 0) audio.Play(SonidoClave.GolpeAlAire);
-            if ((events & RunEvent.JefeDerrotado) != 0) audio.Play(SonidoClave.BombaExplota);
+            // El jefe: suena desde donde esta (detras de la moto). El proyectil que cae lo hace junto a la moto.
+            // La embestida no tiene un golpe propio: la cuentan sus orugas, que aceleran (OrugasDelJefe).
+            float? jefeX = run.Sim.Jefe != null && run.Sim.Jefe.EnDuelo ? run.ToWorldX(run.Sim.Jefe.X) : (float?)null;
+            if ((events & RunEvent.JefeApunta) != 0) audio.Play(SonidoClave.JefeApunta, jefeX);
+            if ((events & RunEvent.JefeDispara) != 0) audio.Play(SonidoClave.JefeDispara, jefeX);
+            if ((events & RunEvent.JefeImpacto) != 0) audio.Play(SonidoClave.JefeImpacto);
+            if ((events & RunEvent.JefeHerido) != 0) audio.Play(SonidoClave.JefeHerido, jefeX);
+            // El rebote suena un instante despues del tiro: si sale junto, el disparo propio lo tapa.
+            if ((events & RunEvent.JefeRebota) != 0) StartCoroutine(Demorado(SonidoClave.JefeRebota, demoraRebote));
+            if ((events & RunEvent.JefeDerrotado) != 0) audio.Play(SonidoClave.JefeDerrotado, jefeX);
         }
 
         /// <summary>
@@ -233,6 +239,12 @@ namespace Zombineta.Audio
             if (state.Ammo > prevAmmo + EpsilonRecurso) audio.Play(SonidoClave.PickupMunicion);
             if (state.Granadas > prevGranadas) audio.Play(SonidoClave.PickupGranada);
             if (state.Bombas > prevBombas) audio.Play(SonidoClave.PickupBomba);
+        }
+
+        System.Collections.IEnumerator Demorado(SonidoClave clave, float segundos)
+        {
+            yield return new WaitForSeconds(segundos);
+            AudioDirector.Instance?.Play(clave);
         }
 
         /// <summary>Lo que viene por delante: los zombies de frente y los autos que pueden saltar con la alarma.</summary>

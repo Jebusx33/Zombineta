@@ -13,6 +13,7 @@ namespace Zombineta.Juego.Screens
     /// Marca con una cruz los lugares que ya se jugaron, resalta el que sigue y pide ENTER para seguir (a la
     /// cinematica de ese nivel). El mapa es una imagen provisoria (Resources/Mapa/MapaCiudad) con los puntos de
     /// los niveles encima: se arma entero por codigo, la escena solo trae el Canvas y esta pantalla.
+    /// Se ve en un televisor viejo (PantallaCRT), que se prende al aparecer el mapa.
     /// </summary>
     public sealed class MapScreen : MonoBehaviour
     {
@@ -55,8 +56,21 @@ namespace Zombineta.Juego.Screens
                 yield return null;
 
             Armar();
-            desde = Time.unscaledTime;
+            var crt = PantallaCRT.Poner(GetComponent<Canvas>(), CamaraDeLaEscena());
+            // El sello del nivel ganado cae cuando la tele ya se prendio.
+            desde = Time.unscaledTime + crt.SegundosEncendido;
             listo = true;
+        }
+
+        Camera CamaraDeLaEscena()
+        {
+            foreach (var raiz in gameObject.scene.GetRootGameObjects())
+            {
+                var cam = raiz.GetComponentInChildren<Camera>(true);
+                if (cam != null)
+                    return cam;
+            }
+            return null;
         }
 
         void Armar()

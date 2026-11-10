@@ -25,25 +25,41 @@ namespace Zombineta.Audio
                 run = FindAnyObjectByType<RunController>();
         }
 
+        bool registrado;
+
         void OnEnable()
         {
+            registrado = false;
+            Registrar();
+        }
+
+        /// <summary>
+        /// Engancha el banco del nivel y la escala de metros. Con Play directo en la escena del nivel, Boot (con
+        /// el AudioDirector y GameRoot) se carga un cuadro despues: se reintenta en Update hasta que esten.
+        /// </summary>
+        void Registrar()
+        {
             var audio = AudioDirector.Instance;
-            if (audio == null)
+            if (registrado || audio == null || GameRoot.Instance == null || GameRoot.Flow == null)
                 return;
 
             audio.BancoNivel = BancoDelNivelActual();
             audio.WorldUnitsPerMeter = run != null ? run.Config.worldUnitsPerMeter : 1f;
+            registrado = true;
         }
 
         void OnDisable()
         {
             var audio = AudioDirector.Instance;
-            if (audio != null)
+            if (audio != null && registrado)
                 audio.BancoNivel = null;
+            registrado = false;
         }
 
         void Update()
         {
+            Registrar();
+
             if (run == null || run.Sim == null)
                 return;
 

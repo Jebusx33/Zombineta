@@ -121,6 +121,19 @@ namespace Zombineta.Audio
                 ref velocidadAmenaza, AudioDirector.Mezcla.suavizadoTension, Mathf.Infinity, Time.unscaledDeltaTime);
         }
 
+        /// <summary>
+        /// La cinematica avisa cuando empieza a desvanecerse: el tema del nivel arranca ahi, antes de que
+        /// se vea el nivel. Cuando el flujo pasa a Playing, el tema ya es el mismo y sigue sin cortarse.
+        /// </summary>
+        public void AdelantarNivel()
+        {
+            var flow = GameRoot.Flow;
+            if (flow == null || flow.Current != GameScreen.Cinematic)
+                return;
+            Traza("adelanta el tema del nivel");
+            Aplicar(GameScreen.Playing);
+        }
+
         /// <summary>La llama el nivel (Task 6) cada cuadro con 0 (lejos) a 1 (encima de la moto).</summary>
         public void SetAmenaza(float amenaza01) => amenazaObjetivo = Mathf.Clamp01(amenaza01);
 

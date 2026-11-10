@@ -190,9 +190,36 @@ namespace Zombineta.Fx
 
         bool OnFoot => run.Sim.State.Phase == RunPhase.Pelea;
 
-        /// <summary>De donde sale el disparo: de la mano de la protagonista, que a pie camina entre carriles.</summary>
+        Zombineta.Player.ScooterView moto;
+        Zombineta.Auxilio.VistaDelAuxilio aPie;
+        bool vistasBuscadas;
+
+        /// <summary>
+        /// La boca del arma del dibujo (en la moto o a pie), si la vista la sabe. Corre despues de las
+        /// vistas (orden 20), asi que el dibujo ya esta donde se ve en este cuadro.
+        /// </summary>
+        Vector3? BocaDelDibujo()
+        {
+            if (!vistasBuscadas)
+            {
+                moto = FindAnyObjectByType<Zombineta.Player.ScooterView>();
+                aPie = FindAnyObjectByType<Zombineta.Auxilio.VistaDelAuxilio>();
+                vistasBuscadas = true;
+            }
+            if (OnFoot)
+                return aPie != null ? aPie.BocaDelArma : null;
+            return moto != null ? moto.BocaDelArma : null;
+        }
+
+        /// <summary>
+        /// De donde sale el disparo: de la boca del arma del dibujo. Sin dibujo, de la mano de la
+        /// protagonista a una altura fija (a pie camina entre carriles).
+        /// </summary>
         Vector3 MuzzlePosition(HordeEvent e)
         {
+            var boca = BocaDelDibujo();
+            if (boca.HasValue)
+                return new Vector3(boca.Value.x, boca.Value.y, 0f);
             if (OnFoot)
                 return new Vector3(run.ToWorldX(e.FromX), run.LaneToWorldY(run.Sim.State.LaneVisual) + tracerHeightPelea, 0f);
             return new Vector3(run.ToWorldX(e.FromX), run.LaneToWorldY(e.Lane) + tracerHeight, 0f);
@@ -203,9 +230,9 @@ namespace Zombineta.Fx
             if (tracer == null)
                 return;
             float h = OnFoot ? tracerHeightPelea : tracerHeight;
-            float y0 = MuzzlePosition(e).y;
+            var desde = MuzzlePosition(e);
             float y1 = run.LaneToWorldY(e.Lane) + h;
-            tracer.SetPosition(0, new Vector3(run.ToWorldX(e.FromX), y0, 0f));
+            tracer.SetPosition(0, desde);
             tracer.SetPosition(1, new Vector3(run.ToWorldX(e.X), y1, 0f));
             tracer.sortingOrder = LaneSorting.Order(e.Lane, SortSlot.Effect);
             tracer.sortingLayerID = LaneSorting.GameLayerId;

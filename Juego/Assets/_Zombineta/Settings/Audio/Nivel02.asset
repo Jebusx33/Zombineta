@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Nivel02
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.AudioDeNivel
   musica: {fileID: 8300000, guid: 420772009fdb05d419e24550f28d7364, type: 3}
-  tension: {fileID: 8300000, guid: f0fb9a826e6e0f24cba3ea7df2ec060d, type: 3}
-  volumenTension: 1
+  tension: {fileID: 8300000, guid: edd5a0b681433aa428ecadbb28b72728, type: 3}
+  volumenTension: 0.3
   tensionLibre: 1
-  ambiente: {fileID: 11400000, guid: da01a5e20cf8fb340b12aaeb6f79eeee, type: 2}
+  ambiente: {fileID: 0}
   banco: {fileID: 11400000, guid: aff76a1dbb4b7264082f09111825d284, type: 2}

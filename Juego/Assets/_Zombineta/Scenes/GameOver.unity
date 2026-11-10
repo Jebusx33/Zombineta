@@ -412,7 +412,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Audio.SonidosAleatorios
   sonidos:
-  - {fileID: 11400000, guid: 60d074b964ac97a4a9cbd8b819e914ce, type: 2}
+  - {fileID: 11400000, guid: d5b47373fd725994097d6277477d0c7e, type: 2}
+  - {fileID: 11400000, guid: 4dd3ad70338de5d44b36eede9f6aedf4, type: 2}
   intervalo: {x: 6, y: 14}
 --- !u!114 &570151355
 MonoBehaviour:
@@ -2058,7 +2059,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: CAISTE ANTE LA HORA
+  m_Text: CAISTE ANTE LA HORDA
 --- !u!222 &2008986732
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -26,5 +26,12 @@ namespace Zombineta.Audio
         Lluvia, Viento, FaroTitila,
         // Una vez por partida, al arrancar a correr (no al volver a la moto despues de una pelea).
         InicioDeNivel,
+
+        // El jefe: fija el carril, dispara, cae el proyectil, le pegan aturdido, rebota un tiro, cae derrotado,
+        // y el loop mecanico de sus orugas (OrugasDelJefe), que acelera en la embestida.
+        JefeApunta, JefeDispara, JefeImpacto, JefeHerido, JefeRebota, JefeDerrotado, JefeOrugas,
+
+        // La tele del mapa se prende (PantallaCRT): suena con el punto blanco del encendido.
+        MapaEncendido,
     }
 }

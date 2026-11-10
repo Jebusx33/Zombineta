@@ -229,7 +229,9 @@ namespace Zombineta.Juego.Flow
                 {
                     fader.Modo = iris ? Transicion.Iris : Transicion.Fundido;
                     fader.Seguir = iris ? CentroDeLaProtagonista : (System.Func<Vector2>)null;
-                    yield return fader.FadeTo(1f, iris ? segundosIris : fadeSeconds);
+                    // La cinematica termina en negro: cerrar el iris encima seria tiempo muerto antes del nivel.
+                    float cierre = plan.Unload.Contains(SceneNames.Cinematic) ? 0f : iris ? segundosIris : fadeSeconds;
+                    yield return fader.FadeTo(1f, cierre);
                     Traza("fundido a negro listo");
                 }
 
@@ -267,7 +269,9 @@ namespace Zombineta.Juego.Flow
                         yield return null;
                         yield return null;
                     }
-                    yield return fader.FadeTo(0f, iris ? segundosIris : fadeSeconds);
+                    // El mapa se prende como una tele desde el negro: el fundido se saca de una vez.
+                    float apertura = plan.Load.Contains(SceneNames.Map) ? 0f : iris ? segundosIris : fadeSeconds;
+                    yield return fader.FadeTo(0f, apertura);
                     Traza("fundido de vuelta listo");
                 }
             }

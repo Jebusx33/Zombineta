@@ -48,7 +48,6 @@ namespace Zombineta.Juego.Tests
         }
 
         [TestCase("AmbienteNivel1", "amb_level1_city")]
-        [TestCase("AmbienteNivel2", "autopista_tension")]
         public void CadaNivelTieneSuAmbiente(string sonido, string clip)
         {
             var s = AssetDatabase.LoadAssetAtPath<Sonido>(Ajustes + "Sonidos/" + sonido + ".asset");
@@ -58,11 +57,12 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
-        public void ElAmbienteDelNivel2YaNoEsUnZumbido()
+        public void ElNivel2NoTieneAmbiente()
         {
-            // El viejo duraba 0,39 s y en loop sonaba casi tres veces por segundo.
-            var s = AssetDatabase.LoadAssetAtPath<Sonido>(Ajustes + "Sonidos/AmbienteNivel2.asset");
-            Assert.Greater(s.clips[0].length, 2f);
+            // Desde el 10/11 el Nivel 2 suena con su tema (el pulso de la autopista), la tension y el viento:
+            // el ambiente aparte (autopista_tension de 2,1 s) se saco.
+            var nivel = AssetDatabase.LoadAssetAtPath<AudioDeNivel>(Ajustes + "Nivel02.asset");
+            Assert.IsNull(nivel.ambiente);
         }
 
         [Test]
@@ -181,5 +181,67 @@ namespace Zombineta.Juego.Tests
         [TestCase(false, true, 0.2f, false)]
         public void ElFaroChisporroteaConLaBateriaBaja(bool corriendo, bool prendido, float carga, bool suena) =>
             Assert.AreEqual(suena, LoopsDeNivel.FaroTitila(corriendo, prendido, carga, 0.25f));
+
+        // --- Jefe ---
+
+        [Test]
+        public void LasOrugasAceleranParaLaEmbestida()
+        {
+            var normal = OrugasDelJefe.Ritmo(Zombineta.Jefe.FaseDeJefe.Persecucion, 0f, 1.2f);
+            var aviso = OrugasDelJefe.Ritmo(Zombineta.Jefe.FaseDeJefe.AvisoEmbestida, 0.6f, 1.2f);
+            var embiste = OrugasDelJefe.Ritmo(Zombineta.Jefe.FaseDeJefe.Embestida, 0.1f, 1.2f);
+            Assert.Greater(aviso.x, normal.x, "en el aviso ya sube el motor");
+            Assert.Greater(embiste.x, aviso.x, "embistiendo va a fondo");
+            Assert.AreEqual(1f, embiste.y, 1e-6f);
+            Assert.Less(OrugasDelJefe.Ritmo(Zombineta.Jefe.FaseDeJefe.Aturdido, 0f, 1.2f).x, normal.x, "aturdido casi se para");
+            Assert.AreEqual(0f, OrugasDelJefe.Ritmo(Zombineta.Jefe.FaseDeJefe.Derrotado, 0f, 1.2f).y, "derrotado se calla");
+            Assert.AreEqual(0f, OrugasDelJefe.Ritmo(Zombineta.Jefe.FaseDeJefe.Inactivo, 0f, 1.2f).y, "sin duelo no suena");
+        }
+
+        [Test]
+        public void ElJefeTieneSusSonidosEnElBancoGlobal()
+        {
+            var banco = UnityEditor.AssetDatabase.LoadAssetAtPath<BancoDeSonidos>("Assets/_Zombineta/Settings/Audio/SonidosGlobales.asset");
+            foreach (var c in new[] { SonidoClave.JefeApunta, SonidoClave.JefeDispara, SonidoClave.JefeImpacto, SonidoClave.JefeHerido,
+                                      SonidoClave.JefeRebota, SonidoClave.JefeDerrotado, SonidoClave.JefeOrugas })
+            {
+                var s = banco.Buscar(c);
+                Assert.IsNotNull(s, c.ToString());
+                Assert.IsNotNull(s.clips[0], c.ToString());
+                StringAssert.StartsWith("boss_", s.clips[0].name, c.ToString());
+            }
+            Assert.IsTrue(banco.Buscar(SonidoClave.JefeOrugas).loop, "las orugas son un loop");
+        }
+
+        [Test]
+        public void ElNivel2UsaLaTensionDelNivel1()
+        {
+            var n1 = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioDeNivel>("Assets/_Zombineta/Settings/Audio/Nivel01.asset");
+            var n2 = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioDeNivel>("Assets/_Zombineta/Settings/Audio/Nivel02.asset");
+            Assert.AreSame(n1.tension, n2.tension);
+            Assert.AreEqual(n1.volumenTension, n2.volumenTension, 1e-6f);
+            Assert.IsTrue(n2.tensionLibre, "dura distinto que el pulso del Nivel 2: va libre");
+        }
+
+        // --- Paneo ---
+
+        [Test]
+        public void ElPaneoSeMideEnMetrosDesdeLaMoto()
+        {
+            // Con 0,75 unidades por metro, un auto 7,5 unidades adelante esta a 10 m.
+            Assert.AreEqual(10f, AudioDirector.Espaciado(17.5f, 10f, 0.75f), 1e-4f);
+            Assert.AreEqual(-4f, AudioDirector.Espaciado(7f, 10f, 0.75f), 1e-4f, "ya pasado: atras, a la izquierda");
+        }
+
+        // --- Lluvia ---
+
+        [Test]
+        public void ConMediaLluviaSeOyeMasFuerteYConLaPlenaIgual()
+        {
+            Assert.AreEqual(0.7071f, LoopsDeNivel.VolumenDeLoop(1f, 0.5f, 0.5f), 1e-3f);
+            Assert.AreEqual(0.5f, LoopsDeNivel.VolumenDeLoop(1f, 0.5f, 1f), 1e-6f, "curva 1: en proporcion");
+            Assert.AreEqual(0.8f, LoopsDeNivel.VolumenDeLoop(0.8f, 1f, 0.5f), 1e-6f, "lluvia plena: el volumen del Sonido");
+            Assert.AreEqual(0f, LoopsDeNivel.VolumenDeLoop(1f, 0f, 0.5f), 1e-6f, "sin lluvia no suena");
+        }
     }
 }

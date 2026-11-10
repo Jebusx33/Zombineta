@@ -59,6 +59,21 @@ namespace Zombineta.Auxilio
 
         public AnimacionesAPie Animaciones => animaciones;
 
+        /// <summary>
+        /// La boca del arma en el mundo, en el cuadro en que apunta, mirando para donde mira ahora.
+        /// Null si no esta a pie o no hay dibujo de disparo.
+        /// </summary>
+        public Vector3? BocaDelArma
+        {
+            get
+            {
+                if (cuerpo == null || !cuerpo.enabled || animaciones == null)
+                    return null;
+                var cuadro = animaciones.CuadroDelTiro;
+                return cuadro != null ? PuntaDelArma.EnMundo(cuerpo, cuadro, animaciones.bocaDelArma) : (Vector3?)null;
+            }
+        }
+
         void OnEnable()
         {
             if (run != null)

@@ -30,7 +30,7 @@ namespace Zombineta.Juego.Tests
             animaciones.lastimada = Clip(3, 10f);
             animaciones.derribada = Clip(5, 10f);
             animaciones.dispara = Clip(5, 10f);
-            animaciones.disparoRepiteDesde = 3;
+            animaciones.cuadroDelTiro = 3;
         }
 
         [TearDown]
@@ -112,14 +112,14 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
-        public void ElDisparoSeTerminaDeVerYDespuesVuelveAQuieta()
+        public void ElDisparoArrancaApuntandoSeTerminaDeVerYVuelveAQuieta()
         {
             var r = new ReproductorAPie(animaciones);
             r.Disparar();
             Assert.AreEqual(PoseAPie.Dispara, r.Actual);
-            Assert.AreEqual("0", r.Cuadro.name, "saca el arma");
+            Assert.AreEqual("3", r.Cuadro.name, "el tiro sale al apretar: ya apunta");
 
-            r.Avanzar(0.45f, true, false);
+            r.Avanzar(0.15f, true, false);
             Assert.AreEqual(PoseAPie.Dispara, r.Actual, "aunque camine, el tiro se termina de ver");
             Assert.AreEqual("4", r.Cuadro.name);
 
@@ -128,20 +128,7 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
-        public void DispararConElArmaYaApuntadaNoLaVuelveASacar()
-        {
-            var r = new ReproductorAPie(animaciones);
-            r.Disparar();
-            r.Avanzar(0.45f, false, false);
-
-            r.Disparar();
-
-            Assert.AreEqual(PoseAPie.Dispara, r.Actual);
-            Assert.AreEqual("3", r.Cuadro.name, "sigue apuntando: arranca en el cuadro del tiro");
-        }
-
-        [Test]
-        public void DispararMientrasSacaElArmaNoLaReinicia()
+        public void CadaDisparoVuelveAlCuadroDelTiro()
         {
             var r = new ReproductorAPie(animaciones);
             r.Disparar();
@@ -149,7 +136,8 @@ namespace Zombineta.Juego.Tests
 
             r.Disparar();
 
-            Assert.AreEqual("1", r.Cuadro.name);
+            Assert.AreEqual(PoseAPie.Dispara, r.Actual);
+            Assert.AreEqual("3", r.Cuadro.name);
         }
 
         [Test]

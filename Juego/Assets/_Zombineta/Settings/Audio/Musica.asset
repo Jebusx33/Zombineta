@@ -16,8 +16,8 @@ MonoBehaviour:
   opciones: {fileID: 8300000, guid: 015cd52826e36524b91ce52e54f72a8d, type: 3}
   personaje: {fileID: 8300000, guid: 015cd52826e36524b91ce52e54f72a8d, type: 3}
   cinematica: {fileID: 8300000, guid: 0fc0d22199a1caa4c92eb9fb01275aad, type: 3}
-  nivelCompleto: {fileID: 8300000, guid: 5125d50a529c3344fa991472f994012c, type: 3}
-  gameOver: {fileID: 8300000, guid: 4ffdc35424cb403489dd3adf5a511b37, type: 3}
-  ending: {fileID: 8300000, guid: 614caaaa210461a4b954aa56ab82e95b, type: 3}
-  creditos: {fileID: 8300000, guid: 1f7a10cd5966199468d8568ef04f7536, type: 3}
+  nivelCompleto: {fileID: 8300000, guid: 000bdd7c1de39344abe1009814d28add, type: 3}
+  gameOver: {fileID: 8300000, guid: efe3c41701b38a84988e5533c275f391, type: 3}
+  ending: {fileID: 8300000, guid: 000bdd7c1de39344abe1009814d28add, type: 3}
+  creditos: {fileID: 8300000, guid: 000bdd7c1de39344abe1009814d28add, type: 3}
   fundido: 1.5

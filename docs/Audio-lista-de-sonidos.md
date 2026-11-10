@@ -1,7 +1,7 @@
 # Zombineta — Lista de audios
 
 Inventario de todo el audio que el juego usa hoy y propuesta de lo que falta, armado a partir del
-estado del proyecto al 01/11 y puesto al día el 06/11 con los audios editados. Los efectos con audio editado suenan a volumen 1 (vienen ecualizados). La música va aparte, al final. Para el *cómo* (dónde se pisa un
+estado del proyecto al 01/11 y puesto al día el 06/11 con los audios editados. Los efectos con audio editado suenan a volumen 1 (vienen ecualizados), salvo la horda (`Horda`, `ZombieAdelante`) y la moto (`Motor`, `MotorRalenti`, `MotorCambio`), que desde el 10/11 van a 0,8. La música del Nivel 1 (`mus_level1_loop`) se subió 2 dB en el archivo el 10/11: si se vuelve a exportar desde Reaper, sumarlos ahí. La música va aparte, al final. Para el *cómo* (dónde se pisa un
 archivo, volúmenes, loops) ver [`Guia-de-sonido.md`](Guia-de-sonido.md).
 
 ## Cómo leer las tablas
@@ -132,27 +132,32 @@ cada tabla traen el nombre sin la extensión.
 | Sonido | Archivo | Cuándo suena | Estado | Prio | Prog. | Nota |
 |---|---|---|---|---|---|---|
 | Ambiente Nivel 1 (ciudad) | `amb_level1_city` | Loop de fondo | ✅ | A | No | `amb_level1_city` (40 s) |
-| Ambiente Nivel 2 (puente / autopista) | `autopista_tension` | Loop de fondo | ✅ | A | No | Un pulso de 2,1 s; el viento del nivel suma `amb_wind` encima. `amb_level2_bridge` queda sin usar |
+| Ambiente Nivel 2 (puente / autopista) | — | — | ✅ | A | No | Sin ambiente propio desde el 10/11: el nivel suena con su tema (el pulso de la autopista), la tensión y el viento (`amb_wind`). Se sacaron el `Sonido` `AmbienteNivel2` y el archivo `Sfx/autopista_tension` (el pulso de 2,1 s). `amb_level2_bridge` queda sin usar |
 | Apagón: corte de luz | `world_blackout_start` | Empieza el apagón | ✅ | A | Sí | Suena cuando la luz empieza a bajar (oscuridad 0,25). Zumbido eléctrico que se corta en seco: el momento más dramático del nivel |
 | Apagón: vuelve la luz | `world_blackout_end` | Termina el apagón | ✅ | M | Sí | Suena cuando la luz recuperó casi la mitad, también si se prende para pelear. Transformador que arranca, tubos que parpadean |
 | Postes que titilan | `world_pole_flicker` | Faroles del escenario que parpadean | ❌ | B | Sí | Chisporroteo posicional |
-| Autos abandonados (Nivel 2) | `world_car_alarm_01` a `_02` | Al pasar junto a autos del embotellamiento | ✅ | M | Sí | Cada auto tiene 35 % de chance a 10 m, con 6–12 s de descanso entre alarmas. Solo en el banco del Nivel 2 |
-| Lluvia | `amb_rain` | Loop, con el volumen de la lluvia del tramo | ✅ | M | Sí | Ya llueve en el Nivel 1 (los apagones son la tormenta). El volumen sale de `ClimaDirector.Lluvia` |
+| Autos abandonados (Nivel 2) | `world_car_alarm_01` a `_02` | Al pasar junto a autos del embotellamiento | ✅ | M | Sí | Cada auto tiene 35 % de chance a 10 m, con 6–12 s de descanso entre alarmas. Solo en el banco del Nivel 2. Panea mientras suena: arranca a la derecha, pasa por el centro al cruzar el auto y se va a la izquierda bajando (10/11) |
+| Lluvia | `amb_rain` | Loop, con el volumen de la lluvia del tramo | ✅ | M | Sí | Ya llueve en el Nivel 1 (los apagones son la tormenta). El volumen sale de `ClimaDirector.Lluvia`, con una curva (`curvaLluvia` 0,5 en `LoopsDeNivel`) para que la lluvia media ya se oiga fuerte |
 | Viento | `amb_wind` | Loop, con el volumen del viento del tramo | ✅ | M | Sí | Sopla en todo el Nivel 2 y en las tormentas del Nivel 1. El volumen sale de `ClimaDirector.Viento` |
 
 ### 2.5 Jefe del Nivel 2 — diegético
 
-Hoy usa sonidos prestados de otras acciones. Cada uno necesita su archivo y una clave nueva en `SonidoClave`.
+Desde el 10/11 todos tienen su archivo y su clave (`Jefe*` en `SonidoClave`, en el banco global). Los avisos y el disparo
+suenan desde donde está el jefe, detrás de la moto. El impacto, la herida, el rebote y la derrota suenan al centro y
+sin atenuar: el impacto cae junto a la moto, y los otros tres son la respuesta al tiro del jugador (desde el jefe, a la
+izquierda y al 74 %, los tapaba el disparo propio). `boss_hurt` (+11 dB) y `boss_death` (+6 dB) se subieron en el
+archivo el 10/11: venían muy bajos; si se vuelven a exportar desde Reaper, sumarlo ahí.
 
 | Sonido | Archivo | Cuándo suena | Estado | Prio | Prog. | Nota |
 |---|---|---|---|---|---|---|
-| Fija el carril | `boss_aim` | Empieza el aviso de un ataque | 🟡 | A | Sí | Es la señal para esquivar. Hoy suena el aviso de batería baja |
-| Disparo orgánico | `boss_shot` | Suelta el proyectil, frontal o elevado | 🟡 | A | Sí | Húmedo y pesado, sin metal. Hoy suena el atropello |
-| Impacto en el piso | `boss_impact` | Cae el proyectil elevado | 🟡 | A | Sí | Hoy suena la explosión del barril |
-| Embestida | `boss_charge` | Se lanza por el carril | 🟡 | A | Sí | Orugas aceleradas y un rugido. Hoy suena el zombie de frente |
-| Recibe daño | `boss_hurt` | Le dan estando aturdido | 🟡 | M | Sí | Hoy suena el primer golpe de la pelea |
-| Rebote | `boss_bounce` | Le dan cuando no se lo puede lastimar | 🟡 | M | Sí | Tiene que sonar a tiro inútil. Hoy suena el golpe al aire |
-| Derrota | `boss_death` | Se le acaba la vida | 🟡 | A | Sí | Un quejido largo y las orugas que se paran. Hoy suena la explosión de la bomba |
+| Fija el carril | `boss_aim` | Empieza el aviso de un ataque (también el de la embestida) | ✅ | A | Sí | Es la señal para esquivar |
+| Disparo orgánico | `boss_shot` | Suelta el proyectil, frontal o elevado | ✅ | A | Sí | |
+| Impacto en el piso | `boss_impact` | Cae el proyectil elevado | ✅ | A | Sí | Junto a la moto, sin paneo |
+| Orugas | `boss_tank` | Loop mientras dura el duelo | ✅ | A | Sí | `OrugasDelJefe` (6.º hijo de `SonidoDelNivel`). Rodando va a 0,6; en el aviso de embestida sube de tono (1 → 1,25) y de volumen (0,6 → 0,85), y embistiendo va a 1,55 de tono y volumen 1 (unos 4 dB más). Afloja al volver y casi se para aturdido. La distancia lo baja poco (`cuantoAtenua` 0,4) y panea a medias (`paneo` 0,5): del todo a la izquierda y al 73 % se perdía. Archivo subido 7 dB (10/11). Se calla derrotado o al terminar la partida |
+| Embestida | (las orugas) | Se lanza por el carril | ✅ | A | Sí | No tiene golpe propio: la cuentan las orugas aceleradas. `boss_charge` no existe |
+| Recibe daño | `boss_hurt` | Le dan estando aturdido | ✅ | M | Sí | Al centro, sin atenuar. Archivo subido 11 dB |
+| Rebote | `boss_bounce` | Le dan cuando no se lo puede lastimar | ✅ | M | Sí | Al centro, sin atenuar, 0,09 s después del tiro (`demoraRebote` en `SfxDirector`) y más agudo (tono 1,12 a 1,25): junto con el disparo propio no se distinguía |
+| Derrota | `boss_death` | Se le acaba la vida | ✅ | A | Sí | Al centro, sin atenuar. Archivo subido 6 dB. Las orugas se apagan con un fundido |
 
 ---
 
@@ -270,8 +275,9 @@ Hoy usa sonidos prestados de otras acciones. Cada uno necesita su archivo y una 
 | Menú principal | "Jugar" | `ui_play` | ❌ | UI | M | Sí | Moto que arranca: mejor que el confirmar genérico |
 | Selección de personaje | Cambiar de personaje | `ui_character_change` | ❌ | UI | M | Sí |  |
 | Selección de personaje | Elegir personaje | `ui_character_select` | ❌ | UI | M | Sí | Acelerón + frase corta del personaje |
+| Mapa | La tele se prende | `map_start` | ✅ | No diegético | A | Sí | `MapaEncendido`, lo toca `PantallaCRT` en el mismo cuadro en que aparece el punto blanco. Se le recortaron 30 ms de silencio al principio y se subió 4 dB (pico -1,3 dB), volumen 1 (10/11) |
 | Nivel completo | Conteo de estadísticas (metros, bajas, notas) | `ui_stats_tick` y `ui_stats_end` | ❌ | No diegético | M | Sí | Tick que sube + golpe final |
-| Game Over | Gemidos lejanos al azar | `screen_groan_01` a `_02` | 🟡 | Diegético | M | No |  |
+| Game Over | Zombies al azar | `zombie-sound` y `zombie_horde` | 🟡 | Diegético | M | No | Desde el 10/11, por ahora: se intercalan cada 6 a 14 s (`GameOverZombie` 0,2 y `GameOverHorda` 0,1, unos 6 dB debajo de la música). `screen_groan_01`/`_02` (`ScreenGroan`) quedan sin usar |
 | Game Over | "Reintentar" | `ui_retry` | ❌ | UI | B | Sí |  |
 | Final y Créditos | Viento al azar | `screen_wind` | 🟡 | Diegético | B | No |  |
 | Tutorial | Paso completado | `ui_step_done` | ❌ | No diegético | A | Sí | "Ding" que confirma que lo hizo bien |
@@ -303,7 +309,7 @@ conversación del 21/10.
 | Recolectables (2.2) | 6 | 0 | 5 | 0 | 1 |
 | Zombies y horda (2.3) | 10 | 5 | 1 | 0 | 4 |
 | Mundo y ambiente (2.4) | 8 | 7 | 0 | 0 | 1 |
-| Jefe del Nivel 2 (2.5) | 7 | 0 | 7 | 0 | 0 |
+| Jefe del Nivel 2 (2.5) | 8 | 8 | 0 | 0 | 0 |
 | Pelea: protagonista (3.1) | 15 | 8 | 0 | 1 | 6 |
 | Pelea: zombies (3.2) | 6 | 0 | 0 | 0 | 6 |
 | Pelea: drops (3.3) | 6 | 0 | 0 | 0 | 6 |
@@ -312,7 +318,7 @@ conversación del 21/10.
 | Transiciones (5) | 10 | 2 | 2 | 0 | 6 |
 | Menús y pantallas (6) | 17 | 0 | 5 | 0 | 12 |
 | Radio (7) | 6 | 0 | 0 | 0 | 6 |
-| **Total** | **127** | **36** | **25** | **2** | **64** |
+| **Total** | **128** | **44** | **18** | **2** | **64** |
 
 **Por dónde empezar (prioridad A, en este orden):**
 Ya resuelto el 06/11: el motor, los ambientes, el impacto de bala, el apagón y el inicio de nivel.
@@ -340,11 +346,11 @@ Ya resuelto el 06/11: el motor, los ambientes, el impacto de bala, el apagón y 
 | Nivel 1 — tema | `mus_level1_loop` | 150 s | ✅ | |
 | Nivel 1 — tensión | `zombie-tribe-loop` | 8,3 s | ✅ | Loop libre, tope 0,3; sube con la horda |
 | Nivel 2 — tema | `mus_level2_loop` | 0,39 s | ✅ | Es `autopista_tension` en loop: un zumbido corto que da tensión. Se carga sin streaming para que el loop no corte |
-| Nivel 2 — tensión | `mus_level2_tension` | 16 s | 🟡 | Placeholder. Va como loop libre: el tema dura 0,39 s |
-| Nivel completo | `mus_levelcomplete_loop` | 16 s | 🟡 | Placeholder |
-| Game Over | `mus_gameover_loop` | 16 s | 🟡 | Placeholder |
-| Final | `mus_ending_loop` | 16 s | 🟡 | Placeholder |
-| Créditos | `mus_credits_loop` | 16 s | 🟡 | Placeholder |
+| Nivel 2 — tensión | `zombie-tribe-loop` | 8,3 s | ✅ | La misma del Nivel 1 desde el 10/11, con el mismo tope de 0,3. Va como loop libre: el tema dura 0,39 s. `mus_level2_tension` queda sin usar |
+| Nivel completo | `mus_victoria_loop` | 160 s | ✅ | "Ragged Held Chord" (10/11), bajada 10,5 dB para quedar a -25 LUFS como el resto de la música |
+| Game Over | `mus_derrota_loop` | 178 s | ✅ | "Snarl in the Cellar" (10/11), bajada 13,2 dB (-25 LUFS) |
+| Final | `mus_victoria_loop` | 160 s | ✅ | La misma de nivel completo: del nivel completo al final y a los créditos sigue sin cortarse |
+| Créditos | `mus_victoria_loop` | 160 s | ✅ | La misma |
 | Tutorial | (el tema del nivel que use) | — | 🟡 | Podría tener un tema propio, más tranquilo |
 
 Sin usar en el proyecto: `Pinky Swings.mp3` (30 s, el mismo tema que `mus_cinematic_loop`), `mus_level1_tension` (16 s, reemplazada por

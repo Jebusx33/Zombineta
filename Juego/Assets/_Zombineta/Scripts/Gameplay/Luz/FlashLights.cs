@@ -70,13 +70,30 @@ namespace Zombineta.Luz
             var atMoto = new Vector2(run.ToWorldX(x), run.LaneToWorldY(state.LaneVisual));
 
             if ((events & RunEvent.Shot) != 0)
-                director.Trigger(FlashKind.Shot, atMoto);
+                director.Trigger(FlashKind.Shot, BocaDelArma(state.Phase == RunPhase.Pelea) ?? atMoto);
             if ((events & RunEvent.Crashed) != 0)
                 director.Trigger(FlashKind.Crash, atMoto);
             if ((events & RunEvent.RanOver) != 0)
                 director.Trigger(FlashKind.RanOver, HordeEventPosition(HordeEventKind.Death, DeathCause.RunOver, atMoto));
             if ((events & RunEvent.Explosion) != 0)
                 director.Trigger(FlashKind.Explosion, HordeEventPosition(HordeEventKind.Explosion, DeathCause.None, atMoto));
+        }
+
+        Zombineta.Player.ScooterView moto;
+        Zombineta.Auxilio.VistaDelAuxilio aPie;
+        bool vistasBuscadas;
+
+        /// <summary>El destello del tiro sale de la boca del arma del dibujo, si la vista la sabe.</summary>
+        Vector2? BocaDelArma(bool aPieAhora)
+        {
+            if (!vistasBuscadas)
+            {
+                moto = FindAnyObjectByType<Zombineta.Player.ScooterView>();
+                aPie = FindAnyObjectByType<Zombineta.Auxilio.VistaDelAuxilio>();
+                vistasBuscadas = true;
+            }
+            Vector3? boca = aPieAhora ? (aPie != null ? aPie.BocaDelArma : null) : (moto != null ? moto.BocaDelArma : null);
+            return boca.HasValue ? (Vector2?)(Vector2)boca.Value : null;
         }
 
         /// <summary>

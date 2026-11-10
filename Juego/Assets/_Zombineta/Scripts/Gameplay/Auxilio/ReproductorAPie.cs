@@ -7,7 +7,7 @@ namespace Zombineta.Auxilio
     /// <summary>
     /// Elige que animacion de la protagonista a pie se ve y por que cuadro va. Derribada le gana a
     /// todo; un golpe, un disparo o el dolor se terminan de ver y despues vuelve a quieta o
-    /// caminando. Disparar con el arma ya apuntada sigue desde el cuadro del tiro, sin sacarla otra vez.
+    /// caminando. El disparo arranca en el cuadro en que el brazo apunta: el tiro sale al apretar.
     /// </summary>
     public sealed class ReproductorAPie
     {
@@ -32,15 +32,8 @@ namespace Zombineta.Auxilio
         {
             if (Actual == PoseAPie.Derribada)
                 return;
-            if (Actual != PoseAPie.Dispara)
-            {
-                Empezar(PoseAPie.Dispara);
-                return;
-            }
-            // Ya esta disparando: si el brazo apunta, vuelve al cuadro del tiro; si todavia saca el arma, sigue.
-            float apunta = animaciones.disparoRepiteDesde / animaciones.dispara.cuadrosPorSegundo;
-            if (tiempo >= apunta)
-                tiempo = apunta;
+            Empezar(PoseAPie.Dispara);
+            tiempo = animaciones.cuadroDelTiro / animaciones.dispara.cuadrosPorSegundo;
         }
 
         public void Lastimar()

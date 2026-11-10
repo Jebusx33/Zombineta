@@ -74,4 +74,5 @@ MonoBehaviour:
     - {fileID: 21300000, guid: c3145b37f7e9ac042992aeffb9204c9d, type: 3}
     cuadrosPorSegundo: 16
     enBucle: 0
-  disparoRepiteDesde: 3
+  cuadroDelTiro: 3
+  bocaDelArma: {x: 449, y: 95}

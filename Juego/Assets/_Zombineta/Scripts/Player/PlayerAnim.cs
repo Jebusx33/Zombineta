@@ -47,6 +47,39 @@ namespace Zombineta.Player
             Finished = false;
         }
 
+        /// <summary>
+        /// Arranca el clip ya en el cuadro 'cuadro' (desde 0). El disparo empieza en el cuadro en que el
+        /// brazo apunta: el tiro, el fogonazo y el sonido salen en el mismo instante en que se aprieta.
+        /// </summary>
+        public void Play(PlayerClip clip, int cuadro)
+        {
+            Play(clip);
+            float fps = FpsDe(clip);
+            int frames = FramesDe(clip);
+            if (fps <= 0f || frames <= 0)
+                return;
+            Frame = Mathf.Clamp(cuadro, 0, frames - 1);
+            time = Frame / fps;
+        }
+
+        float FpsDe(PlayerClip clip) => clip switch
+        {
+            PlayerClip.Down => downFps,
+            PlayerClip.Up => upFps,
+            PlayerClip.Shoot => shootFps,
+            PlayerClip.Crash => crashFps,
+            _ => idleFps,
+        };
+
+        int FramesDe(PlayerClip clip) => clip switch
+        {
+            PlayerClip.Down => downFrames,
+            PlayerClip.Up => upFrames,
+            PlayerClip.Shoot => shootFrames,
+            PlayerClip.Crash => crashFrames,
+            _ => idleFrames,
+        };
+
         public void Tick(float dt)
         {
             time += dt;

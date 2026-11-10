@@ -40,9 +40,19 @@ namespace Zombineta.Auxilio
         public ClipAPie derribada = new ClipAPie { cuadrosPorSegundo = 10f };
         [Tooltip("El disparo a pie: saca el arma y tira con el brazo estirado.")]
         public ClipAPie dispara = new ClipAPie { cuadrosPorSegundo = 16f };
-        [Tooltip("Cuadro (desde 0) en que el brazo ya apunta. Si vuelve a disparar con el arma afuera, " +
-                 "sigue desde aca en vez de sacarla otra vez.")]
-        [Min(0)] public int disparoRepiteDesde = 3;
+        [Tooltip("Cuadro (desde 0) en que el brazo ya apunta. El disparo arranca aca: el tiro sale al " +
+                 "apretar, asi que no hay tiempo de mostrar como saca el arma.")]
+        [UnityEngine.Serialization.FormerlySerializedAs("disparoRepiteDesde")]
+        [Min(0)] public int cuadroDelTiro = 3;
+        [Tooltip("Boca del arma en ese cuadro, en pixeles desde arriba a la izquierda del dibujo (mirando " +
+                 "a la derecha). De ahi salen el fogonazo y la traza.")]
+        public Vector2 bocaDelArma = new Vector2(449f, 95f);
+
+        /// <summary>El cuadro en que apunta, o null si no hay dibujos de disparo.</summary>
+        public Sprite CuadroDelTiro =>
+            dispara != null && dispara.cuadros != null && dispara.cuadros.Length > 0
+                ? dispara.cuadros[Mathf.Clamp(cuadroDelTiro, 0, dispara.cuadros.Length - 1)]
+                : null;
 
         public ClipAPie Clip(PoseAPie pose)
         {
