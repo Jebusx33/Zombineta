@@ -339,8 +339,8 @@ Ya resuelto el 06/11: el motor, los ambientes, el impacto de bala, el apagón y 
 | Cinemática | `mus_cinematic_loop` | 30 s | ✅ | |
 | Nivel 1 — tema | `mus_level1_loop` | 150 s | ✅ | |
 | Nivel 1 — tensión | `zombie-tribe-loop` | 8,3 s | ✅ | Loop libre, tope 0,3; sube con la horda |
-| Nivel 2 — tema | `mus_level2_loop` | 16 s | 🟡 | Placeholder |
-| Nivel 2 — tensión | `mus_level2_tension` | 16 s | 🟡 | Placeholder. Tiene que medir lo mismo que el tema (o ir como loop libre) |
+| Nivel 2 — tema | `mus_level2_loop` | 0,39 s | ✅ | Es `autopista_tension` en loop: un zumbido corto que da tensión. Se carga sin streaming para que el loop no corte |
+| Nivel 2 — tensión | `mus_level2_tension` | 16 s | 🟡 | Placeholder. Va como loop libre: el tema dura 0,39 s |
 | Nivel completo | `mus_levelcomplete_loop` | 16 s | 🟡 | Placeholder |
 | Game Over | `mus_gameover_loop` | 16 s | 🟡 | Placeholder |
 | Final | `mus_ending_loop` | 16 s | 🟡 | Placeholder |

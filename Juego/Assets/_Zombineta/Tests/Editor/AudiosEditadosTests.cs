@@ -66,6 +66,18 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
+        public void LaMusicaDeLaAutopistaEsLaTensionCorta()
+        {
+            var nivel = AssetDatabase.LoadAssetAtPath<AudioDeNivel>(Ajustes + "Nivel02.asset");
+            Assert.AreEqual("mus_level2_loop", nivel.musica.name);
+            // autopista_tension: 0,39 s en loop. Sin streaming, para que el loop no corte en cada vuelta.
+            Assert.Less(nivel.musica.length, 0.5f);
+            Assert.AreEqual(UnityEngine.AudioClipLoadType.DecompressOnLoad, nivel.musica.loadType);
+            // La capa de tension dura otra cosa: va como loop propio, sin aviso de desfasaje.
+            Assert.IsTrue(nivel.tensionLibre);
+        }
+
+        [Test]
         public void ElSonidoDeNivelTieneLosLoops()
         {
             var prefab = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/_Zombineta/Art/Audio/SonidoDelNivel.prefab");
