@@ -133,6 +133,11 @@ namespace Zombineta.Tutorial
                 case CondicionPaso.LlegarMeta:
                     return e.meta;
 
+                case CondicionPaso.Granada:
+                    if ((e.eventos & RunEvent.GranadaLanzada) != 0)
+                        contador++;
+                    return contador >= Veces(paso.cantidad);
+
                 default:
                     return false;
             }

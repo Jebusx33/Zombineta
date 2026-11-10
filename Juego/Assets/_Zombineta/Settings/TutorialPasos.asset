@@ -18,39 +18,29 @@ MonoBehaviour:
     cantidad: 1.5
     resaltar: 0
     hordaSuelta: 0
-  - texto: "Manten\xE9 {Reverse} para frenar."
-    condicion: 1
-    cantidad: 1
-    resaltar: 0
-    hordaSuelta: 0
   - texto: "{LaneUp} / {LaneDown} cambian de carril. Prob\xE1 hacia los dos lados."
     condicion: 2
     cantidad: 0
     resaltar: 0
     hordaSuelta: 0
-  - texto: "Pas\xE1 por una rampa. En el aire, {Turbo} / {Reverse} inclinan la moto."
-    condicion: 3
-    cantidad: 1
-    resaltar: 0
-    hordaSuelta: 0
-  - texto: "Agarr\xE1 un bid\xF3n: es tu nafta."
+  - texto: "Sin nafta te baj\xE1s a pelear. Agarr\xE1 el bid\xF3n."
     condicion: 4
     cantidad: 1
     resaltar: 1
     hordaSuelta: 0
-  - texto: "La bater\xEDa alimenta el faro. Agarr\xE1 una."
+  - texto: "Pas\xE1 por la rampa. En el aire, {Turbo} / {Reverse} inclinan la moto."
+    condicion: 3
+    cantidad: 1
+    resaltar: 0
+    hordaSuelta: 0
+  - texto: "La bater\xEDa alimenta el faro. Agarrala."
     condicion: 5
     cantidad: 1
     resaltar: 2
     hordaSuelta: 0
-  - texto: "Agarr\xE1 balas para defenderte."
-    condicion: 6
-    cantidad: 1
-    resaltar: 3
-    hordaSuelta: 0
-  - texto: "{Headlight} prende el faro. Gasta bater\xEDa: dejalo prendido un rato."
+  - texto: "{Headlight} prende el faro: en los apagones es tu \xFAnica luz."
     condicion: 7
-    cantidad: 2
+    cantidad: 1.5
     resaltar: 2
     hordaSuelta: 0
   - texto: "{Fire} dispara hacia atr\xE1s. Pegale a la horda."
@@ -58,7 +48,12 @@ MonoBehaviour:
     cantidad: 1
     resaltar: 3
     hordaSuelta: 0
-  - texto: "\xA1La horda! Disparar la empuja, el faro la frena y {Granada} lanza una granada hacia atr\xE1s. Lleg\xE1 al refugio."
+  - texto: "{Granada} tira una granada hacia atr\xE1s."
+    condicion: 10
+    cantidad: 1
+    resaltar: 0
+    hordaSuelta: 0
+  - texto: "\xA1Escap\xE1 de la horda! Lleg\xE1 al refugio."
     condicion: 9
     cantidad: 0
     resaltar: 4

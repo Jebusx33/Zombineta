@@ -27,6 +27,7 @@ namespace Zombineta.Juego.Tests
         const string ScenePath = "Assets/_Zombineta/Scenes/Tutorial.unity";
         const float Dt = 1f / 60f;
         const int MaxCuadros = 60 * 400;
+        const int CantidadDePasos = 9;
 
         Scene escena;
         bool yaEstabaCargada;
@@ -71,12 +72,14 @@ namespace Zombineta.Juego.Tests
             public RunSimulation sim;
             public LevelRuntime nivel;
             public TutorialSesion sesion;
+            public List<Paso> pasos;
             public readonly List<int> pasosCumplidos = new List<int>();
             public readonly List<string> avisos = new List<string>();
-            public float bateriaAlCumplirPaso6 = -1f;
-            public float gapAlCumplirPaso9 = -1f;
+            public float gapAlDisparar = -1f;
             public bool terminado;
             public float xAlTerminar;
+            public float metaAlTerminar;
+            public float xAlEmpezarElFinal = -1f;
             public int cuadros;
             public int lostEmitidos;
             public int cuadrosSeguidosSinNafta, maxSinNafta;
@@ -103,34 +106,37 @@ namespace Zombineta.Juego.Tests
 
             var pasos = (TutorialPasos)Campo(director, "pasos");
             Assert.IsNotNull(pasos);
-            Assert.AreEqual(10, pasos.pasos.Count);
+            Assert.AreEqual(CantidadDePasos, pasos.pasos.Count);
 
-            var c = new Corrida();
+            var c = new Corrida { pasos = pasos.pasos };
             c.sim = new RunSimulation(config);
             c.nivel = new LevelRuntime(definicion);
             c.sim.Barrels = c.nivel;
             c.sesion = new TutorialSesion(c.sim, c.nivel, pasos.pasos, director.Ajustes);
             c.sesion.PasoCambiado += () =>
             {
-                c.pasosCumplidos.Add(c.sesion.Progreso.Indice - 1);
-                if (c.sesion.Progreso.Indice == 6)
-                    c.bateriaAlCumplirPaso6 = c.sim.State.Battery;
-                if (c.sesion.Progreso.Indice == 9)
-                    c.gapAlCumplirPaso9 = c.sim.State.Gap; // el cuadro del tiro que pego
+                int cumplido = c.sesion.Progreso.Indice - 1;
+                c.pasosCumplidos.Add(cumplido);
+                if (c.pasos[cumplido].condicion == CondicionPaso.DisparoAcertado)
+                    c.gapAlDisparar = c.sim.State.Gap; // el cuadro del tiro que pego
+                if (c.sesion.EsUltimoPaso)
+                    c.xAlEmpezarElFinal = c.sim.State.PlayerX;
             };
             c.sesion.Terminado += () =>
             {
                 c.pasosCumplidos.Add(c.sesion.Progreso.Indice - 1);
                 c.terminado = true;
                 c.xAlTerminar = c.sim.State.PlayerX;
+                c.metaAlTerminar = c.sim.Meta;
             };
             c.sesion.Aviso += t => c.avisos.Add(t);
             return c;
         }
 
         /// <summary>
-        /// Un jugador que lee el cartel y hace lo que pide. Mientras "demora" sea mayor a 0
-        /// segundos no toca nada (un lector lento): la moto sigue sola.
+        /// Un jugador que lee el cartel y hace lo que pide: va al carril del objeto que trae el
+        /// paso, dispara, tira la granada. Mientras "demora" sea mayor a 0 segundos no toca nada
+        /// (un lector lento): la moto sigue sola.
         /// </summary>
         sealed class Jugador
         {
@@ -139,10 +145,16 @@ namespace Zombineta.Juego.Tests
             /// <summary>Segundos que va de reversa al empezar el paso final, para que la horda lo alcance.</summary>
             public float reversaEnElFinal;
 
+            /// <summary>
+            /// Cuantos objetos deja pasar de largo (para ver que aparece otro). Lo que se agarra igual le
+            /// llega por el iman de los pickups: lo que deja pasar es la rampa, esquivandola.
+            /// </summary>
+            public int objetosQueDeja;
+
             int cuadrosDesdeTiro;
             int cuadrosDesdeCarril;
 
-            public PlayerIntent Decidir(TutorialSesion sesion, RunState s)
+            public PlayerIntent Decidir(TutorialSesion sesion, LevelRuntime nivel, RunState s)
             {
                 var intent = PlayerIntent.Idle;
                 if (demora > 0f)
@@ -162,9 +174,6 @@ namespace Zombineta.Juego.Tests
                     case CondicionPaso.TurboSostenido:
                         intent.Mode = DriveMode.Turbo;
                         break;
-                    case CondicionPaso.ReversaSostenida:
-                        intent.Mode = DriveMode.Reverse;
-                        break;
                     case CondicionPaso.CambioCarrilAmbos:
                         if (cuadrosDesdeCarril >= 15)
                         {
@@ -179,7 +188,13 @@ namespace Zombineta.Juego.Tests
                         break;
                     case CondicionPaso.DisparoAcertado:
                         ApagarFaro(ref intent, s);
-                        Disparar(ref intent);
+                        if (Listo())
+                            intent.Fire = true;
+                        break;
+                    case CondicionPaso.Granada:
+                        ApagarFaro(ref intent, s);
+                        if (Listo())
+                            intent.Granada = true;
                         break;
                     case CondicionPaso.LlegarMeta:
                         if (reversaEnElFinal > 0f)
@@ -190,28 +205,46 @@ namespace Zombineta.Juego.Tests
                             break;
                         }
                         intent.Mode = DriveMode.Turbo;
-                        if (s.Gap < 25f)
-                        {
-                            Disparar(ref intent);
-                            if (!s.HeadlightOn)
-                                intent.ToggleHeadlight = true;
-                        }
+                        if (s.Gap < 25f && Listo())
+                            intent.Fire = true;
                         break;
                     default:
-                        // Rampa y pickups: seguir andando. Todo el recorrido del tutorial tiene
-                        // sus items en los tres carriles.
+                        // Rampa y pickups: ir al carril del objeto que trajo el paso.
                         ApagarFaro(ref intent, s);
+                        IrAlObjeto(ref intent, sesion, nivel, s);
                         break;
                 }
                 return intent;
             }
 
-            void Disparar(ref PlayerIntent intent)
+            void IrAlObjeto(ref PlayerIntent intent, TutorialSesion sesion, LevelRuntime nivel, RunState s)
+            {
+                if (sesion.Colocado < 0 || s.Airborne)
+                    return;
+                int carril = nivel.Items[sesion.Colocado].Entry.lane;
+                if (sesion.Repuestos < objetosQueDeja)
+                {
+                    // La esquiva: se va a otro carril.
+                    if (carril == s.Lane && cuadrosDesdeCarril >= 15)
+                    {
+                        intent.LaneDelta = s.Lane < 2 ? 1 : -1;
+                        cuadrosDesdeCarril = 0;
+                    }
+                    return;
+                }
+                if (carril != s.Lane && cuadrosDesdeCarril >= 15)
+                {
+                    intent.LaneDelta = carril > s.Lane ? 1 : -1;
+                    cuadrosDesdeCarril = 0;
+                }
+            }
+
+            bool Listo()
             {
                 if (cuadrosDesdeTiro < 20)
-                    return;
-                intent.Fire = true;
+                    return false;
                 cuadrosDesdeTiro = 0;
+                return true;
             }
 
             static void ApagarFaro(ref PlayerIntent intent, RunState s)
@@ -221,12 +254,12 @@ namespace Zombineta.Juego.Tests
             }
         }
 
-        static void Jugar(Corrida c, Jugador jugador)
+        static void Jugar(Corrida c, Jugador jugador, int maxCuadros = MaxCuadros)
         {
             var s = c.sim.State;
-            for (c.cuadros = 0; c.cuadros < MaxCuadros && !c.terminado; c.cuadros++)
+            for (c.cuadros = 0; c.cuadros < maxCuadros && !c.terminado; c.cuadros++)
             {
-                var intent = jugador.Decidir(c.sesion, s);
+                var intent = jugador.Decidir(c.sesion, c.nivel, s);
                 float antes = s.PlayerX;
 
                 // El orden del juego: TutorialDirector.Update (-150), RunController.Update
@@ -264,69 +297,80 @@ namespace Zombineta.Juego.Tests
         {
             Assert.IsTrue(c.terminado, "el tutorial termino (" + c.sesion.Progreso.Indice + " pasos, x=" +
                                        c.sim.State.PlayerX + ", " + c.cuadros + " cuadros)");
-            CollectionAssert.AreEqual(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, c.pasosCumplidos, "los 10 pasos, en orden");
+            var todos = new List<int>();
+            for (int i = 0; i < CantidadDePasos; i++)
+                todos.Add(i);
+            CollectionAssert.AreEqual(todos, c.pasosCumplidos, "todos los pasos, en orden");
             Assert.AreEqual(RunPhase.Won, c.sim.State.Phase, "termina ganando, en el refugio");
-            Assert.GreaterOrEqual(c.xAlTerminar, c.sim.Config.goalDistance);
+            Assert.GreaterOrEqual(c.xAlTerminar, c.metaAlTerminar);
             Assert.AreEqual(0, c.lostEmitidos, "la simulacion nunca llego a Lost (ni transitorio)");
             Assert.LessOrEqual(c.maxSinNafta, 1, "la nafta nunca queda en 0 (se recarga el cuadro siguiente)");
             Assert.LessOrEqual(c.maxSinBateria, 1, "la bateria nunca queda en 0");
             Assert.LessOrEqual(c.maxSinBalas, 1, "en los pasos de disparo la municion nunca queda en 0");
+            Assert.LessOrEqual(c.retrocesoMaximo, 1f, "la moto nunca salta hacia atras");
         }
 
         [Test]
-        public void UnJugadorQueHaceLoQueDiceElCartel_CompletaLosDiezPasosYLlegaAlRefugio()
+        public void UnJugadorQueHaceLoQueDiceElCartel_CompletaTodosLosPasosYLlegaAlRefugio()
         {
             var c = Armar();
             Jugar(c, new Jugador());
 
             VerificarCompleto(c);
 
-            // C1: la bateria arranca llena y recien el faro la gasta; el paso 6 se cumple igual.
-            Assert.AreEqual(c.sim.Config.batteryMax, c.bateriaAlCumplirPaso6, 1e-3f,
-                "el paso 6 se cumplio agarrando una bateria con la bateria al maximo");
+            // En el paso de disparo la horda esta cerca, al alcance del tiro hacia atras.
+            Assert.Greater(c.gapAlDisparar, 0f);
+            Assert.Less(c.gapAlDisparar, c.sim.Config.shotRangeMeters * 0.5f);
 
-            // C2: en el paso de disparo la horda esta cerca, al alcance del tiro hacia atras.
-            Assert.Greater(c.gapAlCumplirPaso9, 0f);
-            Assert.Less(c.gapAlCumplirPaso9, c.sim.Config.shotRangeMeters * 0.5f);
+            // El refugio aparece recien en el paso final, a unos metros.
+            Assert.Greater(c.xAlEmpezarElFinal, 0f);
+            Assert.AreEqual(c.xAlEmpezarElFinal + c.sesion.Ajustes.metrosHastaRefugio, c.metaAlTerminar, 1e-3f);
+
+            // Corto: se juega en menos de un minuto y medio.
+            Assert.Less(c.cuadros * Dt, 90f, "duracion del tutorial jugado como se pide");
+            CollectionAssert.DoesNotContain(c.avisos, TutorialSesion.OtraVezTexto, "nunca se paso nada de largo");
         }
 
         [Test]
-        public void UnJugadorLentoNuncaVuelveAtrasYIgualTermina()
+        public void SiDejaPasarUnObjeto_ApareceOtroAdelanteYIgualTermina()
         {
             var c = Armar();
-            // 12 s sin tocar nada con el primer cartel: la moto anda sola y se pasa de largo las
-            // rampas, los bidones y las baterias. Nada la hace volver: lo que necesita aparece
-            // adelante, y lo que ya no entra antes del refugio se deja.
+            Jugar(c, new Jugador { objetosQueDeja = 1 });
+
+            VerificarCompleto(c);
+            Assert.GreaterOrEqual(c.sesion.Repuestos, 1, "repuso adelante lo que se paso de largo");
+            CollectionAssert.Contains(c.avisos, TutorialSesion.OtraVezTexto);
+        }
+
+        [Test]
+        public void UnJugadorLentoIgualTermina()
+        {
+            var c = Armar();
+            // 12 s sin tocar nada con el primer cartel: la moto anda sola. El paso espera.
             Jugar(c, new Jugador { demora = 12f });
 
-            Assert.IsTrue(c.terminado, "el tutorial termino");
-            Assert.AreEqual(RunPhase.Won, c.sim.State.Phase);
-            Assert.AreEqual(0, c.lostEmitidos);
-            Assert.AreEqual(0, c.sesion.Rebobinados, "nunca rebobina");
-            Assert.GreaterOrEqual(c.sesion.Repuestos, 1, "repuso adelante lo que se paso de largo");
-            CollectionAssert.Contains(c.avisos, TutorialSesion.RepuestoTexto);
-            CollectionAssert.DoesNotContain(c.avisos, TutorialSesion.RebobinadoTexto);
-            Assert.LessOrEqual(c.retrocesoMaximo, 1f, "la moto nunca salta hacia atras");
+            VerificarCompleto(c);
         }
 
         [Test]
-        public void UnJugadorQueNoHaceNada_LlegaIgualAlRefugio()
+        public void UnJugadorQueNoHaceNada_NoPierdeYElPasoLoEspera()
         {
             var c = Armar();
-            Jugar(c, new Jugador { demora = 60f });
+            Jugar(c, new Jugador { demora = 1000f }, 60 * 60);
 
-            Assert.IsTrue(c.terminado);
-            Assert.AreEqual(RunPhase.Won, c.sim.State.Phase);
-            Assert.AreEqual(0, c.sesion.Rebobinados);
-            Assert.LessOrEqual(c.retrocesoMaximo, 1f);
+            Assert.IsFalse(c.terminado);
+            Assert.AreEqual(0, c.sesion.Progreso.Indice, "sigue esperando el primer paso");
+            Assert.AreEqual(RunPhase.Running, c.sim.State.Phase);
+            Assert.AreEqual(0, c.lostEmitidos);
+            Assert.Less(c.sim.State.PlayerX, c.sim.Meta, "el refugio no aparece sin haber hecho los pasos");
         }
 
         [Test]
         public void SiLaHordaLoAlcanzaEnElFinal_SePerdonaSinLlegarALostYIgualCompleta()
         {
             var c = Armar();
-            // En el paso final va de reversa unos segundos: la horda (que arranca a 15 m, donde
-            // quedo en el paso de disparo) lo alcanza.
+            // En el paso final va de reversa unos segundos: la horda (que arranca a 12 m, donde
+            // quedo en el paso de la granada) lo alcanza.
             Jugar(c, new Jugador { reversaEnElFinal = 6f });
 
             VerificarCompleto(c);
@@ -335,15 +379,28 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
-        public void ElPasoDeDisparoPideDispararleALaHorda()
+        public void LosPasosEnsenanLoQueElJuegoPide()
         {
             var director = Buscar<TutorialDirector>();
-            var pasos = (TutorialPasos)Campo(director, "pasos");
-            var paso9 = pasos.pasos[8];
-            Assert.AreEqual(CondicionPaso.DisparoAcertado, paso9.condicion);
-            Assert.AreEqual("{Fire} dispara hacia atrás. Pegale a la horda.", paso9.texto);
-            Assert.AreEqual(BarraHud.Municion, paso9.resaltar);
-            Assert.AreEqual(1f, paso9.cantidad, 1e-4f);
+            var pasos = ((TutorialPasos)Campo(director, "pasos")).pasos;
+            var condiciones = new List<CondicionPaso>();
+            foreach (var p in pasos)
+                condiciones.Add(p.condicion);
+
+            CollectionAssert.AreEqual(new[]
+            {
+                CondicionPaso.TurboSostenido, CondicionPaso.CambioCarrilAmbos, CondicionPaso.PickupNafta,
+                CondicionPaso.Salto, CondicionPaso.PickupBateria, CondicionPaso.FaroSostenido,
+                CondicionPaso.DisparoAcertado, CondicionPaso.Granada, CondicionPaso.LlegarMeta,
+            }, condiciones);
+
+            // El bidon explica lo central del juego: sin nafta hay que pelear a pie.
+            StringAssert.Contains("pelear", pasos[2].texto);
+            Assert.AreEqual(BarraHud.Nafta, pasos[2].resaltar);
+            Assert.AreEqual(BarraHud.Municion, pasos[6].resaltar);
+            // Solo el ultimo suelta la horda.
+            for (int i = 0; i < pasos.Count; i++)
+                Assert.AreEqual(i == pasos.Count - 1, pasos[i].hordaSuelta, "paso " + i);
         }
     }
 }

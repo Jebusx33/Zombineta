@@ -61,7 +61,7 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
-        public void PickupDeBateriaConLaBateriaAlMaximo_CompletaElPaso()
+        public void ElPasoDeLaBateriaLaDejaBajaYAgarrarlaLoCumple()
         {
             var cfg = Config();
             var sim = new RunSimulation(cfg);
@@ -70,12 +70,12 @@ namespace Zombineta.Juego.Tests
             var sesion = new TutorialSesion(sim, nivel, new List<Paso> { P(CondicionPaso.PickupBateria), P(CondicionPaso.LlegarMeta, 0f, true) },
                 AjustesTutorial.PorDefecto);
 
-            Assert.AreEqual(cfg.batteryMax, sim.State.Battery, "arranca llena");
+            Assert.AreEqual(cfg.batteryMax * AjustesTutorial.PorDefecto.recursoParaJuntar, sim.State.Battery, 1e-3f,
+                "arranca baja: se ve en el HUD");
             for (int i = 0; i < 300 && sesion.Progreso.Indice == 0; i++)
                 Cuadro(sesion, sim, nivel, PlayerIntent.Idle);
 
-            Assert.AreEqual(1, sesion.Progreso.Indice, "agarrar la bateria cuenta aunque el valor no suba");
-            Assert.AreEqual(cfg.batteryMax, sim.State.Battery, "la bateria sigue al maximo");
+            Assert.AreEqual(1, sesion.Progreso.Indice);
             Assert.IsTrue(nivel.Items[0].Consumed);
         }
 
@@ -83,9 +83,14 @@ namespace Zombineta.Juego.Tests
         public void PickupDeOtroTipoNoCompletaElPasoDeBateria()
         {
             var sim = new RunSimulation(Config());
-            var nivel = Nivel(new LevelEntry(20f, 1, LevelEntryKind.Fuel));
+            // La bateria del paso va al carril de al lado; un bidon en el de la moto.
+            var nivel = Nivel(new LevelEntry(20f, 1, LevelEntryKind.Fuel), new LevelEntry(20f, 2, LevelEntryKind.Battery));
+            // La bateria del paso, bien lejos: el iman de los pickups la traeria desde el carril de al lado.
+            var ajustes = AjustesTutorial.PorDefecto;
+            ajustes.adelanteObjeto = 500f;
             var sesion = new TutorialSesion(sim, nivel, new List<Paso> { P(CondicionPaso.PickupBateria), P(CondicionPaso.LlegarMeta, 0f, true) },
-                AjustesTutorial.PorDefecto);
+                ajustes);
+            nivel.Mover(0, sim.State.PlayerX + 10f);
 
             for (int i = 0; i < 180; i++)
                 Cuadro(sesion, sim, nivel, PlayerIntent.Idle);
@@ -117,7 +122,7 @@ namespace Zombineta.Juego.Tests
             for (int i = 0; i < 120; i++)
                 Cuadro(sesion, sim, nivel, PlayerIntent.Idle);
             sesion.AntesDelTick(Dt);
-            Assert.AreEqual(60f, sim.State.PlayerX - sim.State.HordeX, 1e-3f);
+            Assert.AreEqual(AjustesTutorial.PorDefecto.distanciaHordaTenida, sim.State.PlayerX - sim.State.HordeX, 1e-3f);
             for (int i = 0; i < generaciones.Length; i++)
             {
                 Assert.AreEqual(generaciones[i], sim.Horde.Units[i].Generation, "no se regenera cada cuadro");
@@ -165,12 +170,13 @@ namespace Zombineta.Juego.Tests
             var cfg = Config();
             var sim = new RunSimulation(cfg);
             var nivel = Nivel();
+            // Ya en el paso final, con el refugio adelante (el paso lo pone a unos metros de la moto).
+            sim.State.PlayerX = 300f;
             var sesion = new TutorialSesion(sim, nivel, new List<Paso> { P(CondicionPaso.LlegarMeta, 0f, true) },
                 AjustesTutorial.PorDefecto);
             string aviso = null;
             sesion.Aviso += t => aviso = t;
 
-            sim.State.PlayerX = 300f;
             sim.Horde.ShiftTo(299.5f);
             sim.State.HordeX = sim.Horde.FrontX;
 
@@ -218,7 +224,6 @@ namespace Zombineta.Juego.Tests
             Assert.IsTrue(sesion.EstaTerminado, "la llegada cuenta como la del ultimo paso");
             Assert.AreEqual(RunPhase.Won, sim.State.Phase);
             Assert.AreEqual(cfg.goalDistance, sim.State.PlayerX, 1e-3f, "nunca vuelve atras");
-            Assert.AreEqual(0, sesion.Rebobinados);
         }
 
         [Test]
@@ -301,9 +306,14 @@ namespace Zombineta.Juego.Tests
             var sesion = new TutorialSesion(sim, nivel,
                 new List<Paso> { P(CondicionPaso.Salto), P(CondicionPaso.LlegarMeta, 0f, true) },
                 AjustesTutorial.PorDefecto);
+            string aviso = null;
+            sesion.Aviso += t => aviso = t;
+            var rampa = System.Array.Find(nivel.Items, i => i.Entry.kind == LevelEntryKind.Ramp);
+            float adelante = AjustesTutorial.PorDefecto.adelanteObjeto;
+            Assert.AreEqual(sim.State.PlayerX + adelante, rampa.Entry.distance, 1e-3f, "el paso trae su rampa");
 
-            // Pasado el margen de la rampa, pero volando (como si hubiera saltado de otra cosa).
-            sim.State.PlayerX = 90f + TutorialRewind.MargenRampa + 5f;
+            // Pasada la rampa, pero volando (como si hubiera saltado de otra cosa).
+            sim.State.PlayerX = rampa.Entry.distance + 10f;
             sim.State.Airborne = true;
             sim.State.Height = 2f;
             sesion.DespuesDelTick(RunEvent.None, Dt);
@@ -314,12 +324,98 @@ namespace Zombineta.Juego.Tests
             float x = sim.State.PlayerX;
             sesion.DespuesDelTick(RunEvent.None, Dt);
             Assert.AreEqual(1, sesion.Repuestos);
-            Assert.AreEqual(0, sesion.Rebobinados);
+            Assert.AreEqual(TutorialSesion.OtraVezTexto, aviso);
             Assert.AreEqual(x, sim.State.PlayerX, 1e-3f, "la moto no se mueve: la rampa viene a ella");
-
-            var rampa = System.Array.Find(nivel.Items, i => i.Entry.kind == LevelEntryKind.Ramp);
-            Assert.AreEqual(x + TutorialSesion.AdelanteRepuesto, rampa.Entry.distance, 1e-3f);
+            Assert.AreEqual(x + adelante, rampa.Entry.distance, 1e-3f);
             Assert.IsFalse(rampa.Consumed);
+        }
+
+        [Test]
+        public void CadaPasoTraeSuObjeto_LaRampaEnElCarrilDeLaMotoYLoQueSeAgarraEnElDeAlLado()
+        {
+            var sim = new RunSimulation(Config());
+            var nivel = Nivel(
+                new LevelEntry(90f, 0, LevelEntryKind.Ramp), new LevelEntry(90f, 1, LevelEntryKind.Ramp),
+                new LevelEntry(120f, 1, LevelEntryKind.Fuel), new LevelEntry(120f, 2, LevelEntryKind.Fuel));
+            var sesion = new TutorialSesion(sim, nivel,
+                new List<Paso> { P(CondicionPaso.Salto), P(CondicionPaso.PickupNafta), P(CondicionPaso.LlegarMeta, 0f, true) },
+                AjustesTutorial.PorDefecto);
+
+            Assert.AreEqual(1, sim.State.Lane, "la moto arranca en el medio");
+            var rampa = nivel.Items[sesion.Colocado].Entry;
+            Assert.AreEqual(LevelEntryKind.Ramp, rampa.kind);
+            Assert.AreEqual(1, rampa.lane, "la rampa, en su carril");
+            foreach (var i in nivel.Items)
+                if (i.Entry.kind == LevelEntryKind.Fuel)
+                    Assert.Greater(i.Entry.distance, 1000f, "lo de los otros pasos queda guardado lejos");
+
+            // Salta: el paso siguiente trae el bidon al carril de al lado.
+            sesion.DespuesDelTick(RunEvent.Launched | RunEvent.Landed, Dt);
+            Assert.AreEqual(1, sesion.Progreso.Indice);
+            var bidon = nivel.Items[sesion.Colocado].Entry;
+            Assert.AreEqual(LevelEntryKind.Fuel, bidon.kind);
+            Assert.AreEqual(2, bidon.lane, "el bidon, en el carril de al lado: hay que ir a buscarlo");
+            Assert.AreEqual(sim.State.PlayerX + AjustesTutorial.PorDefecto.adelanteObjeto, bidon.distance, 1e-3f);
+        }
+
+        [Test]
+        public void QuienSeSuscribeDespuesSeEnteraDeDondeQuedoCadaObjeto()
+        {
+            var sim = new RunSimulation(Config());
+            var nivel = Nivel(new LevelEntry(55f, 0, LevelEntryKind.Ramp), new LevelEntry(100f, 1, LevelEntryKind.Fuel));
+            var sesion = new TutorialSesion(sim, nivel,
+                new List<Paso> { P(CondicionPaso.PickupNafta), P(CondicionPaso.LlegarMeta, 0f, true) },
+                AjustesTutorial.PorDefecto);
+
+            // La escena se suscribe despues de construir la sesion (TutorialDirector.Start).
+            var recibidos = new Dictionary<int, float>();
+            sesion.ItemMovido += (i, metros) => recibidos[i] = metros;
+            sesion.AvisarPosiciones();
+
+            Assert.AreEqual(nivel.Items.Length, recibidos.Count, "cada objeto");
+            for (int i = 0; i < nivel.Items.Length; i++)
+                Assert.AreEqual(nivel.Items[i].Entry.distance, recibidos[i], 1e-3f);
+            Assert.Greater(recibidos[0], 1000f, "la rampa de la escena, guardada lejos (no queda en su lugar original)");
+        }
+
+        [Test]
+        public void ElRefugioApareceRecienEnElPasoFinal()
+        {
+            var sim = new RunSimulation(Config());
+            var nivel = Nivel();
+            var sesion = new TutorialSesion(sim, nivel,
+                new List<Paso> { P(CondicionPaso.TurboSostenido, 0.01f), P(CondicionPaso.LlegarMeta, 0f, true) },
+                AjustesTutorial.PorDefecto);
+            Assert.AreEqual(TutorialColocacion.MetaLejana, sim.Meta, "mientras tanto el refugio esta lejos");
+
+            sim.State.Mode = DriveMode.Turbo;
+            sesion.DespuesDelTick(RunEvent.None, Dt);
+
+            Assert.AreEqual(1, sesion.Progreso.Indice, "paso final");
+            Assert.AreEqual(sim.State.PlayerX + AjustesTutorial.PorDefecto.metrosHastaRefugio, sim.Meta, 1e-3f);
+        }
+
+        [Test]
+        public void EnElPasoDeLaGranadaHayUnaParaTirarYTirarlaLoCumple()
+        {
+            var sim = new RunSimulation(Config());
+            var nivel = Nivel();
+            var sesion = new TutorialSesion(sim, nivel,
+                new List<Paso> { P(CondicionPaso.Granada), P(CondicionPaso.LlegarMeta, 0f, true) },
+                AjustesTutorial.PorDefecto);
+            sim.State.Granadas = 0;
+
+            Cuadro(sesion, sim, nivel, PlayerIntent.Idle);
+            Assert.GreaterOrEqual(sim.State.Granadas, 1, "siempre hay una para tirar");
+            Assert.AreEqual(AjustesTutorial.PorDefecto.distanciaHordaDisparo, sim.State.PlayerX - sim.State.HordeX, 0.5f,
+                "la horda cerca, como en el paso de disparo");
+
+            var ev = RunEvent.None;
+            for (int i = 0; i < 10 && sesion.Progreso.Indice == 0; i++)
+                ev |= Cuadro(sesion, sim, nivel, new PlayerIntent { Mode = DriveMode.Normal, Granada = i == 0 });
+
+            Assert.AreNotEqual(RunEvent.None, ev & RunEvent.GranadaLanzada);
+            Assert.AreEqual(1, sesion.Progreso.Indice, "tirar la granada cumple el paso");
         }
     }
 }

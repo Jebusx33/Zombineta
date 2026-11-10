@@ -29,7 +29,7 @@ namespace Zombineta.Tutorial
 
         [Header("Horda")]
         [Tooltip("Metros detras del jugador donde se mantiene la horda mientras el paso no la suelta.")]
-        [SerializeField] float distanciaHordaTenida = 60f;
+        [SerializeField] float distanciaHordaTenida = 30f;
         [Tooltip("Metros detras del jugador donde se mantiene la horda en el paso de disparo: dentro " +
                  "del alcance del tiro (shotRangeMeters) y con los primeros zombies a la vista.")]
         [SerializeField] float distanciaHordaDisparo = 12f;
@@ -42,6 +42,14 @@ namespace Zombineta.Tutorial
         [Header("Recursos")]
         [SerializeField] float umbralAvisoRecurso = 0.2f;
         [SerializeField] float recargaRecurso = 0.6f;
+        [Tooltip("Cuanto queda en el tanque (o en la bateria) al empezar el paso de juntarlo (0 a 1).")]
+        [Range(0.05f, 1f)] [SerializeField] float recursoParaJuntar = 0.3f;
+
+        [Header("Recorrido")]
+        [Tooltip("Metros delante de la moto donde aparece el objeto de cada paso (rampa, bidon, bateria).")]
+        [SerializeField] float adelanteObjeto = 45f;
+        [Tooltip("Metros desde donde empieza el paso final hasta el refugio.")]
+        [SerializeField] float metrosHastaRefugio = 130f;
 
         [Header("Tiempos")]
         [SerializeField] float duracionAviso = 2.5f;
@@ -63,6 +71,9 @@ namespace Zombineta.Tutorial
             margenAlcance = margenAlcance,
             umbralAvisoRecurso = umbralAvisoRecurso,
             recargaRecurso = recargaRecurso,
+            adelanteObjeto = adelanteObjeto,
+            metrosHastaRefugio = metrosHastaRefugio,
+            recursoParaJuntar = recursoParaJuntar,
         };
 
         /// <summary>
@@ -116,7 +127,11 @@ namespace Zombineta.Tutorial
             sesion.Terminado += MostrarFinal;
             var nivel = FindAnyObjectByType<Zombineta.Juego.Levels.LevelScene>();
             if (nivel != null)
+            {
                 sesion.ItemMovido += nivel.MoverItem;
+                // La sesion ya acomodo los items al construirse, antes de esta suscripcion.
+                sesion.AvisarPosiciones();
+            }
 
             MostrarPasoActual();
         }

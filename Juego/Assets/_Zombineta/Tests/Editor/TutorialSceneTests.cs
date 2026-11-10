@@ -87,28 +87,32 @@ namespace Zombineta.Juego.Tests
             Assert.AreSame(LoadTutorialConfig(), levelScene.Config, "LevelScene.Config tiene que ser TutorialConfig");
         }
 
+        // Cada paso pone su objeto delante de la moto, en su carril o en el de al lado: tiene que
+        // haber uno de cada tipo en cada carril (y otro mas, para reponer el que se paso de largo).
         [Test]
-        public void CadaTipoDeItemApareceAlMenosTresVeces()
+        public void HayObjetosDeCadaPasoEnLosTresCarriles()
         {
             var levelScene = FindInScene<LevelScene>(escena);
             Assert.IsNotNull(levelScene);
 
-            var counts = new Dictionary<LevelEntryKind, int>();
-            foreach (var item in levelScene.Items)
-            {
-                counts.TryGetValue(item.kind, out int n);
-                counts[item.kind] = n + 1;
-            }
+            foreach (var kind in new[] { LevelEntryKind.Ramp, LevelEntryKind.Fuel, LevelEntryKind.Battery })
+                for (int carril = 0; carril < 3; carril++)
+                {
+                    int n = 0;
+                    foreach (var item in levelScene.Items)
+                        if (item.kind == kind && item.lane == carril)
+                            n++;
+                    Assert.GreaterOrEqual(n, 2, kind + " en el carril " + carril);
+                }
+        }
 
-            foreach (var kind in new[]
-                     {
-                         LevelEntryKind.Ramp, LevelEntryKind.Fuel, LevelEntryKind.Battery,
-                         LevelEntryKind.Ammo, LevelEntryKind.ZombieFront,
-                     })
-            {
-                counts.TryGetValue(kind, out int n);
-                Assert.GreaterOrEqual(n, 3, kind + " tiene que aparecer al menos 3 veces");
-            }
+        // Los zombies parados en el camino no son parte de ningun paso: chocaban con lo que se ensena.
+        [Test]
+        public void NoHayZombiesDeFrente()
+        {
+            var levelScene = FindInScene<LevelScene>(escena);
+            foreach (var item in levelScene.Items)
+                Assert.AreNotEqual(LevelEntryKind.ZombieFront, item.kind, item.name);
         }
 
         [Test]

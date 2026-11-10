@@ -495,10 +495,14 @@ suma `TutorialPendiente`, `EnTutorial`, `TutorialDesdeMenu`, el evento `Tutorial
 (Play directo en `Scenes/Tutorial.unity` desde el editor); durante el tutorial `LevelWon()` y
 `LevelLost()` se ignoran. La escena `Tutorial.unity` se armó sobre `Templates/NivelBase`, con su
 propia configuración (`Settings/TutorialConfig.asset`: copia de `GameConfig` con la horda más
-lenta y un `startingGap` grande) y su propio recorrido (~650 m, armado en la misma escena como
-`LevelItem` hijos de `Nivel`, con la paleta de nivel; no hay un `LevelDefinition` aparte): un tramo por paso, cada uno repitiendo su objeto cada 30-40 m para
-que el paso nunca se trabe si el jugador se pasa uno. `Settings/TutorialPasos.asset` (SO
-`TutorialPasos`) tiene los 10 pasos en orden, cada uno con su cartel (texto con marcadores tipo
+lenta y un `startingGap` grande). **Desde el 09/11 no tiene recorrido fijo:** los `LevelItem` de la escena
+(rampas, bidones, baterías y balas, dos por carril) son un depósito. Al arrancar se guardan lejos y cada paso
+que necesita un objeto lo pone 45 m delante de la moto: la rampa en su carril y lo que se agarra en el de al
+lado. Si el jugador se lo pasa, aparece otro adelante ("¡Casi! Ahí va otro."). El refugio queda lejos hasta el
+paso final, que lo pone 130 m adelante (`RunSimulation.FijarMeta`). Así nunca se vuelve atrás ni se saltean
+pasos, y el tutorial espera al jugador. Jugado por un bot que hace lo que pide cada cartel, dura unos 20 s;
+una persona que lee, unos 40 s. `Settings/TutorialPasos.asset` (SO
+`TutorialPasos`) tiene los 9 pasos en orden, cada uno con su cartel (texto con marcadores tipo
 `{Turbo}`/`{Reverse}`, resueltos por esquema de control con la misma tabla que usa
 `ControlHints.Accion`/`Resolver`), su condición y, si corresponde, qué barra del HUD resaltar.
 `TutorialDirector` (`Scripts/Tutorial/TutorialDirector.cs`, en su propio GameObject raíz, NO
@@ -510,13 +514,18 @@ Encadena todo sin tocar las reglas de la simulación:
   Tick. Después corre el Tick de `RunController` (`RunController.StepSimulation`). En el
   `LateUpdate`, `DespuesDelTick` arma la entrada del paso con los eventos del Tick, avanza y
   rebobina si hace falta.
-- **Horda:** en los pasos 1 a 8 la mantiene fija 60 m detrás de la moto y en el paso 9 (el de
-  disparo) a 12 m, al alcance del tiro y con los primeros zombies a la vista. La corre con
+- **Pasos (09/11):** acelerar, cambiar de carril, agarrar el bidón ("Sin nafta te bajás a pelear": lo
+  central del juego), saltar la rampa, agarrar la batería, prender el faro, disparar, tirar una granada y
+  escapar al refugio. El paso del bidón y el de la batería arrancan con ese recurso al 30 %
+  (`recursoParaJuntar`), así se ve bajo en el HUD y se llena al agarrarlo. Cada paso cumplido avisa "¡Bien!".
+  Los zombies de frente se sacaron: no eran parte de ningún paso.
+- **Horda:** en los pasos que no la sueltan la mantiene fija 30 m detrás de la moto, y en los de
+  disparo y granada a 12 m, al alcance y con los primeros zombies a la vista. La corre con
   `HordeSimulation.ShiftTo` (método aditivo de la simulación compartida): mueve la masa entera sin
   regenerarla, así conserva carriles y looks y no borra los eventos del tick que leen el sonido y
-  los efectos (con `Reset` en cada cuadro se perdían). En el paso 10 (el único con `hordaSuelta`)
+  los efectos (con `Reset` en cada cuadro se perdían). En el paso final (el único con `hordaSuelta`)
   la suelta; si en ese cuadro te puede alcanzar, se perdona **antes** del Tick: la horda vuelve
-  35 m atrás, sale "¡Te alcanzaron! Dispará o usá el faro" y se repite el paso. Así la simulación
+  35 m atrás, sale "¡Te alcanzaron! Dispará o tirá una granada." y se repite el paso. Así la simulación
   nunca llega a `Lost` y el motor sigue sonando (`MotorSonido` además vuelve a arrancar si ve
   `Running` después de un `Lost`, por si se colara uno; en un nivel normal eso no pasa sin
   `Restarted`).
@@ -524,19 +533,14 @@ Encadena todo sin tocar las reglas de la simulación:
   recargan solos al 60 % ("En el juego te quedarías sin nafta/batería..."); la munición también se
   recarga en 0 en el paso de disparo y en el último, para que siempre se pueda disparar. Las
   reglas de consumo no cambian, es la misma escritura de `RunState` que ya usa "Probar desde acá".
-- **Pickups:** los pasos 5 a 7 cuentan el item del recorrido consumido (`Consumed` pasa a true),
-  no que el recurso suba: la batería arranca llena, y agarrar una con la batería al máximo cuenta.
-- **Disparo (paso 9):** "{Fire} dispara hacia atrás. Pegale a la horda." El arma solo tira hacia
-  atrás; los zombies de frente del recorrido solo se arrollan y quedan como obstáculos.
-- **Rebobinado:** si el auto-avance de la moto se pasa de largo el tramo de un paso con items
-  (rampas, bidones, baterías, balas), `TutorialRewind` (C# plano, testeado) la devuelve al hueco
-  libre antes del tramo (a 8 m o más de cualquier otro item), vuelve a poner los items del tramo y
-  avisa "Volvamos a intentarlo.". Para las rampas el margen es de 45 m (un salto con turbo mide
-  unos 35 m) y nunca rebobina con la moto en el aire. Los pasos sin items (el de disparo
-  incluido) solo tienen el guardia de la meta: a 40 m del refugio vuelven 150 m. Llegar al
-  refugio antes del paso 10 (F2, un salto de tiempo) no termina el tutorial: se deshace y se
-  rebobina igual, y `LevelFlowBridge` (con `DecidirFinal`, una función pura testeada) no arranca
-  el plano de victoria.
+- **Pickups:** los pasos de bidón y batería cuentan el item consumido (`Consumed` pasa a true), no que
+  el recurso suba. Ojo: el imán de los pickups (`imanCarriles`) trae lo del carril de al lado, así que esos
+  se agarran aunque el jugador no cambie de carril.
+- **Disparo y granada:** "{Fire} dispara hacia atrás" y "{Granada} tira una granada hacia atrás". El arma
+  solo tira hacia atrás. En esos pasos y en el último la munición se recarga en 0 y siempre queda una granada.
+- **Objetos (`TutorialColocacion`, C# plano y testeado):** qué objeto pide cada paso, en qué carril va y cuándo
+  se lo pasó de largo. Llegar al refugio antes del paso final (F2) salta al último paso, y `LevelFlowBridge`
+  (con `DecidirFinal`, una función pura testeada) no arranca el plano de victoria antes.
 - **UI:** `TutorialCartel` maneja el cartel del paso (con fundido), los avisos (2,5 s) y el marco
   de resaltado sobre la barra del HUD indicada.
 
@@ -556,7 +560,7 @@ que `TutorialDirector`/`TutorialProgreso` nacen de cero.
 
 **Dónde está cada cosa:**
 - Scripts: `Scripts/Tutorial/` (`TutorialPasos.cs`, `TutorialProgreso.cs`, `TutorialRecursos.cs`,
-  `TutorialRewind.cs` y `TutorialSesion.cs` son C# plano y testeados; `TutorialDirector.cs` y
+  `TutorialColocacion.cs` y `TutorialSesion.cs` son C# plano y testeados; `TutorialDirector.cs` y
   `TutorialCartel.cs` son `MonoBehaviour`).
 - Escena: `Scenes/Tutorial.unity` (también el recorrido, como `LevelItem`).
 - Assets de datos: `Settings/TutorialConfig.asset`, `Settings/TutorialPasos.asset`.

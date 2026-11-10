@@ -17,6 +17,8 @@ namespace Zombineta.Tutorial
         FaroSostenido,
         DisparoAcertado,
         LlegarMeta,
+        /// <summary>Tirar una granada (RunEvent.GranadaLanzada). Agregado al final: los pasos se guardan como int.</summary>
+        Granada,
     }
 
     /// <summary>Que barra del HUD resalta el paso, si alguna.</summary>

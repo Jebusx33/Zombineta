@@ -27,23 +27,40 @@ namespace Zombineta.Tutorial
         public float umbralAvisoRecurso;
         public float recargaRecurso;
 
+        [Tooltip("Metros delante de la moto donde aparece el objeto de cada paso (rampa, bidon, bateria).")]
+        public float adelanteObjeto;
+
+        [Tooltip("Metros desde donde empieza el paso final hasta el refugio.")]
+        public float metrosHastaRefugio;
+
+        [Tooltip("Cuanto queda en el tanque (o en la bateria) al empezar el paso de juntarlo (0 a 1): " +
+                 "se ve bajo en el HUD y el pickup lo llena a la vista.")]
+        public float recursoParaJuntar;
+
         public static AjustesTutorial PorDefecto => new AjustesTutorial
         {
-            distanciaHordaTenida = 60f,
+            distanciaHordaTenida = 30f,
             distanciaHordaDisparo = 12f,
             distanciaHordaAlAlcanzar = 35f,
             margenAlcance = 2f,
             umbralAvisoRecurso = 0.2f,
             recargaRecurso = 0.6f,
+            adelanteObjeto = 45f,
+            metrosHastaRefugio = 130f,
+            recursoParaJuntar = 0.3f,
         };
     }
 
     /// <summary>
-    /// La logica cuadro a cuadro del tutorial, en C# plano (spec
-    /// docs/superpowers/specs/2026-09-24-tutorial-design.md, secciones 3 a 5). El
-    /// TutorialDirector es solo el adaptador de Unity: la llama en el orden del cuadro y muestra
-    /// lo que pide (carteles, avisos, camara). Un test la puede manejar igual que el juego,
-    /// con una RunSimulation y un LevelRuntime reales.
+    /// La logica cuadro a cuadro del tutorial, en C# plano. El TutorialDirector es solo el
+    /// adaptador de Unity: la llama en el orden del cuadro y muestra lo que pide (carteles,
+    /// avisos). Un test la puede manejar igual que el juego, con una RunSimulation y un
+    /// LevelRuntime reales.
+    ///
+    /// El tutorial no tiene un recorrido fijo: los objetos de la escena se guardan lejos al
+    /// arrancar y cada paso que necesita uno (rampa, bidon, bateria) lo pone delante de la moto,
+    /// en un carril claro. Si el jugador se lo pasa, aparece otro adelante. El refugio queda lejos
+    /// hasta el paso final, que lo pone a unos metros: nunca se vuelve atras ni se saltean pasos.
     ///
     /// Orden por cuadro:
     /// 1. AntesDelTick (Update del director, -150, antes que RunController -100): recarga los
@@ -52,24 +69,19 @@ namespace Zombineta.Tutorial
     ///    que la simulacion lo convierta en Lost.
     /// 2. El Tick de RunController (RunController.StepSimulation).
     /// 3. DespuesDelTick (LateUpdate del director): arma la EntradaPaso (eventos, carril, items
-    ///    agarrados), avanza el paso, rebobina si hace falta y deshace un Lost o un Won que se
-    ///    hayan colado.
+    ///    agarrados), avanza el paso, repone el objeto si se lo paso de largo y deshace un Lost o
+    ///    un Won que se hayan colado.
     /// </summary>
     public sealed class TutorialSesion
     {
-        // --- Textos verbatim del spec (secciones 4 y 5) -------------------------------------
-
         public const string AvisoNaftaTexto = "¡Poca nafta! Agarrá un bidón.";
         public const string AvisoBateriaTexto = "¡Poca batería! Agarrá una batería.";
         public const string RecargaNaftaTexto = "En el juego te quedarías sin nafta: te la recargamos para que sigas.";
         public const string RecargaBateriaTexto = "En el juego te quedarías sin batería: te la recargamos para que sigas.";
-        public const string AlcanzadoTexto = "¡Te alcanzaron! Dispará o usá el faro";
+        public const string AlcanzadoTexto = "¡Te alcanzaron! Dispará o tirá una granada.";
         public const string FinalTexto = "¡Listo! Ya sabés jugar";
-        public const string RebobinadoTexto = "Volvamos a intentarlo.";
-        public const string RepuestoTexto = "Te dejamos otro más adelante.";
-
-        /// <summary>Metros por delante de la moto donde se repone lo que se paso de largo.</summary>
-        public const float AdelanteRepuesto = 28f;
+        public const string BienTexto = "¡Bien!";
+        public const string OtraVezTexto = "¡Casi! Ahí va otro.";
 
         readonly RunSimulation sim;
         readonly LevelRuntime level;
@@ -81,14 +93,12 @@ namespace Zombineta.Tutorial
         // Estado de los items al final del cuadro anterior: un pickup es un false -> true.
         readonly bool[] consumidoPrevio;
 
-        // Distancias de los items por tipo, y de todos los demas, para el rebobinado. El
-        // recorrido no cambia durante el tutorial: se calculan una vez.
-        readonly Dictionary<LevelEntryKind, List<float>> distanciasPorTipo = new Dictionary<LevelEntryKind, List<float>>();
-        readonly Dictionary<LevelEntryKind, List<float>> otrasPorTipo = new Dictionary<LevelEntryKind, List<float>>();
-
         int prevLane;
 
-        /// <summary>Pide un aviso en el panel chico (texto del spec).</summary>
+        // El objeto que el paso actual puso delante de la moto (indice en LevelRuntime.Items), o -1.
+        int colocado = -1;
+
+        /// <summary>Pide un aviso en el panel chico.</summary>
         public event Action<string> Aviso;
 
         /// <summary>Se cumplio un paso y hay uno nuevo (Actual).</summary>
@@ -111,8 +121,15 @@ namespace Zombineta.Tutorial
 
             var items = level != null ? level.Items : new LevelRuntime.Item[0];
             consumidoPrevio = new bool[items.Length];
-            PrepararDistancias(items);
+
+            // Todo lo de la escena se guarda lejos: cada paso trae lo suyo. El refugio tambien,
+            // hasta el paso final.
+            for (int i = 0; i < items.Length; i++)
+                MoverItem(i, TutorialColocacion.Guardado + i * 20f);
+            sim.FijarMeta(TutorialColocacion.MetaLejana);
+
             Sincronizar();
+            PrepararPaso();
         }
 
         public TutorialProgreso Progreso => progreso;
@@ -123,20 +140,37 @@ namespace Zombineta.Tutorial
 
         /// <summary>
         /// Si llegar al refugio ahora termina el tutorial: solo en el ultimo paso (o ya
-        /// terminado). En los demas, un Won (F2, un dt enorme) se deshace y se rebobina.
+        /// terminado). En los demas, un Won (F2) salta al ultimo paso.
         /// </summary>
         public bool PermiteGanar => progreso.Terminado || EsUltimoPaso;
 
-        /// <summary>Cuantas veces rebobino (para tests y depuracion). El tutorial ya no rebobina: queda en 0.</summary>
-        public int Rebobinados { get; private set; }
+        /// <summary>Cuantas veces puso un objeto delante de la moto (el del paso y los que se paso de largo).</summary>
+        public int Colocados { get; private set; }
 
-        /// <summary>Cuantas veces repuso por delante lo que el jugador se paso de largo.</summary>
+        /// <summary>Cuantas veces repuso un objeto que el jugador se paso de largo.</summary>
         public int Repuestos { get; private set; }
 
         /// <summary>Cuantas veces perdono un alcance de la horda.</summary>
         public int Perdones { get; private set; }
 
+        /// <summary>El objeto que el paso actual puso delante de la moto (indice en LevelRuntime.Items), o -1.</summary>
+        public int Colocado => colocado;
+
         public AjustesTutorial Ajustes => ajustes;
+
+        /// <summary>
+        /// Avisa por ItemMovido donde quedo cada item. El constructor ya los guardo lejos y puso el del
+        /// primer paso, pero quien dibuja (LevelScene.MoverItem) se suscribe despues de construir la sesion:
+        /// el director lo llama apenas se suscribe, asi la escena se entera.
+        /// </summary>
+        public void AvisarPosiciones()
+        {
+            if (level == null)
+                return;
+            var items = level.Items;
+            for (int i = 0; i < items.Length; i++)
+                ItemMovido?.Invoke(i, items[i].Entry.distance);
+        }
 
         /// <summary>
         /// Toma como punto de partida el estado actual (carril e items). Lo llama el constructor
@@ -150,6 +184,63 @@ namespace Zombineta.Tutorial
                 return;
             for (int i = 0; i < consumidoPrevio.Length && i < items.Length; i++)
                 consumidoPrevio[i] = items[i].Consumed;
+        }
+
+        // --- Lo que cada paso necesita al empezar ---------------------------------------------
+
+        void PrepararPaso()
+        {
+            colocado = -1;
+            var actual = progreso.Actual;
+            if (actual == null)
+                return;
+
+            var s = sim.State;
+            var cfg = sim.Config;
+
+            // El recurso a juntar arranca bajo: se ve en el HUD y el pickup lo llena a la vista.
+            if (actual.condicion == CondicionPaso.PickupNafta)
+                s.Fuel = Mathf.Min(s.Fuel, cfg.fuelMax * ajustes.recursoParaJuntar);
+            if (actual.condicion == CondicionPaso.PickupBateria)
+                s.Battery = Mathf.Min(s.Battery, cfg.batteryMax * ajustes.recursoParaJuntar);
+
+            var kind = TutorialColocacion.ItemDe(actual.condicion);
+            if (kind.HasValue)
+                Colocar(kind.Value, TutorialColocacion.CarrilPara(actual.condicion, s.Lane));
+
+            // El paso final suelta la horda y pone el refugio a la vista.
+            if (actual.hordaSuelta)
+                sim.FijarMeta(s.PlayerX + ajustes.metrosHastaRefugio);
+        }
+
+        /// <summary>Pone un objeto del tipo delante de la moto, en el carril pedido.</summary>
+        void Colocar(LevelEntryKind kind, int carril)
+        {
+            if (level == null)
+                return;
+            var items = level.Items;
+            int elegido = -1;
+            for (int i = 0; i < items.Length && elegido < 0; i++)
+                if (items[i].Entry.kind == kind && items[i].Entry.lane == carril && items[i].Entry.height <= 0f)
+                    elegido = i;
+            // Sin uno en ese carril, cualquiera del tipo.
+            for (int i = 0; i < items.Length && elegido < 0; i++)
+                if (items[i].Entry.kind == kind && items[i].Entry.height <= 0f)
+                    elegido = i;
+            if (elegido < 0)
+                return;
+
+            MoverItem(elegido, sim.State.PlayerX + ajustes.adelanteObjeto);
+            colocado = elegido;
+            Colocados++;
+        }
+
+        void MoverItem(int indice, float metros)
+        {
+            level.Mover(indice, metros);
+            if (indice < consumidoPrevio.Length)
+                consumidoPrevio[indice] = false;
+            ItemMovido?.Invoke(indice, metros);
         }
 
         // --- 1. Antes del Tick ------------------------------------------------------------
@@ -184,14 +275,14 @@ namespace Zombineta.Tutorial
             float fuel01 = cfg.fuelMax > 0f ? s.Fuel / cfg.fuelMax : 0f;
             float battery01 = cfg.batteryMax > 0f ? s.Battery / cfg.batteryMax : 0f;
 
-            var d = recursos.Evaluar(fuel01, battery01, s.Ammo, RecargaMunicion);
+            var d = recursos.Evaluar(fuel01, battery01, s.Ammo, ConArmas);
 
             if (d.recargarNafta)
             {
                 s.Fuel = cfg.fuelMax * recursos.Recarga;
                 Aviso?.Invoke(RecargaNaftaTexto);
             }
-            else if (d.avisoNafta)
+            else if (d.avisoNafta && !JuntandoNafta)
                 Aviso?.Invoke(AvisoNaftaTexto);
 
             if (d.recargarBateria)
@@ -199,29 +290,49 @@ namespace Zombineta.Tutorial
                 s.Battery = cfg.batteryMax * recursos.Recarga;
                 Aviso?.Invoke(RecargaBateriaTexto);
             }
-            else if (d.avisoBateria)
+            else if (d.avisoBateria && !JuntandoBateria)
                 Aviso?.Invoke(AvisoBateriaTexto);
 
             if (d.recargarMunicion)
                 s.Ammo = Mathf.Max(1, Mathf.RoundToInt(cfg.ammoMax * recursos.Recarga));
+
+            // En el paso de la granada (y en el final) siempre hay una para tirar.
+            if (ConGranada && s.Granadas <= 0)
+                s.Granadas = 1;
         }
 
-        /// <summary>La municion se recarga en 0 en el paso de disparo y en el ultimo (spec: pasos 9 y 10).</summary>
-        bool RecargaMunicion
+        // Mientras el paso es juntar ese recurso, el cartel ya lo dice: el aviso de "poco" sobra.
+        bool JuntandoNafta => progreso.Actual != null && progreso.Actual.condicion == CondicionPaso.PickupNafta;
+        bool JuntandoBateria => progreso.Actual != null && progreso.Actual.condicion == CondicionPaso.PickupBateria;
+
+        /// <summary>La municion se recarga en 0 en los pasos de disparo, de la granada y en el ultimo.</summary>
+        bool ConArmas
         {
             get
             {
                 var actual = progreso.Actual;
-                return actual != null && (actual.condicion == CondicionPaso.DisparoAcertado || EsUltimoPaso);
+                return actual != null && (actual.condicion == CondicionPaso.DisparoAcertado ||
+                                          actual.condicion == CondicionPaso.Granada || EsUltimoPaso);
+            }
+        }
+
+        bool ConGranada
+        {
+            get
+            {
+                var actual = progreso.Actual;
+                return actual != null && (actual.condicion == CondicionPaso.Granada || EsUltimoPaso);
             }
         }
 
         bool HordaSuelta => progreso.Actual != null && progreso.Actual.hordaSuelta;
 
+        /// <summary>En los pasos de disparo y de granada la horda esta cerca, al alcance y a la vista.</summary>
         float DistanciaTenida()
         {
             var actual = progreso.Actual;
-            return actual != null && actual.condicion == CondicionPaso.DisparoAcertado
+            return actual != null && (actual.condicion == CondicionPaso.DisparoAcertado ||
+                                      actual.condicion == CondicionPaso.Granada)
                 ? ajustes.distanciaHordaDisparo
                 : ajustes.distanciaHordaTenida;
         }
@@ -282,10 +393,10 @@ namespace Zombineta.Tutorial
 
             if (s.Phase == RunPhase.Won && !PermiteGanar)
             {
-                // Llego al refugio sin estar en el ultimo paso (F2, o un salto de tiempo que se
-                // comio el guardia de la meta): nunca se vuelve atras. Los pasos que faltaban se
-                // dejan y la llegada cuenta como la del ultimo.
-                SaltarAlUltimo();
+                // Llego al refugio sin estar en el ultimo paso (F2): los pasos que faltaban se dejan
+                // y la llegada cuenta como la del ultimo.
+                if (progreso.SaltarAlUltimo())
+                    PasoCambiado?.Invoke();
             }
 
             if (s.Phase != RunPhase.Running && s.Phase != RunPhase.Won)
@@ -317,10 +428,30 @@ namespace Zombineta.Tutorial
             }
 
             if (avanzo)
+            {
+                Aviso?.Invoke(BienTexto);
+                PrepararPaso();
                 PasoCambiado?.Invoke();
+                return;
+            }
 
             if (s.Phase == RunPhase.Running)
-                RebobinarSiHaceFalta(s);
+                ReponerSiSePaso(s);
+        }
+
+        /// <summary>Si el objeto del paso quedo atras sin usarlo, aparece otro adelante.</summary>
+        void ReponerSiSePaso(RunState s)
+        {
+            if (colocado < 0 || level == null)
+                return;
+            var item = level.Items[colocado];
+            if (!TutorialColocacion.SePasoDeLargo(item.Entry.distance, s.PlayerX, item.Consumed, s.Airborne))
+                return;
+
+            var actual = progreso.Actual;
+            Colocar(item.Entry.kind, TutorialColocacion.CarrilPara(actual.condicion, s.Lane));
+            Repuestos++;
+            Aviso?.Invoke(OtraVezTexto);
         }
 
         /// <summary>Cuenta los items que pasaron de Consumed false a true desde el cuadro anterior.</summary>
@@ -344,107 +475,6 @@ namespace Zombineta.Tutorial
                     }
                 }
                 consumidoPrevio[i] = ahora;
-            }
-        }
-
-        // --- Reposicion: nunca dejar que la moto (que avanza sola) se saltee un tramo entero --
-
-        void RebobinarSiHaceFalta(RunState s)
-        {
-            var actual = progreso.Actual;
-            if (actual == null)
-                return;
-
-            var kind = TutorialRewind.ItemDe(actual.condicion);
-            List<float> distancias = null, otras = null;
-            if (kind.HasValue)
-            {
-                distanciasPorTipo.TryGetValue(kind.Value, out distancias);
-                otrasPorTipo.TryGetValue(kind.Value, out otras);
-            }
-
-            var decision = TutorialRewind.Decidir(
-                actual.condicion, EsUltimoPaso, distancias, otras, s.PlayerX, sim.Config.goalDistance, s.Airborne);
-            if (!decision.Rebobinar)
-                return;
-
-            // Nunca hacia atras: lo que se paso de largo vuelve a aparecer por delante. Y si ya
-            // no hay lugar antes del refugio (o es la guardia de la meta), se pasa al ultimo paso.
-            if (!(decision.LimpiarItems && kind.HasValue && Reponer(s, kind.Value)))
-                SaltarAlUltimo();
-        }
-
-        void SaltarAlUltimo()
-        {
-            if (progreso.SaltarAlUltimo())
-                PasoCambiado?.Invoke();
-        }
-
-        /// <summary>
-        /// Lleva la primera tanda de items del tipo (los de la misma distancia, uno por carril) a
-        /// unos metros por delante de la moto, en un lugar sin otros items cerca. Devuelve false si
-        /// no entra antes del refugio.
-        /// </summary>
-        bool Reponer(RunState s, LevelEntryKind kind)
-        {
-            if (level == null)
-                return false;
-            var items = level.Items;
-
-            float tanda = float.MaxValue;
-            for (int i = 0; i < items.Length; i++)
-                if (items[i].Entry.kind == kind && items[i].Entry.height <= 0f)
-                    tanda = Mathf.Min(tanda, items[i].Entry.distance);
-            if (tanda == float.MaxValue)
-                return false;
-
-            otrasPorTipo.TryGetValue(kind, out var otras);
-            float tope = sim.Config.goalDistance - TutorialRewind.MargenMeta;
-            float destino = s.PlayerX + AdelanteRepuesto;
-            while (destino < tope && !Libre(destino, otras))
-                destino += 2f;
-            if (destino >= tope)
-                return false;
-
-            for (int i = 0; i < items.Length; i++)
-            {
-                if (items[i].Entry.kind != kind || Mathf.Abs(items[i].Entry.distance - tanda) > 0.01f)
-                    continue;
-                level.Mover(i, destino);
-                if (i < consumidoPrevio.Length)
-                    consumidoPrevio[i] = false;
-                ItemMovido?.Invoke(i, destino);
-            }
-
-            PrepararDistancias(items);
-            Repuestos++;
-            Aviso?.Invoke(RepuestoTexto);
-            return true;
-        }
-
-        static bool Libre(float x, List<float> otras)
-        {
-            if (otras == null)
-                return true;
-            foreach (var o in otras)
-                if (Mathf.Abs(o - x) < TutorialRewind.DistanciaLibre)
-                    return false;
-            return true;
-        }
-
-        void PrepararDistancias(LevelRuntime.Item[] items)
-        {
-            foreach (LevelEntryKind kind in new[]
-                     {
-                         LevelEntryKind.Ramp, LevelEntryKind.Fuel, LevelEntryKind.Battery, LevelEntryKind.Ammo,
-                     })
-            {
-                var propias = new List<float>();
-                var otras = new List<float>();
-                foreach (var item in items)
-                    (item.Entry.kind == kind ? propias : otras).Add(item.Entry.distance);
-                distanciasPorTipo[kind] = propias;
-                otrasPorTipo[kind] = otras;
             }
         }
     }

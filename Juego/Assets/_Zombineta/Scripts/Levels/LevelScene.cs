@@ -218,7 +218,7 @@ namespace Zombineta.Juego.Levels
             var items = Items;
             for (int i = 0; i < items.Length; i++)
             {
-                EnsurePlayLook(items[i]);
+                EnsurePlayLook(items[i], i);
                 EnsurePlayShadow(items[i]);
                 AnimarZombieQuieto(items[i], i);
             }
@@ -247,6 +247,18 @@ namespace Zombineta.Juego.Levels
             if (quieto == null)
                 quieto = item.gameObject.AddComponent<ZombieQuieto>();
             quieto.Iniciar(sr, zombieLook.idle, zombieLook.idleFps, index * 7 % zombieLook.idle.Length);
+        }
+
+        /// <summary>Escala del tipo de zombie (Zombies.asset): la misma que usa la horda.</summary>
+        float EscalaDeTipo(int variant) =>
+            config != null && config.zombies != null ? config.zombies.Get(variant).scale : 1f;
+
+        /// <summary>Escala del look: empareja la resolucion de su hoja. Solo cuenta si el look tiene cuadros.</summary>
+        static float EscalaDeLook(ZombieLook look)
+        {
+            bool tieneCuadros = look != null &&
+                ((look.idle != null && look.idle.Length > 0) || (look.walk != null && look.walk.Length > 0));
+            return tieneCuadros && look.scale > 0f ? look.scale : 1f;
         }
 
         /// <summary>El look sorteado para un ZombieFront, o null si no hay looks para su tipo.</summary>
@@ -303,24 +315,23 @@ namespace Zombineta.Juego.Levels
             }
         }
 
-        void EnsurePlayLook(LevelItem item)
+        void EnsurePlayLook(LevelItem item, int index)
         {
             var look = palette != null ? palette.Get(item.kind, item.variant) : null;
             if (look == null)
                 return;
 
-            // Siempre aplica la escala de la paleta al entrar en Play, incluso si no hay prefab
-            // o si el editor ya creo el hijo "Vista" en esta sesion (sin reload de escena).
-            // Sin esto, la escala guardada en el .unity (ej. 1.9 del asset original) persiste
-            // en Play aunque en el editor se vea bien porque ApplyVisual la pisa cada frame.
-            // ZombieFront excepcion: su escala combina palette * typeScale * lookScale (calculado
-            // en ApplyVisual); conserva la que guardo el editor en la escena.
-            if (item.kind != LevelEntryKind.ZombieFront)
-            {
-                var scale = new Vector3(look.scale.x, look.scale.y, 1f);
-                if (item.transform.localScale != scale)
-                    item.transform.localScale = scale;
-            }
+            // Siempre aplica la escala al entrar en Play, incluso si no hay prefab o si el editor ya
+            // creo el hijo "Vista" en esta sesion (sin reload de escena). Sin esto, la escala guardada
+            // en el .unity persiste en Play aunque en el editor se vea bien porque ApplyVisual la pisa
+            // cada frame. El ZombieFront tambien: confiar en la guardada dejo al tutorial con zombies
+            // de 4,75 (una escala de cuando las hojas eran otras) mientras el editor mostraba 1,9.
+            float factor = item.kind == LevelEntryKind.ZombieFront
+                ? EscalaDeTipo(item.variant) * EscalaDeLook(LookDeZombie(item, index))
+                : 1f;
+            var scale = new Vector3(look.scale.x * factor, look.scale.y * factor, 1f);
+            if (item.transform.localScale != scale)
+                item.transform.localScale = scale;
 
             if (look.prefab == null)
                 return;
@@ -674,8 +685,7 @@ namespace Zombineta.Juego.Levels
                     sprite = tieneQuieto ? zombieLook.idle[0] : zombieLook.walk[0];
                     // Mismo tinte por tipo que en la horda.
                     color = config != null && config.zombies != null ? config.zombies.Get(item.variant).tint : Color.white;
-                    if (zombieLook.scale > 0f)
-                        lookScale = zombieLook.scale;
+                    lookScale = EscalaDeLook(zombieLook);
                 }
                 else if (config != null && config.zombies != null)
                 {
@@ -683,7 +693,7 @@ namespace Zombineta.Juego.Levels
                 }
 
                 // Mismo tamano que en la horda: escala del tipo y del look sobre la de la paleta.
-                float typeScale = config != null && config.zombies != null ? config.zombies.Get(item.variant).scale : 1f;
+                float typeScale = EscalaDeTipo(item.variant);
                 scale = new Vector3(scale.x * typeScale * lookScale, scale.y * typeScale * lookScale, 1f);
             }
 
