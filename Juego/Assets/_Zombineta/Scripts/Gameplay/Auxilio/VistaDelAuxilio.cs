@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 using Zombineta.Core;
 using Zombineta.Luz;
 using Zombineta.Player;
@@ -46,8 +45,20 @@ namespace Zombineta.Auxilio
         [SerializeField] float segundosTitileo = 3f;
         [SerializeField] float rebote = 0.08f;
 
+        [Header("Brillo del bidon")]
+        [Tooltip("Color del brillo titilante del bidon: el mismo naranja de la nafta en el resto del juego.")]
+        [SerializeField] Color colorBrilloBidon = new Color(1f, 0.62f, 0.2f);
+        [Tooltip("Diametro del brillo, en unidades de mundo. Va detras del bidon.")]
+        [SerializeField] float diametroBrilloBidon = 3.2f;
+        [Tooltip("Opacidad del brillo en su punto mas flojo y en el mas fuerte del titileo (0 a 1).")]
+        [SerializeField] Vector2 alfaBrilloBidon = new Vector2(0.25f, 0.8f);
+        [Tooltip("Titileos por segundo.")]
+        [SerializeField] float titileoBrilloBidon = 1.6f;
+
         SpriteRenderer cuerpo, golpe;
         readonly System.Collections.Generic.List<SpriteRenderer> drops = new System.Collections.Generic.List<SpriteRenderer>();
+        readonly System.Collections.Generic.List<SpriteRenderer> brillos = new System.Collections.Generic.List<SpriteRenderer>();
+        Sprite spriteBrillo;
         Renderer[] moto;
         bool motoEscondida;
         ReproductorAPie reproductor;
@@ -177,9 +188,89 @@ namespace Zombineta.Auxilio
                 float y = run.LaneToWorldY(d.Lane) + salto - sr.sprite.bounds.min.y * escala;
                 sr.transform.position = new Vector3(run.ToWorldX(d.X), y, 0f);
                 sr.sortingOrder = LaneSorting.Order(d.Lane, SortSlot.Item);
+                ActualizarBrillo(i, esBidon, sr.bounds.center, sr.sortingOrder);
             }
             for (int i = n; i < drops.Count; i++)
+            {
                 drops[i].enabled = false;
+                ActualizarBrillo(i, false, Vector3.zero, 0);
+            }
+        }
+
+        /// <summary>
+        /// El bidon del ultimo zombie titila con un resplandor naranja DETRAS de el (un sprite difuso un
+        /// escalon abajo del bidon), para que se lo vea desde lejos sin ningun cartel y sin taparlo ni
+        /// lavarle los colores. Los demas drops no brillan.
+        /// </summary>
+        void ActualizarBrillo(int indice, bool esBidon, Vector3 centro, int ordenDelDrop)
+        {
+            while (brillos.Count <= indice)
+                brillos.Add(null);
+
+            var glow = brillos[indice];
+            if (!esBidon)
+            {
+                if (glow != null)
+                    glow.enabled = false;
+                return;
+            }
+
+            if (glow == null)
+            {
+                var go = new GameObject("Brillo del bidon " + indice);
+                go.transform.SetParent(transform, false);
+                glow = go.AddComponent<SpriteRenderer>();
+                glow.sprite = SpriteBrillo();
+                glow.sortingLayerID = LaneSorting.GameLayerId;
+                brillos[indice] = glow;
+            }
+
+            // Titila de verdad: sube y baja entre su punto flojo y su punto fuerte.
+            float latido = 0.5f + 0.5f * Mathf.Sin(Time.time * titileoBrilloBidon * Mathf.PI * 2f);
+            var c = colorBrilloBidon;
+            c.a = Mathf.Lerp(alfaBrilloBidon.x, alfaBrilloBidon.y, latido);
+            glow.enabled = true;
+            glow.color = c;
+            glow.sortingOrder = ordenDelDrop - 1; // justo debajo del bidon, encima de la sombra y la calle
+            glow.transform.position = new Vector3(centro.x, centro.y, 0f);
+            glow.transform.localScale = Vector3.one * (diametroBrilloBidon * (0.92f + 0.08f * latido));
+        }
+
+        /// <summary>Un circulo blanco que se desvanece hacia el borde, hecho por codigo (se tine con el color del brillo).</summary>
+        Sprite SpriteBrillo()
+        {
+            if (spriteBrillo != null)
+                return spriteBrillo;
+            const int N = 128;
+            var tex = new Texture2D(N, N, TextureFormat.RGBA32, false)
+            {
+                wrapMode = TextureWrapMode.Clamp,
+                filterMode = FilterMode.Bilinear,
+                hideFlags = HideFlags.HideAndDontSave,
+            };
+            var px = new Color32[N * N];
+            for (int y = 0; y < N; y++)
+            for (int x = 0; x < N; x++)
+            {
+                float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(N * 0.5f, N * 0.5f)) / (N * 0.5f);
+                float a = Mathf.Clamp01(1f - d);
+                a *= a;   // cae suave: fuerte en el centro, casi nada en el borde
+                px[y * N + x] = new Color32(255, 255, 255, (byte)(a * 255f));
+            }
+            tex.SetPixels32(px);
+            tex.Apply();
+            // 1 unidad de lado: la escala del objeto es el diametro en unidades de mundo.
+            spriteBrillo = Sprite.Create(tex, new Rect(0, 0, N, N), new Vector2(0.5f, 0.5f), N);
+            return spriteBrillo;
+        }
+
+        void OnDestroy()
+        {
+            if (spriteBrillo != null)
+            {
+                Destroy(spriteBrillo.texture);
+                Destroy(spriteBrillo);
+            }
         }
 
         SpriteRenderer NuevoDrop(int indice)

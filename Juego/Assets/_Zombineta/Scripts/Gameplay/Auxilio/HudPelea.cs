@@ -8,7 +8,7 @@ using Zombineta.UI;
 namespace Zombineta.Auxilio
 {
     /// <summary>
-    /// El HUD de la pelea a pie: vida, oleada en curso y cuantos zombies quedan, mas los carteles grandes
+    /// El HUD de la pelea a pie: vida y oleada en curso, mas los carteles grandes
     /// ("¡SIN NAFTA!", "¡AGUANTÁ!") y la vineta roja con poca vida. Va en el Canvas del HUD y arma sus
     /// propios elementos.
     /// </summary>
@@ -183,12 +183,8 @@ namespace Zombineta.Auxilio
                 MostrarRecogida(run.Sim.State.DropLlenoKind == 0 ? "VIDA LLENA" : "MUNICIÓN LLENA", new Color(1f, 1f, 1f));
             if ((ev & RunEvent.BalasRecogidas) != 0 && run != null)
                 MostrarRecogida("+" + run.Config.dropBalasCantidad + " BALAS", new Color(1f, 0.85f, 0.3f));
-            if ((ev & RunEvent.PeleaGanada) != 0)
-                Mostrar("¡AGARRÁ EL BIDÓN!", new Color(0.55f, 1f, 0.55f));
             if ((ev & RunEvent.BombaPuesta) != 0)
                 MostrarRecogida("¡BOMBA!", new Color(1f, 0.5f, 0.3f));
-            if ((ev & RunEvent.BombaExplota) != 0 && run != null && run.Sim != null)
-                Mostrar(run.Sim.State.UltimaExplosionMuertos > 0 ? "¡BOOM!" : "¡BOOM... NADA!", new Color(1f, 0.6f, 0.25f));
 
             // La cadena de golpes: el paso lo da el estado. Los golpes al aire tambien cuentan.
             if (run != null && run.Sim != null && (ev & (RunEvent.Golpe | RunEvent.GolpeAlAire)) != 0)
@@ -275,12 +271,13 @@ namespace Zombineta.Auxilio
             if (pelea)
             {
                 // Sin reloj: se pelea por oleadas.
+                // Con el bidon en el piso no hay cartel: el bidon brilla solo (VistaDelAuxilio).
                 if (s.BidonEnElPiso)
-                    oleadaTexto.text = "¡AGARRÁ EL BIDÓN!";
+                    oleadaTexto.text = "";
                 else if (s.OleadaRespiro > 0f)
                     oleadaTexto.text = "OLEADA " + (s.Oleada + 1) + "/" + s.Oleadas + " VENCIDA";
                 else
-                    oleadaTexto.text = "OLEADA " + (s.Oleada + 1) + "/" + s.Oleadas + "  ·  QUEDAN " + s.ZombiesRestantes;
+                    oleadaTexto.text = "OLEADA " + (s.Oleada + 1) + "/" + s.Oleadas;
                 vida.text = new string('♥', Mathf.Max(0, s.Vida)) + new string('♡', Mathf.Max(0, c.vidaPelea - s.Vida));
             }
 
