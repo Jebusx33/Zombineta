@@ -74,6 +74,9 @@ namespace Zombineta.Juego.Flow
             }
 
             Instance = this;
+            // En Android el reproductor va a 30 cuadros por segundo si nadie le pide otra cosa.
+            if (Application.isMobilePlatform)
+                Application.targetFrameRate = 60;
             int count = levels != null ? Mathf.Max(1, levels.levels.Count) : 1;
             flow = new GameFlow(count);
             flow.Changed += OnChanged;

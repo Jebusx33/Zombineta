@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using Zombineta.Fx;
+using Zombineta.Jefe;
 using Zombineta.Player;
 
 namespace Zombineta.Juego.EditorTools
@@ -42,6 +43,13 @@ namespace Zombineta.Juego.EditorTools
         static readonly Color SangreNiebla = new Color(0.5f, 0.05f, 0.07f, 0.55f);
         static readonly Color Fuego = new Color(1f, 0.62f, 0.2f, 1f);
 
+        // El plasma del jefe del nivel 2: la carne roja de su proyectil, con vetas claras.
+        static readonly Color PlasmaOscuro = new Color(0.5f, 0.08f, 0.06f, 1f);
+        static readonly Color PlasmaClaro = new Color(0.86f, 0.74f, 0.52f, 1f);
+        static readonly Color PlasmaNiebla = new Color(0.55f, 0.12f, 0.08f, 0.5f);
+
+        const string JefeEscena = "Assets/_Zombineta/Scenes/Level_02.unity";
+
         static Material matHumo, matFuego, matDestello, matChispa, matGota, matAnillo, matEscombro, matFogonazo, matCasquillo, matTraza;
 
         [MenuItem("Zombineta/Fx/Reconstruir efectos")]
@@ -55,6 +63,19 @@ namespace Zombineta.Juego.EditorTools
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 return;
             Build();
+        }
+
+        [MenuItem("Zombineta/Fx/Efectos del jefe")]
+        static void RebuildJefe()
+        {
+            if (!EditorUtility.DisplayDialog("Efectos del jefe",
+                    "Reescribe el humo del tanque y el plasma de sus proyectiles, y los engancha en Level_02 " +
+                    "(guarda esa escena). Conviene guardar lo abierto antes.",
+                    "Reconstruir", "Cancelar"))
+                return;
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                return;
+            BuildJefe();
         }
 
         public static void Build()
@@ -73,6 +94,7 @@ namespace Zombineta.Juego.EditorTools
 
             AssetDatabase.SaveAssets();
             Debug.Log("Efectos reconstruidos y enganchados en " + Escenas.Length + " escenas.");
+            BuildJefe();
         }
 
         // --- Efectos -------------------------------------------------------------------
@@ -315,6 +337,234 @@ namespace Zombineta.Juego.EditorTools
             Atlas(turbo, 2, 2);
             GiroAlAzar(turbo, 180f);
         }
+
+        // --- Efectos del jefe del nivel 2 -----------------------------------------------
+
+        /// <summary>Crea los efectos del jefe y los engancha en su escena. Lo llama tambien Build.</summary>
+        public static void BuildJefe()
+        {
+            CrearMateriales();
+            Crear("FxJefeHumo", ArmarHumoJefe);
+            Crear("FxPlasmaDisparo", ArmarPlasmaDisparo);
+            Crear("FxPlasmaEstela", ArmarPlasmaEstela);
+            Crear("FxPlasmaImpacto", ArmarPlasmaImpacto);
+            EngancharJefe();
+            AssetDatabase.SaveAssets();
+            Debug.Log("Efectos del jefe reconstruidos y enganchados en " + JefeEscena + ".");
+        }
+
+        /// <summary>
+        /// Humo del tanque, que sale de atras hacia arriba: la raiz es el humo de siempre y el hijo
+        /// Hollin, bocanadas negras y rapidas cuando acelera. La cantidad de cada uno la maneja EfectosDelJefe.
+        /// </summary>
+        static void ArmarHumoJefe(ParticleSystem raiz)
+        {
+            // Oscuro: la niebla del nivel es gris clara y un humo claro se pierde en ella.
+            var m = Main(raiz, 1f, 1.4f, 2f, 0.4f, 1f, 0.45f, 0.8f, new Color(0.22f, 0.21f, 0.21f, 0.7f));
+            m.loop = true;
+            m.playOnAwake = true;
+            m.maxParticles = 260;
+            Continuo(raiz);
+            ConElTanque(raiz, 0.8f);
+            Cono(raiz, 25f, 145f, 0.12f);
+            Crecer(raiz, 3.2f);
+            Desvanecer(raiz, 0.05f);
+            Subir(raiz, 0.8f);
+            Atlas(raiz, 4, 2);
+            GiroAlAzar(raiz, 35f);
+            Ruido(raiz, 0.3f, 0.6f);
+            Pintar(raiz, matHumo, 0);
+
+            var hollin = Capa(raiz.transform, "Hollin", matHumo, 1);
+            var mh = Main(hollin, 1f, 0.7f, 1.1f, 1.2f, 2.4f, 0.5f, 0.85f, new Color(0.08f, 0.07f, 0.07f, 0.8f));
+            mh.loop = true;
+            mh.playOnAwake = true;
+            mh.maxParticles = 160;
+            Continuo(hollin);
+            ConElTanque(hollin, 0.7f);
+            Cono(hollin, 18f, 160f, 0.1f);
+            Crecer(hollin, 2.8f);
+            Desvanecer(hollin, 0.1f);
+            Subir(hollin, 0.7f);
+            Atlas(hollin, 4, 2);
+            GiroAlAzar(hollin, 50f);
+        }
+
+        /// <summary>Salpicadura de plasma en la boca del brazo, hacia donde sale el proyectil (armada hacia la derecha).</summary>
+        static void ArmarPlasmaDisparo(ParticleSystem raiz)
+        {
+            var piso = Piso(raiz.transform, 1.9f);
+
+            Destello(raiz, matDestello, 0.75f, 0.06f, new Color(1f, 0.82f, 0.7f, 1f), 3);
+
+            var gotas = Gotas(Capa(raiz.transform, "Gotas", matGota, 1), piso, 18, 26, 2.5f, 6.5f, 0.05f, 0.11f, 28f, 0f);
+            ConPlasma(gotas);
+
+            // Lo que chorrea del brazo y cae al piso.
+            var goteo = Gotas(Capa(raiz.transform, "Goteo", matGota, 1), piso, 6, 10, 0.5f, 1.5f, 0.04f, 0.08f, 50f, 270f);
+            ConPlasma(goteo);
+
+            var niebla = Capa(raiz.transform, "Niebla", matHumo, 0);
+            Niebla(niebla, 4, 0.3f, 0.55f, 0.35f, 0.55f, 0f);
+            var mn = niebla.main;
+            mn.startColor = PlasmaNiebla;
+        }
+
+        /// <summary>Gotas que suelta el proyectil en vuelo, hacia atras (armada mirando a la derecha), con un vaho.</summary>
+        static void ArmarPlasmaEstela(ParticleSystem raiz)
+        {
+            var m = Main(raiz, 1f, 0.35f, 0.6f, 0.3f, 1.2f, 0.05f, 0.1f, PlasmaOscuro);
+            m.loop = true;
+            m.playOnAwake = true;
+            m.maxParticles = 200;
+            Continuo(raiz);
+            ConColoresDePlasma(raiz);
+            Gravedad(raiz, 1.3f);
+            Cono(raiz, 35f, 180f, 0.08f);
+            // Se llevan algo del envion del proyectil: no quedan clavadas en el aire.
+            ConElTanque(raiz, 0.35f);
+            Desvanecer(raiz, 0.6f);
+            Pintar(raiz, matGota, 0);
+            Estirar(raiz, 0.03f);
+
+            var vaho = Capa(raiz.transform, "Vaho", matHumo, -1);
+            var mv = Main(vaho, 1f, 0.25f, 0.4f, 0.1f, 0.4f, 0.18f, 0.3f, PlasmaNiebla);
+            mv.loop = true;
+            mv.playOnAwake = true;
+            mv.maxParticles = 80;
+            Continuo(vaho);
+            ConElTanque(vaho, 0.5f);
+            Cono(vaho, 20f, 180f, 0.05f);
+            Crecer(vaho, 1.8f);
+            Desvanecer(vaho, 0f);
+            Atlas(vaho, 4, 2);
+            GiroAlAzar(vaho, 40f);
+        }
+
+        /// <summary>
+        /// Reventon del proyectil, armado hacia arriba: destello, corona de gotas que salpican al caer,
+        /// un segundo chorro, trozos, niebla y un charco que queda en el piso y se seca.
+        /// </summary>
+        static void ArmarPlasmaImpacto(ParticleSystem raiz)
+        {
+            var piso = Piso(raiz.transform, 0.8f);
+
+            Destello(raiz, matDestello, 1.3f, 0.08f, new Color(1f, 0.8f, 0.65f, 1f), 3);
+
+            var gotas = Gotas(Capa(raiz.transform, "Gotas", matGota, 1), piso, 40, 55, 3f, 8f, 0.06f, 0.14f, 55f, 90f);
+            ConPlasma(gotas);
+
+            var chorro = Gotas(Capa(raiz.transform, "Chorro", matGota, 1), piso, 16, 24, 4f, 7f, 0.06f, 0.13f, 25f, 60f);
+            var em = chorro.emission;
+            em.SetBursts(new[] { new ParticleSystem.Burst(0.05f, 16, 24) });
+            ConPlasma(chorro);
+
+            var trozos = Capa(raiz.transform, "Trozos", matEscombro, 2);
+            Trozos(trozos, piso, PlasmaOscuro, 5, 8, 2.5f, 5f, 0.08f, 0.15f, 90f, 60f);
+            ConColoresDePlasma(trozos);
+
+            var niebla = Capa(raiz.transform, "Niebla", matHumo, 0);
+            Niebla(niebla, 6, 0.45f, 0.9f, 0.5f, 0.8f, 90f);
+            var mn = niebla.main;
+            mn.startColor = PlasmaNiebla;
+
+            // El charco cuelga del piso: va a la altura del carril aunque el reventon nazca contra la moto.
+            // Su orden lo baja del slot de efectos al de las sombras (40 menos): queda pisado.
+            var charco = Capa(piso, "Charco", matGota, OrdenEnElPiso);
+            var mc = Main(charco, 1f, 1.6f, 2.2f, 0f, 0f, 1f, 1f, new Color(PlasmaOscuro.r, PlasmaOscuro.g, PlasmaOscuro.b, 0.85f));
+            mc.startSize3D = true;
+            mc.startSizeX = new ParticleSystem.MinMaxCurve(1.3f, 1.8f);
+            mc.startSizeY = new ParticleSystem.MinMaxCurve(0.35f, 0.5f);
+            mc.startSizeZ = 1f;
+            mc.startDelay = 0.08f;
+            Rafaga(charco, 0f, 1, 1);
+            var so = charco.sizeOverLifetime;
+            so.enabled = true;
+            so.size = new ParticleSystem.MinMaxCurve(1f, new AnimationCurve(new Keyframe(0f, 0.3f), new Keyframe(0.12f, 1f), new Keyframe(1f, 1.05f)));
+            Desvanecer(charco, 0.6f);
+
+            var manchas = Capa(piso, "Manchas", matGota, OrdenEnElPiso + 1);
+            var mm = Main(manchas, 1f, 1.3f, 1.9f, 0f, 0f, 1f, 1f, PlasmaOscuro);
+            mm.startSize3D = true;
+            mm.startSizeX = new ParticleSystem.MinMaxCurve(0.12f, 0.3f);
+            mm.startSizeY = new ParticleSystem.MinMaxCurve(0.04f, 0.09f);
+            mm.startSizeZ = 1f;
+            mm.startDelay = 0.15f;
+            Rafaga(manchas, 0f, 4, 6);
+            var sh = manchas.shape;
+            sh.enabled = true;
+            sh.shapeType = ParticleSystemShapeType.Box;
+            sh.scale = new Vector3(2f, 0.02f, 0.1f);
+            ConColoresDePlasma(manchas);
+            Desvanecer(manchas, 0.6f);
+        }
+
+        /// <summary>
+        /// Lo que larga algo que se mueve (el tanque, el proyectil) sale con parte de su velocidad: el
+        /// sistema se mueve a mano, asi que la velocidad sale del Transform y no de un Rigidbody.
+        /// </summary>
+        static void ConElTanque(ParticleSystem ps, float cuanto)
+        {
+            var m = ps.main;
+            m.emitterVelocityMode = ParticleSystemEmitterVelocityMode.Transform;
+            var heredar = ps.inheritVelocity;
+            heredar.enabled = true;
+            heredar.mode = ParticleSystemInheritVelocityMode.Initial;
+            heredar.curve = new ParticleSystem.MinMaxCurve(cuanto);
+        }
+
+        // Del slot de efectos al de las sombras, como las manchas de FxManager (Shadow + 2).
+        const int OrdenEnElPiso = -38;
+
+        /// <summary>Gotas de plasma: casi todas de la carne oscura y algunas de las vetas claras, y su salpicadura.</summary>
+        static void ConPlasma(ParticleSystem gotas)
+        {
+            ConColoresDePlasma(gotas);
+            Salpicadura(gotas, -2);
+            var s = gotas.transform.Find("Salpicadura").GetComponent<ParticleSystem>().main;
+            s.startColor = PlasmaOscuro;
+        }
+
+        static void ConColoresDePlasma(ParticleSystem ps)
+        {
+            var g = new Gradient { mode = GradientMode.Fixed };
+            g.SetKeys(new[] { new GradientColorKey(PlasmaOscuro, 0.7f), new GradientColorKey(PlasmaClaro, 1f) },
+                      new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 1f) });
+            var m = ps.main;
+            m.startColor = new ParticleSystem.MinMaxGradient(g) { mode = ParticleSystemGradientMode.RandomColor };
+        }
+
+        /// <summary>Pone EfectosDelJefe junto a la vista del jefe, con sus prefabs.</summary>
+        static void EngancharJefe()
+        {
+            var scene = EditorSceneManager.OpenScene(JefeEscena, OpenSceneMode.Single);
+            var vista = Object.FindAnyObjectByType<VistaDelJefe>();
+            if (vista == null)
+            {
+                Debug.LogWarning("Sin VistaDelJefe en " + JefeEscena);
+                return;
+            }
+
+            var efectos = vista.GetComponent<EfectosDelJefe>();
+            if (efectos == null)
+                efectos = vista.gameObject.AddComponent<EfectosDelJefe>();
+
+            // Los prefabs se cargan despues de abrir la escena: cargados antes pueden quedar nulos.
+            var so = new SerializedObject(efectos);
+            so.FindProperty("run").objectReferenceValue = new SerializedObject(vista).FindProperty("run").objectReferenceValue;
+            so.FindProperty("vista").objectReferenceValue = vista;
+            so.FindProperty("humoPrefab").objectReferenceValue = Prefab("FxJefeHumo");
+            so.FindProperty("disparoPrefab").objectReferenceValue = Prefab("FxPlasmaDisparo");
+            so.FindProperty("estelaPrefab").objectReferenceValue = Prefab("FxPlasmaEstela");
+            so.FindProperty("impactoPrefab").objectReferenceValue = Prefab("FxPlasmaImpacto");
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
+        }
+
+        static ParticleSystem Prefab(string nombre) =>
+            AssetDatabase.LoadAssetAtPath<GameObject>(PrefabsDir + nombre + ".prefab").GetComponent<ParticleSystem>();
 
         // --- Capas comunes -----------------------------------------------------------------
 

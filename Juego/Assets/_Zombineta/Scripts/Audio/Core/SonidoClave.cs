@@ -33,5 +33,8 @@ namespace Zombineta.Audio
 
         // La tele del mapa se prende (PantallaCRT): suena con el punto blanco del encendido.
         MapaEncendido,
+
+        // El jefe jadea mientras esta aturdido: es cuando se le puede pegar (OrugasDelJefe).
+        JefeCansado,
     }
 }

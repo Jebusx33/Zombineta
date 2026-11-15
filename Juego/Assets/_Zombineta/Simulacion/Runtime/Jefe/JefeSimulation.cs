@@ -27,6 +27,30 @@ namespace Zombineta.Jefe
         public int Carril;
     }
 
+    /// <summary>Un proyectil del jefe y el impacto que deja donde pega.</summary>
+    public sealed class ProyectilDelJefe
+    {
+        public bool Activo;
+        public bool Elevado;
+        /// <summary>El carril por donde va, y donde queda el impacto.</summary>
+        public int Carril;
+        /// <summary>Metros respecto de la moto: negativo, todavia detras.</summary>
+        public float Relativo;
+        /// <summary>Donde salio, respecto de la moto.</summary>
+        public float Salida;
+        /// <summary>Del recorrido del elevado: 0 al salir, 1 al caer.</summary>
+        public float Avance;
+        internal float vida;
+        /// <summary>Sube con cada disparo: la vista reconoce uno nuevo aunque reuse este lugar.</summary>
+        public int Serie;
+
+        public float ImpactoRestante;
+        public float ImpactoRelativo;
+        public bool ImpactoEnElPiso;
+        /// <summary>Sube con cada impacto, como Serie.</summary>
+        public int SerieImpacto;
+    }
+
     /// <summary>
     /// El duelo en moto contra el jefe. C# plano, como el resto de las reglas: la vista solo lee este
     /// estado. El jefe persigue a una distancia fija, repite su patron y solo se lo puede lastimar
@@ -46,6 +70,8 @@ namespace Zombineta.Jefe
         bool emitido;
         bool embestidaPego;
         AccionDeJefe accion;
+        int elevados;
+        int disparosRestantes;
 
         public FaseDeJefe Fase { get; private set; }
         /// <summary>Segundos desde que empezo la fase. La vista saca de aca el cuadro de la animacion.</summary>
@@ -64,23 +90,24 @@ namespace Zombineta.Jefe
         /// <summary>Segundos que le quedan a la animacion de dano.</summary>
         public float DanoRestante { get; private set; }
 
-        // --- Proyectil: uno solo a la vez ---
-        public bool ProyectilActivo { get; private set; }
-        public bool ProyectilElevado { get; private set; }
-        public int ProyectilCarril { get; private set; }
-        /// <summary>Metros respecto de la moto: negativo, todavia detras.</summary>
-        public float ProyectilRelativo { get; private set; }
-        /// <summary>Donde salio, respecto de la moto.</summary>
-        public float ProyectilSalida { get; private set; }
-        /// <summary>Del recorrido del proyectil elevado: 0 al salir, 1 al caer.</summary>
-        public float ProyectilAvance { get; private set; }
-        float proyectilVida;
+        // --- Proyectiles: en el mortero doble hay dos en el aire, y un frontal que ya paso a la moto
+        // puede seguir viaje mientras empieza el ataque siguiente ---
+        public const int MaxProyectiles = 3;
+        public ProyectilDelJefe[] Proyectiles { get; } =
+            { new ProyectilDelJefe(), new ProyectilDelJefe(), new ProyectilDelJefe() };
+        public ProyectilDelJefe UltimoDisparo { get; private set; }
+        public ProyectilDelJefe UltimoImpacto { get; private set; }
 
-        // --- Impacto: el efecto que queda donde pego ---
-        public float ImpactoRestante { get; private set; }
-        public float ImpactoRelativo { get; private set; }
-        public int ImpactoCarril { get; private set; }
-        public bool ImpactoEnElPiso { get; private set; }
+        public bool ProyectilActivo
+        {
+            get
+            {
+                foreach (var p in Proyectiles)
+                    if (p.Activo)
+                        return true;
+                return false;
+            }
+        }
 
         // --- Lo que hay que ir recogiendo para vencerlo ---
         public RecursoDelDuelo CajaDeBalas { get; } = new RecursoDelDuelo();
@@ -106,12 +133,14 @@ namespace Zombineta.Jefe
 
         public bool Vulnerable => Fase == FaseDeJefe.Aturdido;
 
-        /// <summary>Hay un carril fijado para el ataque en curso: la vista lo marca en el piso.</summary>
+        /// <summary>
+        /// Hay un carril fijado para el ataque en curso: la vista lo marca en el piso. Cada mortero en
+        /// el aire marca ademas el suyo (ver Proyectiles).
+        /// </summary>
         public bool AvisoDeCarril =>
             Fase == FaseDeJefe.Anticipacion || Fase == FaseDeJefe.AvisoEmbestida ||
             (Fase == FaseDeJefe.Disparo && !emitido) ||
-            (Fase == FaseDeJefe.Embestida && !embestidaPego) ||
-            (ProyectilActivo && ProyectilElevado);
+            (Fase == FaseDeJefe.Embestida && !embestidaPego);
 
         public void Reset()
         {
@@ -124,14 +153,22 @@ namespace Zombineta.Jefe
             Carril = 1;
             CarrilVisual = 1f;
             DanoRestante = 0f;
-            ProyectilActivo = false;
-            ImpactoRestante = 0f;
+            // Las series no vuelven a cero: la vista las compara con las que ya vio.
+            foreach (var p in Proyectiles)
+            {
+                p.Activo = false;
+                p.ImpactoRestante = 0f;
+            }
+            UltimoDisparo = null;
+            UltimoImpacto = null;
             CajaDeBalas.Activo = false;
             GranadaSuelta.Activo = false;
             paso = 0;
             segundaMitad = false;
             emitido = false;
             embestidaPego = false;
+            elevados = 0;
+            disparosRestantes = 0;
         }
 
         public RunEvent Step(float dt)
@@ -145,7 +182,8 @@ namespace Zombineta.Jefe
             TiempoFase += dt;
             Invulnerable = Mathf.Max(0f, Invulnerable - dt);
             DanoRestante = Mathf.Max(0f, DanoRestante - dt);
-            ImpactoRestante = Mathf.Max(0f, ImpactoRestante - dt);
+            foreach (var p in Proyectiles)
+                p.ImpactoRestante = Mathf.Max(0f, p.ImpactoRestante - dt);
             CarrilVisual = Mathf.MoveTowards(CarrilVisual, Carril, Jefe.velocidadCarril * dt);
 
             var events = AvanzarFase(dt);
@@ -186,8 +224,9 @@ namespace Zombineta.Jefe
                     return RunEvent.None;
 
                 case FaseDeJefe.Persecucion:
-                    // Nunca empieza otro ataque con un proyectil en el aire: podria cerrar la salida segura.
-                    if (TiempoFase >= Jefe.pausaEntreAcciones && !ProyectilActivo)
+                    // Nunca empieza otro ataque con un proyectil que todavia pueda pegar: podria cerrar
+                    // la salida segura. Un frontal que ya paso a la moto no cuenta.
+                    if (TiempoFase >= Jefe.pausaEntreAcciones && !HayProyectilQueAmenaza)
                         return SiguienteAccion();
                     return RunEvent.None;
 
@@ -203,7 +242,20 @@ namespace Zombineta.Jefe
                 case FaseDeJefe.Disparo:
                     var emision = EmitirSiToca();
                     if (TiempoFase >= (AtaqueElevado ? Jefe.disparoElevado : Jefe.disparoFrontal))
-                        Pasar(FaseDeJefe.Persecucion);
+                    {
+                        if (disparosRestantes > 0)
+                        {
+                            // Mortero doble: repite el disparo hacia otro carril, sin nueva anticipacion.
+                            disparosRestantes--;
+                            Carril = OtroCarril(Carril);
+                            Pasar(FaseDeJefe.Disparo);
+                            emitido = false;
+                        }
+                        else
+                        {
+                            Pasar(FaseDeJefe.Persecucion);
+                        }
+                    }
                     return emision;
 
                 case FaseDeJefe.AvisoEmbestida:
@@ -285,8 +337,43 @@ namespace Zombineta.Jefe
 
             // El objetivo se fija aca y ya no sigue a la moto.
             Carril = s.Lane;
+            disparosRestantes = 0;
+            if (accion == AccionDeJefe.Elevado)
+                disparosRestantes = DisparosDelElevado(Jefe.disparosElevados, elevados++) - 1;
             Pasar(accion == AccionDeJefe.Embestida ? FaseDeJefe.AvisoEmbestida : FaseDeJefe.Anticipacion);
             return RunEvent.JefeApunta;
+        }
+
+        /// <summary>Morteros seguidos del ataque elevado numero "indice" (desde 0): la serie se repite.</summary>
+        public static int DisparosDelElevado(int[] serie, int indice)
+        {
+            if (serie == null || serie.Length == 0)
+                return 1;
+            return Mathf.Max(1, serie[indice % serie.Length]);
+        }
+
+        /// <summary>
+        /// El carril del segundo mortero: el de la moto si ya salio del primero; si no, uno vecino. Asi
+        /// los dos caen en carriles distintos y siempre queda uno libre.
+        /// </summary>
+        int OtroCarril(int primero)
+        {
+            if (s.Lane != primero)
+                return s.Lane;
+            if (primero != 1)
+                return 1;
+            return elevados % 2 == 0 ? 0 : 2;
+        }
+
+        bool HayProyectilQueAmenaza
+        {
+            get
+            {
+                foreach (var p in Proyectiles)
+                    if (p.Activo && (p.Elevado || p.Relativo - Jefe.radioProyectil <= config.motoNariz))
+                        return true;
+                return false;
+            }
         }
 
         RunEvent EmitirSiToca()
@@ -295,70 +382,93 @@ namespace Zombineta.Jefe
                 return RunEvent.None;
 
             emitido = true;
-            ProyectilActivo = true;
-            ProyectilElevado = AtaqueElevado;
-            ProyectilCarril = Carril;
-            ProyectilSalida = -Separacion + (AtaqueElevado ? Jefe.bocaElevado : Jefe.bocaFrontal);
-            ProyectilRelativo = ProyectilSalida;
-            ProyectilAvance = 0f;
-            proyectilVida = 0f;
+            var p = LugarLibre();
+            p.Activo = true;
+            p.Elevado = AtaqueElevado;
+            p.Carril = Carril;
+            p.Salida = -Separacion + (AtaqueElevado ? Jefe.bocaElevado : Jefe.bocaFrontal);
+            p.Relativo = p.Salida;
+            p.Avance = 0f;
+            p.vida = 0f;
+            p.Serie++;
+            UltimoDisparo = p;
             return RunEvent.JefeDispara;
+        }
+
+        // Mejor uno que ya no muestre su impacto. Con todos en el aire (no deberia pasar) se pisa el primero.
+        ProyectilDelJefe LugarLibre()
+        {
+            foreach (var p in Proyectiles)
+                if (!p.Activo && p.ImpactoRestante <= 0f)
+                    return p;
+            foreach (var p in Proyectiles)
+                if (!p.Activo)
+                    return p;
+            return Proyectiles[0];
         }
 
         RunEvent AvanzarProyectil(float dt)
         {
-            if (!ProyectilActivo)
-                return RunEvent.None;
-
-            proyectilVida += dt;
-            if (proyectilVida >= Jefe.vidaProyectil)
+            var events = RunEvent.None;
+            foreach (var p in Proyectiles)
             {
-                ProyectilActivo = false;
-                return RunEvent.None;
-            }
+                if (!p.Activo)
+                    continue;
 
-            return ProyectilElevado ? AvanzarElevado(dt) : AvanzarFrontal(dt);
+                p.vida += dt;
+                if (p.vida >= Jefe.vidaProyectil)
+                {
+                    p.Activo = false;
+                    continue;
+                }
+
+                events |= p.Elevado ? AvanzarElevado(p, dt) : AvanzarFrontal(p, dt);
+                if (s.Phase == RunPhase.Lost)
+                    break;
+            }
+            return events;
         }
 
-        RunEvent AvanzarFrontal(float dt)
+        RunEvent AvanzarFrontal(ProyectilDelJefe p, float dt)
         {
-            ProyectilRelativo += Jefe.velocidadProyectil * dt;
+            p.Relativo += Jefe.velocidadProyectil * dt;
 
-            if (ProyectilRelativo > Jefe.salidaProyectil)
+            if (p.Relativo > Jefe.salidaProyectil)
             {
-                ProyectilActivo = false;
+                p.Activo = false;
                 return RunEvent.None;
             }
 
-            bool toca = ProyectilRelativo + Jefe.radioProyectil >= -config.motoCola &&
-                        ProyectilRelativo - Jefe.radioProyectil <= config.motoNariz;
-            if (!toca || !EnElCarril(ProyectilCarril) || s.Airborne || Invulnerable > 0f)
+            bool toca = p.Relativo + Jefe.radioProyectil >= -config.motoCola &&
+                        p.Relativo - Jefe.radioProyectil <= config.motoNariz;
+            if (!toca || !EnElCarril(p.Carril) || s.Airborne || Invulnerable > 0f)
                 return RunEvent.None;
 
-            Impactar(ProyectilRelativo, false);
+            Impactar(p, p.Relativo, false);
             return Golpear();
         }
 
-        RunEvent AvanzarElevado(float dt)
+        RunEvent AvanzarElevado(ProyectilDelJefe p, float dt)
         {
-            ProyectilAvance = Mathf.Min(1f, ProyectilAvance + dt / Jefe.vueloElevado);
-            ProyectilRelativo = Mathf.Lerp(ProyectilSalida, 0f, ProyectilAvance);
-            if (ProyectilAvance < 1f)
+            p.Avance = Mathf.Min(1f, p.Avance + dt / Jefe.vueloElevado);
+            p.Relativo = Mathf.Lerp(p.Salida, 0f, p.Avance);
+            if (p.Avance < 1f)
                 return RunEvent.None;
 
             // Cae en un solo punto: el efecto no deja una zona que siga lastimando.
-            Impactar(0f, true);
-            bool pega = EnElCarril(ProyectilCarril) && !s.Airborne && Invulnerable <= 0f;
+            Impactar(p, 0f, true);
+            bool pega = EnElCarril(p.Carril) && !s.Airborne && Invulnerable <= 0f;
             return RunEvent.JefeImpacto | (pega ? Golpear() : RunEvent.None);
         }
 
-        void Impactar(float relativo, bool enElPiso)
+        void Impactar(ProyectilDelJefe p, float relativo, bool enElPiso)
         {
-            ProyectilActivo = false;
-            ImpactoRestante = Jefe.impacto;
-            ImpactoRelativo = relativo;
-            ImpactoCarril = ProyectilCarril;
-            ImpactoEnElPiso = enElPiso;
+            p.Activo = false;
+            p.ImpactoRestante = Jefe.impacto;
+            p.ImpactoRelativo = relativo;
+            p.ImpactoEnElPiso = enElPiso;
+            p.SerieImpacto++;
+            UltimoImpacto = p;
         }
 
         bool EnElCarril(int carril) => Mathf.Abs(s.LaneVisual - carril) <= 0.5f;
@@ -445,7 +555,9 @@ namespace Zombineta.Jefe
                 return RunEvent.JefeHerido;
 
             Pasar(FaseDeJefe.Derrotado);
-            ProyectilActivo = false;
+            foreach (var p in Proyectiles)
+                p.Activo = false;
+            disparosRestantes = 0;
             CajaDeBalas.Activo = false;
             GranadaSuelta.Activo = false;
             DanoRestante = 0f;

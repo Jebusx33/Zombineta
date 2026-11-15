@@ -116,8 +116,9 @@ escena. `LevelScene` (componente en la escena) construye el `LevelDefinition` y 
 El editor `Zombineta > Nivel` provee paleta de objetos y acciones de nivel.
 
 El jefe se activa con el campo `Jefe` de `LevelScene`. Hoy solo lo usa `Level_02`, con
-`Settings/JefeNivel2.asset`. Lo que se ve está en `VistaDelJefe` y `HudJefe`, y los dibujos en
-`Settings/AnimacionesJefeNivel2.asset`.
+`Settings/JefeNivel2.asset`. Lo que se ve está en `VistaDelJefe` y `HudJefe`, el humo del tanque y el
+plasma de los proyectiles en `EfectosDelJefe` (prefabs `FxJefeHumo` y `FxPlasma*`, armados por `FxBuilder`), y los
+dibujos en `Settings/AnimacionesJefeNivel2.asset`.
 
 ---
 
