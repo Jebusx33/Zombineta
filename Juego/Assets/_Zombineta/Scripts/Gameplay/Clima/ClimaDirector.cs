@@ -314,7 +314,9 @@ namespace Zombineta.Clima
             vel.space = ParticleSystemSimulationSpace.World;
             vel.x = new ParticleSystem.MinMaxCurve(-14f * Viento, -6f * Viento);
             vel.y = new ParticleSystem.MinMaxCurve(-0.6f, 0.9f);
-            vel.z = new ParticleSystem.MinMaxCurve(0f);
+            // Los tres ejes tienen que estar en el mismo modo (dos constantes): si z queda en una constante sola,
+            // Unity tira "Particle Velocity curves must all be in the same mode" en cada cuadro de viento.
+            vel.z = new ParticleSystem.MinMaxCurve(0f, 0f);
             var e = papeles.emission;
             e.rateOverTime = papelesPorSegundo * Viento * Viento * calidad;
         }

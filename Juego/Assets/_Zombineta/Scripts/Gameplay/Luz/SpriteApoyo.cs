@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Zombineta.Luz
 {
@@ -11,6 +12,10 @@ namespace Zombineta.Luz
     ///
     /// Se calcula una vez por sprite. La textura no hace falta que sea legible: se copia chica
     /// a una RenderTexture una sola vez por hoja y de ahi se lee el alfa.
+    ///
+    /// En PC esa lectura es inmediata. En los celulares y consolas (Asincronico) frena la GPU entera
+    /// hasta que termina, y cada hoja nueva que aparecia en el nivel daba un tiron de 20 a 130 ms en
+    /// la X55: ahi se pide sin esperar y mientras llega se usa el borde de la malla.
     /// </summary>
     public static class SpriteApoyo
     {
@@ -33,6 +38,19 @@ namespace Zombineta.Luz
         static readonly Dictionary<Sprite, Vector2> apoyos = new Dictionary<Sprite, Vector2>();
         static readonly Dictionary<Texture2D, Alfa> hojas = new Dictionary<Texture2D, Alfa>();
 
+        sealed class Pedido
+        {
+            public AsyncGPUReadbackRequest lectura;
+            public RenderTexture copia;
+        }
+
+        static readonly Dictionary<Texture2D, Pedido> pedidos = new Dictionary<Texture2D, Pedido>();
+
+        /// <summary>null: lo decide la plataforma (asincronico en celulares y consolas). Los tests lo fuerzan.</summary>
+        public static bool? ForzarAsincronico;
+
+        static bool Asincronico => ForzarAsincronico ?? Application.isMobilePlatform;
+
         // Con "Enter Play Mode" sin recargar el dominio los static sobreviven entre un Play y el
         // siguiente, con las claves (sprites y texturas) ya destruidas: se limpian al empezar.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -40,6 +58,10 @@ namespace Zombineta.Luz
         {
             apoyos.Clear();
             hojas.Clear();
+            foreach (var p in pedidos.Values)
+                if (p.copia != null)
+                    p.copia.Release();
+            pedidos.Clear();
         }
 
         public static Vector2 De(Sprite sprite)
@@ -47,21 +69,27 @@ namespace Zombineta.Luz
             if (apoyos.TryGetValue(sprite, out var apoyo))
                 return apoyo;
 
-            if (!PorAlfa(sprite, out apoyo))
+            if (!PorAlfa(sprite, out apoyo, out bool esperando))
+            {
+                // La lectura de la hoja todavia no llego: el borde de la malla por ahora, sin guardarlo.
+                if (esperando)
+                    return PorMalla(sprite);
                 apoyo = PorMalla(sprite);
+            }
 
             apoyos[sprite] = apoyo;
             return apoyo;
         }
 
-        static bool PorAlfa(Sprite sprite, out Vector2 apoyo)
+        static bool PorAlfa(Sprite sprite, out Vector2 apoyo, out bool esperando)
         {
             apoyo = default;
+            esperando = false;
             // En un atlas con sprites rotados la cuenta de abajo no vale: que resuelva la malla.
             if (sprite.texture == null || (sprite.packed && sprite.packingRotation != SpritePackingRotation.None))
                 return false;
 
-            var alfa = AlfaDe(sprite.texture);
+            var alfa = AlfaDe(sprite.texture, out esperando);
             if (alfa == null)
                 return false;
 
@@ -103,13 +131,22 @@ namespace Zombineta.Luz
             return true;
         }
 
-        static Alfa AlfaDe(Texture2D hoja)
+        static Alfa AlfaDe(Texture2D hoja, out bool esperando)
         {
+            esperando = false;
             if (hojas.TryGetValue(hoja, out var alfa))
                 return alfa;
 
             int ancho = Mathf.Max(1, hoja.width / Reduccion);
             int alto = Mathf.Max(1, hoja.height / Reduccion);
+
+            if (Asincronico && SystemInfo.supportsAsyncGPUReadback)
+            {
+                alfa = AlfaSinEsperar(hoja, ancho, alto, out esperando);
+                if (!esperando)
+                    hojas[hoja] = alfa;
+                return alfa;
+            }
 
             var rt = RenderTexture.GetTemporary(ancho, alto, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
             var anterior = RenderTexture.active;
@@ -152,6 +189,44 @@ namespace Zombineta.Luz
             }
 
             hojas[hoja] = alfa;
+            return alfa;
+        }
+
+        static Alfa AlfaSinEsperar(Texture2D hoja, int ancho, int alto, out bool esperando)
+        {
+            if (!pedidos.TryGetValue(hoja, out var pedido))
+            {
+                var copia = new RenderTexture(ancho, alto, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
+                Graphics.Blit(hoja, copia);
+                pedido = new Pedido { copia = copia, lectura = AsyncGPUReadback.Request(copia, 0, TextureFormat.RGBA32) };
+                pedidos[hoja] = pedido;
+            }
+
+            esperando = !pedido.lectura.done;
+            if (esperando)
+                return null;
+
+            pedidos.Remove(hoja);
+            Alfa alfa = null;
+            if (!pedido.lectura.hasError)
+            {
+                var pixeles = pedido.lectura.GetData<Color32>();
+                alfa = new Alfa
+                {
+                    datos = new byte[pixeles.Length],
+                    ancho = ancho,
+                    alto = alto,
+                    escalaX = (float)ancho / hoja.width,
+                    escalaY = (float)alto / hoja.height,
+                };
+                for (int i = 0; i < pixeles.Length; i++)
+                    alfa.datos[i] = pixeles[i].a;
+            }
+            pedido.copia.Release();
+            if (Application.isPlaying)
+                Object.Destroy(pedido.copia);
+            else
+                Object.DestroyImmediate(pedido.copia);
             return alfa;
         }
 

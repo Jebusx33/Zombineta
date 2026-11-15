@@ -18,10 +18,6 @@ namespace Zombineta.Juego.EditorTools
         const string Identificador = "com.uchar.deadlivery";
         const string Salida = "../Builds/Android";
 
-        // Con 1 GB de RAM entre todo el sistema, ninguna textura pasa de este lado. A 720 de alto alcanza:
-        // los dibujos mas grandes (las hojas del jefe y los fondos) igual se ven a menos de eso en pantalla.
-        const int TexturaMaxima = 1024;
-
         [MenuItem("Zombineta/Build/Android (consolas de 1 GB)")]
         static void DesdeElMenu()
         {
@@ -32,8 +28,11 @@ namespace Zombineta.Juego.EditorTools
             Build();
         }
 
-        /// <summary>El APK para jugar: Vulkan con OpenGL ES 3 de respaldo, sin medidor.</summary>
-        public static void Build() => Generar(false, false, "");
+        /// <summary>
+        /// El APK para jugar: solo OpenGL ES 3, sin medidor. En la X55 corrio parejo con OpenGL (37-40 fps, sin
+        /// tirones) y con Vulkan se sentian tirones.
+        /// </summary>
+        public static void Build() => Generar(true, false, "");
 
         /// <summary>
         /// Dos APK de prueba para comparar en la consola, los dos con el medidor de cuadros en pantalla
@@ -45,7 +44,53 @@ namespace Zombineta.Juego.EditorTools
                 Generar(true, true, "-prueba-opengl");
         }
 
-        static bool Generar(bool soloOpenGL, bool medidor, string sufijo)
+        /// <summary>Solo el de OpenGL con el medidor.</summary>
+        public static void BuildPruebaOpenGL()
+        {
+            Generar(true, true, "-prueba-opengl");
+            VolverAWindowsEnBatch();
+        }
+
+        /// <summary>Solo el de Vulkan (con OpenGL de respaldo) con el medidor.</summary>
+        public static void BuildPruebaVulkan()
+        {
+            Generar(false, true, "-prueba-vulkan");
+            VolverAWindowsEnBatch();
+        }
+
+        /// <summary>
+        /// Build de desarrollo para buscar tirones: Vulkan (con OpenGL de respaldo), el medidor en pantalla y el
+        /// profiler grabando en la consola (PerfilDeCuadros). Los archivos se bajan con adb desde
+        /// /sdcard/Android/data/com.uchar.deadlivery/files.
+        /// </summary>
+        public static void BuildPerfil()
+        {
+            bool tiempos = PlayerSettings.enableFrameTimingStats;
+            PlayerSettings.enableFrameTimingStats = true;
+            try
+            {
+                Generar(false, new[] { "ZOMBINETA_MEDIDOR", "ZOMBINETA_PERFIL" }, "-perfil", BuildOptions.Development);
+            }
+            finally
+            {
+                PlayerSettings.enableFrameTimingStats = tiempos;
+                AssetDatabase.SaveAssets();
+            }
+            VolverAWindowsEnBatch();
+        }
+
+        // En modo batch el proyecto queda en Windows al terminar, como lo usa el equipo: abrirlo despues
+        // en Android obligaria a esperar otra reimportacion.
+        static void VolverAWindowsEnBatch()
+        {
+            if (Application.isBatchMode && EditorUserBuildSettings.activeBuildTarget != BuildTarget.StandaloneWindows64)
+                EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
+        }
+
+        static bool Generar(bool soloOpenGL, bool medidor, string sufijo) =>
+            Generar(soloOpenGL, medidor ? new[] { "ZOMBINETA_MEDIDOR" } : null, sufijo, BuildOptions.None);
+
+        static bool Generar(bool soloOpenGL, string[] defines, string sufijo, BuildOptions extra)
         {
             Configurar(soloOpenGL);
 
@@ -60,10 +105,12 @@ namespace Zombineta.Juego.EditorTools
                 locationPathName = apk,
                 target = BuildTarget.Android,
                 targetGroup = BuildTargetGroup.Android,
-                options = BuildOptions.None,
-                extraScriptingDefines = medidor ? new[] { "ZOMBINETA_MEDIDOR" } : null,
+                options = extra,
+                extraScriptingDefines = defines,
             };
-            var reporte = BuildPipeline.BuildPlayer(opciones);
+            BuildReport reporte;
+            using (new SinTelemetria())
+                reporte = BuildPipeline.BuildPlayer(opciones);
             var r = reporte.summary;
             string resumen = "Build de Android: " + r.result + ", " + (r.totalSize / (1024f * 1024f)).ToString("0.0") +
                              " MB, " + r.totalTime.TotalMinutes.ToString("0.0") + " min, " + r.totalErrors + " errores -> " + apk;
@@ -97,10 +144,108 @@ namespace Zombineta.Juego.EditorTools
             PlayerSettings.Android.startInFullscreen = true;
             PlayerSettings.Android.renderOutsideSafeArea = true;
 
-            EditorUserBuildSettings.androidBuildSubtarget = MobileTextureSubtarget.ETC2;
-            EditorUserBuildSettings.overrideMaxTextureSize = TexturaMaxima;
+            // ASTC y no ETC2: ETC2 solo comprime texturas con lados multiplos de 4 y las demas (62, entre ellas los
+            // arboles, los edificios y el jefe) quedaban crudas, a 4 bytes por pixel. Con 1 GB de RAM la consola se
+            // quedaba sin memoria en el nivel y se congelaba segundos enteros. La Mali-G52 de la X55 lee ASTC.
+            PlayerSettings.Android.textureCompressionFormats = new[] { TextureCompressionFormat.ASTC };
+            EditorUserBuildSettings.androidBuildSubtarget = MobileTextureSubtarget.ASTC;
+            ComprimirLoQueQuedaCrudo();
+            // Sin tope de tamano: las texturas tienen que importarse igual que en PC. El escenario y otros datos
+            // se miden en pixeles del dibujo (el avance de cada tile, la boca del arma): con un tope de 1024 el
+            // asfalto (3552 px) quedaba chico y aparecian huecos oscuros en la calle. Ademas el tope queda
+            // guardado en Library y tambien achicaba las texturas del editor.
+            EditorUserBuildSettings.overrideMaxTextureSize = 0;
             EditorUserBuildSettings.buildAppBundle = false;
             AssetDatabase.SaveAssets();
+        }
+
+        // Debajo de esto (iconos y paneles de UI) no vale la pena: pesan poco y se ven mejor crudos.
+        public const int PixelesMinimosParaComprimir = 512 * 512;
+
+        /// <summary>
+        /// Lo que en PC quedo sin comprimir (las hojas del jefe, el cielo, las luces de los edificios) en Android
+        /// pesa 4 bytes por pixel. Les pone un ajuste solo para Android con ASTC 4x4 (1 byte por pixel, casi sin
+        /// diferencia a la vista). Respeta los que ya tienen un ajuste de Android puesto a mano. PC no cambia.
+        /// </summary>
+        public static int ComprimirLoQueQuedaCrudo()
+        {
+            int cambiadas = 0;
+            AssetDatabase.StartAssetEditing();
+            try
+            {
+                foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { "Assets/_Zombineta/Art" }))
+                {
+                    if (!(AssetImporter.GetAtPath(AssetDatabase.GUIDToAssetPath(guid)) is TextureImporter imp))
+                        continue;
+                    if (!DebeComprimirseEnAndroid(imp))
+                        continue;
+                    var pc = imp.GetDefaultPlatformTextureSettings();
+                    var android = imp.GetPlatformTextureSettings("Android");
+                    android.overridden = true;
+                    android.maxTextureSize = pc.maxTextureSize;
+                    android.format = TextureImporterFormat.ASTC_4x4;
+                    android.textureCompression = TextureImporterCompression.CompressedHQ;
+                    imp.SetPlatformTextureSettings(android);
+                    imp.SaveAndReimport();
+                    cambiadas++;
+                }
+            }
+            finally
+            {
+                AssetDatabase.StopAssetEditing();
+            }
+            return cambiadas;
+        }
+
+        public static bool DebeComprimirseEnAndroid(TextureImporter imp)
+        {
+            if (imp.GetDefaultPlatformTextureSettings().textureCompression != TextureImporterCompression.Uncompressed)
+                return false;
+            if (imp.GetPlatformTextureSettings("Android").overridden)
+                return false;
+            imp.GetSourceTextureWidthAndHeight(out int ancho, out int alto);
+            return ancho * alto >= PixelesMinimosParaComprimir;
+        }
+
+        /// <summary>
+        /// Apaga los servicios de Unity (Engine Diagnostics y el envio de eventos) solo mientras se arma el APK y
+        /// despues los deja como estaban. En la consola, sin internet, el envio trababa el juego hasta 1,5 s
+        /// (EarlyUpdate.InsightsUpdate en el profiler). El build de PC no se toca.
+        /// </summary>
+        sealed class SinTelemetria : System.IDisposable
+        {
+            readonly bool diagnosticos;
+            readonly SerializedObject conexion;
+            readonly bool conectado;
+
+            public SinTelemetria()
+            {
+                diagnosticos = UnityEditor.EngineDiagnostics.EngineDiagnosticsSettings.enabled;
+                UnityEditor.EngineDiagnostics.EngineDiagnosticsSettings.enabled = false;
+                var ajustes = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/UnityConnectSettings.asset");
+                if (ajustes.Length > 0)
+                {
+                    conexion = new SerializedObject(ajustes[0]);
+                    var activo = conexion.FindProperty("m_Enabled");
+                    conectado = activo != null && activo.boolValue;
+                    if (activo != null)
+                    {
+                        activo.boolValue = false;
+                        conexion.ApplyModifiedPropertiesWithoutUndo();
+                    }
+                }
+            }
+
+            public void Dispose()
+            {
+                UnityEditor.EngineDiagnostics.EngineDiagnosticsSettings.enabled = diagnosticos;
+                var activo = conexion?.FindProperty("m_Enabled");
+                if (activo != null)
+                {
+                    activo.boolValue = conectado;
+                    conexion.ApplyModifiedPropertiesWithoutUndo();
+                }
+            }
         }
     }
 }

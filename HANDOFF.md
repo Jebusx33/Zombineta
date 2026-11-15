@@ -668,11 +668,36 @@ En el aviso de embestida las orugas aceleran con tres tirones (`OrugasDelJefe.Ru
 `BuildAndroid` (menú Zombineta > Build > Android, o en batch con
 `-buildTarget Android -executeMethod Zombineta.Juego.EditorTools.BuildAndroid.Build`) y queda en
 `Builds/Android/DeadLivery-<versión>.apk`, firmado con la clave de prueba de Unity. Solo cambia la configuración de
-Android: `com.uchar.deadlivery`, IL2CPP para ARM64 y ARMv7, Vulkan con OpenGL ES 3 de respaldo, siempre horizontal,
-ETC2 y texturas hasta 1024 px (`overrideMaxTextureSize`, que no se guarda en el proyecto). En celulares y consolas
-`GameRoot` pide 60 cuadros por segundo; si no, Android corre a 30. El primer APK pesa 108 MB y se generó en 21 minutos. No está
-probado en la consola. Las hojas del jefe salen sin comprimir (4 MB cada una): si falta memoria, lo primero es
-comprimirlas para Android.
+Android: `com.uchar.deadlivery`, IL2CPP para ARM64 y ARMv7, solo OpenGL ES 3, siempre horizontal y ASTC. En
+celulares y consolas `GameRoot` pide 60 cuadros por segundo; si no, Android corre a 30. En la X55, con OpenGL, anda a
+37-40 fps parejo; con Vulkan se sentían tirones. `BuildPruebaOpenGL` suma `MedidorDeCuadros` arriba a la izquierda
+(fps, peor cuadro, API gráfica).
+**No poner tope de tamaño a las texturas** (`overrideMaxTextureSize`). El escenario mide en píxeles del dibujo
+importado (`avancePx`, offsets de acompañantes, la boca del arma): con un tope de 1024 el asfalto (3552 px) dejaba
+huecos oscuros en la calle. El tope además queda guardado en Library y achica las texturas del editor.
+`EscenarioSinHuecosTests` lo detecta.
+
+**Memoria y tirones en Android (15/11):** en la X55 el nivel se congelaba segundos enteros: la consola tiene unos
+290 MB libres y el juego ocupaba unos 250 MB de texturas, así que Android paginaba memoria (en el profiler el
+tiempo de esos cuadros cae en funciones triviales y el sistema mata procesos con "device is not responding").
+Cambios, todos solo para Android:
+- Texturas en ASTC, no ETC2. ETC2 deja crudas (4 bytes por píxel) las que no miden múltiplos de 4, y eran 62:
+  árboles, edificios, el jefe. Estimado: Nivel 1 de ~108 a ~32 MB, Nivel 2 de ~192 a ~45 MB.
+- Las texturas grandes que en PC van sin comprimir (las hojas del jefe, el cielo, dos luces de edificios) tienen un
+  ajuste de Android en ASTC 4x4 (`BuildAndroid.ComprimirLoQueQuedaCrudo`, que corre en cada build; respeta los
+  ajustes de Android puestos a mano).
+- `SpriteApoyo` lee el alfa de cada hoja sin esperar a la GPU en celulares y consolas
+  (`AsyncGPUReadback`); mientras llega usa el borde de la malla. La lectura inmediata frenaba la GPU y daba tirones
+  de 20 a 130 ms cada vez que aparecía una hoja nueva. En PC sigue inmediata.
+- El APK se arma con Engine Diagnostics y los servicios de Unity apagados (`SinTelemetria`, se restauran al
+  terminar): sin internet, `EarlyUpdate.InsightsUpdate` trababa hasta 1,5 s.
+- En todas las plataformas: los papeles del viento (`ClimaDirector`) tenían la velocidad en z en otro modo que x e
+  y, y Unity tiraba "Particle Velocity curves must all be in the same mode" en cada cuadro de viento.
+
+`RendimientoAndroidTests` cubre lo anterior. Para medir hay un build de desarrollo, `BuildPerfil`, que graba el
+profiler en la consola en `perfil_000.raw`, `perfil_001.raw`... (en `/sdcard/Android/data/com.uchar.deadlivery/files`)
+y anota en logcat cada cuadro lento con escena y metros (`PerfilDeCuadros`). Escribir el profiler pesa: ese APK se
+juega mucho peor que el normal, sirve solo para ver qué se lleva el tiempo.
 
 **Audios nuevos (14/11):**
 - `boss_music` es el tema del jefe. Arranca desde su comienzo 15 m antes de que entre el jefe, unos 2,4 s antes de
