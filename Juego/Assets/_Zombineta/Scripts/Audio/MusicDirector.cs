@@ -41,6 +41,9 @@ namespace Zombineta.Audio
         /// <summary>Debug/Play: la fuente de la capa de tension.</summary>
         public AudioSource Tension => sourceTension;
 
+        /// <summary>Debug/Play: la fuente de la capa del jefe.</summary>
+        public AudioSource CapaJefe => sourceJefe;
+
         FuenteConBus[] temaFuentes;
         AudioSource[] temaSources;
         int indiceActual = -1;
@@ -52,6 +55,27 @@ namespace Zombineta.Audio
         float amenazaObjetivo;
         float velocidadAmenaza;
         float topeTension = 1f;
+
+        // Capa del jefe: se carga con el tema del nivel y arranca desde su comienzo cuando el jefe esta por
+        // aparecer (anticipa su llegada), sube enseguida y se apaga despacio al derrotarlo.
+        FuenteConBus fuenteJefe;
+        AudioSource sourceJefe;
+        bool jefeActivo;
+        bool jefeSonando;
+        const float SubidaJefe = 0.15f;
+        float jefeObjetivo;
+        float velocidadJefe;
+        float topeJefe = 1f;
+        const float SuavizadoJefe = 1.5f;
+
+        // El tema del nivel baja de volumenTema a volumenTemaConJefe a medida que sube la capa del jefe.
+        bool temaDeNivel;
+        float volumenTema = 1f, volumenTemaConJefe = 1f;
+        float jefeSuave, velocidadJefeSuave; // la intensidad del jefe, sin saltos (al derrotarlo baja de golpe)
+
+        /// <summary>Volumen del tema del nivel para esa intensidad de la capa del jefe (0 sin jefe, 1 en el duelo).</summary>
+        public static float VolumenDelTema(float normal, float conJefe, float jefe01) =>
+            Mathf.Lerp(normal, conJefe, Mathf.Clamp01(jefe01));
 
         object actualClip;
         Coroutine fundidoRoutine;
@@ -115,6 +139,15 @@ namespace Zombineta.Audio
         {
             // Mientras se apaga (fundido de salida), solo Fundir escribe volumenPropio: si el
             // SmoothDamp tambien escribiera, competiria con el fundido y la tension no llegaria a 0.
+            if (jefeActivo)
+                AvanzarCapaDelJefe();
+
+            // Fuera del fundido cruzado, el tema del nivel sigue a la capa del jefe (jefeObjetivo ya viene de a poco).
+            jefeSuave = Mathf.SmoothDamp(jefeSuave, jefeObjetivo, ref velocidadJefeSuave, SuavizadoJefe,
+                Mathf.Infinity, Time.unscaledDeltaTime);
+            if (temaDeNivel && fundidoRoutine == null && indiceActual >= 0)
+                temaFuentes[indiceActual].volumenPropio = VolumenDelTema(volumenTema, volumenTemaConJefe, jefeSuave);
+
             if (!tensionActiva || apagandoTension)
                 return;
             fuenteTension.volumenPropio = Mathf.SmoothDamp(fuenteTension.volumenPropio, amenazaObjetivo * topeTension,
@@ -134,6 +167,39 @@ namespace Zombineta.Audio
             Aplicar(GameScreen.Playing);
         }
 
+        /// <summary>La llama el nivel cada cuadro: 0 sin jefe a la vista, 1 con el duelo en marcha (CapaDelJefe).</summary>
+        public void SetJefe(float intensidad01) => jefeObjetivo = Mathf.Clamp01(intensidad01);
+
+        /// <summary>
+        /// Volumen al que va la capa del jefe: todo apenas el jefe se anuncia (el tema del jefe empieza con un
+        /// golpe que se tiene que oir), nada sin el. El tema del nivel, en cambio, baja de a poco con la intensidad.
+        /// </summary>
+        public static float VolumenDeLaCapaDelJefe(float intensidad01, float tope) => intensidad01 > 0f ? tope : 0f;
+
+        void AvanzarCapaDelJefe()
+        {
+            float objetivo = VolumenDeLaCapaDelJefe(jefeObjetivo, topeJefe);
+            if (objetivo > 0f && !jefeSonando)
+            {
+                // Desde el principio cada vez que el jefe se anuncia, tambien al reintentar.
+                sourceJefe.Stop();
+                sourceJefe.time = 0f;
+                sourceJefe.Play();
+                jefeSonando = true;
+                velocidadJefe = 0f;
+            }
+            float suavizado = objetivo > fuenteJefe.volumenPropio ? SubidaJefe : SuavizadoJefe;
+            fuenteJefe.volumenPropio = Mathf.SmoothDamp(fuenteJefe.volumenPropio, objetivo,
+                ref velocidadJefe, suavizado, Mathf.Infinity, Time.unscaledDeltaTime);
+
+            // Ya apagada (derrotado, o el reintento volvio al principio del nivel): queda lista para la proxima.
+            if (jefeSonando && objetivo <= 0f && fuenteJefe.volumenPropio < 0.001f)
+            {
+                sourceJefe.Stop();
+                jefeSonando = false;
+            }
+        }
+
         /// <summary>La llama el nivel (Task 6) cada cuadro con 0 (lejos) a 1 (encima de la moto).</summary>
         public void SetAmenaza(float amenaza01) => amenazaObjetivo = Mathf.Clamp01(amenaza01);
 
@@ -144,6 +210,7 @@ namespace Zombineta.Audio
             temaFuentes[0] = CrearFuente("TemaA", out temaSources[0]);
             temaFuentes[1] = CrearFuente("TemaB", out temaSources[1]);
             fuenteTension = CrearFuente("Tension", out sourceTension);
+            fuenteJefe = CrearFuente("Jefe", out sourceJefe);
         }
 
         FuenteConBus CrearFuente(string nombre, out AudioSource source)
@@ -233,6 +300,16 @@ namespace Zombineta.Audio
             entranteSource.clip = clip;
             entrante.volumenPropio = 0f;
             entranteSource.PlayScheduled(horaInicio);
+            temaDeNivel = pantalla == GameScreen.Playing && nivelParaTension != null;
+            volumenTema = temaDeNivel ? Mathf.Clamp01(nivelParaTension.volumenMusica) : 1f;
+            volumenTemaConJefe = temaDeNivel ? Mathf.Clamp01(nivelParaTension.volumenMusicaConJefe) : 1f;
+            float volumenEntrante = volumenTema;
+
+            // La capa del jefe: arranca con el tema de un nivel que la tiene; al irse del nivel, se va.
+            if (pantalla == GameScreen.Playing && nivelParaTension != null && nivelParaTension.jefe != null)
+                IniciarJefe(nivelParaTension);
+            else if (jefeActivo)
+                apagarJefe = true;
 
             bool debeIniciarTension = pantalla == GameScreen.Playing && nivelParaTension != null &&
                 nivelParaTension.tension != null;
@@ -245,7 +322,7 @@ namespace Zombineta.Audio
             float segundos = musica != null ? musica.fundido : FundidoPorDefecto;
             if (fundidoRoutine != null)
                 StopCoroutine(fundidoRoutine);
-            fundidoRoutine = StartCoroutine(Fundir(saliente, salienteSource, entrante, segundos, apagarTension));
+            fundidoRoutine = StartCoroutine(Fundir(saliente, salienteSource, entrante, segundos, apagarTension, volumenEntrante));
 
             indiceActual = indiceEntrante;
             actualClip = clip;
@@ -272,20 +349,41 @@ namespace Zombineta.Audio
             amenazaObjetivo = 0f; // que no herede la amenaza del nivel anterior: arranca en 0 y sigue a SetAmenaza.
         }
 
+        bool apagarJefe;
+
+        void IniciarJefe(AudioDeNivel nivel)
+        {
+            sourceJefe.Stop();
+            sourceJefe.clip = nivel.jefe;
+            fuenteJefe.volumenPropio = 0f;
+            jefeSonando = false; // suena recien cuando el jefe se anuncia (AvanzarCapaDelJefe)
+            jefeActivo = true;
+            apagarJefe = false;
+            topeJefe = Mathf.Clamp01(nivel.volumenJefe);
+            velocidadJefe = 0f;
+            jefeObjetivo = 0f; // arranca callada: la sube SetJefe cuando el jefe esta por aparecer.
+        }
+
         IEnumerator Fundir(FuenteConBus saliente, AudioSource salienteSource, FuenteConBus entrante, float segundos,
-            bool apagarTension)
+            bool apagarTension, float volumenEntrante)
         {
             float desdeSaliente = saliente != null ? saliente.volumenPropio : 0f;
             float desdeTension = apagarTension ? fuenteTension.volumenPropio : 0f;
+            bool apagaJefe = apagarJefe;
+            if (apagaJefe)
+                jefeActivo = false; // el fundido de aca manda: que el SmoothDamp no la vuelva a subir.
+            float desdeJefe = apagaJefe ? fuenteJefe.volumenPropio : 0f;
 
             for (float t = 0f; t < segundos; t += Time.unscaledDeltaTime)
             {
                 float f = Mathf.Clamp01(t / segundos);
                 if (saliente != null)
                     saliente.volumenPropio = Mathf.Lerp(desdeSaliente, 0f, f);
-                entrante.volumenPropio = f;
+                entrante.volumenPropio = f * volumenEntrante;
                 if (apagarTension)
                     fuenteTension.volumenPropio = Mathf.Lerp(desdeTension, 0f, f);
+                if (apagaJefe)
+                    fuenteJefe.volumenPropio = Mathf.Lerp(desdeJefe, 0f, f);
                 yield return null;
             }
 
@@ -294,7 +392,13 @@ namespace Zombineta.Audio
                 saliente.volumenPropio = 0f;
                 salienteSource.Stop();
             }
-            entrante.volumenPropio = 1f;
+            entrante.volumenPropio = volumenEntrante;
+            if (apagaJefe)
+            {
+                fuenteJefe.volumenPropio = 0f;
+                sourceJefe.Stop();
+                apagarJefe = false;
+            }
 
             if (apagarTension)
             {

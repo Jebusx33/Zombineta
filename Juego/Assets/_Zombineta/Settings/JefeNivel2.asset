@@ -17,8 +17,8 @@ MonoBehaviour:
   separacionEntrada: 30
   despejarDesde: 35
   hordaEnDuelo: 0.5
-  vida: 12
-  vidaSegundaMitad: 6
+  vida: 15
+  vidaSegundaMitad: 7
   danoBala: 1
   danoGranada: 3
   corazones: 3
@@ -26,13 +26,14 @@ MonoBehaviour:
   frenoPorGolpe: 0.4
   separacion: 11
   velocidadCarril: 4
-  pausaEntreAcciones: 0.6
-  patronPrimeraMitad: 000000000100000003000000i
-  patronSegundaMitad: 000000000200000003000000010000000200000003000000i
+  pausaEntreAcciones: 0.35
+  patronPrimeraMitad: 00000000010000000000000003000000i
+  patronSegundaMitad: 0000000002000000010000000300000001000000000000000200000003000000i
   anticipacion: 0.95
   disparoFrontal: 0.5
   disparoElevado: 0.6
   emisionElevado: 0.18
+  disparosElevados: 0100000002000000i
   bocaFrontal: 3.4
   bocaElevado: 2.2
   velocidadProyectil: 13

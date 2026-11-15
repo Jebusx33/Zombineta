@@ -17,8 +17,8 @@ namespace Zombineta.Audio
     /// FxManager; para ZombieAdelante recorre run.Level.Items buscando un ZombieFront que haya
     /// entrado dentro de distanciaAvisoZombie (12 m por defecto) por delante de la moto: cerca a
     /// proposito, porque a distanciaMaxima (30 m) la atenuacion espacial ya dio 0 y no se
-    /// escuchaba; y escucha GameRoot.Flow.Changed para Victoria y Derrota (Won/Lost no disparan
-    /// sonido por si solos). Tambien hace sonar el impacto de bala (de los eventos de la horda),
+    /// escuchaba; Victoria suena con RunEvent.Won, al cruzar la meta; y escucha GameRoot.Flow.Changed
+    /// para Derrota (Lost no dispara sonido por si solo). Tambien hace sonar el impacto de bala (de los eventos de la horda),
     /// el corte y la vuelta de la luz (LightingDirector.Oscuridad) y, si el banco del nivel las
     /// tiene, las alarmas de los autos que pasa. Vive en el prefab SonidoDeNivel, como hijo suyo.
     /// Busca su RunController si no esta cableado.
@@ -194,6 +194,8 @@ namespace Zombineta.Audio
             if ((events & RunEvent.HeadlightOff) != 0) audio.Play(SonidoClave.FaroOff);
             if ((events & RunEvent.RanOutOfFuel) != 0) audio.Play(SonidoClave.SinNafta);
             if ((events & RunEvent.Launched) != 0) audio.Play(SonidoClave.Salto);
+            // Al cruzar la linea de meta, no al aparecer la pantalla de nivel completo (alli arranca la musica de victoria).
+            if ((events & RunEvent.Won) != 0) audio.Play(SonidoClave.Victoria);
 
             // Pelea a pie: suena cada golpe de la cadena (el paso lo da el estado), el remate y el dano.
             float aPie = run.ToWorldX(state.PeatonX);
@@ -351,9 +353,7 @@ namespace Zombineta.Audio
             if (audio == null)
                 return;
 
-            if (to == GameScreen.LevelComplete)
-                audio.Play(SonidoClave.Victoria);
-            else if (to == GameScreen.GameOver)
+            if (to == GameScreen.GameOver)
                 audio.Play(SonidoClave.Derrota);
             Traza("sonido de pantalla listo");
         }

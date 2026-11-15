@@ -69,6 +69,12 @@ namespace Zombineta.Juego.Tests
                 var hud = Buscar<HudJefe>(escena);
                 Assert.IsNotNull(hud, "falta el HUD del duelo");
                 Assert.IsNotNull(new SerializedObject(hud).FindProperty("run").objectReferenceValue);
+
+                var efectos = Buscar<EfectosDelJefe>(escena);
+                Assert.IsNotNull(efectos, "faltan el humo y el plasma del jefe");
+                var fx = new SerializedObject(efectos);
+                foreach (var campo in new[] { "run", "vista", "humoPrefab", "disparoPrefab", "estelaPrefab", "impactoPrefab" })
+                    Assert.IsNotNull(fx.FindProperty(campo).objectReferenceValue, campo);
             });
         }
 

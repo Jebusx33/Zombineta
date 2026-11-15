@@ -6,7 +6,7 @@ using Zombineta.Luz;
 namespace Zombineta.Jefe
 {
     /// <summary>
-    /// Lo que se ve del duelo: el jefe, su proyectil con el impacto, las marcas en el piso y lo que hay
+    /// Lo que se ve del duelo: el jefe, sus proyectiles con el impacto, las marcas en el piso y lo que hay
     /// que recoger en el camino. Solo lee la simulacion: el cuadro de cada animacion sale del tiempo de la fase, asi que la
     /// pausa la congela y el reintento la limpia sin hacer nada aca.
     /// </summary>
@@ -47,9 +47,14 @@ namespace Zombineta.Jefe
         [SerializeField] Sprite granadaSuelta;
         [SerializeField] float altoRecolectable = 0.8f;
 
-        SpriteRenderer cuerpo, proyectil, impacto, marcaCarril, marcaPunto, caja, granada;
+        SpriteRenderer cuerpo, marcaCarril, caja, granada;
+        // Uno por lugar de JefeSimulation.Proyectiles; las marcas de caida, una por mortero mas la del que apunta.
+        readonly SpriteRenderer[] proyectiles = new SpriteRenderer[JefeSimulation.MaxProyectiles];
+        readonly SpriteRenderer[] impactos = new SpriteRenderer[JefeSimulation.MaxProyectiles];
+        readonly SpriteRenderer[] marcasPunto = new SpriteRenderer[JefeSimulation.MaxProyectiles + 1];
+        readonly Vector2[] ultimaPosicion = new Vector2[JefeSimulation.MaxProyectiles];
+        readonly int[] serieDibujada = new int[JefeSimulation.MaxProyectiles];
         SombraProyectada sombra;
-        Vector2 ultimaPosicionProyectil;
 
         void Awake()
         {
@@ -57,16 +62,22 @@ namespace Zombineta.Jefe
                 run = FindAnyObjectByType<RunController>();
 
             cuerpo = Nuevo("Cuerpo");
-            proyectil = Nuevo("Proyectil");
-            impacto = Nuevo("Impacto");
+            for (int i = 0; i < proyectiles.Length; i++)
+            {
+                proyectiles[i] = Nuevo("Proyectil " + i);
+                impactos[i] = Nuevo("Impacto " + i);
+            }
             marcaCarril = Nuevo("Marca de carril");
-            marcaPunto = Nuevo("Marca de caida");
+            for (int i = 0; i < marcasPunto.Length; i++)
+            {
+                marcasPunto[i] = Nuevo("Marca de caida " + i);
+                marcasPunto[i].sprite = FormasDeAviso.Aro;
+            }
             caja = Nuevo("Caja de balas");
             caja.sprite = cajaDeBalas;
             granada = Nuevo("Granada");
             granada.sprite = granadaSuelta;
             marcaCarril.sprite = FormasDeAviso.Capsula;
-            marcaPunto.sprite = FormasDeAviso.Aro;
             sombra = SombraProyectada.Poner(cuerpo.gameObject, cuerpo, "", 0, true);
         }
 
@@ -96,8 +107,11 @@ namespace Zombineta.Jefe
                 DibujarCuerpo(jefe);
 
             DibujarAvisos(jefe);
-            DibujarProyectil(jefe);
-            DibujarImpacto(jefe);
+            for (int i = 0; i < proyectiles.Length; i++)
+            {
+                DibujarProyectil(i, jefe.Proyectiles[i]);
+                DibujarImpacto(impactos[i], jefe.Proyectiles[i]);
+            }
             DibujarRecurso(caja, jefe.CajaDeBalas);
             DibujarRecurso(granada, jefe.GranadaSuelta);
         }
@@ -171,91 +185,129 @@ namespace Zombineta.Jefe
 
         void DibujarAvisos(JefeSimulation jefe)
         {
-            bool activo = jefe.AvisoDeCarril;
-            bool elevado = activo && jefe.AtaqueElevado && jefe.Fase != FaseDeJefe.AvisoEmbestida && jefe.Fase != FaseDeJefe.Embestida;
-            marcaPunto.enabled = elevado;
-            marcaCarril.enabled = activo && !elevado;
-            if (!activo)
-                return;
-
             var color = colorAviso;
             color.a *= 0.55f + 0.45f * Mathf.Sin(run.Sim.State.Elapsed * pulsoAviso * Mathf.PI * 2f);
-            float y = run.LaneToWorldY(jefe.Carril);
-            int orden = LaneSorting.Order(jefe.Carril, SortSlot.Shadow) - 2;
 
+            // El ataque en curso: el elevado marca donde va a caer; el resto, todo el carril.
+            bool activo = jefe.AvisoDeCarril;
+            bool elevado = activo && jefe.AtaqueElevado && jefe.Fase != FaseDeJefe.AvisoEmbestida && jefe.Fase != FaseDeJefe.Embestida;
+            int marcas = 0;
             if (elevado)
-            {
-                color.a = Mathf.Clamp01(color.a * 1.8f);
-                marcaPunto.color = color;
-                marcaPunto.sortingOrder = orden;
-                marcaPunto.transform.position = new Vector3(run.ToWorldX(run.Sim.State.PlayerX), y, 0f);
-                float ancho = anchoMarcaElevado / marcaPunto.sprite.bounds.size.x;
-                marcaPunto.transform.localScale = new Vector3(ancho, ancho * 0.45f, 1f);
+                MarcarCaida(marcasPunto[marcas++], jefe.Carril, color);
+            // Cada mortero en el aire, hasta que cae.
+            foreach (var p in jefe.Proyectiles)
+                if (p.Activo && p.Elevado && marcas < marcasPunto.Length)
+                    MarcarCaida(marcasPunto[marcas++], p.Carril, color);
+            for (int i = marcas; i < marcasPunto.Length; i++)
+                marcasPunto[i].enabled = false;
+
+            marcaCarril.enabled = activo && !elevado;
+            if (!marcaCarril.enabled)
                 return;
-            }
 
             // Desde el jefe hasta pasar la moto: todo el carril por donde va a venir.
+            float y = run.LaneToWorldY(jefe.Carril);
             float desde = run.ToWorldX(jefe.X);
             float hasta = run.ToWorldX(run.Sim.State.PlayerX + 8f);
             marcaCarril.color = color;
-            marcaCarril.sortingOrder = orden;
+            marcaCarril.sortingOrder = LaneSorting.Order(jefe.Carril, SortSlot.Shadow) - 2;
             marcaCarril.transform.position = new Vector3((desde + hasta) * 0.5f, y, 0f);
             var tam = marcaCarril.sprite.bounds.size;
             marcaCarril.transform.localScale = new Vector3(
                 (hasta - desde) / tam.x, run.Config.laneSpacing * 0.6f / tam.y, 1f);
         }
 
-        void DibujarProyectil(JefeSimulation jefe)
+        void MarcarCaida(SpriteRenderer marca, int carril, Color color)
         {
-            proyectil.enabled = jefe.ProyectilActivo;
-            if (!jefe.ProyectilActivo)
+            color.a = Mathf.Clamp01(color.a * 1.8f);
+            marca.enabled = true;
+            marca.color = color;
+            marca.sortingOrder = LaneSorting.Order(carril, SortSlot.Shadow) - 2;
+            marca.transform.position = new Vector3(run.ToWorldX(run.Sim.State.PlayerX), run.LaneToWorldY(carril), 0f);
+            float ancho = anchoMarcaElevado / marca.sprite.bounds.size.x;
+            marca.transform.localScale = new Vector3(ancho, ancho * 0.45f, 1f);
+        }
+
+        void DibujarProyectil(int i, ProyectilDelJefe p)
+        {
+            var proyectil = proyectiles[i];
+            proyectil.enabled = p.Activo;
+            if (!p.Activo)
                 return;
 
             var clip = animaciones.proyectilVuelo;
             proyectil.sprite = clip.cuadros[clip.Indice(run.Sim.State.Elapsed)];
-            proyectil.sortingOrder = LaneSorting.Order(jefe.ProyectilCarril, SortSlot.Effect);
+            proyectil.sortingOrder = LaneSorting.Order(p.Carril, SortSlot.Effect);
             proyectil.transform.localScale = new Vector3(escalaProyectil, escalaProyectil, 1f);
 
-            var boca = (jefe.ProyectilElevado ? animaciones.bocaElevado : animaciones.bocaFrontal) * escala;
-            float suelo = run.LaneToWorldY(jefe.ProyectilCarril);
-            float x = run.ToWorldX(run.Sim.State.PlayerX + jefe.ProyectilRelativo);
+            var boca = (p.Elevado ? animaciones.bocaElevado : animaciones.bocaFrontal) * escala;
+            float suelo = run.LaneToWorldY(p.Carril);
+            float x = run.ToWorldX(run.Sim.State.PlayerX + p.Relativo);
             float y;
-            if (jefe.ProyectilElevado)
+            if (p.Elevado)
             {
-                float p = jefe.ProyectilAvance;
-                y = suelo + Mathf.Lerp(boca.y, 0f, p) + 4f * alturaDelArco * p * (1f - p);
+                float t = p.Avance;
+                y = suelo + Mathf.Lerp(boca.y, 0f, t) + 4f * alturaDelArco * t * (1f - t);
             }
             else
             {
-                float p = Mathf.InverseLerp(jefe.ProyectilSalida, 0f, jefe.ProyectilRelativo);
-                y = suelo + Mathf.Lerp(boca.y, alturaDeContacto, p);
+                float t = Mathf.InverseLerp(p.Salida, 0f, p.Relativo);
+                y = suelo + Mathf.Lerp(boca.y, alturaDeContacto, t);
             }
 
             // La cola queda atras: el dibujo mira hacia donde va. La moto corre con el proyectil,
-            // asi que se mide contra ella y no contra el piso.
+            // asi que se mide contra ella y no contra el piso. Uno nuevo arranca mirando hacia donde sale.
             var posicion = new Vector2(x - run.ToWorldX(run.Sim.State.PlayerX), y);
-            var paso = posicion - ultimaPosicionProyectil;
-            ultimaPosicionProyectil = posicion;
+            if (serieDibujada[i] != p.Serie)
+            {
+                serieDibujada[i] = p.Serie;
+                ultimaPosicion[i] = posicion;
+                proyectil.transform.rotation = Quaternion.Euler(0f, 0f, p.Elevado ? 60f : 0f);
+            }
+            var paso = posicion - ultimaPosicion[i];
+            ultimaPosicion[i] = posicion;
             if (paso.sqrMagnitude > 0.000001f && paso.sqrMagnitude < 4f)
                 proyectil.transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(paso.y, paso.x) * Mathf.Rad2Deg);
             proyectil.transform.position = new Vector3(x, y, 0f);
         }
 
-        void DibujarImpacto(JefeSimulation jefe)
+        void DibujarImpacto(SpriteRenderer impacto, ProyectilDelJefe p)
         {
-            impacto.enabled = jefe.ImpactoRestante > 0f;
+            impacto.enabled = p.ImpactoRestante > 0f;
             if (!impacto.enabled)
                 return;
 
             var clip = animaciones.proyectilImpacto;
-            impacto.sprite = clip.cuadros[clip.Indice(run.Config.jefe.impacto - jefe.ImpactoRestante)];
-            impacto.sortingOrder = LaneSorting.Order(jefe.ImpactoCarril, SortSlot.Effect);
+            impacto.sprite = clip.cuadros[clip.Indice(run.Config.jefe.impacto - p.ImpactoRestante)];
+            impacto.sortingOrder = LaneSorting.Order(p.Carril, SortSlot.Effect);
             impacto.transform.localScale = new Vector3(escalaProyectil, escalaProyectil, 1f);
-
-            float y = run.LaneToWorldY(jefe.ImpactoCarril) + (jefe.ImpactoEnElPiso ? 0.1f : alturaDeContacto);
-            impacto.transform.position = new Vector3(run.ToWorldX(run.Sim.State.PlayerX + jefe.ImpactoRelativo), y, 0f);
+            impacto.transform.position = PosicionDelImpacto(p);
             // El pivote es el punto de contacto: el frente del dibujo va contra la superficie.
-            impacto.transform.rotation = Quaternion.Euler(0f, 0f, jefe.ImpactoEnElPiso ? -90f : 0f);
+            impacto.transform.rotation = Quaternion.Euler(0f, 0f, p.ImpactoEnElPiso ? -90f : 0f);
+        }
+
+        // --- Para los efectos (EfectosDelJefe), que corren despues de esta vista ---
+
+        public bool CuerpoVisible => cuerpo != null && cuerpo.enabled;
+        public int OrdenDelCuerpo => cuerpo.sortingOrder;
+
+        /// <summary>Un punto del dibujo del jefe, medido desde el apoyo de las orugas con la escala del dibujo.</summary>
+        public Vector3 EnElCuerpo(Vector2 desdeElApoyo) =>
+            cuerpo.transform.position + (Vector3)(desdeElApoyo * cuerpo.transform.localScale.x);
+
+        /// <summary>Donde se dibujo el proyectil de ese lugar en este cuadro y hacia donde mira, en grados.</summary>
+        public bool ProyectilDibujado(int i, out Vector3 posicion, out float angulo)
+        {
+            var t = proyectiles[i].transform;
+            posicion = t.position;
+            angulo = t.eulerAngles.z;
+            return proyectiles[i].enabled;
+        }
+
+        public Vector3 PosicionDelImpacto(ProyectilDelJefe p)
+        {
+            float y = run.LaneToWorldY(p.Carril) + (p.ImpactoEnElPiso ? 0.1f : alturaDeContacto);
+            return new Vector3(run.ToWorldX(run.Sim.State.PlayerX + p.ImpactoRelativo), y, 0f);
         }
 
         void DibujarRecurso(SpriteRenderer sr, RecursoDelDuelo recurso)

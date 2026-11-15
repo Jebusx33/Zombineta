@@ -107,9 +107,9 @@ cada tabla traen el nombre sin la extensión.
 |---|---|---|---|---|---|---|
 | Bidón de nafta | `pickup_fuel` | Agarrarlo | 🟡 | A | No | Líquido + clic |
 | Batería | `pickup_battery` | Agarrarla | 🟡 | A | No | Zumbido eléctrico ascendente |
-| Caja de balas | `pickup_ammo` | Agarrarla | 🟡 | A | No | Cartuchos |
-| Granada | `pickup_grenade` | Agarrarla | 🟡 | A | No |  |
-| Bomba | `pickup_bomb` | Agarrarla | 🟡 | A | No |  |
+| Caja de balas | `pickup_ammo` | Agarrarla | ✅ | A | No | `pickup_ammo` desde el 14/11 (llegó como `pickup_amo`), al 0,5–0,65 |
+| Granada | `pickup_grenade` | Agarrarla | ✅ | A | No | Desde el 14/11 suena `pickup_bomb`, el mismo que la bomba, al 0,45–0,55 |
+| Bomba | `pickup_bomb` | Agarrarla | ✅ | A | No | `pickup_bomb` desde el 14/11, al 0,45–0,55 |
 | Recolectable que se acerca / flota | `pickup_magnet` | Al pasar por el carril de al lado y atraerlo | ❌ | B | Sí | "Imán" suave |
 
 ### 2.3 Zombies y horda — diegético
@@ -151,12 +151,13 @@ archivo el 10/11: venían muy bajos; si se vuelven a exportar desde Reaper, suma
 | Sonido | Archivo | Cuándo suena | Estado | Prio | Prog. | Nota |
 |---|---|---|---|---|---|---|
 | Fija el carril | `boss_aim` | Empieza el aviso de un ataque (también el de la embestida) | ✅ | A | Sí | Es la señal para esquivar |
-| Disparo orgánico | `boss_shot` | Suelta el proyectil, frontal o elevado | ✅ | A | Sí | |
+| Disparo orgánico | `boss_shot` | Suelta el proyectil, frontal o elevado | ✅ | A | Sí | Al centro desde el 14/11 (desde el jefe no se oía), y las orugas bajan al 30 % un momento (`agacheAlDisparar` en `OrugasDelJefe`) |
 | Impacto en el piso | `boss_impact` | Cae el proyectil elevado | ✅ | A | Sí | Junto a la moto, sin paneo |
-| Orugas | `boss_tank` | Loop mientras dura el duelo | ✅ | A | Sí | `OrugasDelJefe` (6.º hijo de `SonidoDelNivel`). Rodando va a 0,6; en el aviso de embestida sube de tono (1 → 1,25) y de volumen (0,6 → 0,85), y embistiendo va a 1,55 de tono y volumen 1 (unos 4 dB más). Afloja al volver y casi se para aturdido. La distancia lo baja poco (`cuantoAtenua` 0,4) y panea a medias (`paneo` 0,5): del todo a la izquierda y al 73 % se perdía. Archivo subido 7 dB (10/11). Se calla derrotado o al terminar la partida |
+| Orugas | `boss_tank` | Loop mientras dura el duelo | ✅ | A | Sí | `OrugasDelJefe` (6.º hijo de `SonidoDelNivel`). Rodando va a 0,6. En el aviso de embestida acelera en el lugar: el tono sube de 1 a 1,45 con tres tirones encima, cada uno más fuerte (`Rugido`), y el volumen llega a 1. Embistiendo va a 1,8 de tono y volumen 1 (14/11). Afloja al volver y casi se para aturdido. La distancia lo baja poco (`cuantoAtenua` 0,4) y panea a medias (`paneo` 0,5): del todo a la izquierda y al 73 % se perdía. Archivo subido 7 dB (10/11); la versión corregida del 14/11 (4 s) también se subió 7 dB para quedar igual de fuerte (-15 LUFS). Se calla derrotado o al terminar la partida |
 | Embestida | (las orugas) | Se lanza por el carril | ✅ | A | Sí | No tiene golpe propio: la cuentan las orugas aceleradas. `boss_charge` no existe |
-| Recibe daño | `boss_hurt` | Le dan estando aturdido | ✅ | M | Sí | Al centro, sin atenuar. Archivo subido 11 dB |
-| Rebote | `boss_bounce` | Le dan cuando no se lo puede lastimar | ✅ | M | Sí | Al centro, sin atenuar, 0,09 s después del tiro (`demoraRebote` en `SfxDirector`) y más agudo (tono 1,12 a 1,25): junto con el disparo propio no se distinguía |
+| Cansado | `boss_tired` | Mientras está aturdido (es cuando se le puede pegar) | ✅ | A | Sí | `JefeCansado`, lo toca `OrugasDelJefe`: arranca al quedar aturdido y se apaga con un fundido de 0,3 s al recuperarse, aunque el archivo (4,4 s) dure más que el aturdimiento (3,5 s). Al centro, volumen 1. El archivo original se llama `boos_tired` (14/11) |
+| Recibe daño | `boss_hurt` | Le dan estando aturdido | ✅ | M | Sí | Al centro, sin atenuar. Versión corregida del 14/11, tal cual llegó (-10 LUFS) |
+| Rebote | `boss_bounce` | Le dan cuando no se lo puede lastimar | ✅ | M | Sí | Al centro, sin atenuar, 0,09 s después del tiro (`demoraRebote` en `SfxDirector`) y más agudo (tono 1,12 a 1,25): junto con el disparo propio no se distinguía. Versión corregida del 14/11 (0,28 s), tal cual llegó |
 | Derrota | `boss_death` | Se le acaba la vida | ✅ | A | Sí | Al centro, sin atenuar. Archivo subido 6 dB. Las orugas se apagan con un fundido |
 
 ---
@@ -232,7 +233,7 @@ archivo el 10/11: venían muy bajos; si se vuelven a exportar desde Reaper, suma
 | Popup de radio: apagón | `radio_blackout_01` a `_03` | El popup de radio, 5–10 s antes del apagón | ⚠️ | A | No | Campo listo, sin audio (problema 8) |
 | Popup de radio: otros avisos | Ver sección 7 | Puente, auxilio, poca nafta (sección 7) | ❌ | M | Sí |  |
 | Mitad del recorrido / hito | `hud_milestone` | La barra de progreso pasa un hito | ❌ | B | Sí |  |
-| Llegada al refugio | `stinger_goal` | Cruza la meta | 🟡 | A | No | Hoy suena "Victoria" al pasar de pantalla |
+| Llegada al refugio | `level_complete` | Cruza la meta | ✅ | A | No | Desde el 14/11: es "Victoria" y suena al cruzar la línea (`RunEvent.Won`), ya no al pasar a la pantalla de nivel completo, donde arranca la música de victoria |
 
 ---
 
@@ -247,7 +248,7 @@ archivo el 10/11: venían muy bajos; si se vuelven a exportar desde Reaper, suma
 | Salir de pausa | `ui_resume` | Volver al juego | ❌ | UI | M | Sí |  |
 | Página de cinemática | `ui_page` | Pasar de viñeta / página | ❌ | No diegético | M | Sí | Papel o golpe de cómic |
 | Saltar cinemática | `ui_skip` | Saltar | ❌ | UI | B | Sí |  |
-| Victoria (stinger) | `stinger_win_01` a `_02` | Pasar a "Nivel completo" | 🟡 | No diegético | A | No |  |
+| Victoria (stinger) | `level_complete` | Cruzar la meta | ✅ | No diegético | A | No | Ver "Llegada al refugio": `sfx_stinger_win_01` y `_02` quedaron sin uso |
 | Derrota (stinger) | `stinger_lose_01` a `_02` | Pasar a "Game Over" | 🟡 | No diegético | A | No |  |
 | Atrapada por la horda | `horde_catch` | El momento en que te alcanza, antes del Game Over | ❌ | Diegético | A | Mínima | Horda encima + grito; hoy corta directo al stinger |
 
@@ -309,7 +310,7 @@ conversación del 21/10.
 | Recolectables (2.2) | 6 | 0 | 5 | 0 | 1 |
 | Zombies y horda (2.3) | 10 | 5 | 1 | 0 | 4 |
 | Mundo y ambiente (2.4) | 8 | 7 | 0 | 0 | 1 |
-| Jefe del Nivel 2 (2.5) | 8 | 8 | 0 | 0 | 0 |
+| Jefe del Nivel 2 (2.5) | 9 | 9 | 0 | 0 | 0 |
 | Pelea: protagonista (3.1) | 15 | 8 | 0 | 1 | 6 |
 | Pelea: zombies (3.2) | 6 | 0 | 0 | 0 | 6 |
 | Pelea: drops (3.3) | 6 | 0 | 0 | 0 | 6 |
@@ -318,7 +319,7 @@ conversación del 21/10.
 | Transiciones (5) | 10 | 2 | 2 | 0 | 6 |
 | Menús y pantallas (6) | 17 | 0 | 5 | 0 | 12 |
 | Radio (7) | 6 | 0 | 0 | 0 | 6 |
-| **Total** | **128** | **44** | **18** | **2** | **64** |
+| **Total** | **129** | **45** | **18** | **2** | **64** |
 
 **Por dónde empezar (prioridad A, en este orden):**
 Ya resuelto el 06/11: el motor, los ambientes, el impacto de bala, el apagón y el inicio de nivel.
@@ -345,7 +346,8 @@ Ya resuelto el 06/11: el motor, los ambientes, el impacto de bala, el apagón y 
 | Cinemática | `mus_cinematic_loop` | 30 s | ✅ | |
 | Nivel 1 — tema | `mus_level1_loop` | 150 s | ✅ | |
 | Nivel 1 — tensión | `zombie-tribe-loop` | 8,3 s | ✅ | Loop libre, tope 0,3; sube con la horda |
-| Nivel 2 — tema | `mus_level2_loop` | 0,39 s | ✅ | Es `autopista_tension` en loop: un zumbido corto que da tensión. Se carga sin streaming para que el loop no corte |
+| Nivel 2 — tema | `mus_level2_loop` | 0,39 s | ✅ | Es `autopista_tension` en loop: un zumbido corto que da tensión. Se carga sin streaming para que el loop no corte. El archivo viene a -6,7 LUFS (20 dB más que el tema del Nivel 1) y tapaba los sonidos del jefe: desde el 14/11 suena al 0,4 en el recorrido (`volumenMusica` en `Nivel02.asset`, unos -15 LUFS) y baja de a poco a 0,2 (`volumenMusicaConJefe`, unos -21 LUFS) en los 200 m antes del jefe; al derrotarlo vuelve a 0,4 |
+| Nivel 2 — tema del jefe | `boss_music` | 21 s | ✅ | Llegó el 14/11 como `boos_music` (-22,7 LUFS). `AudioDeNivel.jefe`: arranca desde el principio 15 m antes de que entre el jefe (`metrosAntesDelJefe`), unos 2,4 s antes de que se lo vea a la velocidad normal, enseguida a su volumen (`volumenJefe` 1), en loop sobre el tema del nivel, y se apaga despacio al derrotarlo (`MusicDirector.AvanzarCapaDelJefe`). El tema del nivel baja a 0,2 al mismo tiempo |
 | Nivel 2 — tensión | `zombie-tribe-loop` | 8,3 s | ✅ | La misma del Nivel 1 desde el 10/11, con el mismo tope de 0,3. Va como loop libre: el tema dura 0,39 s. `mus_level2_tension` queda sin usar |
 | Nivel completo | `mus_victoria_loop` | 160 s | ✅ | "Ragged Held Chord" (10/11), bajada 10,5 dB para quedar a -25 LUFS como el resto de la música |
 | Game Over | `mus_derrota_loop` | 178 s | ✅ | "Snarl in the Cellar" (10/11), bajada 13,2 dB (-25 LUFS) |

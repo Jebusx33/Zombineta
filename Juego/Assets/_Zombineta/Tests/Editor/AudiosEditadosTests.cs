@@ -23,6 +23,10 @@ namespace Zombineta.Juego.Tests
         [TestCase(SonidoClave.ImpactoDeBala, "zombie_hit_bullet", false)]
         [TestCase(SonidoClave.MotorCambio, "moto_cambio", false)]
         [TestCase(SonidoClave.InicioDeNivel, "level_start", false)]
+        [TestCase(SonidoClave.Victoria, "level_complete", false)]
+        [TestCase(SonidoClave.PickupMunicion, "pickup_ammo", false)]
+        [TestCase(SonidoClave.PickupGranada, "pickup_bomb", false)]
+        [TestCase(SonidoClave.PickupBomba, "pickup_bomb", false)]
         [TestCase(SonidoClave.Lluvia, "amb_rain", true)]
         [TestCase(SonidoClave.Viento, "amb_wind", true)]
         [TestCase(SonidoClave.FaroTitila, "moto_faro_titila", true)]
@@ -199,11 +203,76 @@ namespace Zombineta.Juego.Tests
         }
 
         [Test]
+        public void AntesDeEmbestirAceleraEnElLugar()
+        {
+            const float aviso = 1.2f;
+            var F = Zombineta.Jefe.FaseDeJefe.AvisoEmbestida;
+            Assert.AreEqual(0f, OrugasDelJefe.Rugido(Zombineta.Jefe.FaseDeJefe.Persecucion, 0.5f, aviso), "fuera del aviso, nada");
+            // Tres tirones: el pico de cada uno es mas fuerte que el anterior.
+            float t1 = OrugasDelJefe.Rugido(F, aviso / 6f, aviso), t2 = OrugasDelJefe.Rugido(F, aviso / 2f, aviso), t3 = OrugasDelJefe.Rugido(F, aviso * 5f / 6f, aviso);
+            Assert.Greater(t2, t1);
+            Assert.Greater(t3, t2);
+            Assert.AreEqual(1f, OrugasDelJefe.Ritmo(F, aviso, aviso).y, 1e-6f, "termina el aviso a volumen pleno");
+            Assert.Greater(OrugasDelJefe.Ritmo(Zombineta.Jefe.FaseDeJefe.Embestida, 0f, aviso).x,
+                           OrugasDelJefe.Ritmo(F, aviso, aviso).x + OrugasDelJefe.Rugido(F, aviso * 5f / 6f, aviso) - 0.01f, "embistiendo, mas agudo que el ultimo tiron");
+        }
+
+        [Test]
+        public void LaCapaDelJefeSubeAntesDeQueAparezcaYSeVaAlDerrotarlo()
+        {
+            Assert.AreEqual(0f, CapaDelJefe.Intensidad(true, false, false, 3000f, 3500f, 200f), "lejos: nada");
+            Assert.AreEqual(0.5f, CapaDelJefe.Intensidad(true, false, false, 3400f, 3500f, 200f), 1e-5f, "a mitad del tramo previo");
+            Assert.AreEqual(1f, CapaDelJefe.Intensidad(true, true, false, 3600f, 3500f, 200f), "en el duelo, llena");
+            Assert.AreEqual(0f, CapaDelJefe.Intensidad(true, true, true, 3700f, 3500f, 200f), "derrotado, se va");
+            Assert.AreEqual(0f, CapaDelJefe.Intensidad(false, false, false, 3500f, 3500f, 200f), "sin jefe en el nivel, nunca");
+        }
+
+        [Test]
+        public void ElTemaDelJefeSuenaEnteroApenasSeAnuncia()
+        {
+            Assert.AreEqual(0f, MusicDirector.VolumenDeLaCapaDelJefe(0f, 0.8f), "sin jefe, callado");
+            Assert.AreEqual(0.8f, MusicDirector.VolumenDeLaCapaDelJefe(0.05f, 0.8f), "apenas se anuncia, a su volumen: arranca con un golpe");
+            Assert.AreEqual(0.8f, MusicDirector.VolumenDeLaCapaDelJefe(1f, 0.8f));
+        }
+
+        [Test]
+        public void ElNivel2TieneTemaDelJefeQueArrancaUnPocoAntes()
+        {
+            var n2 = AssetDatabase.LoadAssetAtPath<AudioDeNivel>(Ajustes + "Nivel02.asset");
+            Assert.IsNotNull(n2.jefe);
+            Assert.AreEqual("boss_music", n2.jefe.name);
+            // Un par de segundos antes de verlo: a la velocidad normal (12 m/s) no mas de 2,5 s antes de que entre,
+            // y despues el jefe tarda en llegar desde atras.
+            Assert.LessOrEqual(n2.metrosAntesDelJefe, 30f);
+            Assert.Greater(n2.volumenJefe, n2.volumenMusicaConJefe, "por encima del tema del nivel, que baja");
+        }
+
+        [Test]
+        public void ElTemaDelNivel2BajaCuandoLlegaElJefe()
+        {
+            // El pulso de la autopista viene a -6,7 LUFS (el tema del Nivel 1, a -26,7): con el jefe tapaba sus sonidos.
+            var n2 = AssetDatabase.LoadAssetAtPath<AudioDeNivel>(Ajustes + "Nivel02.asset");
+            Assert.Less(n2.volumenMusicaConJefe, n2.volumenMusica, "con el jefe, mas bajo");
+            Assert.LessOrEqual(n2.volumenMusicaConJefe, 0.3f);
+            Assert.AreEqual(n2.volumenMusica, MusicDirector.VolumenDelTema(n2.volumenMusica, n2.volumenMusicaConJefe, 0f), 1e-6f);
+            Assert.AreEqual(n2.volumenMusicaConJefe, MusicDirector.VolumenDelTema(n2.volumenMusica, n2.volumenMusicaConJefe, 1f), 1e-6f);
+            Assert.IsFalse(AssetDatabase.LoadAssetAtPath<Sonido>(Ajustes + "Sonidos/JefeDispara.asset").posicional, "el disparo del jefe, al centro");
+        }
+
+        [Test]
+        public void ElJefeJadeaSoloMientrasEstaAturdido()
+        {
+            Assert.IsTrue(OrugasDelJefe.Jadea(Zombineta.Jefe.FaseDeJefe.Aturdido, Zombineta.Core.RunPhase.Running));
+            Assert.IsFalse(OrugasDelJefe.Jadea(Zombineta.Jefe.FaseDeJefe.Persecucion, Zombineta.Core.RunPhase.Running));
+            Assert.IsFalse(OrugasDelJefe.Jadea(Zombineta.Jefe.FaseDeJefe.Aturdido, Zombineta.Core.RunPhase.Lost), "perdida la partida, se calla");
+        }
+
+        [Test]
         public void ElJefeTieneSusSonidosEnElBancoGlobal()
         {
             var banco = UnityEditor.AssetDatabase.LoadAssetAtPath<BancoDeSonidos>("Assets/_Zombineta/Settings/Audio/SonidosGlobales.asset");
             foreach (var c in new[] { SonidoClave.JefeApunta, SonidoClave.JefeDispara, SonidoClave.JefeImpacto, SonidoClave.JefeHerido,
-                                      SonidoClave.JefeRebota, SonidoClave.JefeDerrotado, SonidoClave.JefeOrugas })
+                                      SonidoClave.JefeRebota, SonidoClave.JefeDerrotado, SonidoClave.JefeOrugas, SonidoClave.JefeCansado })
             {
                 var s = banco.Buscar(c);
                 Assert.IsNotNull(s, c.ToString());

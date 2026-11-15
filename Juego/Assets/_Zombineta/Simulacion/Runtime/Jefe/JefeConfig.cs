@@ -75,6 +75,9 @@ namespace Zombineta.Jefe
         [Min(0.1f)] public float disparoElevado = 0.6f;
         [Tooltip("Tiempo de la animacion del disparo elevado en que emite.")]
         [Min(0f)] public float emisionElevado = 0.18f;
+        [Tooltip("Morteros seguidos de cada ataque elevado, por turno: con {1, 2} alterna uno solo y dos. " +
+                 "El segundo repite la animacion del disparo y cae en otro carril.")]
+        public int[] disparosElevados = { 1, 2 };
         [Tooltip("Metros desde el jefe hasta la boca del brazo en el disparo frontal.")]
         public float bocaFrontal = 3.4f;
         [Tooltip("Metros desde el jefe hasta la boca del brazo en el disparo elevado.")]

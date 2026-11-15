@@ -217,7 +217,7 @@ namespace Zombineta.Tests
             var ev = sim.Tick(PlayerIntent.Idle, 0.3f);
 
             Assert.AreNotEqual(RunEvent.None, ev & RunEvent.JefeDispara);
-            Assert.IsTrue(sim.Jefe.ProyectilElevado);
+            Assert.IsTrue(sim.Jefe.UltimoDisparo.Elevado);
         }
 
         [Test]
@@ -232,8 +232,84 @@ namespace Zombineta.Tests
             var ev = Correr(sim, 2.5f);
 
             Assert.AreNotEqual(RunEvent.None, ev & RunEvent.JefeImpacto);
-            Assert.AreEqual(fijado, sim.Jefe.ImpactoCarril);
-            Assert.IsTrue(sim.Jefe.ImpactoEnElPiso);
+            Assert.AreEqual(fijado, sim.Jefe.UltimoImpacto.Carril);
+            Assert.IsTrue(sim.Jefe.UltimoImpacto.ImpactoEnElPiso);
+            Assert.AreEqual(3, sim.Jefe.Corazones);
+        }
+
+        [Test]
+        public void ElMorteroAlternaUnoYDosDisparos()
+        {
+            var serie = new[] { 1, 2 };
+            Assert.AreEqual(1, JefeSimulation.DisparosDelElevado(serie, 0));
+            Assert.AreEqual(2, JefeSimulation.DisparosDelElevado(serie, 1));
+            Assert.AreEqual(1, JefeSimulation.DisparosDelElevado(serie, 2));
+            Assert.AreEqual(1, JefeSimulation.DisparosDelElevado(null, 5));
+            Assert.AreEqual(1, JefeSimulation.DisparosDelElevado(new[] { 0 }, 0), "nunca menos de uno");
+        }
+
+        static JefeConfig SoloMorteroDoble()
+        {
+            var jefe = MakeJefe();
+            jefe.patronPrimeraMitad = new[] { AccionDeJefe.Elevado };
+            jefe.disparosElevados = new[] { 2 };
+            return jefe;
+        }
+
+        [Test]
+        public void ElMorteroDobleCaeEnDosCarrilesDistintos()
+        {
+            var sim = Duelo(SoloMorteroDoble());
+            HastaFase(sim, FaseDeJefe.Anticipacion, 30f, false);
+
+            int emisiones = 0, enElAire = 0;
+            var carriles = new System.Collections.Generic.List<int>();
+            for (float t = 0f; t < 3.5f && carriles.Count < 2; t += Dt)
+            {
+                var ev = sim.Tick(PlayerIntent.Idle, Dt);
+                if ((ev & RunEvent.JefeDispara) != 0)
+                    emisiones++;
+                if ((ev & RunEvent.JefeImpacto) != 0)
+                    carriles.Add(sim.Jefe.UltimoImpacto.Carril);
+                int activos = 0;
+                foreach (var p in sim.Jefe.Proyectiles)
+                    if (p.Activo) activos++;
+                enElAire = Mathf.Max(enElAire, activos);
+            }
+
+            Assert.AreEqual(2, emisiones);
+            Assert.AreEqual(2, enElAire, "los dos morteros vuelan a la vez");
+            Assert.AreEqual(2, carriles.Count);
+            Assert.AreNotEqual(carriles[0], carriles[1]);
+        }
+
+        [Test]
+        public void ElSegundoMorteroVaAlCarrilDondeSeCorrioLaMoto()
+        {
+            var sim = Duelo(SoloMorteroDoble());
+            HastaFase(sim, FaseDeJefe.Anticipacion, 30f, false);
+            int primero = sim.Jefe.Carril;
+            int destino = primero == 0 ? 1 : primero - 1;
+            Correr(sim, 0.3f, destino - primero);
+
+            for (float t = 0f; t < 2f && sim.Jefe.Carril == primero; t += Dt)
+                sim.Tick(PlayerIntent.Idle, Dt);
+
+            Assert.AreEqual(destino, sim.Jefe.Carril);
+        }
+
+        [Test]
+        public void VuelveAAtacarApenasElFrontalPasaLaMoto()
+        {
+            var jefe = MakeJefe();
+            jefe.patronPrimeraMitad = new[] { AccionDeJefe.Frontal };
+            var sim = Duelo(jefe);
+            HastaFase(sim, FaseDeJefe.Anticipacion);
+            HastaFase(sim, FaseDeJefe.Persecucion);
+
+            HastaFase(sim, FaseDeJefe.Anticipacion, 3f);
+
+            Assert.IsTrue(sim.Jefe.ProyectilActivo, "el frontal anterior sigue viaje adelante, ya sin peligro");
             Assert.AreEqual(3, sim.Jefe.Corazones);
         }
 

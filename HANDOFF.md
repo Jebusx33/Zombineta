@@ -641,7 +641,7 @@ crea solo al dar Play: no hay objetos nuevos en las escenas. Los sonidos de lluv
 sobre lo que estaba abierto. Es un duelo en moto en la Recta final: entra en el metro 3500, la horda se queda
 atrás y el camino se despeja. La moto tiene 3 corazones, la nafta no baja y sin corazones es Game Over. Reintentar
 vuelve al inicio del nivel. Se lo lastima solo aturdido y en su carril: bala 1, granada 3 sin importar el carril, sobre 12
-de vida. El disparo frontal recorre el carril fijado y el elevado cae como mortero sobre ese carril, junto a la moto.
+de vida (15 desde el 14/11, ver abajo). El disparo frontal recorre el carril fijado y el elevado cae como mortero sobre ese carril, junto a la moto.
 "Sobrecalentamiento" pasó a "Aturdido", porque el arte final es orgánico. Con 6 de vida o menos entra la
 embestida. Cada ciclo aparecen en el camino una caja de 4 balas y una granada, las que no estén al tope, y hay que ir a
 recogerlas: lo que se pasa de largo se pierde hasta el ciclo siguiente. La meta no cuenta con el jefe
@@ -657,6 +657,52 @@ turbo todo el tiempo sigue escapando (la goma elástica, +7 m/s, también queda 
 real lo frena la nafta, que el turbo gasta al triple. La sonda es `SondaHorda` (script suelto de la sesión, no está en
 el repo): si hace falta otra vuelta, el próximo ajuste es que el faro frene menos en este nivel o que la goma
 elástica no se divida con el faro.
+
+**Sonido del jefe (14/11):** la música del Nivel 2 va a 0,4 en el recorrido (`AudioDeNivel.volumenMusica`) y baja a
+0,2 con el jefe (`volumenMusicaConJefe`, siguiendo a `CapaDelJefe`): el pulso venía 20 dB más fuerte que los otros
+temas y tapaba al jefe. El disparo del jefe suena al centro y las orugas se agachan al dispararlo.
+En el aviso de embestida las orugas aceleran con tres tirones (`OrugasDelJefe.Rugido`). Hay una capa de música del jefe
+(`AudioDeNivel.jefe`, `CapaDelJefe`) que sube 200 m antes de que entre y se va al derrotarlo; falta elegir el tema.
+
+**Build de Android (14/11):** para probar en una Powkiddy X55 (1 GB de RAM, 1280x720). Se arma con
+`BuildAndroid` (menú Zombineta > Build > Android, o en batch con
+`-buildTarget Android -executeMethod Zombineta.Juego.EditorTools.BuildAndroid.Build`) y queda en
+`Builds/Android/DeadLivery-<versión>.apk`, firmado con la clave de prueba de Unity. Solo cambia la configuración de
+Android: `com.uchar.deadlivery`, IL2CPP para ARM64 y ARMv7, Vulkan con OpenGL ES 3 de respaldo, siempre horizontal,
+ETC2 y texturas hasta 1024 px (`overrideMaxTextureSize`, que no se guarda en el proyecto). En celulares y consolas
+`GameRoot` pide 60 cuadros por segundo; si no, Android corre a 30. El primer APK pesa 108 MB y se generó en 21 minutos. No está
+probado en la consola. Las hojas del jefe salen sin comprimir (4 MB cada una): si falta memoria, lo primero es
+comprimirlas para Android.
+
+**Audios nuevos (14/11):**
+- `boss_music` es el tema del jefe. Arranca desde su comienzo 15 m antes de que entre el jefe, unos 2,4 s antes de
+  que se vea, a volumen pleno, y se apaga al derrotarlo. Antes la capa corría callada desde el principio del nivel.
+- `level_complete` es "Victoria" y suena al cruzar la meta (`RunEvent.Won`), no al pasar a la pantalla de nivel
+  completo.
+- `pickup_ammo` suena al agarrar balas y `pickup_bomb` al agarrar granadas o C4.
+- Los clips viejos `sfx_pickup_ammo/grenade/bomb_0x` y `sfx_stinger_win_0x` quedaron sin uso, pero siguen en el
+  proyecto.
+
+**Jefe más difícil (14/11):** 15 de vida (antes 12) y la segunda mitad empieza con 7. Dispara más seguido: la pausa
+entre acciones bajó de 0,6 a 0,35 s y ya no espera a que el frontal salga de pantalla, solo a que pase a la moto
+(`HayProyectilQueAmenaza`). Entre ataques pasa de unos 3,9 s a 1,8 s. Los patrones suman un disparo:
+frontal, elevado, frontal y aturdido en la primera mitad; frontal, embestida, elevado, aturdido, elevado, frontal,
+embestida y aturdido en la segunda. El mortero alterna uno y dos disparos (`JefeConfig.disparosElevados = {1, 2}`).
+El segundo repite la animación del disparo y cae en otro carril: el de la moto si ya salió del primero, o uno
+vecino. Siempre queda un carril libre. Por eso `JefeSimulation` tiene hasta 3 proyectiles a la vez (`Proyectiles`) y
+la vista marca en el piso cada mortero en el aire.
+
+**Humo y plasma del jefe (14/11):** `EfectosDelJefe` (junto a `VistaDelJefe` en Level_02) maneja cuatro prefabs que
+arma `FxBuilder` (menú Zombineta > Fx > Efectos del jefe):
+- `FxJefeHumo`: humo oscuro que sale de atrás del tanque. En el aviso de embestida sube de a poco a bastante más y
+  suma bocanadas de hollín negro, que siguen en la embestida (`EfectosDelJefe.Humo`). Aturdido apenas humea.
+- `FxPlasmaDisparo`: salpicadura de gotas en la boca del brazo con cada disparo.
+- `FxPlasmaEstela`: gotas que va soltando el proyectil en vuelo.
+- `FxPlasmaImpacto`: reventón con gotas que salpican al caer, trozos, niebla y un charco que se seca.
+
+Todo el plasma usa los colores del proyectil, rojo oscuro con algunas gotas claras, y sale gris sin sangre alta,
+igual que la sangre de los zombies. Está probado en Play con capturas de cámara, pero no se miró jugando en
+pantalla.
 
 **Luces del Nivel 2 (01/11):** la autopista usa las mismas `LuzDeCiudad` que el Nivel 1. `tile_edificio_4`
 y `tile_edificio_5` tienen ventanas con máscara (`Art/Tileset/Level2/Luces/`) y los paredones 1 a 3 llevan

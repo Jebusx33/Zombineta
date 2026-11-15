@@ -10,6 +10,8 @@ namespace Zombineta.Audio
     /// a poco en el aviso de la embestida, va a fondo mientras embiste, afloja al volver y casi se para cuando
     /// queda aturdido. Al caer derrotado se apaga con un fundido (el quejido lo pone JefeDerrotado). Vive en el
     /// prefab SonidoDelNivel; sin clip en el banco no suena.
+    /// Tambien el jadeo (boss_tired, JefeCansado): arranca cuando el jefe queda aturdido, que es cuando se le
+    /// puede pegar, y se apaga con un fundido corto cuando se recupera, aunque el archivo dure mas.
     /// </summary>
     [DefaultExecutionOrder(20)]
     public sealed class OrugasDelJefe : MonoBehaviour
@@ -24,12 +26,28 @@ namespace Zombineta.Audio
         [Range(0f, 1f)] [SerializeField] float cuantoAtenua = 0.4f;
         [Tooltip("Cuanto se va al costado (1 = paneo completo). Del todo a la izquierda se oia por un solo oido.")]
         [Range(0f, 1f)] [SerializeField] float paneo = 0.5f;
+        [Tooltip("Segundos en que se apaga el jadeo cuando el jefe deja de estar aturdido.")]
+        [SerializeField] float fundidoJadeo = 0.3f;
+        [Tooltip("Cuando el jefe dispara, las orugas bajan a esto y vuelven solas: que el disparo se oiga.")]
+        [Range(0f, 1f)] [SerializeField] float agacheAlDisparar = 0.3f;
+        [Tooltip("Segundos en que las orugas vuelven a su volumen despues del disparo.")]
+        [SerializeField] float vueltaDelAgache = 0.7f;
 
         AudioSource source;
         FuenteConBus fuente;
         float volumenBase = 1f;
         bool resuelto, sonando;
         float tono = 1f, volumen;
+        float agache = 1f;
+
+        AudioSource jadeo;
+        FuenteConBus fuenteJadeo;
+        float volumenJadeo = 1f;
+        bool jadeando;
+
+        /// <summary>Regla pura: el jadeo suena mientras el jefe esta aturdido y la partida sigue.</summary>
+        public static bool Jadea(FaseDeJefe fase, RunPhase partida) =>
+            fase == FaseDeJefe.Aturdido && partida == RunPhase.Running;
 
         /// <summary>Tono (x) y volumen de 0 a 1 (y) de las orugas en cada momento del duelo.</summary>
         public static Vector2 Ritmo(FaseDeJefe fase, float tiempoFase, float segundosAviso)
@@ -40,12 +58,13 @@ namespace Zombineta.Audio
                 case FaseDeJefe.Derrotado:
                     return new Vector2(1f, 0f);
                 case FaseDeJefe.AvisoEmbestida:
-                    // Se acelera: el motor sube de tono y de volumen mientras avisa.
+                    // Se acelera en el lugar: el motor sube de tono y llega al volumen pleno mientras avisa
+                    // (encima, Rugido le suma los acelerones).
                     float k = segundosAviso > 0f ? Mathf.Clamp01(tiempoFase / segundosAviso) : 1f;
-                    return new Vector2(Mathf.Lerp(1f, 1.25f, k), Mathf.Lerp(0.6f, 0.85f, k));
+                    return new Vector2(Mathf.Lerp(1f, 1.45f, k), Mathf.Lerp(0.6f, 1f, k));
                 case FaseDeJefe.Embestida:
-                    // A fondo: bastante mas agudo y unos 4 dB mas fuerte que rodando normal.
-                    return new Vector2(1.55f, 1f);
+                    // A fondo: casi el doble de agudo y unos 4 dB mas fuerte que rodando normal.
+                    return new Vector2(1.8f, 1f);
                 case FaseDeJefe.Regreso:
                     return new Vector2(0.9f, 0.6f);
                 case FaseDeJefe.Aturdido:
@@ -55,6 +74,32 @@ namespace Zombineta.Audio
                 default:
                     return new Vector2(1f, 0.6f);
             }
+        }
+
+        /// <summary>
+        /// Los acelerones del aviso de embestida, sumados al tono: tres tirones del motor, cada uno mas fuerte,
+        /// como quien acelera parado antes de largar. Fuera del aviso, 0.
+        /// </summary>
+        public static float Rugido(FaseDeJefe fase, float tiempoFase, float segundosAviso)
+        {
+            if (fase != FaseDeJefe.AvisoEmbestida || segundosAviso <= 0f)
+                return 0f;
+            float k = Mathf.Clamp01(tiempoFase / segundosAviso);
+            float tiron = Mathf.Abs(Mathf.Sin(k * Mathf.PI * 3f)); // tres tirones en el aviso
+            return tiron * Mathf.Lerp(0.12f, 0.3f, k);
+        }
+
+        void OnEnable()
+        {
+            resuelto = false;
+            if (run != null)
+                run.Stepped += AlPasar;
+        }
+
+        void AlPasar(RunEvent ev)
+        {
+            if ((ev & RunEvent.JefeDispara) != 0)
+                agache = agacheAlDisparar;
         }
 
         void Awake()
@@ -67,15 +112,27 @@ namespace Zombineta.Audio
             source.spatialBlend = 0f;
             fuente = gameObject.AddComponent<FuenteConBus>();
             fuente.volumenPropio = 0f;
-        }
 
-        void OnEnable() => resuelto = false;
+            // El jadeo va en un hijo: FuenteConBus maneja la AudioSource de su propio objeto.
+            var go = new GameObject("Jadeo");
+            go.transform.SetParent(transform, false);
+            jadeo = go.AddComponent<AudioSource>();
+            jadeo.loop = false;
+            jadeo.playOnAwake = false;
+            jadeo.spatialBlend = 0f;
+            fuenteJadeo = go.AddComponent<FuenteConBus>();
+            fuenteJadeo.volumenPropio = 0f;
+        }
 
         void OnDisable()
         {
+            if (run != null)
+                run.Stepped -= AlPasar;
             source.Stop();
             sonando = false;
             volumen = 0f;
+            jadeo.Stop();
+            jadeando = false;
         }
 
         void Resolver()
@@ -88,6 +145,37 @@ namespace Zombineta.Audio
             source.clip = sonido != null && sonido.clips != null && sonido.clips.Length > 0 ? sonido.clips[0] : null;
             fuente.bus = sonido != null ? sonido.bus : AudioBus.Efectos;
             volumenBase = SonidoVolumen.VolumenBase(sonido);
+
+            var cansado = audio.Resolver(SonidoClave.JefeCansado);
+            jadeo.clip = cansado != null && cansado.clips != null && cansado.clips.Length > 0 ? cansado.clips[0] : null;
+            fuenteJadeo.bus = cansado != null ? cansado.bus : AudioBus.Efectos;
+            volumenJadeo = SonidoVolumen.VolumenBase(cansado);
+        }
+
+        void Jadear(FaseDeJefe fase, RunPhase partida, float dt)
+        {
+            if (jadeo.clip == null)
+                return;
+            if (Jadea(fase, partida))
+            {
+                if (!jadeando)
+                {
+                    jadeando = true;
+                    jadeo.time = 0f;
+                    jadeo.Play();
+                }
+                fuenteJadeo.volumenPropio = volumenJadeo;
+                return;
+            }
+            if (!jadeando)
+                return;
+            fuenteJadeo.volumenPropio = Mathf.MoveTowards(fuenteJadeo.volumenPropio, 0f,
+                volumenJadeo * dt / Mathf.Max(0.01f, fundidoJadeo));
+            if (fuenteJadeo.volumenPropio <= 0f)
+            {
+                jadeo.Stop();
+                jadeando = false;
+            }
         }
 
         void Update()
@@ -98,6 +186,8 @@ namespace Zombineta.Audio
             var jefe = run != null && run.Sim != null ? run.Sim.Jefe : null;
             if (source.clip == null || audio == null || jefe == null)
                 return;
+
+            Jadear(jefe.Fase, run.Sim.State.Phase, Time.unscaledDeltaTime);
 
             var cfg = run.Config != null ? run.Config.jefe : null;
             var objetivo = Ritmo(jefe.Fase, jefe.TiempoFase, cfg != null ? cfg.avisoEmbestida : 1f);
@@ -113,8 +203,9 @@ namespace Zombineta.Audio
             float dx = AudioDirector.Espaciado(run.ToWorldX(jefe.X), audio.PlayerWorldX, audio.WorldUnitsPerMeter);
             fuente.espacial = Mathf.Lerp(1f, SonidoEspacial.Volumen(dx, audio.Espacial), cuantoAtenua);
             source.panStereo = SonidoEspacial.Pan(dx, audio.Espacial) * paneo;
-            source.pitch = tono;
-            fuente.volumenPropio = volumenBase * volumen;
+            source.pitch = tono + Rugido(jefe.Fase, jefe.TiempoFase, cfg != null ? cfg.avisoEmbestida : 1f);
+            agache = Mathf.MoveTowards(agache, 1f, dt / Mathf.Max(0.01f, vueltaDelAgache));
+            fuente.volumenPropio = volumenBase * volumen * agache;
 
             bool suena = volumen > 0.0001f;
             if (suena == sonando)

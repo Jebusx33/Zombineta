@@ -80,7 +80,23 @@ namespace Zombineta.Audio
                     enPelea ? run.Sim.Pelea.Activo : (System.Func<int, bool>)null);
                 float distancia = dx.HasValue ? Mathf.Abs(dx.Value) : float.MaxValue;
                 music.SetAmenaza(1f - Mathf.Clamp01(distancia / AudioDirector.Mezcla.distanciaAmenaza));
+
+                // La capa del jefe: sube antes de que aparezca, llena en el duelo, se va al derrotarlo.
+                var cfgJefe = run.Config.jefe;
+                var jefe = run.Sim.Jefe;
+                var nivelAudio = AudioDelNivelActual();
+                music.SetJefe(CapaDelJefe.Intensidad(cfgJefe != null && jefe != null,
+                    jefe != null && jefe.EnDuelo, jefe != null && jefe.Fase == Zombineta.Jefe.FaseDeJefe.Derrotado,
+                    state.PlayerX, cfgJefe != null ? cfgJefe.metroEntrada : 0f,
+                    nivelAudio != null ? nivelAudio.metrosAntesDelJefe : 200f));
             }
+        }
+
+        static AudioDeNivel AudioDelNivelActual()
+        {
+            var root = GameRoot.Instance;
+            var nivel = root != null ? root.CurrentLevel : null;
+            return nivel != null ? nivel.audio as AudioDeNivel : null;
         }
 
         static BancoDeSonidos BancoDelNivelActual()

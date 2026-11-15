@@ -538,6 +538,7 @@ GameObject:
   m_Component:
   - component: {fileID: 46085024}
   - component: {fileID: 46085023}
+  - component: {fileID: 46085025}
   m_Layer: 0
   m_Name: Jefe
   m_TagString: Untagged
@@ -588,6 +589,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &46085025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 46085022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cb1bb0490a22644082eb1420caa9213, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Zombineta.Juego::Zombineta.Jefe.EfectosDelJefe
+  run: {fileID: 1170739137}
+  vista: {fileID: 46085023}
+  humoPrefab: {fileID: 1460288311085113426, guid: 0587f052f0c003b41acdca0d4d454cd8, type: 3}
+  escape: {x: -1.45, y: 1.05}
+  humoRodando: 14
+  humoAFondo: 42
+  hollinAFondo: 26
+  disparoPrefab: {fileID: 3213482399857482245, guid: 25d2a96dd33d62e4f9939ac9aa9cd0b6, type: 3}
+  estelaPrefab: {fileID: 3509296325685093277, guid: 2b30393073237ab428bb05a039152561, type: 3}
+  impactoPrefab: {fileID: 5535385553416681101, guid: 7edc83711355c704b9b7306a8b0b7597, type: 3}
+  gotasPorSegundo: 80
+  colaDelProyectil: 0.35
+  sinSangre: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
 --- !u!1 &53059454
 GameObject:
   m_ObjectHideFlags: 0

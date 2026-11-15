@@ -17,6 +17,6 @@ MonoBehaviour:
   volumen: {x: 1, y: 1}
   tono: {x: 0.95, y: 1.05}
   bus: 1
-  posicional: 1
+  posicional: 0
   loop: 0
   cooldown: 0.05
