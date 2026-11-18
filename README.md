@@ -1,151 +1,185 @@
-# 🎮 Zombineta (TBD)
+<p align="center">
+  <img src="Juego/Assets/_Zombineta/Art/UI/sprite_logo_deadlivery_2.png" alt="DeadLivery" width="480">
+</p>
 
-Juego de conducción, supervivencia y evasión 2.5D desarrollado en Unity.
+<h1 align="center">DeadLivery</h1>
 
----
-
-## 📖 Descripción
-
-**Zombineta** es un videojuego de supervivencia y conducción frenética en 2.5D, donde el jugador toma el rol de una valiente repartidora en una motocicleta Vespa. Su misión es llevar alimentos a clientes hambrientos a través de una carretera post-apocalíptica mientras evade a una implacable horda de zombies. 
-
-El juego contrasta la alta tensión de una persecución constante con un tono ligero: la protagonista es inmune al virus zombie simplemente gracias a su buena alimentación y su rutina estricta de cardio. No hay armas ni combate directo; la clave es la velocidad, los reflejos y la gestión del entorno.
-
----
-
-## 🎯 Objetivo del Proyecto
-
-* **Narrativo:** Transmitir la adrenalina de realizar un trabajo cotidiano (delivery) en el escenario más hostil posible, manteniendo un humor irónico.
-* **Jugable:** Dominar el cambio rápido de carriles, el uso de rampas y la gestión del tiempo bajo la presión constante de un enemigo invencible.
-* **Conceptual:** Transformar el *survival horror* tradicional eliminando el combate y enfocándose puramente en la evasión táctica a alta velocidad.
+<p align="center">
+  <b>El pedido llega. Aunque el mundo se haya terminado.</b><br>
+  Persecución 2D en moto + beat'em up a pie, hecha en Unity 6 por <b>UCHAR</b>.
+</p>
 
 ---
 
-## 🕹️ Mecánicas Principales
+## 📖 De qué se trata
 
-* **Conducción en carriles:** Movimiento vertical fluido (estilo *Excitebike*) para sortear vehículos abandonados y barricadas.
-* **Sistema de saltos:** Uso de rampas para evitar trampas en el suelo y alcanzar objetos elevados.
-* **Gestión de recursos:**
-  * **Combustible:** Disminuye constantemente; quedarse en cero permite que la horda te alcance.
-  * **Batería (Faro):** Permite ver en la oscuridad, pero su uso prolongado agota la energía.
-* **Interacción rápida:** Activación de interruptores al paso para abrir puertas blindadas o activar trampas ambientales.
+Una repartidora en motoneta tiene que llevar un pedido a través de una ciudad tomada por los zombies.
+Atrás viene **la horda**: una masa de muertos que no se cansa y avanza más rápido cada vez que te
+equivocás. Adelante, autos abandonados, barricadas, rampas y una calle de tres carriles que se apaga
+con los cortes de luz.
 
-> ❗ **No existe combate directo.** El enfoque está en la evasión milimétrica, mantener la inercia y administrar los recursos para no ser devorado.
+La protagonista es inmune al virus (gracias a su buena alimentación y su rutina de cardio, claro), así
+que su única preocupación es que el pedido no llegue frío.
 
----
-
-## 🏠 Mundo del Juego
-
-* **Escenario:** Carreteras industriales y rurales destruidas, envueltas en oscuridad y niebla.
-* **Estructura:** Tramos lineales con obstáculos generados o diseñados para exigir reflejos rápidos.
-* **Progresión visual:** Uso de múltiples capas de *parallax* para dar profundidad, con una atmósfera opresiva que contrasta fuertemente con el color brillante de la Vespa de la protagonista.
+> El repositorio se llama **Zombineta**, el nombre de trabajo del proyecto. El juego se llama **DeadLivery**.
 
 ---
 
-## 🎭 Personajes
+## 🕹️ Cómo se juega
 
-* **Repartidora (Jugador):** Ágil, decidida e inmune al virus. Su única preocupación es que el pedido no llegue frío.
-* **La Horda (Antagonista):** Una masa oscura e inagotable con ojos brillantes. No son enemigos individuales, sino una fuerza de la naturaleza que avanza dinámicamente según los errores del jugador.
+**En la moto.** Vista lateral con tres carriles. Cambiás de carril para esquivar, acelerás con el turbo
+(gasta el triple de nafta), frenás para acomodarte y saltás por las rampas inclinando la moto en el aire
+para caer bien. Las armas sirven para sacarte zombies de encima:
+
+- **Faro:** con la luz prendida, la horda avanza a la mitad de velocidad. Gasta batería.
+- **Pistola:** una bala por tu carril que mata al primer zombie que encuentra. Munición limitada.
+- **Granada:** se tira hacia atrás y limpia todos los carriles; la horda tarda unos segundos en reponerse.
+
+**A pie.** Cuando se acaba la nafta, la protagonista se baja y pelea: un beat'em up por oleadas con
+combo de tres golpes, disparo, granadas y una bomba con temporizador. El último zombie suelta un bidón:
+lo agarrás, llenás el tanque y volvés a la moto. Cada pelea termina con una nota (B, A o S) según los
+golpes que recibiste.
+
+**En el camino** aparecen bidones de nafta, baterías, balas, granadas y bombas. Administrarlos es la
+mitad del juego: el faro compra tiempo, la pistola compra espacio y el turbo te puede dejar a pie en el
+peor lugar.
+
+### Niveles
+
+| | Nivel | Qué tiene |
+| :---: | :--- | :--- |
+| 🎓 | **Tutorial** | Corto y sin derrota: enseña los controles y los recursos en menos de un minuto. Aparece la primera vez y se puede repetir desde el menú. |
+| 1️⃣ | **La salida** | La ciudad de noche, con llovizna y dos apagones de tormenta donde el faro es lo único que ves. |
+| 2️⃣ | **El puente** | Viento, niebla y una horda más agresiva. En la recta final, **el jefe**: un duelo en moto con tres corazones. |
+
+Cada nivel abre con una cinemática en forma de página de cómic, y entre nivel y nivel un mapa en un
+televisor viejo muestra por dónde va el recorrido.
 
 ---
 
-## 🎨 Estilo Artístico
+## 🎮 Controles
 
-* Estética de horror cinematográfico con elementos semi-realistas y figuras de alto contraste.
-* Paleta fuertemente desaturada (negros, grises y azules profundos).
-* Iluminación focalizada: luces cálidas naranjas y amarillas provenientes del faro de la motocicleta y los interruptores.
-* Modelado 3D optimizado para vista lateral.
+Se juega con **teclado** o **joystick** (Xbox, PlayStation o cualquiera que Unity reconozca como gamepad).
+Los botones cambian de función según estés en la moto o a pie.
+
+| | Teclado | Joystick |
+| :--- | :---: | :---: |
+| **🛵 En la moto** | | |
+| Cambiar de carril | ↑ / ↓ | Stick izq. / D-pad |
+| Turbo (mantener) | → | RT / R2 |
+| Frenar / retroceder (mantener) | ← | LT / L2 |
+| Disparar | X | X / □ · RB / R1 |
+| Granada | Z | LB / L1 |
+| Faro (prender/apagar) | Espacio | Y / △ |
+| Inclinar en el aire | ← / → | LT / RT |
+| **🥊 A pie** | | |
+| Moverse | Flechas | Stick izq. / D-pad |
+| Golpear (3 seguidos = remate) | X | A / ✕ |
+| Disparar | Z | X / □ · RB / R1 |
+| Granada | C | LB / L1 |
+| Bomba con temporizador | Espacio | Y / △ |
+| **⏸️ Siempre** | | |
+| Pausa | Esc | Start |
 
 ---
 
-## 🔊 Audio
+## 👥 El equipo
 
-* Sonido dinámico del motor que reacciona a los saltos, la velocidad y el nivel de combustible.
-* Audio espacial opresivo de la horda acercándose o alejándose según la distancia real.
-* Efectos ambientales rápidos: recolección de bidones, derrapes, activación de mecanismos mecánicos pesados.
+DeadLivery lo hace **UCHAR**, un equipo de cinco estudiantes de la carrera de Producción de Videojuegos
+de la Universidad de la Ciudad de Buenos Aires, para el Taller de Proyecto Integral.
+
+| | Integrante | Rol |
+| :---: | :--- | :--- |
+| 🔊 | **José Luis Ressia** | Desarrollo · Sonido |
+| 🧪 | **Jesús Gabriel Arias** | Desarrollo · Testing |
+| 📋 | **Sebastian Ariel Capurro** | Desarrollo · Producción |
+| 🎨 | **Juana Urzua Montelpare** | Ilustración · Level Design |
+| 🎨 | **Germán Heuer** | Ilustración · Level Design |
+
+El **game design** lo hicimos entre todos.
+
+**Docentes:** Martin Romero (Producción) y Nicolas Matias Crescenzi (Taller de Proyecto Integral).
 
 ---
 
-## 🗂️ Estructura del repositorio
+## 🧰 Herramientas y recursos
 
-| Carpeta | Qué es |
+| | |
 | :--- | :--- |
-| `Prototipo/` | Proyecto de Unity del **prototipo** (entregable de E2). Congelado: solo arreglos para los playtests. Estado de cierre en el tag `prototipo-v1`. |
-| `Juego/` | Proyecto de Unity del **juego definitivo**, en construcción. |
-| `Juego/Assets/_Zombineta/Simulacion/` | Las reglas del juego en C# plano, con sus tests. Las usan **los dos proyectos**: el prototipo la importa como paquete local. |
-| `docs/` | Diseños y planes de cada etapa. |
-| `HANDOFF.md` | Estado técnico detallado para retomar el desarrollo. |
+| **Motor** | Unity 6000.6.0f1 · Universal Render Pipeline 2D · Input System |
+| **Ilustración** | Krita · PaintTool SAI |
+| **Programación** | C#, con Claude Code como asistente |
+| **Música** | Suno |
+| **Efectos de sonido** | [Pixabay](https://pixabay.com) (los autores están en los créditos del juego) |
+| **Partículas** | Particle Pack de [Kenney](https://kenney.nl) · CC0 |
+| **Plataformas** | Windows y Android (probado en una Powkiddy X55) |
 
 ---
 
-## ⚙️ Configuración Técnica
+## ▶️ Abrir el proyecto
 
-| Componente | Detalle |
-| :--- | :--- |
-| **Motor** | Unity 6 (Versión 6000.x) |
-| **Lenguaje** | C# |
-| **Render Pipeline** | Universal Render Pipeline (URP) |
-| **Audio Engine** | FMOD Studio / Reaper (Mezcla y diseño) |
-| **Modelado 3D** | Blender |
-| **Plataforma** | PC / WebGL |
-
----
-
-## 📦 Dependencias
-
-**FMOD Studio Unity Integration**
-
-Este proyecto utiliza FMOD para la gestión del audio adaptativo y procedimental.
-
-**Instalación:**
-1. Abrir el proyecto en Unity.
-2. Ir a *Window → Package Manager*.
-3. Asegurarse de tener importado el paquete de integración de FMOD según la documentación oficial.
-4. Vincular el proyecto de Unity con el banco de sonidos `.fspro` generado.
-
----
-
-## 🎨 Assets y Texturas
-
-Los modelos base generados (bloqueos geométricos y texturas iniciales) están organizados en el repositorio interno. 
-
-**Instrucciones:**
-1. Descargar la carpeta de modelos.
-2. Importarla en `Assets/Models` y `Assets/Textures`.
-3. Configurar los materiales usando los shaders URP (`Lit` / `Simple Lit`) ajustando el *emission* para los elementos interactivos.
-
----
-
-## 🚧 Estado Actual
-
-**Prototipo / Vertical Slice en desarrollo:**
-* Sistema de movimiento en carriles implementado.
-* Mecánicas de recolección de gasolina y batería.
-* Presión dinámica de la horda operativa.
-* Puzles de entorno básicos (puertas e interruptores).
-
----
-
-## ▶️ Ejecución
-
-1. Instalar **Unity 6000.6.0f1** (la misma versión para todo el equipo).
-2. Abrir desde Unity Hub la carpeta `Prototipo/` (para jugar el prototipo) o `Juego/` (el definitivo). **No** la raíz del repo.
-3. Prototipo: cargar `Assets/_Zombineta/Scenes/Prototipo.unity` y presionar *Play*.
-4. Juego: cargar `Assets/_Zombineta/Scenes/Boot.unity`.
-
-**Antes de clonar (una sola vez por máquina):**
+**Una sola vez por máquina, antes de clonar:**
 
 ```bash
 git lfs install
 ```
 
-Las imágenes, audios y modelos van por Git LFS: sin eso llegan como archivos de texto de 130 bytes y Unity muestra sprites rotos.
+Las imágenes, los audios y los modelos van por Git LFS. Si no lo instalás, llegan como archivos de
+texto de 130 bytes y Unity muestra los sprites rotos.
 
-**Para mergear escenas y prefabs sin romperlas (una vez por máquina, ajustando la ruta a tu Unity):**
+Para que Unity pueda mergear escenas y prefabs sin romperlos, ajustá la ruta a tu Unity:
 
 ```bash
 git config --global merge.unityyamlmerge.driver "'D:/Dev/Unity/6000.6.0f1/Editor/Data/Tools/UnityYAMLMerge.exe' merge -p %O %B %A %A"
 ```
 
-Si alguien abrió la raíz por error y Unity creó `Assets/`, `Packages/` o `ProjectSettings/` sueltas en la raíz, se pueden borrar: git las ignora y no son parte del juego.
+**Después:**
 
-> Conviene clonar el repo en una ruta corta (por ejemplo `D:\Zombineta`): algunos paquetes de Unity tienen archivos con rutas muy largas y Windows no admite más de 260 caracteres.
+1. Instalá **Unity 6000.6.0f1**. Todo el equipo usa exactamente esa versión.
+2. Clonalo en una ruta corta, por ejemplo `D:\Zombineta`. Algunos paquetes de Unity tienen rutas muy
+   largas y Windows no acepta más de 260 caracteres.
+3. Desde Unity Hub abrí la carpeta **`Juego/`**, no la raíz del repo.
+4. Abrí `Assets/_Zombineta/Scenes/Boot.unity` y dale Play.
+
+Para probar una pantalla o un nivel suelto, abrí esa escena y dale Play: `Boot` se carga sola.
+
+**Atajos de prueba** (solo en el editor y en builds de desarrollo):
+
+| Tecla | Qué hace |
+| :---: | :--- |
+| F1 | Muestra los números de la partida |
+| F2 / F3 | Gana / pierde el nivel |
+| F4 | Vacía el tanque para ir directo a la pelea a pie |
+| F5 | Salta al jefe del Nivel 2 |
+| F6 | Cambia el estilo de imagen (normal, blanco y negro, película vieja) |
+
+**Build de Android:** menú *Zombineta → Build → Android*. El APK queda en `Builds/Android/`, que no se sube
+al repo.
+
+**Tests:** *Window → General → Test Runner → EditMode*. Las reglas del juego tienen tests propios y
+conviene correrlos antes de subir.
+
+---
+
+## 🗂️ Qué hay en el repo
+
+| Carpeta | Qué es |
+| :--- | :--- |
+| `Juego/` | El proyecto de Unity del juego. |
+| `Juego/Assets/_Zombineta/Simulacion/` | Las reglas del juego en C# puro, sin depender de las escenas: nafta, batería, carriles, horda, jefe. Están testeadas. |
+| `Juego/Assets/_Zombineta/Settings/` | Los números que se ajustan sin programar: balance, niveles, cinemáticas, créditos. |
+| `Prototipo/` | El prototipo de la Etapa 2, congelado. Su estado final está en el tag `prototipo-v1`. |
+| `docs/` | Guías para arte y sonido, la lista de sonidos, las novedades y los diseños de cada etapa. |
+| `HANDOFF.md` | El estado técnico completo, para retomar el desarrollo. |
+
+Cada integrante trabaja en su propia rama (`German`, `Jesus`, `Jose`, `Juana`, `Seba`), y `master`
+tiene la versión del equipo.
+
+---
+
+## 📚 Para seguir leyendo
+
+- [`HANDOFF.md`](HANDOFF.md): cómo está armado todo, qué está verificado y qué falta.
+- [`docs/referencia-proyecto.md`](docs/referencia-proyecto.md): la arquitectura, clase por clase.
+- [`docs/Guia-de-iluminacion-para-arte.md`](docs/Guia-de-iluminacion-para-arte.md) y
+  [`docs/Guia-de-sonido.md`](docs/Guia-de-sonido.md): cómo sumar arte y sonido al juego.
