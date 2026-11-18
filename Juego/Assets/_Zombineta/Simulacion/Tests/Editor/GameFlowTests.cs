@@ -55,14 +55,14 @@ namespace Zombineta.Tests
             f.MapContinue();
             f.CinematicFinished();
             f.LevelWon();
-            f.Continue();          // era el ultimo -> final
+            f.Continue();          // era el ultimo -> creditos
             f.ToMainMenu();
 
             CollectionAssert.AreEqual(new[]
             {
                 GameScreen.MainMenu, GameScreen.CharacterSelect, GameScreen.Map, GameScreen.Cinematic,
                 GameScreen.Playing, GameScreen.LevelComplete, GameScreen.Map, GameScreen.Cinematic,
-                GameScreen.Playing, GameScreen.LevelComplete, GameScreen.Ending,
+                GameScreen.Playing, GameScreen.LevelComplete, GameScreen.Credits,
                 GameScreen.MainMenu,
             }, seen);
         }
@@ -91,7 +91,7 @@ namespace Zombineta.Tests
         }
 
         [Test]
-        public void WinningTheLastLevel_GoesToTheEnding()
+        public void WinningTheLastLevel_GoesStraightToTheCredits()
         {
             var f = InLevel(levels: 2, level: 1);
             Assert.IsTrue(f.IsLastLevel);
@@ -99,7 +99,7 @@ namespace Zombineta.Tests
             f.LevelWon();
             f.Continue();
 
-            Assert.AreEqual(GameScreen.Ending, f.Current);
+            Assert.AreEqual(GameScreen.Credits, f.Current);
         }
 
         [Test]
@@ -281,18 +281,19 @@ namespace Zombineta.Tests
             var ending = InLevel(levels: 2, level: 1);
             ending.LevelWon();
             ending.Continue();
-            Assert.AreEqual(GameScreen.Ending, ending.Current);
+            Assert.AreEqual(GameScreen.Credits, ending.Current);
 
             Assert.IsFalse(ending.OpenCredits());
-            Assert.AreEqual(GameScreen.Ending, ending.Current);
+            Assert.AreEqual(GameScreen.Credits, ending.Current);
         }
 
         [Test]
         public void ShowCreditsDesdeElEnding()
         {
+            // El final ya no esta en el camino del juego (el ultimo nivel va directo a los creditos),
+            // pero la pantalla sigue existiendo: desde ella, Continuar lleva a los creditos.
             var f = InLevel(levels: 2, level: 1);
-            f.LevelWon();
-            f.Continue();
+            f.JumpTo(GameScreen.Ending, 1);
             Assert.AreEqual(GameScreen.Ending, f.Current);
 
             Assert.IsTrue(f.ShowCredits());
@@ -554,13 +555,13 @@ namespace Zombineta.Tests
         }
 
         [Test]
-        public void TheLastLevel_GoesToTheEndingWithoutAMap()
+        public void TheLastLevel_GoesToTheCreditsWithoutAMapOrAnEnding()
         {
             var f = InLevel(levels: 2, level: 1);
             f.LevelWon();
             f.Continue();
 
-            Assert.AreEqual(GameScreen.Ending, f.Current);
+            Assert.AreEqual(GameScreen.Credits, f.Current);
         }
     }
 }

@@ -13,6 +13,8 @@ namespace Zombineta.Juego.Tests
     public class LogoDelJuegoTests
     {
         const string RutaLogo = "Assets/_Zombineta/Art/UI/sprite_logo_deadlivery_1.png";
+        // El logo de la portada de los creditos (version nueva).
+        const string RutaLogoCreditos = "Assets/_Zombineta/Art/UI/sprite_logo_deadlivery_2.png";
         const string RutaMenu = "Assets/_Zombineta/Scenes/MainMenu.unity";
         // El fondo del menu principal ya trae el logo dibujado.
         const string RutaFondoMenu = "Assets/_Zombineta/Art/MenuInicio/menu_fondo_v2.png";
@@ -47,7 +49,7 @@ namespace Zombineta.Juego.Tests
         public void LaPortadaDeLosCreditosEsElLogo()
         {
             var creditos = AssetDatabase.LoadAssetAtPath<Creditos>("Assets/_Zombineta/Settings/Creditos.asset");
-            Assert.AreEqual(AssetDatabase.LoadAssetAtPath<Sprite>(RutaLogo), creditos.secciones[0].imagen);
+            Assert.AreEqual(AssetDatabase.LoadAssetAtPath<Sprite>(RutaLogoCreditos), creditos.secciones[0].imagen);
         }
 
         [Test]

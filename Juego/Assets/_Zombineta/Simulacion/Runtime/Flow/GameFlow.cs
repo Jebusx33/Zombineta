@@ -207,14 +207,14 @@ namespace Zombineta.Flow
 
         public bool Resume() => Go(GameScreen.Paused, GameScreen.Playing);
 
-        /// <summary>Despues de ganar: el mapa (con el nivel ganado marcado y el que sigue), o el final.</summary>
+        /// <summary>Despues de ganar: el mapa (con el nivel ganado marcado y el que sigue), o los creditos si era el ultimo nivel.</summary>
         public bool Continue()
         {
             if (Current != GameScreen.LevelComplete)
                 return false;
 
             if (IsLastLevel)
-                return Switch(GameScreen.Ending);
+                return Switch(GameScreen.Credits);
 
             LevelIndex++;
             return Switch(GameScreen.Map);
