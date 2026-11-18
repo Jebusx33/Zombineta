@@ -31,6 +31,8 @@ namespace Zombineta.Juego.Screens
         [SerializeField] float espacioSeccion = 70f;
         [SerializeField] float altoPortada = 110f;
         [SerializeField] float altoImagenPortada = 340f;
+        [Tooltip("Alto del logo chico que va debajo del titulo de una seccion comun.")]
+        [SerializeField] float altoLogo = 56f;
         [SerializeField] float altoTitulo = 64f;
         [SerializeField] float altoLinea = 42f;
         [SerializeField] int tamanioPortada = 84;
@@ -78,7 +80,7 @@ namespace Zombineta.Juego.Screens
 
                 if (seccion.portada && seccion.imagen != null)
                 {
-                    AgregarImagen(seccion.imagen, y);
+                    AgregarImagen(seccion.imagen, y, altoImagenPortada);
                     y -= altoImagenPortada;
                 }
                 else if (!string.IsNullOrEmpty(seccion.titulo))
@@ -98,7 +100,16 @@ namespace Zombineta.Juego.Screens
                     }
                 }
 
-                if (seccion.lineas != null)
+                if (!seccion.portada && seccion.imagen != null)
+                {
+                    y -= 12f;
+                    AgregarImagen(seccion.imagen, y, altoLogo);
+                    y -= altoLogo + 24f;
+                }
+
+                if (seccion.lineas != null && seccion.columnas > 1)
+                    y = AgregarColumnas(seccion.lineas, seccion.columnas, font, y);
+                else if (seccion.lineas != null)
                     foreach (var linea in seccion.lineas)
                     {
                         AgregarLinea(linea ?? "", font, y);
@@ -165,9 +176,28 @@ namespace Zombineta.Juego.Screens
             rt.anchoredPosition = new Vector2(x, y);
         }
 
-        void AgregarImagen(Sprite sprite, float y)
+        /// <summary>
+        /// Las lineas repartidas en columnas iguales, llenando cada una de arriba abajo antes de
+        /// pasar a la siguiente. Devuelve la altura que queda debajo de la columna mas larga.
+        /// </summary>
+        float AgregarColumnas(string[] lineas, int columnas, Font font, float y)
         {
-            var go = new GameObject("Imagen de portada", typeof(RectTransform), typeof(Image));
+            int filas = (lineas.Length + columnas - 1) / columnas;
+            float ancho = anchoLinea / columnas;
+            for (int i = 0; i < lineas.Length; i++)
+            {
+                int columna = i / filas;
+                int fila = i % filas;
+                float x = -anchoLinea / 2f + ancho * (columna + 0.5f);
+                AgregarTexto(lineas[i] ?? "", font, tamanioLinea, FontStyle.Normal, colorTexto,
+                             TextAnchor.MiddleCenter, x, ancho, altoLinea, y - fila * altoLinea);
+            }
+            return y - filas * altoLinea;
+        }
+
+        void AgregarImagen(Sprite sprite, float y, float alto)
+        {
+            var go = new GameObject("Imagen", typeof(RectTransform), typeof(Image));
             go.transform.SetParent(contenedor, false);
             var image = go.GetComponent<Image>();
             image.sprite = sprite;
@@ -177,7 +207,7 @@ namespace Zombineta.Juego.Screens
             var rt = image.rectTransform;
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
             rt.pivot = new Vector2(0.5f, 1f);
-            rt.sizeDelta = new Vector2(altoImagenPortada * sprite.rect.width / sprite.rect.height, altoImagenPortada);
+            rt.sizeDelta = new Vector2(alto * sprite.rect.width / sprite.rect.height, alto);
             rt.anchoredPosition = new Vector2(0f, y);
         }
 

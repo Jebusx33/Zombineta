@@ -16,11 +16,13 @@ MonoBehaviour:
   - titulo: DeadLivery
     portada: 1
     imagen: {fileID: 21300000, guid: f745f1b5ffc82444a9b5556f43e4ef5c, type: 3}
+    columnas: 1
     lineas:
     - Un juego de UCHAR
   - titulo: Equipo
     portada: 0
     imagen: {fileID: 0}
+    columnas: 1
     lineas:
     - "Jos\xE9 Luis Ressia | Desarrollo \xB7 Sonido"
     - "Jes\xFAs Gabriel Arias | Desarrollo \xB7 Testing"
@@ -30,37 +32,72 @@ MonoBehaviour:
   - titulo: Game Design
     portada: 0
     imagen: {fileID: 0}
+    columnas: 1
     lineas:
     - Todo el equipo
   - titulo: Herramientas
     portada: 0
     imagen: {fileID: 0}
+    columnas: 1
     lineas:
     - Motor | Unity 6 (URP 2D)
     - "Ilustraci\xF3n | Krita \xB7 PaintTool SAI"
   - titulo: Herramientas de IA
     portada: 0
     imagen: {fileID: 0}
+    columnas: 1
     lineas:
     - "Programaci\xF3n | Claude Code"
-    - "M\xFAsica y sonidos | Suno"
+    - "M\xFAsica | Suno"
   - titulo: Recursos de terceros
     portada: 0
     imagen: {fileID: 0}
+    columnas: 1
     lineas:
     - "Particle Pack | Kenney (kenney.nl) \xB7 CC0"
+  - titulo: Efectos de sonido
+    portada: 0
+    imagen: {fileID: 21300000, guid: 69cfe49a9523a30439f8512e2377b848, type: 3}
+    columnas: 3
+    lineas:
+    - alice_soundz
+    - biww
+    - bryansantosbreton
+    - cliffordjohnson
+    - dennish18
+    - dheerajakam4jor
+    - donrain
+    - dragon-studio
+    - freesound_community
+    - juniorsoundays
+    - khoamthanh
+    - melbeebelbee
+    - mrfriends
+    - nastynewfie
+    - olenchic
+    - spinopel
+    - tanweraman
+    - traian1984
+    - tutmozis
+    - universfield
+    - u_r7cny11q7r
+    - u_vrxulot02c
+    - u_xg7ssi08yr
+    - voicebosch
   - titulo: Agradecimientos
     portada: 0
     imagen: {fileID: 0}
+    columnas: 1
     lineas:
     - Universidad de la Ciudad de Buenos Aires
-    - "Taller de Proyecto Integral \xB7 212"
+    - "Taller de Proyecto Integral \xB7 Producci\xF3n de Videojuegos"
     - 
     - "Doc. Producci\xF3n | Martin Romero"
     - Doc. Taller de Proyecto Integral | Nicolas Matias Crescenzi
   - titulo: "\xA1Gracias por jugar!"
     portada: 1
     imagen: {fileID: 0}
+    columnas: 1
     lineas:
     - "Sin vos, la horda no tendr\xEDa a qui\xE9n perseguir."
   velocidad: 70

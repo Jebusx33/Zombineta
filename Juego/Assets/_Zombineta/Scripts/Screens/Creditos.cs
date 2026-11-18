@@ -6,7 +6,9 @@ namespace Zombineta.Juego.Screens
 {
     /// <summary>
     /// Una seccion de los creditos: un titulo y las lineas debajo (puede no tener). Una linea
-    /// "Nombre | Rol" se arma en dos columnas; una linea vacia deja un espacio.
+    /// "Nombre | Rol" se arma en dos columnas; una linea vacia deja un espacio. Con varias
+    /// columnas las lineas se reparten de arriba abajo y despues a la derecha, como una lista
+    /// larga de nombres.
     /// </summary>
     [Serializable]
     public sealed class Seccion
@@ -14,8 +16,11 @@ namespace Zombineta.Juego.Screens
         public string titulo = "";
         [Tooltip("Titulo grande, sin subrayado: el nombre del juego al principio, el saludo al final.")]
         public bool portada;
-        [Tooltip("Dibujo que reemplaza al titulo de una portada, como el logo del juego. Vacio: se escribe el titulo.")]
+        [Tooltip("En una portada, dibujo que reemplaza al titulo (el logo del juego). En una seccion comun, " +
+                 "logo chico debajo del titulo (el de un sitio de recursos). Vacio: solo el titulo.")]
         public Sprite imagen;
+        [Tooltip("Columnas en que se reparten las lineas. 1 (o 0): una por renglon, con \"Nombre | Rol\".")]
+        [Min(0)] public int columnas = 1;
         public string[] lineas = new string[0];
     }
 
