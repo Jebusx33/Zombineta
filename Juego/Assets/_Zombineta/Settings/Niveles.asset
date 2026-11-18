@@ -51,13 +51,13 @@ MonoBehaviour:
     route: {fileID: 0}
     sceneName: Level_02
     comicPanels:
-    - image: {fileID: 21300000, guid: 4f24426ff245b6c469fcb0b67ed2dcf8, type: 3}
+    - image: {fileID: 21300000, guid: 95a3324f627ab0a4880cdc848e108ba4, type: 3}
       seconds: 2.5
       nuevaPagina: 1
-    - image: {fileID: 21300000, guid: 15099ee69b4ecb1499cd3a7e2f489843, type: 3}
+    - image: {fileID: 21300000, guid: a25e43157dc079b4aa75136ddc717b33, type: 3}
       seconds: 2.5
-      nuevaPagina: 1
-    - image: {fileID: 21300000, guid: 668993e93c073ff4d9c7db9aed4c68d3, type: 3}
+      nuevaPagina: 0
+    - image: {fileID: 21300000, guid: b6ebbdabf38736240b28dcf8c53aa85d, type: 3}
       seconds: 2.5
-      nuevaPagina: 1
+      nuevaPagina: 0
     audio: {fileID: 11400000, guid: b15a828131f9d6e4c9c32ef1cd743d09, type: 2}
